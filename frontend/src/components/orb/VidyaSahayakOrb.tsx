@@ -82,6 +82,12 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   const [micOn, setMicOn]         = useState(false);
   const [micAvail, setMicAvail]   = useState(true);
 
+  // References to keep state values fresh inside render loops
+  const activeIdRef   = useRef<OrbState>('idle');
+  const micOnRef      = useRef<boolean>(false);
+  const hasSpokenRef  = useRef<boolean>(false);
+  const silenceStartRef = useRef<number | null>(null);
+
   /* ─── set state ─── */
   const applyState = useCallback((id: OrbState) => {
     const cfg = ORB_STATES.find(s => s.id === id) ?? ORB_STATES[0];
@@ -89,8 +95,16 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
     targetRef.current    = cfg;
     transStartRef.current = performance.now();
     setActiveId(id);
+    activeIdRef.current = id;
     setLabel(cfg.label);
     setDesc(cfg.desc);
+
+    // Reset VAD state when starting to listen
+    if (id === 'listening') {
+      hasSpokenRef.current = false;
+      silenceStartRef.current = null;
+    }
+
     onStateChange?.(id);
   }, [onStateChange]);
 
@@ -113,7 +127,7 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   /* ─── mic ─── */
   const toggleMic = useCallback(async () => {
     stopDemo();
-    if (micOn) {
+    if (micOnRef.current) {
       // 1. Generate base64 encoded audio of what was recorded
       const audioBase64 = getWavBase64(micHandleRef.current);
       
@@ -121,6 +135,7 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       stopMicAnalysis(micHandleRef.current);
       micHandleRef.current = null;
       setMicOn(false);
+      micOnRef.current = false;
       applyState('thinking');
       
       // 3. Fire callback if successful
@@ -132,9 +147,16 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       if (!handle) { setMicAvail(false); return; }
       micHandleRef.current = handle;
       setMicOn(true);
+      micOnRef.current = true;
       applyState('listening');
     }
-  }, [micOn, applyState, stopDemo, onAudioReady]);
+  }, [applyState, stopDemo, onAudioReady]);
+
+  // Keep a mutable reference to toggleMic so the render frame loop can call it without stale closures
+  const toggleMicRef = useRef<() => Promise<void>>();
+  useEffect(() => {
+    toggleMicRef.current = toggleMic;
+  }, [toggleMic]);
 
   /* ─── render loop ─── */
   useEffect(() => {
@@ -189,6 +211,29 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       /* WebGL core */
       updateUniforms(glCtx as WebGLContext, timeRef.current, eff, v);
 
+      /* Client-side VAD (Voice Activity Detection) */
+      if (activeIdRef.current === 'listening' && micOnRef.current) {
+        const silenceThreshold = 0.018; // Silence baseline
+        const silenceDurationMs = 2000;  // 2 seconds of silence
+
+        if (v > silenceThreshold) {
+          if (!hasSpokenRef.current) {
+            console.log('[VAD] Speech detected');
+            hasSpokenRef.current = true;
+          }
+          silenceStartRef.current = null;
+        } else if (hasSpokenRef.current) {
+          if (silenceStartRef.current === null) {
+            silenceStartRef.current = performance.now();
+          } else if (performance.now() - silenceStartRef.current > silenceDurationMs) {
+            console.log('[VAD] Silence timeout reached. Automatically submitting speech...');
+            setTimeout(() => {
+              toggleMicRef.current?.();
+            }, 0);
+          }
+        }
+      }
+
       /* 2D overlays */
       const gCtx2d = glassCanvas.getContext('2d')!;
       const aCtx2d = auraCanvas.getContext('2d')!;
@@ -213,8 +258,28 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
     if (controlledState) {
       stopDemo();
       applyState(controlledState);
+
+      // Handle physical mic activation/deactivation based on controlled state
+      if (controlledState === 'listening') {
+        if (!micOnRef.current) {
+          (async () => {
+            const handle = await startMicAnalysis();
+            if (!handle) { setMicAvail(false); return; }
+            micHandleRef.current = handle;
+            setMicOn(true);
+            micOnRef.current = true;
+          })();
+        }
+      } else {
+        if (micOnRef.current) {
+          stopMicAnalysis(micHandleRef.current);
+          micHandleRef.current = null;
+          setMicOn(false);
+          micOnRef.current = false;
+        }
+      }
     }
-  }, [controlledState]);
+  }, [controlledState, applyState, stopDemo]);
 
   const canvasSize = size * 2; // HiDPI
   const auraSize   = Math.round(size * 1.34);

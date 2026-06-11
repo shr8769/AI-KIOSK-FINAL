@@ -51,6 +51,24 @@ async def ingest_event(request: EventRequest):
 
         # TODO: Save session to Redis via SessionManager
 
+        # Generate TTS for the greeting
+        from app.models.schemas import TTSRequest
+        from app.services.speech.tts_service import tts_service
+        
+        greeting_text = "Welcome to PES University. How can I help you today?"
+        audio_url = None
+        try:
+            tts_req = TTSRequest(
+                session_id=session_id,
+                text=greeting_text,
+                language="en"
+            )
+            tts_resp = await tts_service.synthesize(tts_req)
+            audio_url = tts_resp.audio_url
+            logger.info(f"Generated greeting TTS: {audio_url}")
+        except Exception as e:
+            logger.warning(f"Failed to generate TTS for greeting: {e}")
+
         # Trigger avatar greeting state change via WebSocket
         try:
             await manager.broadcast({
@@ -59,7 +77,10 @@ async def ingest_event(request: EventRequest):
             })
             await manager.broadcast({
                 "type": "greeting",
-                "payload": {"message": "Welcome to PES University."}
+                "payload": {
+                    "message": greeting_text,
+                    "audio_url": audio_url
+                }
             })
         except Exception as e:
             logger.warning(f"Failed to broadcast detection to WebSocket: {e}")
@@ -68,7 +89,7 @@ async def ingest_event(request: EventRequest):
             status="success",
             action_taken="session_created",
             session_id=session_id,
-            message="Welcome to PES University.",
+            message=greeting_text,
         )
 
     elif request.event_type == "PERSON_LEFT":

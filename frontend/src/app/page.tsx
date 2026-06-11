@@ -50,8 +50,13 @@ export default function KioskPage() {
     activeAudioRef.current = audio;
 
     audio.onended = () => {
-      console.log('[Audio] Finished response playback');
-      setOrbState('idle');
+      console.log('[Audio] Finished response playback, transitioning to listening');
+      setOrbState((prev) => {
+        if (prev !== 'idle' && prev !== 'error') {
+          return 'listening';
+        }
+        return 'idle';
+      });
       activeAudioRef.current = null;
     };
 
