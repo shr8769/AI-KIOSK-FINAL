@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { OrbState, OrbStateConfig, ORB_STATES, STATE_SEQUENCE } from './orbStates';
 import { initWebGL, updateUniforms, WebGLContext } from './orbWebGL';
 import { drawGlassShell, drawAura } from './orbCanvas2D';
-import { startMicAnalysis, stopMicAnalysis, MicHandle } from './orbAudio';
+import { startMicAnalysis, stopMicAnalysis, getWavBase64, MicHandle } from './orbAudio';
 import { Typewriter } from '@/components/ui/typewriter-text';
 
 interface VidyaSahayakOrbProps {
@@ -22,6 +22,12 @@ interface VidyaSahayakOrbProps {
   showMic?: boolean;
   /** Orb diameter in px */
   size?: number;
+  /** Custom label to show instead of standard state label */
+  customLabel?: string;
+  /** Custom description to show in Typewriter */
+  customDesc?: string;
+  /** Callback fired when user stops mic recording and WAV is generated */
+  onAudioReady?: (audioBase64: string) => void;
 }
 
 /** Linearly interpolate between a and b by k */
@@ -49,6 +55,9 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   showControls = true,
   showMic = true,
   size = 300,
+  customLabel,
+  customDesc,
+  onAudioReady,
 }) => {
   const glCanvasRef  = useRef<HTMLCanvasElement>(null);
   const glassCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -105,10 +114,19 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   const toggleMic = useCallback(async () => {
     stopDemo();
     if (micOn) {
+      // 1. Generate base64 encoded audio of what was recorded
+      const audioBase64 = getWavBase64(micHandleRef.current);
+      
+      // 2. Tear down the stream/context
       stopMicAnalysis(micHandleRef.current);
       micHandleRef.current = null;
       setMicOn(false);
-      applyState('idle');
+      applyState('thinking');
+      
+      // 3. Fire callback if successful
+      if (audioBase64) {
+        onAudioReady?.(audioBase64);
+      }
     } else {
       const handle = await startMicAnalysis();
       if (!handle) { setMicAvail(false); return; }
@@ -116,7 +134,7 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       setMicOn(true);
       applyState('listening');
     }
-  }, [micOn, applyState, stopDemo]);
+  }, [micOn, applyState, stopDemo, onAudioReady]);
 
   /* ─── render loop ─── */
   useEffect(() => {
@@ -240,10 +258,10 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       {showLabels && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 32, minHeight: 90 }}>
           <p style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 11, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', fontWeight: 600, transition: 'all 0.6s ease' }}>
-            {label}
+            {customLabel || label}
           </p>
           <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 22, color: 'rgba(255,255,255,0.95)', marginTop: 16, textAlign: 'center', fontWeight: 500, letterSpacing: '0.01em', transition: 'all 0.6s ease', maxWidth: '80%' }}>
-            <Typewriter key={desc} text={desc} speed={30} delay={3000} cursor="|" className="inline-block" />
+            <Typewriter key={customDesc || desc} text={customDesc || desc} speed={30} delay={3000} cursor="|" className="inline-block" />
           </div>
         </div>
       )}
