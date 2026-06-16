@@ -129,7 +129,9 @@ class ASRService:
             # Transcribe audio array with VAD filtering and script prompt guidance
             segments, info = model.transcribe(
                 audio_data,
-                beam_size=5,
+                beam_size=1,
+                best_of=1,
+                temperature=0.0,
                 language=lang_hint,
                 initial_prompt=initial_prompt,
                 vad_filter=True
