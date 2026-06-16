@@ -51,17 +51,17 @@ class RIARService:
         
         # Keyword-based domain classification
         domain = "general"
-        if any(kw in query for kw in ["admission", "apply", "seat", "register", "pessat", "eligibility", "cut-off"]):
+        if any(kw in query for kw in ["admission", "apply", "seat", "seats", "register", "registration", "pessat", "eligibility", "cut-off", "cutoff"]):
             domain = "admissions"
-        elif any(kw in query for kw in ["course", "syllabus", "exam", "marks", "credits", "class", "semester", "academics"]):
+        elif any(kw in query for kw in ["course", "courses", "syllabus", "exam", "exams", "marks", "credits", "credit", "class", "classes", "semester", "semesters", "academics"]):
             domain = "academics"
-        elif any(kw in query for kw in ["placement", "job", "salary", "recruit", "company", "companies"]):
+        elif any(kw in query for kw in ["placement", "placements", "job", "jobs", "salary", "packages", "package", "recruit", "recruits", "recruiter", "recruiters", "company", "companies"]):
             domain = "placements"
-        elif any(kw in query for kw in ["research", "phd", "project", "paper", "publication"]):
+        elif any(kw in query for kw in ["research", "phd", "project", "projects", "paper", "papers", "publication", "publications"]):
             domain = "research"
-        elif any(kw in query for kw in ["hostel", "scholarship", "canteen", "library", "sport", "facilities"]):
+        elif any(kw in query for kw in ["hostel", "hostels", "scholarship", "scholarships", "library", "libraries", "sport", "sports", "facilities", "facility"]):
             domain = "student_services"
-        elif any(kw in query for kw in ["where", "map", "building", "floor", "block", "direction", "room", "office", "toilet"]):
+        elif any(kw in query for kw in ["where", "location", "locations", "map", "building", "buildings", "floor", "floors", "block", "blocks", "direction", "directions", "room", "rooms", "office", "offices", "toilet", "toilets", "canteen", "cafeteria", "cafetaria", "situated", "located", "find", "reach"]):
             domain = "navigation"
 
         return RIARResponse(
@@ -115,7 +115,7 @@ class RAGService:
             "academics": "Our academic program is designed to be rigorous and modern. Course structures, syllabi, exam schedules, and credit structures are available on the student portal.",
             "placements": "PES University has an excellent placement record, with top companies visiting our campus annually. Average salary packages range between 8 to 12 LPA.",
             "research": "PES University is heavily invested in research with multiple research centers and PhD programs across engineering and sciences.",
-            "student_services": "Student facilities include extensive libraries, sports complex, state-of-the-art hostiles, and various technical and cultural clubs.",
+            "student_services": "Student facilities include extensive libraries, sports complex, state-of-the-art hostels, and various technical and cultural clubs.",
             "navigation": "To navigate the campus, please follow the main walkway. The admissions office is located in the main Golden Jubilee Block on the ground floor.",
             "general": "Thank you for asking. PES University offers world-class education with courses in Engineering, Medicine, Management, and Law."
         }
@@ -127,12 +127,12 @@ class RAGService:
         query_lower = query.lower()
         if "where" in query_lower and "office" in query_lower:
             answer = "The admissions office is located on the ground floor of the Golden Jubilee Block, right next to the entrance lobby."
-        elif "where" in query_lower and "canteen" in query_lower:
-            answer = "The main campus canteen is situated next to the central library complex, near the football ground."
+        elif any(kw in query_lower for kw in ["canteen", "cafeteria", "cafetaria"]):
+            answer = "The main campus cafeteria is situated next to the central library complex, near the football ground. It serves snacks, meals, and beverages from 8:00 AM to 8:00 PM."
         elif "pessat" in query_lower:
             answer = "PESSAT is the PES Scholastic Aptitude Test. You can register online at the official PESSAT website. Eligibility requires 60% aggregate in Physics, Chemistry, and Math."
-        elif "placement" in query_lower:
-            answer = "Over 100 top companies recruit from PES University every year, including companies like Microsoft, Amazon, and Cisco. The highest package last year exceeded 40 LPA."
+        elif "placement" in query_lower or "placements" in query_lower:
+            answer = "Over 100 top companies recruit from PES University every year, including companies like Microsoft, Amazon, and Cisco. The average package is 8 to 12 LPA, and the highest package last year exceeded 40 LPA."
 
         return RAGResponse(
             session_id=request.session_id,
