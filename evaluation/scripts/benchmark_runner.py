@@ -53,17 +53,21 @@ def run_benchmark():
                 selected_agent = agent.__class__.__name__
         
         # Get the actual answer using coordinator
+        import time
+        start_time = time.perf_counter()
         answer = coordinator.answer(query)
+        latency = time.perf_counter() - start_time
         
         results.append({
             "Query": query,
             "Selected Agent": selected_agent,
+            "Latency (s)": f"{latency:.4f}",
             "Answer": answer
         })
         
     # Save as CSV
     with open(results_csv_path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Query", "Selected Agent", "Answer"])
+        writer = csv.DictWriter(f, fieldnames=["Query", "Selected Agent", "Latency (s)", "Answer"])
         writer.writeheader()
         writer.writerows(results)
         

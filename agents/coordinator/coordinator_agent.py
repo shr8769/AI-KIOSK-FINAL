@@ -50,12 +50,59 @@ class CoordinatorAgent:
 
         # Define keyword routing mappings for each domain agent.
         self.routing_rules = {
-            "admissions": ["gpa", "transcript", "ielts", "toefl", "duolingo", "recommendation", "recommendation letter", "international student", "predicted grades", "educational gap", "tuition", "fee", "admission", "scholarship", "eligibility", "deadline", "application", "predicted grade"],
-            "academics": ["attendance", "exam", "revaluation", "sgpa", "cgpa calculation", "transcript", "grading", "credits", "grade", "timetable", "course", "section", "lecture"],
-            "placements": ["microsoft", "amazon", "internship", "placement", "recruitment", "oa", "online assessment", "coding test", "backlog eligibility", "dream offer", "cgpa", "interview", "resume", "ppo", "salary", "job"],
-            "research": ["publication", "journal", "conference", "research grant", "travel grant", "faculty project", "urop", "research lab", "hpc", "gpu cluster", "research", "lab", "symposium", "thesis", "funding", "stipend"],
-            "student_services": ["hostel", "library", "id card", "counseling", "maintenance", "certificate", "visitor", "curfew", "book borrowing", "bonafide", "health center"],
-            "navigation": ["where", "location", "directions", "located", "reach", "how do I get to", "building", "office", "floor", "where is", "auditorium", "landmark", "facility", "gate", "block"]
+            "admissions": [
+                "admission gpa", "gpa requirements", "transcript evaluation", "transcripts evaluation", "ielts", "toefl", "duolingo", 
+                "recommendation letter", "recommendation letters", "international student", 
+                "international students", "predicted grades", "educational gap", "tuition fee", "tuition fees", 
+                "admission fees", "admission fee", "admission", "admissions", "merit scholarship", "merit scholarships", 
+                "eligibility requirements", "admission deadline", "admission deadlines", "application deadline", "application deadlines", 
+                "apply for admission", "how to apply", "application process", "undergraduate admission", "undergraduate admissions", 
+                "entrance exam", "transfer student", "transfer students", "english proficiency", "early decision", "early action", 
+                "financial aid", "cost of studying", "gpa", "deadline", "deadlines", "application", "applications", "tuition", 
+                "fee", "fees", "apply", "recommendation", "high school", "letters of recommendation", "letter of recommendation", 
+                "cost", "installments"
+            ],
+            "academics": [
+                "attendance", "exam", "exams", "midterm", "midterms", "revaluation", "sgpa", "cgpa calculation", 
+                "academic transcript", "academic transcripts", "grading", "credits", "grade", "grades", "timetable", "course", 
+                "courses", "section", "sections", "lecture", "lectures", "calculator", "calculators", "seating", 
+                "attendance waiver", "re-totaling", "re-totalling", "marks", "paper", "papers", "calculate gpa", 
+                "gpa", "cgpa", "professor", "office hours", "holiday", "holidays", "schedule", "schedules", "class", 
+                "classes", "missed class", "missed classes", "miss", "audit", "midterms schedule", "seating arrangement", 
+                "posted", "visa"
+            ],
+            "placements": [
+                "microsoft", "amazon", "internship", "internships", "placement", "placements", "recruitment", 
+                "oa", "online assessment", "coding test", "backlog eligibility", "backlogs", "backlog", 
+                "dream offer", "dream company", "cgpa", "interview", "interviews", "resume", "resumes", 
+                "ppo", "salary", "job", "jobs", "job offer", "job offers", "placement drive", "placement drives", 
+                "signing", "acceptance", "portal", "placement cell", "resume verification", "eligibility requirements"
+            ],
+            "research": [
+                "publication", "publications", "journal", "journals", "conference", "conferences", 
+                "research grant", "travel grant", "travel", "faculty project", "urop", "research lab", 
+                "hpc", "gpu cluster", "gpu", "clusters", "research", "lab", "labs", "symposium", 
+                "thesis", "funding", "stipend", "stipends", "paper", "papers", "deep learning", "models", 
+                "authorship", "collaborating", "publish", "co-author", "cgpa", "independent study", 
+                "research project", "research projects", "faculty research", "urop application", "urop deadline", "honors thesis"
+            ],
+            "student_services": [
+                "hostel room", "hostel rooms", "hostel accommodation", "hostel", "hostels", "library", "id card", "counseling", "maintenance", "certificate", 
+                "certificates", "visitor", "visitors", "curfew", "book borrowing", "book", "books", 
+                "borrow", "borrowing", "loan", "bonafide", "health center", "vpn access", "vpn", "proxy", "off-campus", 
+                "guest house", "parents", "wi-fi", "wifi", "laptop", "stressed", "stress", "anonymously", 
+                "ambulance", "operational hours", "dining hall", "refund", "gym", "facility", "online journals", "e-books",
+                "doctor", "resident doctor", "medical services", "central library", "university central library", "library open",
+                "ieee", "ieee journals"
+            ],
+            "navigation": [
+                "where", "location", "directions", "located", "reach", "how do i get to", "building", 
+                "office", "floor", "where is", "auditorium", "landmark", "facility", "gate", "block", 
+                "which floor", "which building", "way to", "walk to", "route", "how to walk", "near", 
+                "sports complex", "guest house", "cafeteria", "library", "placement cell", "admissions office", 
+                "accounts counter", "fee counter", "health center", "moot court", "court hall", 
+                "counseling center", "vc office", "gym", "common room", "dining hall"
+            ]
         }
 
     def route(self, query: str) -> Tuple[str, float, str, list]:
@@ -76,12 +123,34 @@ class CoordinatorAgent:
         all_matches = []
         
         # Check for Navigation override keywords
-        nav_override_keywords = ["where", "located", "directions", "reach", "get to", "location"]
+        nav_override_keywords = [
+            "where", "located", "directions", "reach", "get to", "location", 
+            "which floor", "which building", "way to", "walk to", "route", 
+            "how to walk", "near", "where is"
+        ]
+        
+        # Check if the query contains any process/transactional verbs that indicate
+        # it is a procedural question rather than a physical navigation request.
+        process_verbs = [
+            "upload", "request", "register", "apply", "find", "pay", 
+            "submit", "calculate", "borrow", "report", "file", "download", "renew",
+            "doctor", "stipend", "stipends", "stressed", "stress", "exams", "credits", 
+            "cgpa", "sgpa", "midterm", "midterms"
+        ]
+        
         has_nav_override = False
+        has_process_verb = False
+        
         for kw in nav_override_keywords:
             pattern = r'\b' + re.escape(kw) + r'\b'
             if re.search(pattern, query_lower):
                 has_nav_override = True
+                break
+                
+        for verb in process_verbs:
+            pattern = r'\b' + re.escape(verb) + r'\b'
+            if re.search(pattern, query_lower):
+                has_process_verb = True
                 break
         
         for domain, keywords in self.routing_rules.items():
@@ -92,15 +161,23 @@ class CoordinatorAgent:
                     matches.append(keyword)
                     all_matches.append(keyword)
             
+            # Deduplicate matches to prevent double-counting sub-phrases
+            # e.g., if 'where is' matched, ignore 'where'
+            filtered_matches = []
+            for kw in matches:
+                if any(kw != other and kw in other for other in matches):
+                    continue
+                filtered_matches.append(kw)
+            
             # Confidence score is calculated with weighted matches:
             # Phrase matches containing spaces get a weight of 2.0 (more specific).
             # Single keyword matches get a weight of 1.0.
-            score = sum(2.0 if " " in kw else 1.0 for kw in matches)
+            score = sum(2.0 if " " in kw else 1.0 for kw in filtered_matches)
             scores[domain] = score
-            matched_details[domain] = matches
+            matched_details[domain] = filtered_matches
             
-        # Apply Navigation priority boost
-        if has_nav_override:
+        # Apply Navigation priority boost ONLY if there are override keywords and no process verbs
+        if has_nav_override and not has_process_verb:
             scores["navigation"] = scores.get("navigation", 0.0) + 100.0
             # Ensure matched navigation override keywords are recorded
             for kw in nav_override_keywords:

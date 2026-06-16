@@ -57,6 +57,12 @@ def analyze_failures():
     # Initialize coordinator to check matches
     coordinator = CoordinatorAgent()
     
+    # Initialize metrics variables
+    domains = ["admissions", "academics", "placements", "research", "student_services", "navigation", "None"]
+    tp = {d: 0 for d in domains}
+    fp = {d: 0 for d in domains}
+    fn = {d: 0 for d in domains}
+    
     failures = []
     failures_by_domain = {}
     failure_reasons = {}
@@ -75,9 +81,17 @@ def analyze_failures():
                     gt = d_gt
                     break
         if gt is None:
-            gt = "unknown"
+            gt = "None"
             
-        if predicted != gt:
+        if predicted == gt:
+            if gt in tp:
+                tp[gt] += 1
+        else:
+            if predicted in fp:
+                fp[predicted] += 1
+            if gt in fn:
+                fn[gt] += 1
+                
             # Failure detected!
             # Analyze keywords matched
             _, confidence, reason, all_matches = coordinator.route(query)
@@ -104,12 +118,31 @@ def analyze_failures():
             # Count failure reasons
             failure_reasons[fail_reason] = failure_reasons.get(fail_reason, 0) + 1
             
+    total_queries = len(results)
+    correct_queries = total_queries - len(failures)
+    accuracy = correct_queries / total_queries if total_queries > 0 else 0
+            
     # Generate failure analysis report
     report = []
     report.append("============================================================")
     report.append("                   ROUTING FAILURE ANALYSIS")
     report.append("============================================================")
-    report.append(f"Total Failures: {len(failures)}")
+    report.append(f"Total Queries  : {total_queries}")
+    report.append(f"Total Correct  : {correct_queries}")
+    report.append(f"Total Failures : {len(failures)}")
+    report.append(f"Routing Accuracy: {accuracy * 100:.2f}%")
+    report.append("")
+    
+    report.append("PER-DOMAIN METRICS:")
+    report.append("-" * 65)
+    report.append(f"{'Domain':<20} | {'Precision':<10} | {'Recall':<10} | {'F1-Score':<10}")
+    report.append("-" * 65)
+    for d in domains[:-1]:
+        p_val = tp[d] / (tp[d] + fp[d]) if (tp[d] + fp[d]) > 0 else 0.0
+        r_val = tp[d] / (tp[d] + fn[d]) if (tp[d] + fn[d]) > 0 else 0.0
+        f1_val = 2 * p_val * r_val / (p_val + r_val) if (p_val + r_val) > 0 else 0.0
+        report.append(f"{d:<20} | {p_val * 100:>8.2f}% | {r_val * 100:>8.2f}% | {f1_val * 100:>8.2f}%")
+    report.append("-" * 65)
     report.append("")
     
     # 2. Group failures by domain

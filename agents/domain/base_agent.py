@@ -11,6 +11,8 @@ try:
 except ImportError:
     pass
 
+from agents.domain.gemini_rag import GeminiSynthesizer
+
 def log_evaluation_trace(
     query: str,
     selected_agent: str,
@@ -58,7 +60,15 @@ class BaseAgent(ABC):
     Implements a unified retrieval and re-ranking pipeline using semantic similarity
     and keyword overlap scoring.
     """
-    def __init__(self, collection_name: str, client: Any = None, db_path: str = None):
+    def __init__(
+        self, 
+        collection_name: str, 
+        client: Any = None, 
+        db_path: str = None,
+        similarity_weight: float = 1.0,
+        keyword_weight: float = 1.5,
+        rag_enabled: bool = False
+    ):
         """
         Initializes the BaseAgent with a ChromaDB collection.
         
@@ -66,8 +76,17 @@ class BaseAgent(ABC):
             collection_name (str): Name of the ChromaDB collection.
             client (chromadb.PersistentClient, optional): Shared client instance.
             db_path (str, optional): Path to persistent ChromaDB storage.
+            similarity_weight (float): Weight for semantic similarity score.
+            keyword_weight (float): Weight for token overlap score.
+            rag_enabled (bool): Whether to enable Gemini RAG response generation.
         """
         self.collection_name = collection_name
+        self.similarity_weight = similarity_weight
+        self.keyword_weight = keyword_weight
+        self.rag_enabled = rag_enabled
+        
+        if self.rag_enabled:
+            self.synthesizer = GeminiSynthesizer()
         
         if client is not None:
             self.client = client
@@ -181,7 +200,7 @@ class BaseAgent(ABC):
                 # 3. Combine scores
                 # Map distance (usually 0.0 - 2.0, lower is better) to a similarity metric
                 similarity_score = 1.0 / (1.0 + (dist if dist is not None else 0.0))
-                combined_score = similarity_score + kw_score
+                combined_score = self.similarity_weight * similarity_score + self.keyword_weight * kw_score
                 
                 retrieved_docs.append({
                     "id": doc_id,
@@ -242,18 +261,34 @@ class BaseAgent(ABC):
         print(f"* ID: {best_doc['id']}")
         
         # Log evaluation trace as required by PART 4
-        log_evaluation_trace(
-            query=query,
-            selected_agent=self.__class__.__name__,
-            selected_domain=self.get_domain(),
-            routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
-            selected_doc_id=best_doc["id"],
-            retrieved_docs=docs,
-            answer=best_doc["answer"]
-        )
-        
-        response = f"{best_doc['answer']}\n\n[Source: {self.get_domain().title().replace('_', ' ')} | Ref: {best_doc['id']}]"
-        return response
+        if getattr(self, "rag_enabled", False):
+            # Synthesize answer using Gemini/fallback RAG
+            rag_answer = self.synthesizer.synthesize(query, docs)
+            log_evaluation_trace(
+                query=query,
+                selected_agent=self.__class__.__name__,
+                selected_domain=self.get_domain(),
+                routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
+                selected_doc_id=best_doc["id"],
+                retrieved_docs=docs,
+                answer=rag_answer
+            )
+            # Combine the source references for context docs
+            refs = ", ".join(d["id"] for d in docs[:3])
+            response = f"{rag_answer}\n\n[Source: {self.get_domain().title().replace('_', ' ')} (RAG Synth) | Refs: {refs}]"
+            return response
+        else:
+            log_evaluation_trace(
+                query=query,
+                selected_agent=self.__class__.__name__,
+                selected_domain=self.get_domain(),
+                routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
+                selected_doc_id=best_doc["id"],
+                retrieved_docs=docs,
+                answer=best_doc["answer"]
+            )
+            response = f"{best_doc['answer']}\n\n[Source: {self.get_domain().title().replace('_', ' ')} | Ref: {best_doc['id']}]"
+            return response
 
     @abstractmethod
     def get_domain(self) -> str:
