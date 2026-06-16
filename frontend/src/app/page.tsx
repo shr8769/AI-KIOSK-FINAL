@@ -22,6 +22,7 @@ export default function KioskPage() {
   const [orbState, setOrbState] = useState<OrbState>('idle');
   const [customLabel, setCustomLabel] = useState<string | undefined>(undefined);
   const [customDesc, setCustomDesc] = useState<string | undefined>(undefined);
+  const [hasInteracted, setHasInteracted] = useState(false);
   
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -30,6 +31,26 @@ export default function KioskPage() {
   
   // Hardcoded session ID for demo purposes until orchestration is complete
   const sessionId = 'demo_session_id';
+
+  const unlockAudio = () => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const buffer = audioCtx.createBuffer(1, 1, 22050);
+      const source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioCtx.destination);
+      source.start(0);
+
+      // Play a short silent HTML5 Audio element to unlock standard audio tags
+      const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAAA');
+      silentAudio.play().catch(e => console.warn('[Audio] HTML5 Audio unlock failed:', e));
+    } catch (e) {
+      console.warn('[Audio] Failed to unlock audio context:', e);
+    }
+  };
 
   const playResponseAudio = useCallback((audioUrl: string) => {
     // Stop any currently playing audio response
@@ -102,8 +123,11 @@ export default function KioskPage() {
           case 'session_start':
           case 'greeting':
             setOrbState('greeting');
-            setCustomLabel(undefined);
-            setCustomDesc(undefined);
+            setCustomLabel('VidyaSahayak');
+            setCustomDesc(msg.payload?.message || msg.payload?.text || 'Welcome!');
+            if (msg.payload?.audio_url) {
+              playResponseAudio(msg.payload.audio_url);
+            }
             break;
           case 'audio_chunk':
           case 'listening':
@@ -227,7 +251,7 @@ export default function KioskPage() {
         type: 'audio_chunk',
         payload: {
           audio_base64: base64,
-          language_hint: 'en',
+          language_hint: null,
           turn_id: 1
         }
       }));
@@ -240,7 +264,9 @@ export default function KioskPage() {
   }, []);
 
   useEffect(() => {
-    connectWebSocket();
+    if (hasInteracted) {
+      connectWebSocket();
+    }
 
     return () => {
       if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
@@ -255,7 +281,51 @@ export default function KioskPage() {
         activeAudioRef.current = null;
       }
     };
-  }, [connectWebSocket]);
+  }, [connectWebSocket, hasInteracted]);
+
+  if (!hasInteracted) {
+    return (
+      <main className="min-h-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        {/* Decorative background aura */}
+        <div className="absolute w-[500px] h-[500px] rounded-full bg-indigo-500/10 blur-[120px] -top-40 -left-40 animate-pulse pointer-events-none" />
+        <div className="absolute w-[500px] h-[500px] rounded-full bg-emerald-500/5 blur-[120px] -bottom-40 -right-40 animate-pulse pointer-events-none" />
+        
+        {/* Main Card */}
+        <div className="relative z-10 w-full max-w-md p-8 rounded-3xl border border-zinc-800 bg-zinc-950/60 backdrop-blur-xl shadow-2xl flex flex-col items-center text-center space-y-8">
+          {/* Logo / Icon */}
+          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-500 to-emerald-500 flex items-center justify-center p-[2px] shadow-lg shadow-indigo-500/20">
+            <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center">
+              <svg className="w-8 h-8 text-emerald-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h1 className="text-3xl font-bold tracking-tight text-white font-sans bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400">
+              VidyaSahayak AI
+            </h1>
+            <p className="text-sm text-zinc-400 tracking-wider uppercase font-semibold">
+              PES University Kiosk
+            </p>
+            <p className="text-xs text-zinc-500 max-w-xs mx-auto">
+              Welcome! Talk to VidyaSahayak in English, Hindi, or Kannada. Enable audio output to begin.
+            </p>
+          </div>
+
+          <button
+            onClick={() => {
+              unlockAudio();
+              setHasInteracted(true);
+            }}
+            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          >
+            Start Interaction
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black flex flex-col items-center justify-between py-10 px-4 relative overflow-hidden">

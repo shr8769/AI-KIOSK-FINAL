@@ -76,6 +76,39 @@ class TTSService:
                 latency_ms=latency_ms,
             )
 
+        # 1. Try gTTS first for high-quality multilingual output
+        try:
+            from gtts import gTTS
+            
+            lang = "en"
+            req_lang = (request.language or "en").lower()
+            if req_lang in ("kn", "kannada"):
+                lang = "kn"
+            elif req_lang in ("hi", "hindi"):
+                lang = "hi"
+            
+            filename = f"response_{request.session_id}_{int(time.time())}.mp3"
+            filepath = os.path.join(static_dir, filename)
+            
+            logger.info(f"Synthesizing speech via gTTS (lang={lang})...")
+            tts = gTTS(text=request.text, lang=lang)
+            await asyncio.to_thread(tts.save, filepath)
+            
+            words = len(request.text.split())
+            duration = max(1.0, round(words * 0.45, 2))
+            latency_ms = int((time.time() - start_time) * 1000)
+            
+            return TTSResponse(
+                session_id=request.session_id,
+                audio_url=f"/static/audio/{filename}",
+                duration_seconds=duration,
+                format="mp3",
+                latency_ms=latency_ms,
+            )
+        except Exception as e:
+            logger.warning(f"gTTS synthesis failed or not installed: {e}. Falling back to pyttsx3.")
+
+        # 2. Fallback to pyttsx3 SAPI5 local generation
         try:
             # Generate unique filename for this turn response
             filename = f"response_{request.session_id}_{int(time.time())}.wav"

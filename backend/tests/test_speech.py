@@ -90,7 +90,6 @@ class TestTTSService:
         import sys
         if sys.platform != "win32":
             pytest.skip("pyttsx3 real synthesis is only supported on Windows hosts.")
-
         old_val = settings.USE_MOCK_SERVICES
         settings.USE_MOCK_SERVICES = False
 
@@ -102,17 +101,14 @@ class TestTTSService:
                 speed=1.0
             )
             response = await tts_service.synthesize(req)
-
             assert response.session_id == "test_sess_real"
             assert "response_test_sess_real_" in response.audio_url
-            assert response.format == "wav"
+            assert response.format in ("wav", "mp3")
 
-            # Verify the output file was actually created in the filesystem
             local_path = response.audio_url.lstrip("/")
             assert os.path.exists(local_path)
-            assert os.path.getsize(local_path) > 44  # Larger than empty WAV header
+            assert os.path.getsize(local_path) > 44
 
-            # Clean up the test audio file
             if os.path.exists(local_path):
                 os.remove(local_path)
         finally:
