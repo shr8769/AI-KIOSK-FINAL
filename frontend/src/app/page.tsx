@@ -37,6 +37,53 @@ export default function KioskPage() {
   // Hardcoded session ID for demo purposes until orchestration is complete
   const sessionId = 'demo_session_id';
 
+  const playResponseAudio = useCallback((audioUrl: string) => {
+    // Stop any currently playing audio response
+    if (activeAudioRef.current) {
+      try {
+        activeAudioRef.current.pause();
+      } catch (e) {
+        console.warn('[Audio] Failed to pause active audio:', e);
+      }
+      activeAudioRef.current = null;
+    }
+
+    const fullAudioUrl = getAudioAbsoluteUrl(audioUrl);
+    console.log('[Audio] Loading response audio:', fullAudioUrl);
+    
+    setOrbState('speaking');
+    const audio = new Audio(fullAudioUrl);
+    activeAudioRef.current = audio;
+
+    audio.onended = () => {
+      console.log('[Audio] Finished response playback, transitioning to listening');
+      isSelectingLangRef.current = false;
+      setOrbState((prev) => {
+        if (prev !== 'idle' && prev !== 'error') {
+          return 'listening';
+        }
+        return 'idle';
+      });
+      activeAudioRef.current = null;
+    };
+
+    audio.onerror = (err) => {
+      console.error('[Audio] Response playback failed:', err);
+      setOrbState('error');
+      setCustomLabel('Playback Error');
+      setCustomDesc('Could not play synthesized audio response.');
+      activeAudioRef.current = null;
+    };
+
+    audio.play().catch((err) => {
+      console.warn('[Audio] Playback was blocked by browser or failed to start:', err);
+      // Fallback: stay in speaking state briefly for the typewriter to progress, then go back to idle
+      setTimeout(() => {
+        setOrbState('idle');
+      }, 5000);
+    });
+  }, []);
+
   const selectLanguage = useCallback(async (lang: 'en' | 'kn' | 'hi') => {
     setSelectedLanguage(lang);
     setIsLanguageSelected(true);
@@ -104,53 +151,6 @@ export default function KioskPage() {
       console.warn('[Audio] Failed to unlock audio context:', e);
     }
   };
-
-  const playResponseAudio = useCallback((audioUrl: string) => {
-    // Stop any currently playing audio response
-    if (activeAudioRef.current) {
-      try {
-        activeAudioRef.current.pause();
-      } catch (e) {
-        console.warn('[Audio] Failed to pause active audio:', e);
-      }
-      activeAudioRef.current = null;
-    }
-
-    const fullAudioUrl = getAudioAbsoluteUrl(audioUrl);
-    console.log('[Audio] Loading response audio:', fullAudioUrl);
-    
-    setOrbState('speaking');
-    const audio = new Audio(fullAudioUrl);
-    activeAudioRef.current = audio;
-
-    audio.onended = () => {
-      console.log('[Audio] Finished response playback, transitioning to listening');
-      isSelectingLangRef.current = false;
-      setOrbState((prev) => {
-        if (prev !== 'idle' && prev !== 'error') {
-          return 'listening';
-        }
-        return 'idle';
-      });
-      activeAudioRef.current = null;
-    };
-
-    audio.onerror = (err) => {
-      console.error('[Audio] Response playback failed:', err);
-      setOrbState('error');
-      setCustomLabel('Playback Error');
-      setCustomDesc('Could not play synthesized audio response.');
-      activeAudioRef.current = null;
-    };
-
-    audio.play().catch((err) => {
-      console.warn('[Audio] Playback was blocked by browser or failed to start:', err);
-      // Fallback: stay in speaking state briefly for the typewriter to progress, then go back to idle
-      setTimeout(() => {
-        setOrbState('idle');
-      }, 5000);
-    });
-  }, []);
 
   const connectWebSocket = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
