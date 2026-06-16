@@ -23,14 +23,67 @@ export default function KioskPage() {
   const [customLabel, setCustomLabel] = useState<string | undefined>(undefined);
   const [customDesc, setCustomDesc] = useState<string | undefined>(undefined);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'kn' | 'hi' | null>(null);
+  const [isLanguageSelected, setIsLanguageSelected] = useState(false);
   
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttempts = useRef(0);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
   
+  const isLanguageSelectedRef = useRef(false);
+  const isSelectingLangRef = useRef(false);
+  
   // Hardcoded session ID for demo purposes until orchestration is complete
   const sessionId = 'demo_session_id';
+
+  const selectLanguage = useCallback(async (lang: 'en' | 'kn' | 'hi') => {
+    setSelectedLanguage(lang);
+    setIsLanguageSelected(true);
+    isLanguageSelectedRef.current = true;
+    isSelectingLangRef.current = true;
+    
+    // Play confirmation audio in target language
+    let confirmationText = '';
+    if (lang === 'en') {
+      confirmationText = "You selected English. How can I help you today?";
+    } else if (lang === 'kn') {
+      confirmationText = "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?";
+    } else if (lang === 'hi') {
+      confirmationText = "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकता हूँ?";
+    }
+
+    try {
+      const httpBase = WS_BASE_URL.replace(/^ws/, 'http').replace(/\/ws\/session.*$/, '');
+      const ttsUrl = `${httpBase}/api/v1/tts`;
+      console.log('[Audio] Requesting language confirmation TTS:', ttsUrl);
+      
+      const response = await fetch(ttsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          session_id: sessionId,
+          text: confirmationText,
+          language: lang,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.audio_url) {
+          playResponseAudio(data.audio_url);
+          setCustomLabel('VidyaSahayak');
+          setCustomDesc(confirmationText);
+        }
+      } else {
+        console.error('Failed to fetch TTS confirmation');
+        setOrbState('listening');
+      }
+    } catch (e) {
+      console.error('Error fetching TTS confirmation:', e);
+      setOrbState('listening');
+    }
+  }, [sessionId, playResponseAudio]);
 
   const unlockAudio = () => {
     try {
@@ -72,6 +125,7 @@ export default function KioskPage() {
 
     audio.onended = () => {
       console.log('[Audio] Finished response playback, transitioning to listening');
+      isSelectingLangRef.current = false;
       setOrbState((prev) => {
         if (prev !== 'idle' && prev !== 'error') {
           return 'listening';
@@ -142,7 +196,23 @@ export default function KioskPage() {
           case 'transcript':
             setOrbState('thinking');
             setCustomLabel('You Asked');
-            setCustomDesc(msg.payload?.text || '');
+            const transcriptText = msg.payload?.text || '';
+            setCustomDesc(transcriptText);
+
+            // Intercept transcript to detect language voice command
+            if (!isLanguageSelectedRef.current) {
+              const lowerText = transcriptText.toLowerCase();
+              if (lowerText.includes('kannada') || lowerText.includes('ಕನ್ನಡ')) {
+                selectLanguage('kn');
+                return;
+              } else if (lowerText.includes('hindi') || lowerText.includes('हिंदी') || lowerText.includes('hind')) {
+                selectLanguage('hi');
+                return;
+              } else if (lowerText.includes('english') || lowerText.includes('eng')) {
+                selectLanguage('en');
+                return;
+              }
+            }
             break;
           case 'thinking':
             setOrbState('thinking');
@@ -153,6 +223,9 @@ export default function KioskPage() {
             setCustomDesc('Searching knowledge base...');
             break;
           case 'clarifying':
+            if (isSelectingLangRef.current) {
+              break;
+            }
             setOrbState('clarifying');
             setCustomLabel('Clarification Required');
             setCustomDesc(msg.payload?.text || 'Could you clarify that?');
@@ -161,6 +234,9 @@ export default function KioskPage() {
             }
             break;
           case 'answer':
+            if (isSelectingLangRef.current) {
+              break;
+            }
             setOrbState('speaking');
             setCustomLabel('VidyaSahayak');
             setCustomDesc(msg.payload?.text || '');
@@ -251,7 +327,7 @@ export default function KioskPage() {
         type: 'audio_chunk',
         payload: {
           audio_base64: base64,
-          language_hint: null,
+          language_hint: selectedLanguage,
           turn_id: 1
         }
       }));
@@ -261,7 +337,7 @@ export default function KioskPage() {
       setCustomLabel('Offline');
       setCustomDesc('Failed to send audio. WebSocket is not connected.');
     }
-  }, []);
+  }, [selectedLanguage]);
 
   useEffect(() => {
     if (hasInteracted) {
@@ -367,6 +443,35 @@ export default function KioskPage() {
           customDesc={customDesc}
           onAudioReady={handleAudioReady}
         />
+
+        {/* ── Language Selection Buttons ── */}
+        {!isLanguageSelected && (
+          <div className="mt-8 flex flex-col items-center space-y-3 z-30 animate-pulse">
+            <p className="text-[10px] text-zinc-400 uppercase tracking-[0.2em] font-semibold font-sans">
+              Choose Language / ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ / भाषा चुनें
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => selectLanguage('en')}
+                className="px-6 py-3 rounded-xl border border-zinc-800 bg-zinc-950/40 text-zinc-200 hover:text-white font-medium hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all duration-300 shadow-md hover:shadow-indigo-500/10 active:scale-95 text-sm uppercase tracking-wider font-sans"
+              >
+                English
+              </button>
+              <button
+                onClick={() => selectLanguage('kn')}
+                className="px-6 py-3 rounded-xl border border-zinc-800 bg-zinc-950/40 text-zinc-200 hover:text-white font-medium hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all duration-300 shadow-md hover:shadow-emerald-500/10 active:scale-95 text-sm uppercase tracking-wider font-sans"
+              >
+                ಕನ್ನಡ (Kannada)
+              </button>
+              <button
+                onClick={() => selectLanguage('hi')}
+                className="px-6 py-3 rounded-xl border border-zinc-800 bg-zinc-950/40 text-zinc-200 hover:text-white font-medium hover:border-amber-500/50 hover:bg-amber-500/10 transition-all duration-300 shadow-md hover:shadow-amber-500/10 active:scale-95 text-sm uppercase tracking-wider font-sans"
+              >
+                हिंदी (Hindi)
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Footer ── */}

@@ -26,7 +26,7 @@ class DetectionService:
         return DetectResponse(
             session_id=session_id,
             action="session_created",
-            greeting_text="Hello! Welcome to PES University. How can I help you today?",
+            greeting_text="Hello! Welcome to PES University. Please tell me which language you would like to interact with: English, Kannada, or Hindi?",
             greeting_audio_url="/static/audio/greeting_en.mp3",
             language_prompt="Please speak in English, Kannada, or Hindi.",
         )

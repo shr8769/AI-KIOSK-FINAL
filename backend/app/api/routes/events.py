@@ -55,7 +55,7 @@ async def ingest_event(request: EventRequest):
         from app.models.schemas import TTSRequest
         from app.services.speech.tts_service import tts_service
         
-        greeting_text = "Welcome to PES University. How can I help you today?"
+        greeting_text = "Welcome to PES University. Please tell me which language you would like to interact with: English, Kannada, or Hindi?"
         audio_url = None
         try:
             tts_req = TTSRequest(
