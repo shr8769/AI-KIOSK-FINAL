@@ -47,13 +47,30 @@ class ASRService:
 
 class RIARService:
     async def classify(self, request: RIARRequest) -> RIARResponse:
+        query = request.query.lower()
+        
+        # Keyword-based domain classification
+        domain = "general"
+        if any(kw in query for kw in ["admission", "apply", "seat", "register", "pessat", "eligibility", "cut-off"]):
+            domain = "admissions"
+        elif any(kw in query for kw in ["course", "syllabus", "exam", "marks", "credits", "class", "semester", "academics"]):
+            domain = "academics"
+        elif any(kw in query for kw in ["placement", "job", "salary", "recruit", "company", "companies"]):
+            domain = "placements"
+        elif any(kw in query for kw in ["research", "phd", "project", "paper", "publication"]):
+            domain = "research"
+        elif any(kw in query for kw in ["hostel", "scholarship", "canteen", "library", "sport", "facilities"]):
+            domain = "student_services"
+        elif any(kw in query for kw in ["where", "map", "building", "floor", "block", "direction", "room", "office", "toilet"]):
+            domain = "navigation"
+
         return RIARResponse(
             session_id=request.session_id,
             ambiguity_detected=False,
             ambiguity_score=0.1,
             ambiguity_type="CLEAR",
             refined_query=request.query,
-            domain="admissions",
+            domain=domain,
             routing_confidence=0.9,
             requires_clarification=False,
         )
@@ -70,33 +87,61 @@ class RIARService:
 
 class RouteService:
     async def route(self, request: RouteRequest) -> RouteResponse:
+        agent_name = f"Mock{request.domain.replace('_', ' ').title().replace(' ', '')}Agent"
         return RouteResponse(
             session_id=request.session_id,
-            agent="MockAdmissionsAgent",
+            agent=agent_name,
             domain=request.domain,
             retrieved_chunks=[
                 RetrievedChunkModel(
                     chunk_id="mock_chunk_1",
                     source="mock_source.md",
-                    text="Mock admission info",
+                    text=f"Mock {request.domain} information",
                     relevance_score=0.9,
                 )
             ],
-            context_window="Mock admission info context",
+            context_window=f"Mock {request.domain} information context",
             retrieval_latency_ms=100,
         )
 
 
 class RAGService:
     async def generate(self, request: RAGRequest) -> RAGResponse:
+        query = request.query
+        domain = request.domain
+        
+        answers = {
+            "admissions": "For admissions, PES University conducts PESSAT. Registration details, eligibility criteria, and fee structures can be found on our admissions portal.",
+            "academics": "Our academic program is designed to be rigorous and modern. Course structures, syllabi, exam schedules, and credit structures are available on the student portal.",
+            "placements": "PES University has an excellent placement record, with top companies visiting our campus annually. Average salary packages range between 8 to 12 LPA.",
+            "research": "PES University is heavily invested in research with multiple research centers and PhD programs across engineering and sciences.",
+            "student_services": "Student facilities include extensive libraries, sports complex, state-of-the-art hostiles, and various technical and cultural clubs.",
+            "navigation": "To navigate the campus, please follow the main walkway. The admissions office is located in the main Golden Jubilee Block on the ground floor.",
+            "general": "Thank you for asking. PES University offers world-class education with courses in Engineering, Medicine, Management, and Law."
+        }
+        
+        # Tailor answer slightly with query terms if possible
+        answer = answers.get(domain, answers["general"])
+        
+        # Optional: rule-based custom answers for specific common queries
+        query_lower = query.lower()
+        if "where" in query_lower and "office" in query_lower:
+            answer = "The admissions office is located on the ground floor of the Golden Jubilee Block, right next to the entrance lobby."
+        elif "where" in query_lower and "canteen" in query_lower:
+            answer = "The main campus canteen is situated next to the central library complex, near the football ground."
+        elif "pessat" in query_lower:
+            answer = "PESSAT is the PES Scholastic Aptitude Test. You can register online at the official PESSAT website. Eligibility requires 60% aggregate in Physics, Chemistry, and Math."
+        elif "placement" in query_lower:
+            answer = "Over 100 top companies recruit from PES University every year, including companies like Microsoft, Amazon, and Cisco. The highest package last year exceeded 40 LPA."
+
         return RAGResponse(
             session_id=request.session_id,
-            answer="This is a mock answer about admissions.",
-            citations=["mock_source.md"],
+            answer=answer,
+            citations=["pes_university_database.md"],
             model_used="mock_model",
-            tokens_used=100,
-            generation_latency_ms=500,
-            confidence_score=0.9,
+            tokens_used=120,
+            generation_latency_ms=250,
+            confidence_score=0.95,
         )
 
 
