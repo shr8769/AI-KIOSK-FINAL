@@ -75,3 +75,52 @@ Answer:"""
         except Exception as e:
             logger.error(f"Gemini generation failed: {e}. Falling back to retrieval-only mode.")
             return None
+
+    def check_sufficiency(self, query: str, context_docs: list, domain: str) -> str:
+        """
+        Determines whether the context contains sufficient information to answer the question.
+        Returns 'SUFFICIENT', 'INSUFFICIENT', or None on failure/errors.
+        """
+        if not context_docs:
+            return "INSUFFICIENT"
+            
+        if not self.client:
+            logger.warning("Gemini client is not initialized. Sufficiency check bypassed.")
+            return None
+            
+        formatted_context = ""
+        for i, doc in enumerate(context_docs, 1):
+            formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
+            
+        prompt = f"""Question:
+{query}
+
+Context:
+{formatted_context.strip()}
+
+Determine whether the context contains sufficient information to answer the question.
+
+Reply only:
+
+SUFFICIENT
+
+or
+
+INSUFFICIENT"""
+
+        try:
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+            )
+            if response.text:
+                result = response.text.strip().upper()
+                if "SUFFICIENT" in result and "INSUFFICIENT" not in result:
+                    return "SUFFICIENT"
+                return "INSUFFICIENT"
+            else:
+                logger.warning("Gemini relevance check returned empty response.")
+                return None
+        except Exception as e:
+            logger.error(f"Gemini relevance check failed: {e}")
+            return None

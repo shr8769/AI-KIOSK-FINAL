@@ -291,7 +291,8 @@ class CoordinatorAgent:
                 routing_confidence=0.0,
                 selected_doc_id="None",
                 retrieved_docs=[],
-                answer=fallback_msg
+                answer=fallback_msg,
+                relevance_decision="INSUFFICIENT"
             )
             return f"{fallback_msg}\n\n[Source: None]"
             

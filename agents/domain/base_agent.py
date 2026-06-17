@@ -20,7 +20,8 @@ def log_evaluation_trace(
     routing_confidence: float,
     selected_doc_id: str,
     retrieved_docs: List[Dict[str, Any]],
-    answer: str
+    answer: str,
+    relevance_decision: str = "SUFFICIENT"
 ):
     """
     Utility function to log query, routing, and retrieval details to a JSONL file
@@ -47,6 +48,7 @@ def log_evaluation_trace(
                 "combined_score": doc["combined_score"]
             } for doc in retrieved_docs
         ],
+        "relevance_decision": relevance_decision,
         "answer": answer
     }
     
@@ -248,7 +250,8 @@ class BaseAgent(ABC):
                 routing_confidence=routing_confidence if routing_confidence is not None else 0.0,
                 selected_doc_id="None",
                 retrieved_docs=[],
-                answer=fallback_msg
+                answer=fallback_msg,
+                relevance_decision="INSUFFICIENT"
             )
             return f"{fallback_msg}\n\n[Source: None]"
         
@@ -270,10 +273,27 @@ class BaseAgent(ABC):
         print("Selected Document:")
         print(f"* ID: {best_doc['id']}")
         
-        # Check similarity score against threshold (0.58)
+        # Determine relevance decision
+        relevance_decision = "SUFFICIENT"
+        
+        # First filter: check similarity score against threshold (0.58)
         best_sim_score = 1.0 / (1.0 + best_doc["distance"])
         if best_sim_score < getattr(self, "similarity_threshold", 0.58):
-            print(f"[Warning] Similarity score {best_sim_score:.4f} is below threshold {self.similarity_threshold:.2f}. Bypassing LLM generation.")
+            print(f"[Warning] Similarity score {best_sim_score:.4f} is below threshold {self.similarity_threshold:.2f}.")
+            relevance_decision = "INSUFFICIENT"
+            
+        # Second filter: if RAG is enabled and similarity is sufficient, run the Gemini relevance check
+        if relevance_decision == "SUFFICIENT" and getattr(self, "rag_enabled", False):
+            try:
+                check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
+                if check_result is not None:
+                    relevance_decision = check_result
+                    print(f"Gemini relevance check decision: {relevance_decision}")
+            except Exception as e:
+                print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
+                
+        # If either check decides INSUFFICIENT, bypass LLM answer synthesis and return fallback
+        if relevance_decision == "INSUFFICIENT":
             log_evaluation_trace(
                 query=query,
                 selected_agent=self.__class__.__name__,
@@ -281,7 +301,8 @@ class BaseAgent(ABC):
                 routing_confidence=routing_confidence if routing_confidence is not None else 0.0,
                 selected_doc_id="None",
                 retrieved_docs=docs,
-                answer=fallback_msg
+                answer=fallback_msg,
+                relevance_decision=relevance_decision
             )
             return f"{fallback_msg}\n\n[Source: None]"
         
@@ -300,7 +321,8 @@ class BaseAgent(ABC):
                     routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
                     selected_doc_id=best_doc["id"],
                     retrieved_docs=docs,
-                    answer=rag_answer
+                    answer=rag_answer,
+                    relevance_decision="SUFFICIENT"
                 )
                 # Combine the source references for context docs
                 refs = ", ".join(d["id"] for d in docs[:3])
@@ -317,7 +339,8 @@ class BaseAgent(ABC):
             routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
             selected_doc_id=best_doc["id"],
             retrieved_docs=docs,
-            answer=best_doc["answer"]
+            answer=best_doc["answer"],
+            relevance_decision="SUFFICIENT"
         )
         response = f"{best_doc['answer']}\n\n[Source: {self.get_domain().title().replace('_', ' ')} | Ref: {best_doc['id']}]"
         return response
