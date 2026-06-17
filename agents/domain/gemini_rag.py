@@ -1,6 +1,8 @@
 import os
 import logging
+from dotenv import load_dotenv
 
+load_dotenv()
 logger = logging.getLogger(__name__)
 
 class GeminiSynthesizer:
@@ -9,56 +11,67 @@ class GeminiSynthesizer:
     retrieved context documents into natural language answers (RAG).
     Provides compatibility fallbacks if Google GenAI SDK or API keys are missing.
     """
-    def __init__(self, api_key: str = None, model_name: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: str = None, model_name: str = "gemini-2.5-flash"):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
         self.client = None
         
         if self.api_key:
             try:
-                import google.generativeai as genai
-                genai.configure(api_key=self.api_key)
-                self.client = genai.GenerationalModel(model_name)
-                logger.info(f"Initialized Gemini model {model_name} successfully.")
-            except ImportError:
-                logger.warning("google-generativeai SDK is not installed. Will fallback to mock RAG answers.")
+                from google import genai
+                self.client = genai.Client(api_key=self.api_key)
+                logger.info(f"Initialized Gemini client successfully with model {model_name}.")
+            except Exception as e:
+                logger.error(f"Failed to initialize Gemini client: {e}. RAG synthesis will fallback to retrieval-only.")
         else:
-            logger.warning("GEMINI_API_KEY not found in environment. Running in fallback/mock RAG mode.")
+            logger.warning("GEMINI_API_KEY not found in environment. Running in retrieval-only fallback mode.")
 
-    def synthesize(self, query: str, context_docs: list) -> str:
+    def synthesize(self, query: str, context_docs: list, domain: str) -> str:
         """
-        Synthesizes an answer using the query and a list of context documents.
+        Synthesizes an answer using the query and a list of context documents based on the domain prompt template.
+        If Gemini is unavailable or errors out, returns None to signal fallback to retrieval-only mode.
         """
         if not context_docs:
-            return "No context documents were found to construct an answer."
+            logger.warning("No context documents supplied to synthesizer.")
+            return None
+
+        if not self.client:
+            logger.warning("Gemini client is not initialized. RAG synthesis unavailable.")
+            return None
+
+        # Dynamically import templates to prevent circular dependencies
+        try:
+            from agents.concierge.prompt_templates import TEMPLATES
+            template = TEMPLATES.get(domain, TEMPLATES.get("default"))
+        except ImportError as e:
+            logger.warning(f"Could not import prompt templates: {e}. Using a generic RAG prompt.")
+            template = """Answer the user query based ONLY on the provided context.
+If the answer cannot be found in the context, say that you do not know.
+
+Context:
+{context}
+
+Query: {query}
+
+Answer:"""
 
         # Format context
         formatted_context = ""
         for i, doc in enumerate(context_docs, 1):
-            formatted_context += f"Document {i} (Source: {doc.get('metadata', {}).get('category', 'unknown')}):\n{doc.get('document', '')}\n\n"
+            formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
 
-        prompt = f"""You are a helpful and knowledgeable university AI assistant.
-Your task is to answer the student's query based ONLY on the provided context documents.
-If the context documents do not contain the answer, politely state that you do not know.
-Keep the answer clear, natural, and concise.
+        prompt = template.format(context=formatted_context, query=query)
 
-Student Query: {query}
-
-Context Documents:
-{formatted_context}
-
-Answer:"""
-
-        if self.client:
-            try:
-                response = self.client.generate_content(prompt)
+        try:
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+            )
+            if response.text:
                 return response.text.strip()
-            except Exception as e:
-                logger.error(f"Gemini API generation failed: {e}. Falling back to default RAG response.")
-                
-        # Mock RAG fallback (combining top retrieved document answers with a note)
-        best_doc = context_docs[0]
-        category = best_doc.get("metadata", {}).get("category", "general").title().replace('_', ' ')
-        answer_part = best_doc.get("answer", best_doc.get("document", ""))
-        
-        return f"[Synthesized RAG Response (Mock Mode)] Based on {category} data:\n{answer_part}"
+            else:
+                logger.warning("Gemini model returned empty response text.")
+                return None
+        except Exception as e:
+            logger.error(f"Gemini generation failed: {e}. Falling back to retrieval-only mode.")
+            return None

@@ -40,7 +40,9 @@ def log_evaluation_trace(
         "retrieved_documents": [
             {
                 "id": doc["id"],
+                "document": doc.get("document", ""),
                 "distance": doc["distance"],
+                "similarity_score": 1.0 / (1.0 + doc["distance"]),
                 "keyword_score": doc["keyword_score"],
                 "combined_score": doc["combined_score"]
             } for doc in retrieved_docs
@@ -67,7 +69,7 @@ class BaseAgent(ABC):
         db_path: str = None,
         similarity_weight: float = 1.0,
         keyword_weight: float = 1.5,
-        rag_enabled: bool = False
+        rag_enabled: bool = True
     ):
         """
         Initializes the BaseAgent with a ChromaDB collection.
@@ -84,6 +86,7 @@ class BaseAgent(ABC):
         self.similarity_weight = similarity_weight
         self.keyword_weight = keyword_weight
         self.rag_enabled = rag_enabled
+        self.similarity_threshold = 0.58
         
         if self.rag_enabled:
             self.synthesizer = GeminiSynthesizer()
@@ -230,6 +233,11 @@ class BaseAgent(ABC):
         Returns:
             str: The final formatted answer.
         """
+        fallback_msg = (
+            "Sorry, I could not find information regarding this in the university knowledge base. "
+            "Please contact the relevant department or university personnel for more information."
+        )
+        
         docs = self.retrieve(query)
         if not docs:
             # Log failure
@@ -240,9 +248,9 @@ class BaseAgent(ABC):
                 routing_confidence=routing_confidence if routing_confidence is not None else 0.0,
                 selected_doc_id="None",
                 retrieved_docs=[],
-                answer="No suitable documents found."
+                answer=fallback_msg
             )
-            return f"I'm sorry, I couldn't find any information regarding that query in the {self.get_domain()} section."
+            return f"{fallback_msg}\n\n[Source: None]"
         
         # Select best document (first in the re-ranked list)
         best_doc = docs[0]
@@ -250,9 +258,11 @@ class BaseAgent(ABC):
         # Print debugging details as required by PART 3
         print("\nRetrieved Documents:\n")
         for i, doc in enumerate(docs, 1):
+            sim_score = 1.0 / (1.0 + doc['distance'])
             print(f"Document {i}:")
             print(f"* ID: {doc['id']}")
             print(f"* Distance: {doc['distance']:.4f}")
+            print(f"* Similarity Score: {sim_score:.4f}")
             print(f"* Keyword Score: {doc['keyword_score']:.4f}")
             print(f"* Final Score: {doc['combined_score']:.4f}")
             print() # empty line
@@ -260,35 +270,57 @@ class BaseAgent(ABC):
         print("Selected Document:")
         print(f"* ID: {best_doc['id']}")
         
+        # Check similarity score against threshold (0.58)
+        best_sim_score = 1.0 / (1.0 + best_doc["distance"])
+        if best_sim_score < getattr(self, "similarity_threshold", 0.58):
+            print(f"[Warning] Similarity score {best_sim_score:.4f} is below threshold {self.similarity_threshold:.2f}. Bypassing LLM generation.")
+            log_evaluation_trace(
+                query=query,
+                selected_agent=self.__class__.__name__,
+                selected_domain=self.get_domain(),
+                routing_confidence=routing_confidence if routing_confidence is not None else 0.0,
+                selected_doc_id="None",
+                retrieved_docs=docs,
+                answer=fallback_msg
+            )
+            return f"{fallback_msg}\n\n[Source: None]"
+        
         # Log evaluation trace as required by PART 4
         if getattr(self, "rag_enabled", False):
-            # Synthesize answer using Gemini/fallback RAG
-            rag_answer = self.synthesizer.synthesize(query, docs)
-            log_evaluation_trace(
-                query=query,
-                selected_agent=self.__class__.__name__,
-                selected_domain=self.get_domain(),
-                routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
-                selected_doc_id=best_doc["id"],
-                retrieved_docs=docs,
-                answer=rag_answer
-            )
-            # Combine the source references for context docs
-            refs = ", ".join(d["id"] for d in docs[:3])
-            response = f"{rag_answer}\n\n[Source: {self.get_domain().title().replace('_', ' ')} (RAG Synth) | Refs: {refs}]"
-            return response
-        else:
-            log_evaluation_trace(
-                query=query,
-                selected_agent=self.__class__.__name__,
-                selected_domain=self.get_domain(),
-                routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
-                selected_doc_id=best_doc["id"],
-                retrieved_docs=docs,
-                answer=best_doc["answer"]
-            )
-            response = f"{best_doc['answer']}\n\n[Source: {self.get_domain().title().replace('_', ' ')} | Ref: {best_doc['id']}]"
-            return response
+            try:
+                # Synthesize answer using Gemini/fallback RAG
+                rag_answer = self.synthesizer.synthesize(query, docs, domain=self.get_domain())
+                if rag_answer is None:
+                    raise ValueError("Gemini RAG synthesis returned None.")
+                
+                log_evaluation_trace(
+                    query=query,
+                    selected_agent=self.__class__.__name__,
+                    selected_domain=self.get_domain(),
+                    routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
+                    selected_doc_id=best_doc["id"],
+                    retrieved_docs=docs,
+                    answer=rag_answer
+                )
+                # Combine the source references for context docs
+                refs = ", ".join(d["id"] for d in docs[:3])
+                response = f"{rag_answer}\n\n[Source: {self.get_domain().title().replace('_', ' ')} (RAG Synth) | Refs: {refs}]"
+                return response
+            except Exception as e:
+                print(f"[Warning] Gemini RAG synthesis failed: {e}. Falling back to retrieval-only mode.")
+                
+        # Retrieval-only mode (fallback or disabled)
+        log_evaluation_trace(
+            query=query,
+            selected_agent=self.__class__.__name__,
+            selected_domain=self.get_domain(),
+            routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
+            selected_doc_id=best_doc["id"],
+            retrieved_docs=docs,
+            answer=best_doc["answer"]
+        )
+        response = f"{best_doc['answer']}\n\n[Source: {self.get_domain().title().replace('_', ' ')} | Ref: {best_doc['id']}]"
+        return response
 
     @abstractmethod
     def get_domain(self) -> str:

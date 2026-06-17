@@ -3,6 +3,12 @@ import sys
 import json
 import csv
 
+# Reconfigure stdout/stderr to UTF-8 to handle Kannada, Hindi, and other Unicode characters on Windows
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(project_root)
@@ -121,8 +127,19 @@ def analyze_failures():
     total_queries = len(results)
     correct_queries = total_queries - len(failures)
     accuracy = correct_queries / total_queries if total_queries > 0 else 0
+    
+    # Calculate latency statistics
+    latencies = []
+    for row in results:
+        lat = row.get("Latency (s)")
+        if lat:
+            latencies.append(float(lat))
             
-    # Generate failure analysis report
+    avg_lat = sum(latencies) / len(latencies) if latencies else 0.0
+    min_lat = min(latencies) if latencies else 0.0
+    max_lat = max(latencies) if latencies else 0.0
+            
+    # Generate failure analysis text report
     report = []
     report.append("============================================================")
     report.append("                   ROUTING FAILURE ANALYSIS")
@@ -131,6 +148,7 @@ def analyze_failures():
     report.append(f"Total Correct  : {correct_queries}")
     report.append(f"Total Failures : {len(failures)}")
     report.append(f"Routing Accuracy: {accuracy * 100:.2f}%")
+    report.append(f"Average Latency: {avg_lat:.4f}s")
     report.append("")
     
     report.append("PER-DOMAIN METRICS:")
@@ -174,12 +192,64 @@ def analyze_failures():
     # Print the report
     print(report_text)
     
-    # Save to file
+    # Generate Markdown report (week3_report.md)
+    md_report = []
+    md_report.append("# Sprint 3 Evaluation Pass Report")
+    md_report.append("")
+    md_report.append("This report summarizes the performance metrics of the **Campus AI Brain** coordinator routing and retrieval pipeline with integrated Gemini RAG synthesis and language fallback translation.")
+    md_report.append("")
+    md_report.append("## Executive Summary")
+    md_report.append("")
+    md_report.append("| Metric | Value |")
+    md_report.append("| :--- | :--- |")
+    md_report.append(f"| **Total Queries Evaluated** | {total_queries} |")
+    md_report.append(f"| **Successful Routes** | {correct_queries} |")
+    md_report.append(f"| **Routing Failures** | {len(failures)} |")
+    md_report.append(f"| **Routing Accuracy** | **{accuracy * 100:.2f}%** |")
+    md_report.append(f"| **Average Query Latency** | {avg_lat:.4f} seconds |")
+    md_report.append(f"| **Min / Max Latency** | {min_lat:.4f}s / {max_lat:.4f}s |")
+    md_report.append("")
+    md_report.append("## Per-Domain Routing Accuracy")
+    md_report.append("")
+    md_report.append("| Domain | Precision | Recall | F1-Score |")
+    md_report.append("| :--- | :---: | :---: | :---: |")
+    
+    for d in domains[:-1]:
+        p_val = tp[d] / (tp[d] + fp[d]) if (tp[d] + fp[d]) > 0 else 0.0
+        r_val = tp[d] / (tp[d] + fn[d]) if (tp[d] + fn[d]) > 0 else 0.0
+        f1_val = 2 * p_val * r_val / (p_val + r_val) if (p_val + r_val) > 0 else 0.0
+        md_report.append(f"| **{d}** | {p_val * 100:.2f}% | {r_val * 100:.2f}% | {f1_val * 100:.2f}% |")
+        
+    md_report.append("")
+    md_report.append("## Failure Analysis Breakdown")
+    md_report.append("")
+    md_report.append("### Failures by Domain")
+    if failures_by_domain:
+        for dom, count in sorted(failures_by_domain.items(), key=lambda x: x[1], reverse=True):
+            md_report.append(f"- **{dom}**: {count} failure(s)")
+    else:
+        md_report.append("- No domain failures.")
+    md_report.append("")
+    
+    md_report.append("### Top Failure Reasons")
+    if failure_reasons:
+        for reason, count in sorted(failure_reasons.items(), key=lambda x: x[1], reverse=True):
+            md_report.append(f"- **{reason}**: {count} time(s)")
+    else:
+        md_report.append("- No failure reasons identified.")
+    md_report.append("")
+    
+    # Save to files
     os.makedirs(results_dir, exist_ok=True)
     with open(failure_report_path, "w", encoding="utf-8") as f:
         f.write(report_text)
         
+    week3_report_path = os.path.join(results_dir, "week3_report.md")
+    with open(week3_report_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(md_report))
+        
     print(f"\nFailure analysis report saved to: {failure_report_path}")
+    print(f"Sprint 3 Baseline Report saved to: {week3_report_path}")
 
 if __name__ == "__main__":
     analyze_failures()

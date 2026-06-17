@@ -220,20 +220,32 @@ class CoordinatorAgent:
         Returns:
             str: The final answer or fallback response.
         """
-        selected_domain, confidence, reason, all_matches = self.route(query)
+        # Translate query if it is in Kannada or Hindi
+        try:
+            from agents.concierge.language_fallback import GeminiTranslator
+            translator = GeminiTranslator()
+            english_query, detected_lang = translator.translate_to_english(query)
+        except Exception as e:
+            print(f"[Warning] Translation initialization failed: {e}. Passing query through.")
+            english_query = query
+            detected_lang = "en"
+
+        selected_domain, confidence, reason, all_matches = self.route(english_query)
         
         # Check if a strong match exists
         if selected_domain is None or confidence <= 0.0:
             fallback_msg = (
-                "I'm sorry, I couldn't identify the right department for your query.\n"
-                "Please try asking about one of the following topics:\n"
-                "- Admissions (requirements, application, fees, scholarships)\n"
-                "- Academics (attendance, exams, SGPA/CGPA, transcripts)\n"
-                "- Placements (internships, company eligibility, recruitment process)\n"
-                "- Research (labs, publications, faculty projects, UROP)\n"
-                "- Student Services (hostel, library, ID cards, certificate requests)\n"
-                "- Navigation (campus directions, building/office locations)"
+                "Sorry, I could not find information regarding this in the university knowledge base. "
+                "Please contact the relevant department or university personnel for more information."
             )
+            
+            # If the user queried in kn/hi, translate the fallback message
+            if detected_lang in ["kn", "hi"]:
+                try:
+                    fallback_msg = translator.translate_from_english(fallback_msg, detected_lang)
+                except Exception:
+                    pass
+
             print("=" * 52)
             print("USER QUERY")
             print("==========")
@@ -273,7 +285,7 @@ class CoordinatorAgent:
             # Log trace for unmatched query
             from agents.domain.base_agent import log_evaluation_trace
             log_evaluation_trace(
-                query=query,
+                query=english_query,
                 selected_agent="None",
                 selected_domain="None",
                 routing_confidence=0.0,
@@ -281,7 +293,7 @@ class CoordinatorAgent:
                 retrieved_docs=[],
                 answer=fallback_msg
             )
-            return fallback_msg
+            return f"{fallback_msg}\n\n[Source: None]"
             
         agent = self.agents[selected_domain]
         selected_agent_name = agent.__class__.__name__
@@ -294,6 +306,9 @@ class CoordinatorAgent:
         print()
         print(query)
         print()
+        if detected_lang in ["kn", "hi"]:
+            print(f"Translated to English: {english_query}")
+            print()
         print("=" * 52)
         print("ROUTING DECISION")
         print("================")
@@ -313,16 +328,27 @@ class CoordinatorAgent:
         print("=" * 52)
         
         # Perform retrieval and printing of candidate documents
-        raw_ans = agent.answer(query, routing_confidence=confidence)
+        raw_ans = agent.answer(english_query, routing_confidence=confidence)
         
         # Parse returned answer to separate answer and source
         if "\n\n[Source: " in raw_ans:
             answer_part, source_part = raw_ans.split("\n\n[Source: ", 1)
-            source_part = source_part.rstrip("]")
+            source_part = "\n\n[Source: " + source_part
         else:
             answer_part = raw_ans
-            source_part = f"{selected_domain.title().replace('_', ' ')}"
+            source_part = f"\n\n[Source: {selected_domain.title().replace('_', ' ')}]"
             
+        # Translate the answer back if needed
+        if detected_lang in ["kn", "hi"]:
+            try:
+                translated_ans = translator.translate_from_english(answer_part, detected_lang)
+                answer_part = translated_ans
+            except Exception as e:
+                print(f"[Warning] Translation of response failed: {e}")
+                
+        # Reconstruct response
+        raw_ans = answer_part + source_part
+
         # Print ANSWER and SOURCE sections
         print("ANSWER")
         print("======")
@@ -333,7 +359,7 @@ class CoordinatorAgent:
         print("SOURCE")
         print("======")
         print()
-        print(source_part)
+        print(source_part.replace("\n\n[Source: ", "").rstrip("]"))
         print()
         print("=" * 52)
         

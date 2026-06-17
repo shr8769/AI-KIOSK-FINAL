@@ -838,5 +838,365 @@
     {
         "domain": "navigation",
         "query": "cafeteria"
+    },
+    {
+        "domain": "admissions",
+        "query": "What are the eligibility criteria for international students applying to the B.Tech program?"
+    },
+    {
+        "domain": "admissions",
+        "query": "Is there any entrance exam waiver for students with high SAT scores?"
+    },
+    {
+        "domain": "admissions",
+        "query": "How can I check the status of my undergraduate application?"
+    },
+    {
+        "domain": "admissions",
+        "query": "Do you accept IELTS general or is academic required?"
+    },
+    {
+        "domain": "admissions",
+        "query": "What is the fee structure for the MBA program?"
+    },
+    {
+        "domain": "admissions",
+        "query": "Are tuition fees different for NRI students?"
+    },
+    {
+        "domain": "admissions",
+        "query": "Can I get a refund on the application fee if my application is rejected?"
+    },
+    {
+        "domain": "admissions",
+        "query": "How many merit scholarships are awarded each year?"
+    },
+    {
+        "domain": "admissions",
+        "query": "Is there an interview stage for the design program admissions?"
+    },
+    {
+        "domain": "admissions",
+        "query": "Do I need to submit hard copies of my documents after online upload?"
+    },
+    {
+        "domain": "admissions",
+        "query": "ಕನ್ನಡ: ಇಂಜಿನಿಯರಿಂಗ್ ಪ್ರವೇಶಕ್ಕೆ ಕೊನೆಯ ದಿನಾಂಕ ಯಾವಾಗ?"
+    },
+    {
+        "domain": "admissions",
+        "query": "ಕನ್ನಡ: ಪ್ರವೇಶಕ್ಕೆ ಬೇಕಾಗುವ ಕನಿಷ್ಠ ಜಿಪಿಎ ಎಷ್ಟು?"
+    },
+    {
+        "domain": "admissions",
+        "query": "Hindi: क्या प्रवेश के लिए कोई प्रवेश परीक्षा आवश्यक है?"
+    },
+    {
+        "domain": "admissions",
+        "query": "Hindi: विदेशी छात्रों के लिए ट्यूशन फीस क्या है?"
+    },
+    {
+        "domain": "admissions",
+        "query": "Hey, when does the application portal close for regular admissions?"
+    },
+    {
+        "domain": "academics",
+        "query": "What is the minimum passing grade for core engineering subjects?"
+    },
+    {
+        "domain": "academics",
+        "query": "How do I register for minor degree courses?"
+    },
+    {
+        "domain": "academics",
+        "query": "What is the procedure to clear an active backlog in the next semester?"
+    },
+    {
+        "domain": "academics",
+        "query": "Can I request a change of branch after my first year?"
+    },
+    {
+        "domain": "academics",
+        "query": "How does the grading system convert marks to GPA?"
+    },
+    {
+        "domain": "academics",
+        "query": "What is the maximum number of credits allowed for summer semester?"
+    },
+    {
+        "domain": "academics",
+        "query": "How can I calculate my SGPA with course weights?"
+    },
+    {
+        "domain": "academics",
+        "query": "Where do I submit my medical certificate for attendance shortage?"
+    },
+    {
+        "domain": "academics",
+        "query": "What is the deadline for dropping a course?"
+    },
+    {
+        "domain": "academics",
+        "query": "Are we allowed to review our final exam answer scripts?"
+    },
+    {
+        "domain": "academics",
+        "query": "ಕನ್ನಡ: ಪರೀಕ್ಷೆಗೆ ಕನಿಷ್ಠ ಹಾಜರಾತಿ ಎಷ್ಟಿರಬೇಕು?"
+    },
+    {
+        "domain": "academics",
+        "query": "ಕನ್ನಡ: ಎಕ್ಸಾಮ್ ಟೈಮ್ ಟೇಬಲ್ ಎಲ್ಲಿದೆ?"
+    },
+    {
+        "domain": "academics",
+        "query": "Hindi: क्या हम परीक्षा में साइंटिफिक कैलकुलेटर का उपयोग कर सकते हैं?"
+    },
+    {
+        "domain": "academics",
+        "query": "Hindi: परीक्षा परिणाम कब घोषित होंगे?"
+    },
+    {
+        "domain": "academics",
+        "query": "I missed my midterm because of a hospital visit, what do I do now?"
+    },
+    {
+        "domain": "placements",
+        "query": "Does Microsoft recruit from the electronics branch on campus?"
+    },
+    {
+        "domain": "placements",
+        "query": "How does the dream offer policy affect student placement limits?"
+    },
+    {
+        "domain": "placements",
+        "query": "What is the average package offered in computer science placements?"
+    },
+    {
+        "domain": "placements",
+        "query": "Are PG students eligible for placements alongside UG students?"
+    },
+    {
+        "domain": "placements",
+        "query": "How do I register my resume on the placement portal?"
+    },
+    {
+        "domain": "placements",
+        "query": "Do I need an NOC from the college to do a summer internship off-campus?"
+    },
+    {
+        "domain": "placements",
+        "query": "Is there a compulsory internship phase for final year students?"
+    },
+    {
+        "domain": "placements",
+        "query": "Can I decline a placement offer once accepted?"
+    },
+    {
+        "domain": "placements",
+        "query": "Does the placement cell organize coding test practice?"
+    },
+    {
+        "domain": "placements",
+        "query": "What happens if a student sits for placements with unverified data?"
+    },
+    {
+        "domain": "placements",
+        "query": "ಕನ್ನಡ: ಕ್ಯಾಂಪಸ್ ಪ್ಲೇಸ್ಮೆಂಟ್ಗೆ ನೋಂದಾಯಿಸುವುದು ಹೇಗೆ?"
+    },
+    {
+        "domain": "placements",
+        "query": "ಕನ್ನಡ: ಮೈಕ್ರೋಸಾಫ್ಟ್ ಪ್ಲೇಸ್ಮೆಂಟ್ಗೆ ಕನಿಷ್ಠ ಸಿಜಿಪಿಎ ಎಷ್ಟು?"
+    },
+    {
+        "domain": "placements",
+        "query": "Hindi: क्या प्लेसमेंट के लिए बैकलाग होने पर बैठ सकते हैं?"
+    },
+    {
+        "domain": "placements",
+        "query": "Hindi: प्लेसमेंट ड्राइव के लिए रिज्यूम कैसे स्वीकृत कराएं?"
+    },
+    {
+        "domain": "placements",
+        "query": "Hey, how do I apply for the dream company offer?"
+    },
+    {
+        "domain": "research",
+        "query": "What are the rules for co-authoring a paper with my professor?"
+    },
+    {
+        "domain": "research",
+        "query": "How can I apply for a travel grant to present my research paper?"
+    },
+    {
+        "domain": "research",
+        "query": "What high-performance computing resources are available for deep learning?"
+    },
+    {
+        "domain": "research",
+        "query": "How do I apply for the UROP research fellowship?"
+    },
+    {
+        "domain": "research",
+        "query": "Are there research opportunities in cryptography on campus?"
+    },
+    {
+        "domain": "research",
+        "query": "Can undergrads publish papers in international journals?"
+    },
+    {
+        "domain": "research",
+        "query": "How many hours of research are required for course credit?"
+    },
+    {
+        "domain": "research",
+        "query": "Is keycard access to the AI lab open to third-year students?"
+    },
+    {
+        "domain": "research",
+        "query": "What are the active research projects in NLP?"
+    },
+    {
+        "domain": "research",
+        "query": "Who is the lead coordinator for the UROP program?"
+    },
+    {
+        "domain": "research",
+        "query": "ಕನ್ನಡ: ರಿಸರ್ಚ್ ಪ್ರಾಜೆಕ್ಟ್ ಜಾಯಿನ್ ಮಾಡುವುದು ಹೇಗೆ?"
+    },
+    {
+        "domain": "research",
+        "query": "ಕನ್ನಡ: ಸಂಶೋಧನೆಗೆ ಸ್ಕಾಲರ್‌ಶಿಪ್ ಸಿಗುತ್ತದೆಯೆ?"
+    },
+    {
+        "domain": "research",
+        "query": "Hindi: क्या अंडरग्रेजुएट छात्रों को रिसर्च के लिए वजीफा मिलता है?"
+    },
+    {
+        "domain": "research",
+        "query": "Hindi: एआई रिसर्च लैब का प्रमुख कौन है?"
+    },
+    {
+        "domain": "research",
+        "query": "Is there a lab working on autonomous vehicles?"
+    },
+    {
+        "domain": "student_services",
+        "query": "How do I apply for hostel room renewal for the next year?"
+    },
+    {
+        "domain": "student_services",
+        "query": "What are the late library return fee rates per day?"
+    },
+    {
+        "domain": "student_services",
+        "query": "How do I request a duplicate student ID card online?"
+    },
+    {
+        "domain": "student_services",
+        "query": "Who do I contact for psychological counseling on campus?"
+    },
+    {
+        "domain": "student_services",
+        "query": "What is the procedure to access library e-journals from off-campus?"
+    },
+    {
+        "domain": "student_services",
+        "query": "Are visitors allowed in the boy's hostel rooms?"
+    },
+    {
+        "domain": "student_services",
+        "query": "How can I raise a request for hostel room repair?"
+    },
+    {
+        "domain": "student_services",
+        "query": "What are the operational hours of the campus pharmacy?"
+    },
+    {
+        "domain": "student_services",
+        "query": "Can I borrow library books during my semester break?"
+    },
+    {
+        "domain": "student_services",
+        "query": "Is dining plan refund possible during long vacations?"
+    },
+    {
+        "domain": "student_services",
+        "query": "ಕನ್ನಡ: ಹೊಸ ಐಡಿ ಕಾರ್ಡ್ ಪಡೆಯಲು ಶುಲ್ಕ ಎಷ್ಟು?"
+    },
+    {
+        "domain": "student_services",
+        "query": "ಕನ್ನಡ: ಲೈಬ್ರರಿಯಿಂದ ಎಷ್ಟು ಪುಸ್ತಕಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು?"
+    },
+    {
+        "domain": "student_services",
+        "query": "Hindi: हॉस्टल में कर्फ्यू का समय क्या है?"
+    },
+    {
+        "domain": "student_services",
+        "query": "Hindi: क्या परिसर में चिकित्सा सहायता उपलब्ध है?"
+    },
+    {
+        "domain": "student_services",
+        "query": "I am feeling extremely stressed and anxious. Can I get confidential counseling?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Where is the Accounts Counter located and on which floor?"
+    },
+    {
+        "domain": "navigation",
+        "query": "How do I walk to the Seminar Hall from Block C?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Where is the Moot Court Room located?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Is there a lift or elevator in the library building?"
+    },
+    {
+        "domain": "navigation",
+        "query": "How do I reach the campus health center from girls' hostel?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Where is the sports complex and is it near the main gate?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Is there a landmark near the Administrative Block?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Where is the placement cell situated?"
+    },
+    {
+        "domain": "navigation",
+        "query": "How do I get to Block B from Block C?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Where is the dean's office?"
+    },
+    {
+        "domain": "navigation",
+        "query": "ಕನ್ನಡ: ಸೆಂಟ್ರಲ್ ಲೈಬ್ರರಿ ಎಲ್ಲಿದೆ?"
+    },
+    {
+        "domain": "navigation",
+        "query": "ಕನ್ನಡ: ಕ್ಯಾಂಟೀನ್ ಗೆ ಹೋಗುವುದು ಹೇಗೆ?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Hindi: परीक्षा भवन किस मंजिल पर है?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Hindi: एआई लैब ब्लॉक सी में कहाँ है?"
+    },
+    {
+        "domain": "navigation",
+        "query": "Is the VC office on the ground floor or first floor of Admin Block?"
     }
 ]
