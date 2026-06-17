@@ -152,27 +152,39 @@ async def websocket_session_handler(websocket: WebSocket, session_id: str):
                         f.write(f"ASR Transcript: '{asr_resp.transcript}'\n")
                         f.write(f"Detected Language: {asr_resp.detected_language}\n")
 
-                    # Send transcription transcript back to client
+                    # 2. Correct script and translate to English
+                    detected_lang = (asr_resp.detected_language or "en").lower().split("-")[0]
+                    raw_transcript = asr_resp.transcript
+                    clean_transcript = raw_transcript
+                    
+                    if detected_lang in ["kn", "hi"]:
+                        # 2a. Correct script corruption using translation to the target language script (with auto source detection)
+                        try:
+                            clean_transcript = GoogleTranslator(source="auto", target=detected_lang).translate(raw_transcript)
+                            logger.info(f"Corrected ASR script: '{raw_transcript}' -> '{clean_transcript}' ({detected_lang})")
+                        except Exception as e:
+                            logger.error(f"ASR script correction failed: {e}")
+                            clean_transcript = raw_transcript
+                            
+                        # 2b. Translate the clean target-language transcript to English for RAG routing/retrieval
+                        query_en = translate_to_english(clean_transcript, source_lang="auto")
+                    else:
+                        query_en = raw_transcript
+                        detected_lang = "en"
+                        clean_transcript = raw_transcript
+
+                    # Send transcription transcript back to client in correct script
                     await manager.send(
                         session_id,
                         {
                             "type": "transcript",
                             "payload": {
-                                "text": asr_resp.transcript,
+                                "text": clean_transcript,
                                 "confidence": asr_resp.confidence,
                                 "final": True,
                             },
                         },
                     )
-
-                    # 2. Translation to English if query is in other languages
-                    detected_lang = (asr_resp.detected_language or "en").lower().split("-")[0]
-                    
-                    if detected_lang in ["kn", "hi"]:
-                        query_en = translate_to_english(asr_resp.transcript, source_lang=detected_lang)
-                    else:
-                        query_en = asr_resp.transcript
-                        detected_lang = "en"
 
                     # 3. Route query and retrieve answer using CoordinatorAgent
                     await manager.send(session_id, {"type": "retrieving", "payload": {}})

@@ -135,11 +135,22 @@ async def main():
             )
             asr_resp = await asr_service.transcribe(asr_req)
             asr_latency = (time.time() - start) * 1000
-            transcript = asr_resp.transcript
+            raw_transcript = asr_resp.transcript
             detected_lang = asr_resp.detected_language.lower().split("-")[0]
-            print(f"  ASR Transcript     : \"{transcript}\"")
+            print(f"  Raw ASR Transcript : \"{raw_transcript}\"")
             print(f"  Detected Language  : {asr_resp.detected_language.upper()} (prob: {asr_resp.confidence:.2f})")
             print(f"  ASR Latency        : {asr_latency:.2f} ms")
+            
+            clean_transcript = raw_transcript
+            if detected_lang in ["kn", "hi"]:
+                try:
+                    clean_transcript = GoogleTranslator(source="auto", target=detected_lang).translate(raw_transcript)
+                    print(f"  Clean Transcript   : \"{clean_transcript}\"")
+                except Exception as e:
+                    print(f"  [Warning] Script correction failed: {e}")
+                    clean_transcript = raw_transcript
+            
+            transcript = clean_transcript
 
             # Cleanup recorded audio file
             if os.path.exists(test_wav_path):
@@ -169,7 +180,7 @@ async def main():
         print("\n--- STEP 2: Query Translation ---")
         start = time.time()
         if detected_lang in ["kn", "hi"]:
-            query_en = GoogleTranslator(source=detected_lang, target="en").translate(transcript)
+            query_en = GoogleTranslator(source="auto", target="en").translate(transcript)
             trans_query_latency = (time.time() - start) * 1000
             print(f"  Translated Query (en) : \"{query_en}\"")
             print(f"  Translation Latency   : {trans_query_latency:.2f} ms")
