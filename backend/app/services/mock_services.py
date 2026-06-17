@@ -52,13 +52,43 @@ class RIARService:
         # Keyword-based domain classification
         domain = "general"
         
-        # English, Kannada, and Hindi keywords
-        admissions_kws = ["admission", "apply", "seat", "seats", "register", "registration", "pessat", "eligibility", "cut-off", "cutoff", "ಪ್ರವೇಶ", "ಅಡ್ಮಿಷನ್", "ಅರ್ಜಿ", "ಸೀಟು", "ನೋಂದಣಿ", "ಅರ್ಹತೆ", "प्रवेश", "एडमिशन", "आवेदन", "सीट", "पंजीकरण", "पात्रता"]
-        academics_kws = ["course", "courses", "syllabus", "exam", "exams", "marks", "credits", "credit", "class", "classes", "semester", "semesters", "academics", "ಕೋರ್ಸ್", "ವಿಷಯ", "ಪಠ್ಯಕ್ರಮ", "ಪರೀಕ್ಷೆ", "ಅಂಕಗಳು", "ಸೆಮಿಸ್ಟರ್", "पाठ्यक्रम", "परीक्षा", "अंक", "सेमेस्टर", "कक्षा", "एकेडमिक"]
-        placements_kws = ["placement", "placements", "job", "jobs", "salary", "packages", "package", "recruit", "recruits", "recruiter", "recruiters", "company", "companies", "ಪ್ಲೇಸ್‌ಮೆಂಟ್", "ಕೆಲಸ", "ಉದ್ಯೋಗ", "ಸಂಬಳ", "ಪ್ಯಾಕೇಜ್", "ಕಂಪನಿ", "प्लेसमेंट", "नौकरी", "रोजगार", "वेतन", "पैकेज", "कंपनी"]
-        research_kws = ["research", "phd", "project", "projects", "paper", "papers", "publication", "publications", "ಸಂಶೋಧನೆ", "ಪ್ರಬಂಧ", "अनुसंधान", "शोध"]
-        student_services_kws = ["hostel", "hostels", "scholarship", "scholarships", "library", "libraries", "sport", "sports", "facilities", "facility", "ಹಾಸ್ಟೆಲ್", "ಶಿಷ್ಯವೇತನ", "ಗ್ರಂಥಾಲಯ", "ಕ್ರೀಡೆ", "छात्रावास", "छात्रवृत्ति", "पुस्तकालय", "खेल"]
-        navigation_kws = ["where", "location", "locations", "map", "building", "buildings", "floor", "floors", "block", "blocks", "direction", "directions", "room", "rooms", "office", "offices", "toilet", "toilets", "canteen", "cafeteria", "cafetaria", "situated", "located", "find", "reach", "ಎಲ್ಲಿದೆ", "ಸ್ಥಳ", "ನಕ್ಷೆ", "ಕಟ್ಟಡ", "ಬ್ಲಾಕ್", "ದಿಕ್ಕು", "ಕೊಠಡಿ", "ಕಚೇರಿ", "ಶೌಚಾಲಯ", "ಕ್ಯಾಂಟೀನ್", "ಕೆಫೆಟೇರಿಯಾ", "कहाँ", "स्थान", "नक्शा", "इमारत", "ब्लॉक", "दिशा", "कमरा", "कार्यालय", "शौचालय", "कैंटीन", "कैफेटेरिया"]
+        # English, Kannada, and Hindi stem keywords (including Romanized/transliterated variations)
+        admissions_kws = [
+            "admission", "apply", "seat", "pessat", "eligib", "cutoff", "cut-off", "register",
+            "ಪ್ರವೇಶ", "ಅಡ್ಮಿ", "ಅರ್ಜಿ", "ಸೀಟು", "ನೋಂದ", "ಅರ್ಹತೆ", 
+            "प्रवेश", "एडमि", "आवेदन", "सीट", "पंजी", "पात्र",
+            "pravesh", "nondan", "arhat"
+        ]
+        academics_kws = [
+            "course", "syllabus", "exam", "marks", "credit", "class", "semester", "academ",
+            "ಕೋರ್ಸ್", "ವಿಷಯ", "ಪಠ್ಯಕ್ರಮ", "ಪರೀಕ್ಷೆ", "ಅಂಕ", "ಸೆಮಿಸ್ಟ",
+            "पाठ्यक्रम", "परीक्षा", "अंक", "सेमेस्टर", "कक्षा", "एकेड",
+            "parikshe", "patya", "sem"
+        ]
+        placements_kws = [
+            "placement", "job", "salary", "package", "recruit", "company", "companies",
+            "ಪ್ಲೇಸ್", "ಕೆಲಸ", "ಉದ್ಯೋಗ", "ಸಂಬಳ", "ಪ್ಯಾಕೇ", "ಕಂಪನಿ",
+            "प्लेस", "नौकरी", "रोजगार", "वेतन", "पैकेज", "कंपनी",
+            "kelasa", "udyog"
+        ]
+        research_kws = [
+            "research", "phd", "ph.d", "project", "paper", "publicat",
+            "ಸಂಶೋಧನೆ", "ಪ್ರಬಂಧ", 
+            "अनुसंधान", "शोध",
+            "shodh", "sansodhan"
+        ]
+        student_services_kws = [
+            "hostel", "scholarship", "library", "sport", "facilit",
+            "ಹಾಸ್ಟೆ", "ಶಿಷ್ಯವೇ", "ಗ್ರಂಥಾ", "ಲೈಬ್ರ", "ಕ್ರೀಡೆ",
+            "छात्रा", "छात्रवृत्ति", "पुस्तकालय", "खेल",
+            "granthalay", "kreede"
+        ]
+        navigation_kws = [
+            "where", "location", "map", "building", "floor", "block", "direction", "room", "office", "toilet", "canteen", "cafeter", "situat", "located", "find", "reach",
+            "ಎಲ್ಲಿದೆ", "ಸ್ಥಳ", "ನಕ್ಷೆ", "ಕಟ್ಟಡ", "ಬ್ಲಾಕ್", "ದಿಕ್ಕು", "ಕೊಠಡಿ", "ಕಚೇರಿ", "ಶೌಚಾಲಯ", "ಕ್ಯಾಂಟೀ", "ಕೆಫೆ",
+            "कहाँ", "स्थान", "नक्शा", "इमारत", "ब्लॉक", "दिशा", "कममा", "कार्यालय", "शौचालय", "कैंटीन", "कैफे",
+            "ellide", "kacheri", "kattida", "sthana", "dikka", "dikku"
+        ]
 
         if any(kw in query for kw in admissions_kws):
             domain = "admissions"

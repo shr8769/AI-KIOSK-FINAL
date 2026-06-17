@@ -1,0 +1,1402 @@
+[
+    {
+        "id": "admissions_0",
+        "source": "admissions",
+        "topic": "Eligibility",
+        "question": "What are the minimum academic requirements for undergraduate admissions?",
+        "answer": "To be eligible for undergraduate admission, applicants must have completed a high school diploma (or equivalent) with a minimum cumulative GPA of 3.0 on a 4.0 scale. Some competitive majors, particularly engineering and computer science, may have higher GPA requirements."
+    },
+    {
+        "id": "admissions_1",
+        "source": "admissions",
+        "topic": "Eligibility",
+        "question": "Do you accept transfer students, and what are the eligibility criteria for them?",
+        "answer": "Yes, we welcome transfer applicants. To be eligible, you must have completed at least 24 transferable semester credits at an accredited college or university with a minimum cumulative GPA of 2.5."
+    },
+    {
+        "id": "admissions_2",
+        "source": "admissions",
+        "topic": "Eligibility",
+        "question": "I have a gap year in my education. Am I still eligible to apply?",
+        "answer": "Yes, having an educational gap does not disqualify you. We recommend using your personal statement or submitting a brief resume to explain what activities, employment, or personal endeavors you undertook during that time."
+    },
+    {
+        "id": "admissions_3",
+        "source": "admissions",
+        "topic": "Eligibility",
+        "question": "What are the English language proficiency requirements for international students?",
+        "answer": "International applicants whose primary language of instruction was not English must submit official scores. We accept TOEFL (minimum 80 iBT), IELTS (minimum 6.5 band score), or Duolingo English Test (minimum score of 110)."
+    },
+    {
+        "id": "admissions_4",
+        "source": "admissions",
+        "topic": "Eligibility",
+        "question": "Can I apply if my final high school results are not yet released?",
+        "answer": "Yes, you can apply using your predicted grades or official transcripts covering your sophomore and junior years. If accepted, your admission will be conditional upon receiving your final official transcripts and graduation certificate."
+    },
+    {
+        "id": "admissions_5",
+        "source": "admissions",
+        "topic": "Eligibility",
+        "question": "Are there specific subject prerequisites for engineering and computer science programs?",
+        "answer": "Yes, applicants to engineering and computer science must have completed at least four years of high school mathematics (including Calculus) and three years of laboratory sciences (including Chemistry and Physics)."
+    },
+    {
+        "id": "admissions_6",
+        "source": "admissions",
+        "topic": "Fees",
+        "question": "How much is the tuition fee per semester for undergraduate programs?",
+        "answer": "For the current academic year, undergraduate tuition is $15,500 per semester for full-time domestic students taking between 12 and 18 credit hours. Part-time tuition is charged at a rate of $1,100 per credit hour."
+    },
+    {
+        "id": "admissions_7",
+        "source": "admissions",
+        "topic": "Fees",
+        "question": "Are there different fee structures for international students compared to domestic students?",
+        "answer": "Yes, international students are subject to an international tuition rate of $22,000 per semester. This rate covers additional university support services, mandatory international orientation, and visa processing compliance."
+    },
+    {
+        "id": "admissions_8",
+        "source": "admissions",
+        "topic": "Fees",
+        "question": "What auxiliary fees (housing, activities, insurance) should I expect in addition to tuition?",
+        "answer": "In addition to tuition, students should budget for a student activity and facilities fee ($450/semester), mandatory health insurance ($1,200/year, waiverable if you have equivalent coverage), and campus housing/dining packages (averaging $6,500/semester)."
+    },
+    {
+        "id": "admissions_9",
+        "source": "admissions",
+        "topic": "Fees",
+        "question": "What are the payment methods and installment options available for paying tuition fees?",
+        "answer": "Tuition can be paid via credit/debit card, e-check, domestic/international bank wire, or through our monthly installment plan, which divides the semester balance into four interest-free monthly payments for a nominal setup fee of $50."
+    },
+    {
+        "id": "admissions_10",
+        "source": "admissions",
+        "topic": "Fees",
+        "question": "Is the application fee refundable if my application is rejected?",
+        "answer": "No, the $75 application fee is non-refundable. This fee goes toward the administrative costs of processing, verifying, and evaluating candidate applications."
+    },
+    {
+        "id": "admissions_11",
+        "source": "admissions",
+        "topic": "Fees",
+        "question": "What happens if I miss the tuition payment deadline?",
+        "answer": "A late payment fee of $150 will be applied to your student account, and a financial hold will be placed. This hold prevents you from adding/dropping courses, registering for future terms, or obtaining official transcripts."
+    },
+    {
+        "id": "admissions_12",
+        "source": "admissions",
+        "topic": "Scholarships",
+        "question": "What merit-based scholarships are available for incoming freshmen?",
+        "answer": "We offer a range of merit-based scholarships, from partial awards ($5,000 per year) up to full-tuition coverage. These are awarded automatically based on your cumulative GPA, standardized test scores (if submitted), and outstanding high school achievements."
+    },
+    {
+        "id": "admissions_13",
+        "source": "admissions",
+        "topic": "Scholarships",
+        "question": "Do I need to submit a separate application to be considered for scholarships?",
+        "answer": "All applicants are automatically considered for general academic merit scholarships upon submitting their standard admission application. However, specialized awards (such as department-specific, athletic, or leadership scholarships) may require a separate application form."
+    },
+    {
+        "id": "admissions_14",
+        "source": "admissions",
+        "topic": "Scholarships",
+        "question": "Are there financial aid or need-based scholarships available for students?",
+        "answer": "Yes, domestic students can apply for need-based financial aid (grants, loans, and work-study) by completing the Free Application for Federal Student Aid (FAFSA). International students can apply for need-based institutional aid using the CSS Profile."
+    },
+    {
+        "id": "admissions_15",
+        "source": "admissions",
+        "topic": "Scholarships",
+        "question": "Can international students apply for scholarships and financial aid?",
+        "answer": "Yes, international students are eligible for all merit-based scholarships. While they are not eligible for federal US financial aid, we offer a limited number of need-aware institutional scholarships for qualified international applicants."
+    },
+    {
+        "id": "admissions_16",
+        "source": "admissions",
+        "topic": "Scholarships",
+        "question": "What are the renewal criteria for maintaining my scholarship in subsequent years?",
+        "answer": "To renew your academic scholarship annually, you must maintain a cumulative GPA of 3.2 or higher, enroll as a full-time student completing at least 30 credits per academic year, and remain in good behavioral standing with the university."
+    },
+    {
+        "id": "admissions_17",
+        "source": "admissions",
+        "topic": "Scholarships",
+        "question": "Are there athletic or extracurricular scholarships offered by the university?",
+        "answer": "Yes, athletic scholarships are administered directly through the Athletics Department for NCAA Division II sports. We also offer scholarships for talent-based extracurriculars like marching band, orchestra, speech/debate, and theater."
+    },
+    {
+        "id": "admissions_18",
+        "source": "admissions",
+        "topic": "Documents required",
+        "question": "What documents do I need to submit with my online application?",
+        "answer": "You must submit your online application form, official high school transcripts, two letters of recommendation, a personal statement/essay, and a copy of your passport photo page (for international students only)."
+    },
+    {
+        "id": "admissions_19",
+        "source": "admissions",
+        "topic": "Documents required",
+        "question": "Do my academic transcripts need to be officially translated or evaluated?",
+        "answer": "If your transcripts are in a language other than English, you must submit both the native-language documents and a certified, literal English translation. Additionally, we require a course-by-course evaluation from a NACES-approved service like WES."
+    },
+    {
+        "id": "admissions_20",
+        "source": "admissions",
+        "topic": "Documents required",
+        "question": "Are letters of recommendation mandatory, and who should write them?",
+        "answer": "Yes, two letters of recommendation are mandatory. At least one must come from a teacher in a core academic subject (Math, Science, English, or Social Studies) who taught you in your junior or senior year. The second can be from a guidance counselor or mentor."
+    },
+    {
+        "id": "admissions_21",
+        "source": "admissions",
+        "topic": "Documents required",
+        "question": "Should I submit a Statement of Purpose (SOP) or personal essay, and what should it cover?",
+        "answer": "Yes, a personal statement of 500-650 words is required. The essay should address your academic motivations, how you plan to contribute to the university community, and any unique personal experiences or challenges that have shaped your goals."
+    },
+    {
+        "id": "admissions_22",
+        "source": "admissions",
+        "topic": "Documents required",
+        "question": "How do I submit my standardized test scores (like SAT, ACT, GRE, or TOEFL)?",
+        "answer": "Official test scores must be sent directly from the testing agency (e.g., College Board or ETS) to our admissions office. Our institutional code is 4321. We do not accept photocopies or self-reported scores on transcripts."
+    },
+    {
+        "id": "admissions_23",
+        "source": "admissions",
+        "topic": "Documents required",
+        "question": "Do I need to submit a portfolio or project work for creative majors?",
+        "answer": "Yes, applicants to Fine Arts, Graphic Design, Architecture, and Music majors must submit a creative portfolio or schedule an audition. Specific portfolio requirements and submission links are provided on the respective department pages."
+    },
+    {
+        "id": "admissions_24",
+        "source": "admissions",
+        "topic": "Important deadlines",
+        "question": "What is the difference between Early Action, Early Decision, and Regular Decision deadlines?",
+        "answer": "Early Decision (Nov 1) is a binding agreement; you must enroll if accepted. Early Action (Nov 15) is non-binding, giving you an early admissions decision. Regular Decision (Jan 15) is our standard admission pool."
+    },
+    {
+        "id": "admissions_25",
+        "source": "admissions",
+        "topic": "Important deadlines",
+        "question": "When is the deadline to submit the online application for the Fall semester?",
+        "answer": "The application portal closes for Regular Decision Fall admission on January 15 at 11:59 PM EST. Applications received after this date will be reviewed on a space-available basis."
+    },
+    {
+        "id": "admissions_26",
+        "source": "admissions",
+        "topic": "Important deadlines",
+        "question": "What is the final date to submit missing supporting documents after the application deadline?",
+        "answer": "All supporting materials (transcripts, recommendations, test scores) must be received by our office within 14 calendar days of the application deadline (i.e., by January 29 for Regular Decision)."
+    },
+    {
+        "id": "admissions_27",
+        "source": "admissions",
+        "topic": "Important deadlines",
+        "question": "When are the scholarship application deadlines for incoming students?",
+        "answer": "To be prioritized for merit-based scholarships, your complete admission application must be submitted by November 15 (Early Action). Need-based financial aid documents (FAFSA/CSS) should be submitted by March 1."
+    },
+    {
+        "id": "admissions_28",
+        "source": "admissions",
+        "topic": "Important deadlines",
+        "question": "When will I receive the official admission decision after submitting my application?",
+        "answer": "Early Decision applicants receive their decisions by December 15. Early Action applicants are notified by January 15. Regular Decision applicants will receive their admission decisions by April 1."
+    },
+    {
+        "id": "admissions_29",
+        "source": "admissions",
+        "topic": "Important deadlines",
+        "question": "What is the deadline to accept the admission offer and pay the enrollment deposit?",
+        "answer": "The national confirmation deadline is May 1. You must accept your admission offer in the student portal and submit the $500 non-refundable enrollment deposit by 11:59 PM EST on this day to secure your spot."
+    },
+    {
+        "id": "academics_0",
+        "source": "academics",
+        "topic": "Attendance",
+        "question": "What is the minimum attendance percentage required to be eligible to write final exams?",
+        "answer": "Students must maintain a minimum of 75% attendance in each registered course to be eligible to sit for the final semester examinations."
+    },
+    {
+        "id": "academics_1",
+        "source": "academics",
+        "topic": "Attendance",
+        "question": "What happens if my attendance falls below the minimum required percentage?",
+        "answer": "If your attendance in a course falls below 75% without an approved medical or official excuse, you will be barred from taking the final exam for that course and will receive an 'F' (Fail due to lack of attendance) grade."
+    },
+    {
+        "id": "academics_2",
+        "source": "academics",
+        "topic": "Attendance",
+        "question": "How do I request an attendance waiver or medical leave of absence?",
+        "answer": "You must submit a formal leave application along with a valid medical certificate from a registered physician to your Head of Department within three working days of returning to campus."
+    },
+    {
+        "id": "academics_3",
+        "source": "academics",
+        "topic": "Attendance",
+        "question": "Are attendance records updated in real-time, and where can I view them?",
+        "answer": "Attendance is updated weekly by course instructors. You can view your current attendance percentage for each course on the student portal dashboard under 'Academic Records'."
+    },
+    {
+        "id": "academics_4",
+        "source": "academics",
+        "topic": "Attendance",
+        "question": "Do university-sponsored sports, events, or field trips count as excused absences?",
+        "answer": "Yes, representing the university in sports, cultural events, or academic conferences is counted as 'Duty Leave'. You must submit an authorization letter from the activities coordinator to clear your absence."
+    },
+    {
+        "id": "academics_5",
+        "source": "academics",
+        "topic": "Exams",
+        "question": "Where can I find the final exam schedule and my seating arrangement?",
+        "answer": "The exam timetable is published on the university website and student portal 30 days before exams begin. Room assignments and seating details are posted on the portal 3 days prior to the start of examinations."
+    },
+    {
+        "id": "academics_6",
+        "source": "academics",
+        "topic": "Exams",
+        "question": "What is the policy for rescheduling an exam in case of a direct timetable conflict?",
+        "answer": "If you have two exams scheduled at the same time, you must report this conflict to the Office of the Controller of Examinations at least 14 days before exams start to arrange a makeup slot."
+    },
+    {
+        "id": "academics_7",
+        "source": "academics",
+        "topic": "Exams",
+        "question": "What happens if I miss a final exam due to a medical emergency or unforeseen event?",
+        "answer": "You must apply for a makeup exam by submitting a medical certificate or emergency proof to the Dean of Academic Affairs within 48 hours of the missed exam. If approved, you will be allowed to sit for a makeup exam scheduled during the next break."
+    },
+    {
+        "id": "academics_8",
+        "source": "academics",
+        "topic": "Exams",
+        "question": "Are students allowed to use calculators or reference materials during examinations?",
+        "answer": "Only non-programmable calculators are permitted in exam halls unless the course syllabus or exam paper explicitly specifies that scientific calculators or open-book reference materials are allowed."
+    },
+    {
+        "id": "academics_9",
+        "source": "academics",
+        "topic": "Exams",
+        "question": "What actions constitute academic malpractice during an exam, and what are the penalties?",
+        "answer": "Malpractice includes carrying unauthorized notes, using smart devices, copying, or communicating during an exam. Penalties range from a score of zero in the exam to suspension for an entire semester or expulsion."
+    },
+    {
+        "id": "academics_10",
+        "source": "academics",
+        "topic": "Revaluation",
+        "question": "How do I apply for paper revaluation or re-totalling of my exam marks?",
+        "answer": "You can apply online through the student portal by selecting 'Revaluation Request', selecting the specific course, and submitting the digital application form."
+    },
+    {
+        "id": "academics_11",
+        "source": "academics",
+        "topic": "Revaluation",
+        "question": "What is the deadline to submit a request for revaluation after the results are declared?",
+        "answer": "The revaluation application must be submitted within 7 working days from the date of the online publication of the semester results. Late submissions are not accepted under any circumstances."
+    },
+    {
+        "id": "academics_12",
+        "source": "academics",
+        "topic": "Revaluation",
+        "question": "Is there a fee associated with applying for paper revaluation, and is it refundable?",
+        "answer": "Yes, there is a fee of $35 per course for revaluation. If the revaluation results in an upward grade change of one full letter grade or higher, the fee will be fully refunded to your student account."
+    },
+    {
+        "id": "academics_13",
+        "source": "academics",
+        "topic": "Revaluation",
+        "question": "Can my grades decrease after a revaluation process, or do they only increase?",
+        "answer": "Revaluation involves a complete re-grading of the paper. Your grade can increase, decrease, or remain unchanged. The score obtained during the revaluation process will be finalized as your final grade."
+    },
+    {
+        "id": "academics_14",
+        "source": "academics",
+        "topic": "Revaluation",
+        "question": "How long does the revaluation process take, and where will the updated grades be published?",
+        "answer": "The revaluation process typically takes 15 to 20 working days. The revised marks and grades will be updated directly on your student portal and in your official academic record."
+    },
+    {
+        "id": "academics_15",
+        "source": "academics",
+        "topic": "Credits",
+        "question": "What is a course credit, and how many credits do I need to graduate from a degree program?",
+        "answer": "A credit represents the number of contact hours per week. Generally, a 4-year undergraduate degree requires successful completion of at least 120 to 130 credits, depending on the major."
+    },
+    {
+        "id": "academics_16",
+        "source": "academics",
+        "topic": "Credits",
+        "question": "What is the maximum number of credits I can register for in a single semester?",
+        "answer": "The standard semester load is 15-18 credits. With special permission from your academic advisor, students with a CGPA above 3.5 may overload up to a maximum of 21 credits."
+    },
+    {
+        "id": "academics_17",
+        "source": "academics",
+        "topic": "Credits",
+        "question": "What is the difference between core credits, elective credits, and audit courses?",
+        "answer": "Core credits are mandatory courses required for your major. Elective credits allow you to choose topics of interest. Audit courses are taken for knowledge without earning credit or impacting your GPA."
+    },
+    {
+        "id": "academics_18",
+        "source": "academics",
+        "topic": "Credits",
+        "question": "Can I transfer credits earned from another university or an online platform?",
+        "answer": "Yes, credits from accredited institutions can be transferred if the course syllabus matches our curriculum by at least 80%. Online credits (MOOCs) are eligible if pre-approved by the department head."
+    },
+    {
+        "id": "academics_19",
+        "source": "academics",
+        "topic": "Credits",
+        "question": "What is the process for dropping a course, and does it impact my registered credits?",
+        "answer": "You can drop a course during the designated 'Add/Drop' period (typically the first two weeks of class) online. Dropping after this period results in a 'W' (Withdrawn) on your transcript and does not refund the credits."
+    },
+    {
+        "id": "academics_20",
+        "source": "academics",
+        "topic": "CGPA",
+        "question": "How is CGPA calculated, and what is the difference between SGPA and CGPA?",
+        "answer": "SGPA (Semester Grade Point Average) is the GPA for a single semester. CGPA (Cumulative Grade Point Average) is the average of all SGPAs weighted by the credit hours of the courses taken across all semesters."
+    },
+    {
+        "id": "academics_21",
+        "source": "academics",
+        "topic": "CGPA",
+        "question": "What is the minimum CGPA required to remain in good academic standing and avoid academic probation?",
+        "answer": "Students must maintain a minimum CGPA of 2.0. If your CGPA falls below 2.0, you will be placed on academic probation for the following semester to improve your standing."
+    },
+    {
+        "id": "academics_22",
+        "source": "academics",
+        "topic": "CGPA",
+        "question": "How does repeating a course to improve my grade affect my CGPA calculation?",
+        "answer": "When you repeat a course, the new grade replaces the older grade in the CGPA calculation, although both attempts will remain listed on your transcript."
+    },
+    {
+        "id": "academics_23",
+        "source": "academics",
+        "topic": "CGPA",
+        "question": "Is a failing grade (like 'F') included in the CGPA calculation, and what happens when I clear the course?",
+        "answer": "Yes, an 'F' grade carries 0 grade points and is included in the CGPA calculation until you retake and pass the course, at which point the passing grade replaces the 'F' in your CGPA calculation."
+    },
+    {
+        "id": "academics_24",
+        "source": "academics",
+        "topic": "CGPA",
+        "question": "How do I request an official academic transcript containing my semester-wise GPA and CGPA?",
+        "answer": "You can request an official transcript through the 'Academic Records' section on the student portal or by visiting the Registrar's Office. Standard physical copies take 3-5 business days."
+    },
+    {
+        "id": "academics_25",
+        "source": "academics",
+        "topic": "Timetable",
+        "question": "When is the academic timetable released for the upcoming semester?",
+        "answer": "The academic timetable, including class slots and sections, is published on the portal 14 days before the registration period starts."
+    },
+    {
+        "id": "academics_26",
+        "source": "academics",
+        "topic": "Timetable",
+        "question": "Can I request a change in my class section or timetable slot?",
+        "answer": "Class sections can only be changed during the Add/Drop week, subject to seat availability in the desired section. Timetable slots for individual sections are fixed and cannot be changed."
+    },
+    {
+        "id": "academics_27",
+        "source": "academics",
+        "topic": "Timetable",
+        "question": "Where do I find details about my lecture rooms, labs, and professor office hours?",
+        "answer": "Room and laboratory locations are printed on your registered course schedule in the portal. Professor office hours and contact locations are listed in the syllabus of each course."
+    },
+    {
+        "id": "academics_28",
+        "source": "academics",
+        "topic": "Timetable",
+        "question": "How do holiday schedules or weather closures affect the regular timetable?",
+        "answer": "Makeup classes for missed days due to holidays or weather closures are usually scheduled on subsequent Saturdays, and details are announced by the registrar via email and portal notifications."
+    },
+    {
+        "id": "academics_29",
+        "source": "academics",
+        "topic": "Timetable",
+        "question": "What should I do if two of my registered courses have conflicting lecture timings in the timetable?",
+        "answer": "The enrollment portal prevents registration for conflicting classes. If a conflict arises due to a rescheduling, you must contact your academic advisor to change one of the courses."
+    },
+    {
+        "id": "placements_0",
+        "source": "placements",
+        "topic": "Microsoft",
+        "question": "What is the typical recruitment process for software engineering roles at Microsoft during campus placements?",
+        "answer": "The process generally consists of an online coding assessment (usually on Codility, featuring 3 coding tasks), followed by 3 rounds of technical interviews focusing on data structures, algorithms, and system design, concluding with a final behavioral/AA (As Appropriate) interview."
+    },
+    {
+        "id": "placements_1",
+        "source": "placements",
+        "topic": "Microsoft",
+        "question": "What are the CGPA and academic eligibility requirements to apply for Microsoft placement drives?",
+        "answer": "Microsoft requires candidates to have a minimum cumulative CGPA of 7.0/10 (or 3.0/4.0) with no active backlogs. Students from Computer Science, Information Technology, and related circuit branches are eligible."
+    },
+    {
+        "id": "placements_2",
+        "source": "placements",
+        "topic": "Microsoft",
+        "question": "How can I prepare for the Microsoft online coding round?",
+        "answer": "Focus on topics like Arrays, Strings, Trees, Graphs, and Dynamic Programming. Practice solving medium-to-hard level problems on platforms like LeetCode or GeeksforGeeks, and ensure your code is optimized for both time and space complexity."
+    },
+    {
+        "id": "placements_3",
+        "source": "placements",
+        "topic": "Microsoft",
+        "question": "What technical topics are most heavily tested in Microsoft technical interviews?",
+        "answer": "Microsoft interviews strongly emphasize clean coding, basic data structures (Linked Lists, Binary Trees, Stacks, Queues), system architecture, and system design principles for senior/experienced roles."
+    },
+    {
+        "id": "placements_4",
+        "source": "placements",
+        "topic": "Microsoft",
+        "question": "Does Microsoft hire for non-technical roles, like Program Manager, through campus recruitment?",
+        "answer": "Yes, Microsoft frequently recruits for the Program Manager (PM) and Technical Program Manager (TPM) roles. These interviews focus on product design, problem-solving, analytical thinking, and behavioral questions rather than deep coding."
+    },
+    {
+        "id": "placements_5",
+        "source": "placements",
+        "topic": "Microsoft",
+        "question": "What is the structure of the Microsoft final round or 'As Appropriate' (AA) interview?",
+        "answer": "The AA round is conducted by a senior leader or hiring manager. It assesses cultural fit, long-term potential, alignment with Microsoft's growth mindset, and may include high-level technical or product architectural discussions."
+    },
+    {
+        "id": "placements_6",
+        "source": "placements",
+        "topic": "Amazon",
+        "question": "What is the structure of the online assessment (OA) for Amazon SDE roles?",
+        "answer": "The Amazon OA typically includes: (1) Debugging Section (7 questions, 20 mins), (2) Coding Section (2 coding questions, 70 mins), (3) Work Style Assessment (behavioral, 20 mins), and (4) Reasoning Logical Ability (35 mins)."
+    },
+    {
+        "id": "placements_7",
+        "source": "placements",
+        "topic": "Amazon",
+        "question": "How does Amazon evaluate candidates using their Leadership Principles in interviews?",
+        "answer": "Amazon evaluates candidates using behavioral questions mapped to their 16 Leadership Principles (e.g., Customer Obsession, Ownership, Bias for Action). You should structure your answers using the STAR (Situation, Task, Action, Result) method."
+    },
+    {
+        "id": "placements_8",
+        "source": "placements",
+        "topic": "Amazon",
+        "question": "What coding and system design concepts should I focus on for Amazon placements?",
+        "answer": "Concentrate on Hash Maps, Trees, Graphs, BFS/DFS, and Recursion. For SDE-2 or internship conversions, focus on object-oriented design patterns, database scaling, caching, and API design."
+    },
+    {
+        "id": "placements_9",
+        "source": "placements",
+        "topic": "Amazon",
+        "question": "What is the significance of the 'Bar Raiser' round in the Amazon recruitment process?",
+        "answer": "The 'Bar Raiser' is a crucial interview conducted by an objective evaluator outside the target team. They assess whether the candidate is better than 50% of current Amazonians in that role, focusing heavily on leadership principles and cognitive ability."
+    },
+    {
+        "id": "placements_10",
+        "source": "placements",
+        "topic": "Amazon",
+        "question": "Are there specific CGPA requirements or backlog policies for candidates applying to Amazon?",
+        "answer": "Amazon typically requires a minimum CGPA of 6.5/10.0 (or 2.8/4.0) at the time of application and allows no active backlogs. All past backlogs must be cleared before the date of joining."
+    },
+    {
+        "id": "placements_11",
+        "source": "placements",
+        "topic": "Amazon",
+        "question": "What are the typical package details and work location options offered by Amazon during campus placements?",
+        "answer": "Amazon SDE-1 campus offers usually consist of a base salary, sign-on bonuses (spread over year 1 and 2), and restricted stock units (RSUs). Primary locations include Seattle/Bay Area (US) or Bangalore/Hyderabad/Pune (India)."
+    },
+    {
+        "id": "placements_12",
+        "source": "placements",
+        "topic": "Internship eligibility",
+        "question": "Which semesters are students eligible to apply for official campus internships?",
+        "answer": "Undergraduate students are generally eligible to apply for official summer internships starting from the end of their 6th semester (pre-final year), which run during the summer break before their final year."
+    },
+    {
+        "id": "placements_13",
+        "source": "placements",
+        "topic": "Internship eligibility",
+        "question": "Can a student with active backlogs apply for internship selection drives?",
+        "answer": "Most tier-1 recruiting companies do not allow students with active backlogs to sit for internship selection. However, some startups and mid-size firms may permit applications if the candidate meets other skills criteria."
+    },
+    {
+        "id": "placements_14",
+        "source": "placements",
+        "topic": "Internship eligibility",
+        "question": "Is there a minimum CGPA requirement to qualify for on-campus internship interviews?",
+        "answer": "Yes, the placement cell enforces a default baseline criteria of 6.0 CGPA. However, individual companies can set their own cut-offs, which usually range from 7.0 to 8.5 CGPA."
+    },
+    {
+        "id": "placements_15",
+        "source": "placements",
+        "topic": "Internship eligibility",
+        "question": "Can I convert a summer internship into a full-time job offer (PPO), and how does the process work?",
+        "answer": "Yes, a high percentage of interns receive Pre-Placement Offers (PPOs). Companies evaluate performance throughout the internship and conduct a final review or presentation before making a full-time offer."
+    },
+    {
+        "id": "placements_16",
+        "source": "placements",
+        "topic": "Internship eligibility",
+        "question": "Are international students on visa status eligible to participate in the campus internship drives?",
+        "answer": "Yes, but eligibility depends on company policy. International students must ensure they have valid work authorization (such as CPT in the US) active before the start of the internship."
+    },
+    {
+        "id": "placements_17",
+        "source": "placements",
+        "topic": "Internship eligibility",
+        "question": "Can I pursue an off-campus internship alongside my regular semester coursework?",
+        "answer": "Students can pursue off-campus internships only if they obtain an official No Objection Certificate (NOC) from the Dean of Academics, ensuring the internship schedule does not conflict with mandatory class hours and exams."
+    },
+    {
+        "id": "placements_18",
+        "source": "placements",
+        "topic": "Placement registration",
+        "question": "How and when do I register for the upcoming campus placement season?",
+        "answer": "Placement registration begins online through the college portal at the end of the pre-final year (usually June). You must upload verified transcripts, fill out details, and accept the placement policy code of conduct."
+    },
+    {
+        "id": "placements_19",
+        "source": "placements",
+        "topic": "Placement registration",
+        "question": "What is the registration fee, if any, for registering with the placement cell?",
+        "answer": "There is a one-time non-refundable administrative fee of $50 (or local equivalent) collected during registration to cover resume verification, training portals, and interview infrastructure support."
+    },
+    {
+        "id": "placements_20",
+        "source": "placements",
+        "topic": "Placement registration",
+        "question": "What happens if I miss the deadline for placement registration?",
+        "answer": "Missing the registration deadline will result in automatic debarment from the initial phase (Phase-1) of placement drives. Late registrations are only allowed in Phase-2 with a late penalty fee."
+    },
+    {
+        "id": "placements_21",
+        "source": "placements",
+        "topic": "Placement registration",
+        "question": "Can I deregister or opt-out of the placement process once I have registered?",
+        "answer": "Yes, you can opt-out at any point by submitting a formal 'De-registration Form' signed by your academic advisor. Once opted-out, you will not be allowed to re-enter the campus placement pool."
+    },
+    {
+        "id": "placements_22",
+        "source": "placements",
+        "topic": "Placement registration",
+        "question": "What are the rules and policies regarding holding multiple offers during the placement season?",
+        "answer": "Our university follows a 'One Student, One Job' policy. Once you secure an offer, you are excluded from future drives, unless the company falls into a higher category tier (e.g., Dream/Super Dream offer)."
+    },
+    {
+        "id": "placements_23",
+        "source": "placements",
+        "topic": "Placement registration",
+        "question": "What is a 'Dream Option' policy, and how can I utilize it to apply for a higher-paying company?",
+        "answer": "The Dream Option allows a student holding a job offer of a certain package to apply for a company offering a salary package that is at least 1.5 times (or higher) than their current offer."
+    },
+    {
+        "id": "placements_24",
+        "source": "placements",
+        "topic": "Resume requirements",
+        "question": "What is the approved resume format, and is there a page limit for campus placement resumes?",
+        "answer": "All resumes must follow the university's standardized single-page LaTeX/Word template. Two-page resumes are only allowed for post-graduate students with extensive research or work experience."
+    },
+    {
+        "id": "placements_25",
+        "source": "placements",
+        "topic": "Resume requirements",
+        "question": "How do I get my resume verified and approved by the placement cell before applying?",
+        "answer": "You must upload your resume along with supporting documents (certificates, grade sheets) to the placement portal. Student coordinators will verify each detail before approving your resume for company view."
+    },
+    {
+        "id": "placements_26",
+        "source": "placements",
+        "topic": "Resume requirements",
+        "question": "Should I include self-projects, research work, or only academic projects on my placement resume?",
+        "answer": "You should include a mix of all three. Highlight projects that demonstrate practical coding, system building, or research relevance to the roles you are targeting, prioritizing projects with live links or GitHub repos."
+    },
+    {
+        "id": "placements_27",
+        "source": "placements",
+        "topic": "Resume requirements",
+        "question": "What details must be verified and backed by certificates?",
+        "answer": "Academic GPAs, internships, work experiences, certifications, and positions of responsibility must be backed by official documents. Self-declared stats without verification will be rejected."
+    },
+    {
+        "id": "placements_28",
+        "source": "placements",
+        "topic": "Resume requirements",
+        "question": "Can I submit different resumes customized for different job profiles (e.g., SDE vs. Data Analyst)?",
+        "answer": "Yes, the placement portal allows students to create and verify up to three different resume profiles (e.g., Software Engineering, Data Analytics, and Core Engineering) to apply to relevant job openings."
+    },
+    {
+        "id": "placements_29",
+        "source": "placements",
+        "topic": "Resume requirements",
+        "question": "Are spelling errors or incorrect information on a verified resume subject to disciplinary action?",
+        "answer": "Yes. While spelling errors lead to warning flags, submitting falsified information (GPA inflation, fake projects/internships) results in immediate permanent debarment from the placement season."
+    },
+    {
+        "id": "research_0",
+        "source": "research",
+        "topic": "Faculty projects",
+        "question": "How can I find active research projects currently being conducted by university faculty?",
+        "answer": "You can browse active projects on the university's Research Portal, visit departmental websites under the 'Faculty Research' tab, or attend departmental research seminars held at the beginning of each semester."
+    },
+    {
+        "id": "research_1",
+        "source": "research",
+        "topic": "Faculty projects",
+        "question": "Can I propose my own research project to a faculty member for mentorship?",
+        "answer": "Yes. Faculty members are open to student-initiated projects. You should prepare a brief, structured research proposal (problem statement, methodology, and expected outcomes) and schedule a meeting with a professor whose expertise aligns with your topic."
+    },
+    {
+        "id": "research_2",
+        "source": "research",
+        "topic": "Faculty projects",
+        "question": "Do faculty research projects offer funding or stipends for student assistants?",
+        "answer": "Many faculty projects funded by external grants (e.g., NSF, NIH, or industry partners) offer paid research assistantships or monthly stipends for both undergraduate and graduate students."
+    },
+    {
+        "id": "research_3",
+        "source": "research",
+        "topic": "Faculty projects",
+        "question": "How do I approach a professor to join their active research project?",
+        "answer": "Read their recent publications, write a concise email highlighting your interest in their specific project, attach your CV and transcripts, and request a brief meeting during their office hours to discuss potential openings."
+    },
+    {
+        "id": "research_4",
+        "source": "research",
+        "topic": "Faculty projects",
+        "question": "Are faculty projects open to undergraduate students, or are they reserved for graduates?",
+        "answer": "Many faculty projects actively recruit undergraduate students for tasks like data analysis, literature reviews, software development, and lab experimentation, often serving as a pathway to graduate study."
+    },
+    {
+        "id": "research_5",
+        "source": "research",
+        "topic": "Faculty projects",
+        "question": "What is the typical duration and commitment required for a faculty-led research project?",
+        "answer": "Commitment varies, but students are usually expected to dedicate 8-12 hours per week during the academic semester. Projects typically run for one semester to a full academic year."
+    },
+    {
+        "id": "research_6",
+        "source": "research",
+        "topic": "Faculty projects",
+        "question": "How are faculty research projects funded?",
+        "answer": "Funding comes from a mix of external federal grants, state research agencies, private industry partnerships, corporate sponsorships, and university institutional research grants."
+    },
+    {
+        "id": "research_7",
+        "source": "research",
+        "topic": "Research labs",
+        "question": "What research labs exist within the Computer Science and Engineering departments?",
+        "answer": "We host several specialized labs, including the Artificial Intelligence & Robotics Lab, Cybersecurity & Cryptography Lab, Human-Computer Interaction Lab, and the Advanced Data Systems Lab."
+    },
+    {
+        "id": "research_8",
+        "source": "research",
+        "topic": "Research labs",
+        "question": "How can a student gain physical access to work in a university research lab?",
+        "answer": "Physical access (keycard permissions) must be requested by the Lab Director or your faculty research advisor and submitted to the Department Operations Office after completing safety clearances."
+    },
+    {
+        "id": "research_9",
+        "source": "research",
+        "topic": "Research labs",
+        "question": "Are there safety training requirements before starting work in lab facilities?",
+        "answer": "Yes. All researchers must complete the online General Laboratory Safety course and any specialized training (e.g., Chemical Safety, Laser Safety, or Biosafety) relevant to their specific lab before building access is granted."
+    },
+    {
+        "id": "research_10",
+        "source": "research",
+        "topic": "Research labs",
+        "question": "Can students utilize research lab equipment for personal or course-related projects?",
+        "answer": "Research lab equipment is reserved for approved research projects. For personal or regular course projects, students should use the general student makerspaces and computer labs."
+    },
+    {
+        "id": "research_11",
+        "source": "research",
+        "topic": "Research labs",
+        "question": "Who should I contact if I want to collaborate with or visit a specific research lab?",
+        "answer": "You should email the primary Principal Investigator (PI) or Lab Director listed on the lab's directory page, stating the purpose of your visit or proposal."
+    },
+    {
+        "id": "research_12",
+        "source": "research",
+        "topic": "Research labs",
+        "question": "How are lab resources allocated among multiple student researchers?",
+        "answer": "Lab resources (desks, computers, specialized hardware) are managed by the lab's lead manager under the direction of the PI, prioritizing students based on project deadlines and funding source allocations."
+    },
+    {
+        "id": "research_13",
+        "source": "research",
+        "topic": "Research labs",
+        "question": "What computing resources (such as GPU clusters) are available in the department labs?",
+        "answer": "Students have access to our departmental High-Performance Computing (HPC) cluster, housing state-of-the-art GPUs (NVIDIA A100s/H100s) for heavy workloads like machine learning, rendering, and complex physics simulations."
+    },
+    {
+        "id": "research_14",
+        "source": "research",
+        "topic": "Publications",
+        "question": "What are the university guidelines for co-authoring research papers with faculty?",
+        "answer": "Co-authorship requires significant intellectual contribution to the research (design, data collection, analysis, or drafting the manuscript). Author order is determined collaboratively based on contribution levels."
+    },
+    {
+        "id": "research_15",
+        "source": "research",
+        "topic": "Publications",
+        "question": "Does the university provide financial support for publishing in open-access journals?",
+        "answer": "Yes. The University Library manages an Open Access Publishing Fund that can cover Article Processing Charges (APCs) for peer-reviewed open-access journals, subject to application approval."
+    },
+    {
+        "id": "research_16",
+        "source": "research",
+        "topic": "Publications",
+        "question": "How is the order of authorship determined on collaborative research publications?",
+        "answer": "Authorship order follows standard academic practices: the person who performed the majority of the work and writing is the first author, while the supervising faculty advisor is usually listed as the final corresponding author."
+    },
+    {
+        "id": "research_17",
+        "source": "research",
+        "topic": "Publications",
+        "question": "Does the university fund student travel to present papers at international conferences?",
+        "answer": "Yes. The Graduate Student Senate and the Undergraduate Research Office offer travel grants of up to $1,000 per student to cover registration, travel, and lodging if the student is presenting an accepted paper."
+    },
+    {
+        "id": "research_18",
+        "source": "research",
+        "topic": "Publications",
+        "question": "Which journals and conferences are considered high-impact or Tier-1 in our department?",
+        "answer": "Each department maintains a list of Tier-1 venues (e.g., IEEE/ACM transactions, NeurIPS, CVPR, Nature, Science). Consult your research advisor to select the most prestigious and suitable target for your paper."
+    },
+    {
+        "id": "research_19",
+        "source": "research",
+        "topic": "Publications",
+        "question": "What is the process for submitting my research work to the university's institutional repository?",
+        "answer": "Upon publication approval, you can upload your preprint or publisher-compliant version to the 'ScholarWorks' portal, our open digital repository, to ensure long-term preservation and open accessibility."
+    },
+    {
+        "id": "research_20",
+        "source": "research",
+        "topic": "Publications",
+        "question": "What happens if my research paper is rejected, and how do I handle revisions?",
+        "answer": "Rejection is a normal part of research. You should review the peer feedback with your co-authors, revise the manuscript to address criticism, and submit the improved version to an alternative conference or journal."
+    },
+    {
+        "id": "research_21",
+        "source": "research",
+        "topic": "Publications",
+        "question": "Are undergraduate students encouraged to publish, and what support is available to them?",
+        "answer": "Yes, undergraduates are highly encouraged to publish. The university hosts a dedicated Undergraduate Research Journal where students can publish peer-reviewed papers under faculty guidance."
+    },
+    {
+        "id": "research_22",
+        "source": "research",
+        "topic": "Student research opportunities",
+        "question": "What is the Undergraduate Research Opportunities Program (UROP), and how do I apply?",
+        "answer": "UROP funds undergraduate students to work on research projects with faculty mentors. Applications open twice a year (Fall and Spring) and require a project proposal, personal statement, and faculty endorsement."
+    },
+    {
+        "id": "research_23",
+        "source": "research",
+        "topic": "Student research opportunities",
+        "question": "Can I earn academic course credits for participating in research during the semester?",
+        "answer": "Yes, you can register for 'Independent Study' or 'Undergraduate Research' course credits (typically 1 to 3 credits) with approval from your faculty supervisor and academic advisor."
+    },
+    {
+        "id": "research_24",
+        "source": "research",
+        "topic": "Student research opportunities",
+        "question": "Are there summer research fellowships or internships offered by the university?",
+        "answer": "Yes. The Summer Undergraduate Research Fellowship (SURF) offers a 10-week residential research experience, including a $5,000 stipend and free on-campus housing, to work full-time on a research project."
+    },
+    {
+        "id": "research_25",
+        "source": "research",
+        "topic": "Student research opportunities",
+        "question": "How do I balance my coursework with my research assistantship commitments?",
+        "answer": "Time management is key. We recommend scheduling fixed blocks of research time around your class schedule, communicating openly with your advisor about exam weeks, and not exceeding 10 hours/week of research as a full-time student."
+    },
+    {
+        "id": "research_26",
+        "source": "research",
+        "topic": "Student research opportunities",
+        "question": "Are there research opportunities available for freshmen and sophomore students?",
+        "answer": "Yes, programs like the 'First-Year Research Experience' (FYRE) are designed specifically to introduce freshmen and sophomores to basic research methods and connect them with faculty labs early."
+    },
+    {
+        "id": "research_27",
+        "source": "research",
+        "topic": "Student research opportunities",
+        "question": "What are the requirements to apply for a Graduate Research Assistantship (GRA) position?",
+        "answer": "GRA applicants must be admitted to or enrolled in a graduate program, maintain a minimum 3.0 GPA, demonstrate relevant technical skills, and secure a faculty member willing to sponsor them using grant funds."
+    },
+    {
+        "id": "research_28",
+        "source": "research",
+        "topic": "Student research opportunities",
+        "question": "Does the university host an annual research symposium or poster presentation event for students?",
+        "answer": "Yes. The Annual Student Research Exhibition takes place every Spring, allowing students to present posters, give oral presentations, and win cash prizes for outstanding research across all disciplines."
+    },
+    {
+        "id": "research_29",
+        "source": "research",
+        "topic": "Student research opportunities",
+        "question": "Where can I find external student research grants and funding opportunities?",
+        "answer": "The Office of Research Development maintains a curated list of external fellowships (like the NSF GRFP, Goldwater Scholarship, and Fulbright) on its website and hosts regular application workshops."
+    },
+    {
+        "id": "student_services_0",
+        "source": "student_services",
+        "topic": "Hostel",
+        "question": "How do I apply for on-campus hostel accommodation, and what is the allotment criteria?",
+        "answer": "You can apply through the Hostel Portal during the enrollment window. Allotment is based on distance from your home town, academic priority (for seniors), and availability, with priority given to first-year out-of-station students."
+    },
+    {
+        "id": "student_services_1",
+        "source": "student_services",
+        "topic": "Hostel",
+        "question": "What are the rules and timings regarding curfew and visitor entry in the hostels?",
+        "answer": "The main gates close at 10:30 PM daily. Visitors, including family members, are only permitted in the common lounge areas between 9:00 AM and 7:00 PM and are strictly prohibited from entering student rooms."
+    },
+    {
+        "id": "student_services_2",
+        "source": "student_services",
+        "topic": "Hostel",
+        "question": "How can I report maintenance issues (like plumbing, electricity, or Wi-Fi) in my hostel room?",
+        "answer": "You can log a ticket on the Campus Maintenance Portal or contact the resident warden. Non-emergency requests are resolved within 24-48 hours, while emergencies (power outages, leaks) are handled immediately."
+    },
+    {
+        "id": "student_services_3",
+        "source": "student_services",
+        "topic": "Hostel",
+        "question": "What happens if I want to change my room or roommate during the academic year?",
+        "answer": "Room or roommate change requests are only accepted during the third week of each semester. You must submit a mutual swap application to the Hostel warden, subject to approval and room availability."
+    },
+    {
+        "id": "student_services_4",
+        "source": "student_services",
+        "topic": "Hostel",
+        "question": "Are hostels open during summer breaks, and can students stay on campus during holidays?",
+        "answer": "Hostels are closed during winter and summer breaks for maintenance. However, international students or students doing summer courses/research can apply for special permission to stay in designated hostels."
+    },
+    {
+        "id": "student_services_5",
+        "source": "student_services",
+        "topic": "Hostel",
+        "question": "What is the process for checking out of the hostel and getting my security deposit refunded?",
+        "answer": "Upon checkout, a room inspection is done by the caretaker to check for damages. Once the clearance certificate is signed, the security deposit is refunded to your registered bank account within 30 days."
+    },
+    {
+        "id": "student_services_6",
+        "source": "student_services",
+        "topic": "Library",
+        "question": "What are the opening hours of the university central library, and is it open 24/7 during exams?",
+        "answer": "The regular hours are 8:00 AM to 10:00 PM on weekdays and 9:00 AM to 5:00 PM on weekends. During mid-terms and final examinations, the central reading hall is open 24/7."
+    },
+    {
+        "id": "student_services_7",
+        "source": "student_services",
+        "topic": "Library",
+        "question": "How many books can I borrow at a time, and what is the duration of the borrowing period?",
+        "answer": "Undergraduates can borrow up to 5 books for 14 days. Graduate and research students can borrow up to 10 books for 30 days. Borrowed books can be renewed once online if there are no pending holds."
+    },
+    {
+        "id": "student_services_8",
+        "source": "student_services",
+        "topic": "Library",
+        "question": "How can I access online research journals, databases, and e-books from off-campus?",
+        "answer": "You can access digital databases (IEEE, JSTOR, Elsevier) off-campus by logging into the Library Proxy Portal using your university single sign-on (SSO) credentials or configuring the university VPN."
+    },
+    {
+        "id": "student_services_9",
+        "source": "student_services",
+        "topic": "Library",
+        "question": "What are the late return fines, and how can I renew a book online?",
+        "answer": "Fines are $0.50 per book per day. To renew a book, log in to your account on the online library catalog system, view your checked-out items, and click the 'Renew' button next to the eligible book."
+    },
+    {
+        "id": "student_services_10",
+        "source": "student_services",
+        "topic": "Library",
+        "question": "Are there private study rooms or collaborative group spaces available, and how do I reserve them?",
+        "answer": "Yes, the library has 12 study rooms. You can book them for up to 3 hours online through the Library Study Room Reservation System using your student email ID."
+    },
+    {
+        "id": "student_services_11",
+        "source": "student_services",
+        "topic": "Library",
+        "question": "Can I recommend or request the library to purchase a book or resource that is not in the current collection?",
+        "answer": "Yes. Students can fill out the 'Purchase Recommendation Form' on the library website. If approved by the library committee, the book will be acquired and you will be notified when it arrives."
+    },
+    {
+        "id": "student_services_12",
+        "source": "student_services",
+        "topic": "ID cards",
+        "question": "How do I get my first university student ID card, and what documents are required?",
+        "answer": "You can get your ID card at the Campus Card Office during orientation. You must show your official admission letter and a valid government-issued photo ID (Passport, Driver's License)."
+    },
+    {
+        "id": "student_services_13",
+        "source": "student_services",
+        "topic": "ID cards",
+        "question": "What should I do if I lose my student ID card, and how much is the replacement fee?",
+        "answer": "Report the loss immediately on the student portal to freeze your card balances and building access. You can obtain a replacement card at the Security Office for a fee of $20."
+    },
+    {
+        "id": "student_services_14",
+        "source": "student_services",
+        "topic": "ID cards",
+        "question": "My student ID card is damaged and not scanning. How can I get it replaced or repaired?",
+        "answer": "Take your damaged card to the Campus Card Office. If the damage is due to normal wear and tear, it will be replaced free of charge. If it is due to misuse or physical bending, the replacement fee applies."
+    },
+    {
+        "id": "student_services_15",
+        "source": "student_services",
+        "topic": "ID cards",
+        "question": "Can I use a digital version of my ID card on my phone for library access or exams?",
+        "answer": "Yes. You can install the 'University Mobile ID' app, log in with your credentials, and use the NFC/barcode display at library turnstiles and exam sign-in desks."
+    },
+    {
+        "id": "student_services_16",
+        "source": "student_services",
+        "topic": "ID cards",
+        "question": "What campus facilities and discounts can I access using my university student ID card?",
+        "answer": "Your ID card provides access to academic buildings, computer labs, the gym, dining halls, public transit partners, and local student discounts at restaurants and bookstores."
+    },
+    {
+        "id": "student_services_17",
+        "source": "student_services",
+        "topic": "ID cards",
+        "question": "Does my student ID card expire, and do I need to renew it every academic year?",
+        "answer": "Your card is valid for the duration of your degree program. You do not need to renew it annually, but your validation sticker (showing the current year) must be updated at the registrar's office each Fall."
+    },
+    {
+        "id": "student_services_18",
+        "source": "student_services",
+        "topic": "Certificates",
+        "question": "How do I apply for a Bonafide Certificate or proof of enrollment for visa/loan purposes?",
+        "answer": "You can apply through the 'Document Requests' menu on the student portal. Once approved by the registrar, a PDF containing the digital signature and college seal will be emailed to you within 2 working days."
+    },
+    {
+        "id": "student_services_19",
+        "source": "student_services",
+        "topic": "Certificates",
+        "question": "What is the process for obtaining a duplicate degree certificate or official diploma?",
+        "answer": "To get a duplicate degree, you must submit a notarized affidavit stating the loss of the original, a police report (FIR), and apply through the Registrar's portal with a $50 processing fee."
+    },
+    {
+        "id": "student_services_20",
+        "source": "student_services",
+        "topic": "Certificates",
+        "question": "How can I request a Migration Certificate or Transfer Certificate after graduating?",
+        "answer": "After graduation clearance is complete, you can submit a request on the alumni portal under 'Graduation Documents'. These certificates are issued within 10-15 business days."
+    },
+    {
+        "id": "student_services_21",
+        "source": "student_services",
+        "topic": "Certificates",
+        "question": "How long does it take to process certificates, and can I receive a digital copy?",
+        "answer": "Standard certificates take 3-5 working days. Digitally signed, secure PDFs are sent immediately upon approval, which are accepted by most external organizations."
+    },
+    {
+        "id": "student_services_22",
+        "source": "student_services",
+        "topic": "Certificates",
+        "question": "What is a transcripts request, and how can I send certified transcripts directly to other universities?",
+        "answer": "You can request official transcripts online. You must provide the recipient university's address/email. The registrar will send them directly in a sealed envelope or via secure electronic exchange."
+    },
+    {
+        "id": "student_services_23",
+        "source": "student_services",
+        "topic": "Certificates",
+        "question": "Is there a charge for obtaining official certificates, and how can I pay for them?",
+        "answer": "First-time standard enrollment and graduation certificates are free. Additional copies, duplicate diplomas, or express physical shipping incur fees payable online via credit card or student account balance."
+    },
+    {
+        "id": "student_services_24",
+        "source": "student_services",
+        "topic": "Student support",
+        "question": "What mental health and counseling services are available on campus, and are they confidential?",
+        "answer": "The Student Counseling Center offers free, 100% confidential personal therapy, crisis intervention, and group workshops. No information is shared with academic departments or parents without your consent."
+    },
+    {
+        "id": "student_services_25",
+        "source": "student_services",
+        "topic": "Student support",
+        "question": "Where can I find the Student Health Center, and what medical services are covered by my student fee?",
+        "answer": "Located in the Wellness Wing, the Health Center offers free primary care, physicals, basic lab testing, and immunizations. Specialized treatments or prescription drugs may require co-pays or insurance billing."
+    },
+    {
+        "id": "student_services_26",
+        "source": "student_services",
+        "topic": "Student support",
+        "question": "Who should I contact if I am experiencing harassment, discrimination, or bullying on campus?",
+        "answer": "You can contact the Office of Equity and Compliance or report anonymounsly through the campus helpline. The university has a zero-tolerance policy and provides immediate support and protection."
+    },
+    {
+        "id": "student_services_27",
+        "source": "student_services",
+        "topic": "Student support",
+        "question": "Are there tutoring or academic writing support centers available for struggling students?",
+        "answer": "Yes. The Academic Success Center provides free peer tutoring in major subjects, and the Writing Lab assists students with drafting essays, reports, and structuring research papers."
+    },
+    {
+        "id": "student_services_28",
+        "source": "student_services",
+        "topic": "Student support",
+        "question": "How can I get assistance with career planning, mock interviews, and finding off-campus housing?",
+        "answer": "The Career Services office offers career counseling and mock interview sessions. For housing, the Off-Campus Housing Coordinator provides listing guides and roommate matching tools."
+    },
+    {
+        "id": "student_services_29",
+        "source": "student_services",
+        "topic": "Student support",
+        "question": "What disability services and accommodations are available for students with physical or learning challenges?",
+        "answer": "The Office of Disability Resources coordinates accommodations such as extended exam times, note-taking services, assistive technologies, and campus accessibility modifications."
+    },
+    {
+        "id": "navigation_0",
+        "source": "navigation",
+        "topic": "Central Library",
+        "question": "Where is the Central Library?",
+        "answer": "The Central Library is located in Knowledge Resource Center on the Ground Floor (landmark: Opposite Administrative Block). Directions: Enter through the main campus gate, walk straight past the central fountain, and the library is the large glass building on your left."
+    },
+    {
+        "id": "navigation_1",
+        "source": "navigation",
+        "topic": "Placement Cell",
+        "question": "Where is the Placement Cell?",
+        "answer": "The Placement Cell is located in Administrative Block on the 1st Floor (landmark: Next to Accounts Section). Directions: Enter the Administrative Block, take the stairs on your left to the 1st floor, and walk down the corridor to Room 104."
+    },
+    {
+        "id": "navigation_2",
+        "source": "navigation",
+        "topic": "AI Research Lab",
+        "question": "Where is the AI Research Lab?",
+        "answer": "The AI Research Lab is located in Engineering Block C on the 3rd Floor (landmark: Opposite Server Room). Directions: Enter Engineering Block C, take the elevator to the 3rd floor, turn right, and walk to the end of the hallway."
+    },
+    {
+        "id": "navigation_3",
+        "source": "navigation",
+        "topic": "Registrar's Office",
+        "question": "Where is the Registrar's Office?",
+        "answer": "The Registrar's Office is located in Administrative Block on the Ground Floor (landmark: Near Main Reception). Directions: Enter the Administrative Block, take an immediate right after the reception desk, and it is the first office on the right."
+    },
+    {
+        "id": "navigation_4",
+        "source": "navigation",
+        "topic": "Chemistry Lab",
+        "question": "Where is the Chemistry Lab?",
+        "answer": "The Chemistry Lab is located in Science Block A on the 2nd Floor (landmark: Next to Physics Lab). Directions: Go to Science Block A, take the stairs to the 2nd floor, turn left, and walk past the faculty cabins to the double-door lab."
+    },
+    {
+        "id": "navigation_5",
+        "source": "navigation",
+        "topic": "Physics Lab",
+        "question": "Where is the Physics Lab?",
+        "answer": "The Physics Lab is located in Science Block A on the 2nd Floor (landmark: Near Science Block Elevator). Directions: Head to the 2nd floor of Science Block A, and the lab is located directly opposite the elevator exit."
+    },
+    {
+        "id": "navigation_6",
+        "source": "navigation",
+        "topic": "Central Cafeteria",
+        "question": "Where is the Central Cafeteria?",
+        "answer": "The Central Cafeteria is located in Student Activity Center (SAC) on the Ground Floor (landmark: Next to the Indoor Gym). Directions: Walk to the Student Activity Center behind the sports ground; the cafeteria entrance is on the right side of the main lobby."
+    },
+    {
+        "id": "navigation_7",
+        "source": "navigation",
+        "topic": "Indoor Sports Complex",
+        "question": "Where is the Indoor Sports Complex?",
+        "answer": "The Indoor Sports Complex is located in Student Activity Center (SAC) on the Ground Floor (landmark: Behind the Football Field). Directions: From the main entrance, follow the path past the football field, enter the SAC building, and the sports complex is on the ground floor."
+    },
+    {
+        "id": "navigation_8",
+        "source": "navigation",
+        "topic": "Campus Health Center",
+        "question": "Where is the Campus Health Center?",
+        "answer": "The Campus Health Center is located in Hostel Block D Annex on the Ground Floor (landmark: Opposite the Basketball Court). Directions: Head towards the Hostel Block D entrance; the health center is in the adjacent annex building next to the pharmacy."
+    },
+    {
+        "id": "navigation_9",
+        "source": "navigation",
+        "topic": "Dean of Student Affairs Office",
+        "question": "Where is the Dean of Student Affairs Office?",
+        "answer": "The Dean of Student Affairs Office is located in Administrative Block on the 2nd Floor (landmark: Opposite the Seminar Hall). Directions: Enter the Administrative Block, take the elevator to the 2nd floor, turn left, and walk past the main meeting room."
+    },
+    {
+        "id": "navigation_10",
+        "source": "navigation",
+        "topic": "Seminar Hall A",
+        "question": "Where is the Seminar Hall A?",
+        "answer": "The Seminar Hall A is located in Main Block on the 1st Floor (landmark: Near Central Lounge). Directions: Walk to the 1st floor of the Main Block, walk straight past the lounge, and the double doors to Seminar Hall A are on your left."
+    },
+    {
+        "id": "navigation_11",
+        "source": "navigation",
+        "topic": "Computer Science Department Office",
+        "question": "Where is the Computer Science Department Office?",
+        "answer": "The Computer Science Department Office is located in Engineering Block C on the 2nd Floor (landmark: Next to the HOD Cabin). Directions: Enter Engineering Block C, take the stairs to the 2nd floor, turn left, and the department office is the third door on the right."
+    },
+    {
+        "id": "navigation_12",
+        "source": "navigation",
+        "topic": "Mathematics Department Office",
+        "question": "Where is the Mathematics Department Office?",
+        "answer": "The Mathematics Department Office is located in Science Block B on the 1st Floor (landmark: Near Department Library). Directions: Walk to the 1st floor of Science Block B, turn right at the notice board, and the office is next to the library room."
+    },
+    {
+        "id": "navigation_13",
+        "source": "navigation",
+        "topic": "Biotechnology Lab",
+        "question": "Where is the Biotechnology Lab?",
+        "answer": "The Biotechnology Lab is located in Bio-Science Block on the 3rd Floor (landmark: Near Greenhouse Entrance). Directions: Head to the 3rd floor of the Bio-Science Block, walk straight down the corridor, and the lab is on the left before the greenhouse."
+    },
+    {
+        "id": "navigation_14",
+        "source": "navigation",
+        "topic": "Robotics & Automation Lab",
+        "question": "Where is the Robotics & Automation Lab?",
+        "answer": "The Robotics & Automation Lab is located in Mechanical Engineering Block on the Ground Floor (landmark: Near CNC Workshop). Directions: Enter the Mechanical Engineering Block from the rear entrance, walk past the CNC machine shop, and the lab is on your right."
+    },
+    {
+        "id": "navigation_15",
+        "source": "navigation",
+        "topic": "Admissions Office",
+        "question": "Where is the Admissions Office?",
+        "answer": "The Admissions Office is located in Administrative Block on the Ground Floor (landmark: Next to Inquiry Desk). Directions: Walk into the Administrative Block main entrance, and the admissions office is located directly behind the main inquiry desk."
+    },
+    {
+        "id": "navigation_16",
+        "source": "navigation",
+        "topic": "Accounts & Fee Counter",
+        "question": "Where is the Accounts & Fee Counter?",
+        "answer": "The Accounts & Fee Counter is located in Administrative Block on the Ground Floor (landmark: Opposite Admissions Office). Directions: Walk into the Administrative Block lobby, and the accounts desk is located directly to your left across from the admissions desk."
+    },
+    {
+        "id": "navigation_17",
+        "source": "navigation",
+        "topic": "Campus Main Auditorium",
+        "question": "Where is the Campus Main Auditorium?",
+        "answer": "The Campus Main Auditorium is located in Auditorium Block on the Ground Floor (landmark: Near Campus Main Gate). Directions: Immediately after entering the campus main gate, take the first right turn; the auditorium is the large dome-shaped building."
+    },
+    {
+        "id": "navigation_18",
+        "source": "navigation",
+        "topic": "Language Lab",
+        "question": "Where is the Language Lab?",
+        "answer": "The Language Lab is located in Humanities Block on the 2nd Floor (landmark: Opposite English Faculty Cabins). Directions: Head to the 2nd floor of the Humanities Block, turn right, and the lab is the second door on the left."
+    },
+    {
+        "id": "navigation_19",
+        "source": "navigation",
+        "topic": "Graphics Design Studio",
+        "question": "Where is the Graphics Design Studio?",
+        "answer": "The Graphics Design Studio is located in Architecture & Design Block on the 4th Floor (landmark: Near Drawing Hall). Directions: Take the elevator to the 4th floor of the Design Block, turn left, and it is located at the end of the corridor."
+    },
+    {
+        "id": "navigation_20",
+        "source": "navigation",
+        "topic": "Counseling & Mental Health Center",
+        "question": "Where is the Counseling & Mental Health Center?",
+        "answer": "The Counseling & Mental Health Center is located in Student Activity Center (SAC) on the 1st Floor (landmark: Next to the Yoga Room). Directions: Go to the 1st floor of the SAC building, turn right, and the counseling center is located in a quiet corridor at the end."
+    },
+    {
+        "id": "navigation_21",
+        "source": "navigation",
+        "topic": "Alumni Association Office",
+        "question": "Where is the Alumni Association Office?",
+        "answer": "The Alumni Association Office is located in Administrative Block on the 3rd Floor (landmark: Next to Board Room). Directions: Take the elevator to the 3rd floor of the Administrative Block, turn right, and walk past the board room entrance."
+    },
+    {
+        "id": "navigation_22",
+        "source": "navigation",
+        "topic": "Student Senate Hall",
+        "question": "Where is the Student Senate Hall?",
+        "answer": "The Student Senate Hall is located in Student Activity Center (SAC) on the 2nd Floor (landmark: Near Student Union Office). Directions: Take the stairs to the 2nd floor of the SAC, turn left, and the Senate Hall is the large double-door room on the left."
+    },
+    {
+        "id": "navigation_23",
+        "source": "navigation",
+        "topic": "Examination Cell",
+        "question": "Where is the Examination Cell?",
+        "answer": "The Examination Cell is located in Administrative Block on the 1st Floor (landmark: Near Controller of Exams Office). Directions: Take the stairs to the 1st floor of the Administrative Block, turn left, and walk straight to the secure access zone."
+    },
+    {
+        "id": "navigation_24",
+        "source": "navigation",
+        "topic": "Mechanical Workshop",
+        "question": "Where is the Mechanical Workshop?",
+        "answer": "The Mechanical Workshop is located in Mechanical Engineering Block on the Ground Floor (landmark: Near Foundry Shop). Directions: Walk to the ground floor of the Mechanical Block, follow the signs to the workshop corridor, and enter the double doors on the left."
+    },
+    {
+        "id": "navigation_25",
+        "source": "navigation",
+        "topic": "Electrical Machines Lab",
+        "question": "Where is the Electrical Machines Lab?",
+        "answer": "The Electrical Machines Lab is located in Electrical Engineering Block on the Ground Floor (landmark: Opposite Power Systems Lab). Directions: Enter the Electrical Engineering Block, walk down the main ground floor corridor, and the lab is the last room on the right."
+    },
+    {
+        "id": "navigation_26",
+        "source": "navigation",
+        "topic": "Civil Engineering Survey Lab",
+        "question": "Where is the Civil Engineering Survey Lab?",
+        "answer": "The Civil Engineering Survey Lab is located in Civil Engineering Block on the Ground Floor (landmark: Near Materials Testing Lab). Directions: Go to the ground floor of the Civil Block, walk to the rear exit near the testing yard, and the lab is on the left."
+    },
+    {
+        "id": "navigation_27",
+        "source": "navigation",
+        "topic": "Executive Board Room",
+        "question": "Where is the Executive Board Room?",
+        "answer": "The Executive Board Room is located in Administrative Block on the 3rd Floor (landmark: Opposite VC Office). Directions: Take the elevator to the 3rd floor of the Administrative Block, turn left, and the board room is directly opposite the VC's office."
+    },
+    {
+        "id": "navigation_28",
+        "source": "navigation",
+        "topic": "Vice Chancellor (VC) Office",
+        "question": "Where is the Vice Chancellor (VC) Office?",
+        "answer": "The Vice Chancellor (VC) Office is located in Administrative Block on the 3rd Floor (landmark: Next to Conference Hall). Directions: Go to the 3rd floor of the Administrative Block, take a left from the elevator, and the VC office suite is at the end of the corridor."
+    },
+    {
+        "id": "navigation_29",
+        "source": "navigation",
+        "topic": "Career Guidance Cell",
+        "question": "Where is the Career Guidance Cell?",
+        "answer": "The Career Guidance Cell is located in Library Block on the 1st Floor (landmark: Near Reference Section). Directions: Go to the 1st floor of the Library Block, turn left, and the Career Guidance Cell is located next to the reference book racks."
+    },
+    {
+        "id": "navigation_30",
+        "source": "navigation",
+        "topic": "Photocopy & Stationery Shop",
+        "question": "Where is the Photocopy & Stationery Shop?",
+        "answer": "The Photocopy & Stationery Shop is located in Student Activity Center (SAC) on the Ground Floor (landmark: Next to the Food Stall). Directions: Enter the SAC building from the front entrance, walk past the seating area, and the shop is on the left next to the food stall."
+    },
+    {
+        "id": "navigation_31",
+        "source": "navigation",
+        "topic": "Main Security Office",
+        "question": "Where is the Main Security Office?",
+        "answer": "The Main Security Office is located in Main Gate Security Block on the Ground Floor (landmark: Right side of Campus Entry Gate). Directions: Located immediately at the main campus entrance, in the small security building on the right side of the gates."
+    },
+    {
+        "id": "navigation_32",
+        "source": "navigation",
+        "topic": "Guest House Reception",
+        "question": "Where is the Guest House Reception?",
+        "answer": "The Guest House Reception is located in University Guest House on the Ground Floor (landmark: Near Staff Quarters). Directions: Walk past the faculty housing block to the Guest House building; the reception lobby is located just past the main glass doors."
+    },
+    {
+        "id": "navigation_33",
+        "source": "navigation",
+        "topic": "Girls' Common Room",
+        "question": "Where is the Girls' Common Room?",
+        "answer": "The Girls' Common Room is located in Humanities Block on the Ground Floor (landmark: Next to Ladies Washroom). Directions: Go to the ground floor of the Humanities Block, turn right from the entrance, and the common room is the second door on the left."
+    },
+    {
+        "id": "navigation_34",
+        "source": "navigation",
+        "topic": "Boys' Common Room",
+        "question": "Where is the Boys' Common Room?",
+        "answer": "The Boys' Common Room is located in Engineering Block A on the Ground Floor (landmark: Near Sports Equipment Room). Directions: Walk to the ground floor of Engineering Block A, turn left at the entrance lobby, and it is located next to the sports locker room."
+    },
+    {
+        "id": "navigation_35",
+        "source": "navigation",
+        "topic": "Placement Interview Room 1",
+        "question": "Where is the Placement Interview Room 1?",
+        "answer": "The Placement Interview Room 1 is located in Placement Cell Block on the 1st Floor (landmark: Opposite Conference Hall). Directions: Walk to the 1st floor of the Placement Block, and the interview room is the first glass cabin on the left."
+    },
+    {
+        "id": "navigation_36",
+        "source": "navigation",
+        "topic": "Placement Interview Room 2",
+        "question": "Where is the Placement Interview Room 2?",
+        "answer": "The Placement Interview Room 2 is located in Placement Cell Block on the 1st Floor (landmark: Next to Placement Interview Room 1). Directions: Head to the 1st floor of the Placement Block, walk past Interview Room 1, and Room 2 is the next cabin on the left."
+    },
+    {
+        "id": "navigation_37",
+        "source": "navigation",
+        "topic": "Data Center / Server Room",
+        "question": "Where is the Data Center / Server Room?",
+        "answer": "The Data Center / Server Room is located in Engineering Block C on the 3rd Floor (landmark: Opposite AI Research Lab). Directions: Take the elevator to the 3rd floor of Block C, turn right, and the secured-access Data Center is on the left."
+    },
+    {
+        "id": "navigation_38",
+        "source": "navigation",
+        "topic": "IQAC Office",
+        "question": "Where is the IQAC Office?",
+        "answer": "The IQAC Office is located in Administrative Block on the 2nd Floor (landmark: Near Research Cell Office). Directions: Go to the 2nd floor of the Administrative Block, turn right, and the IQAC office is the second door on the left."
+    },
+    {
+        "id": "navigation_39",
+        "source": "navigation",
+        "topic": "NCC / NSS Office",
+        "question": "Where is the NCC / NSS Office?",
+        "answer": "The NCC / NSS Office is located in Student Activity Center (SAC) on the Ground Floor (landmark: Behind the Cafeteria). Directions: Walk to the back exit of the SAC cafeteria, take the corridor to the left, and the NCC/NSS office is at the end."
+    },
+    {
+        "id": "navigation_40",
+        "source": "navigation",
+        "topic": "Music Room",
+        "question": "Where is the Music Room?",
+        "answer": "The Music Room is located in Student Activity Center (SAC) on the 2nd Floor (landmark: Next to Dance Studio). Directions: Take the stairs to the 2nd floor of the SAC, turn right, and the soundproofed music room is the third door on the right."
+    },
+    {
+        "id": "navigation_41",
+        "source": "navigation",
+        "topic": "Fine Arts Gallery",
+        "question": "Where is the Fine Arts Gallery?",
+        "answer": "The Fine Arts Gallery is located in Architecture & Design Block on the Ground Floor (landmark: Near Main Lobby Exhibition Area). Directions: Enter the Design Block, walk straight through the main lobby, and the entry to the gallery is directly ahead."
+    },
+    {
+        "id": "navigation_42",
+        "source": "navigation",
+        "topic": "Dean of Academics Office",
+        "question": "Where is the Dean of Academics Office?",
+        "answer": "The Dean of Academics Office is located in Administrative Block on the 2nd Floor (landmark: Next to Dean of Student Affairs Office). Directions: Head to the 2nd floor of the Administrative Block, turn left from the elevator, and the Academic office is the second door on the right."
+    },
+    {
+        "id": "navigation_43",
+        "source": "navigation",
+        "topic": "Research & Development Cell",
+        "question": "Where is the Research & Development Cell?",
+        "answer": "The Research & Development Cell is located in Science Block B on the Ground Floor (landmark: Opposite Chemistry Lab). Directions: Enter Science Block B, walk down the ground floor hallway, and the R&D cell is on the right side."
+    },
+    {
+        "id": "navigation_44",
+        "source": "navigation",
+        "topic": "IoT Innovation Lab",
+        "question": "Where is the IoT Innovation Lab?",
+        "answer": "The IoT Innovation Lab is located in Engineering Block D on the 2nd Floor (landmark: Near Embedded Systems Lab). Directions: Go to the 2nd floor of Engineering Block D, turn left, and the IoT lab is the third room on the left."
+    },
+    {
+        "id": "navigation_45",
+        "source": "navigation",
+        "topic": "Moot Court Hall",
+        "question": "Where is the Moot Court Hall?",
+        "answer": "The Moot Court Hall is located in Law Department Block on the 1st Floor (landmark: Opposite Department Seminar Hall). Directions: Walk to the 1st floor of the Law Block, and the Moot Court hall with the wooden double doors is on the right."
+    },
+    {
+        "id": "navigation_46",
+        "source": "navigation",
+        "topic": "Business Incubation Center",
+        "question": "Where is the Business Incubation Center?",
+        "answer": "The Business Incubation Center is located in Management Studies Block on the 2nd Floor (landmark: Near Startup Cubicles). Directions: Take the stairs to the 2nd floor of the Management Block, turn right, and walk straight into the incubation open space."
+    },
+    {
+        "id": "navigation_47",
+        "source": "navigation",
+        "topic": "Electronics & Communication Lab",
+        "question": "Where is the Electronics & Communication Lab?",
+        "answer": "The Electronics & Communication Lab is located in Engineering Block D on the 1st Floor (landmark: Next to Microprocessor Lab). Directions: Head to the 1st floor of Block D, turn right, and the lab is located halfway down the corridor on the left."
+    },
+    {
+        "id": "navigation_48",
+        "source": "navigation",
+        "topic": "Digital Library Section",
+        "question": "Where is the Digital Library Section?",
+        "answer": "The Digital Library Section is located in Knowledge Resource Center on the 1st Floor (landmark: Near E-Journal Terminals). Directions: Take the central library stairs to the 1st floor, walk past the book racks, and turn right into the computer terminal zone."
+    },
+    {
+        "id": "navigation_49",
+        "source": "navigation",
+        "topic": "Controller of Examinations Office",
+        "question": "Where is the Controller of Examinations Office?",
+        "answer": "The Controller of Examinations Office is located in Administrative Block on the 1st Floor (landmark: Next to Examination Cell). Directions: Go to the 1st floor of the Administrative Block, turn left, and the Controller's office is the secure cabin at the end of the hallway."
+    }
+]
