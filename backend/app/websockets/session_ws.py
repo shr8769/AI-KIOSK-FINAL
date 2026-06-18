@@ -20,23 +20,11 @@ Message protocol:
 """
 
 import json
-<<<<<<< HEAD
 import logging
 from typing import TYPE_CHECKING
 
 from fastapi import Depends, WebSocket, WebSocketDisconnect
-=======
-import os
-import sys
-from typing import Dict
 
-# Add project root to sys.path to allow importing from agents
-root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-if root_dir not in sys.path:
-    sys.path.append(root_dir)
-
-from fastapi import WebSocket, WebSocketDisconnect
->>>>>>> origin/feature/harsha/speech-pipeline
 
 from app.core.dependencies import (
     RIAR_ENABLED,
@@ -53,44 +41,9 @@ from app.services.riar_service import riar_service
 from app.services.speech.asr_service import asr_service
 from app.services.speech.tts_service import tts_service
 
-<<<<<<< HEAD
 # Re-export manager for events.py (backwards-compat shim — will be removed once
 # events.py is fully migrated to Depends(get_connection_manager))
 manager = get_connection_manager()
-=======
-from agents.coordinator.coordinator_agent import CoordinatorAgent
-from deep_translator import GoogleTranslator
-
-# Initialize the coordinator agent singleton
-coordinator_agent = CoordinatorAgent()
-
-
-def translate_to_english(text: str, source_lang: str = "auto") -> str:
-    if not text or not text.strip() or source_lang == "en":
-        return text
-    try:
-        translated = GoogleTranslator(source=source_lang, target="en").translate(text)
-        logger.info(f"Translated query '{text}' ({source_lang}) -> '{translated}' (en)")
-        return translated
-    except Exception as e:
-        logger.error(f"Translation to English failed: {e}")
-        return text
-
-
-def translate_from_english(text: str, target_lang: str) -> str:
-    if not text or not text.strip() or target_lang == "en":
-        return text
-    try:
-        translated = GoogleTranslator(source="en", target=target_lang).translate(text)
-        logger.info(f"Translated response '{text}' (en) -> '{translated}' ({target_lang})")
-        return translated
-    except Exception as e:
-        logger.error(f"Translation from English failed: {e}")
-        return text
-
-
-# ── Connection Manager ────────────────────────
->>>>>>> origin/feature/harsha/speech-pipeline
 
 
 # ── WebSocket endpoint ────────────────────────────────────────────────
