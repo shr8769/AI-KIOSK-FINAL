@@ -135,7 +135,27 @@ def ingest_file(
         logger.error(f"Invalid format in {file_path}. Expected a JSON array/list.")
         return 0, 1
 
-    logger.info(f"Loaded {len(data)} items from {file_path}. Getting or creating collection '{collection_name}'...")
+    # Schema validation
+    valid_data = []
+    for idx, item in enumerate(data):
+        if not isinstance(item, dict):
+            logger.error(f"Item at index {idx} in {file_path} is not a JSON object/dict. Skipping.")
+            continue
+        if collection_name == "navigation":
+            if "facility" not in item or "directions" not in item:
+                logger.error(f"Item at index {idx} in {file_path} is missing required navigation fields ('facility', 'directions'). Skipping.")
+                continue
+        else:
+            if "question" not in item or "answer" not in item:
+                logger.error(f"Item at index {idx} in {file_path} is missing required Q&A fields ('question', 'answer'). Skipping.")
+                continue
+        valid_data.append(item)
+
+    if not valid_data:
+        logger.error(f"No valid items found in {file_path} after schema validation.")
+        return 0, len(data)
+
+    logger.info(f"Loaded {len(valid_data)} valid items out of {len(data)} from {file_path}. Getting or creating collection '{collection_name}'...")
     
     try:
         # Get or create the collection with the specified embedding function
@@ -145,13 +165,13 @@ def ingest_file(
         )
     except Exception as e:
         logger.error(f"Failed to create/get collection '{collection_name}': {e}")
-        return 0, len(data)
+        return 0, len(valid_data)
 
     ids = []
     documents = []
     metadatas = []
     
-    for idx, item in enumerate(data):
+    for idx, item in enumerate(valid_data):
         doc_id = generate_unique_id(collection_name, item, idx)
         doc_text = format_document(collection_name, item)
         meta = get_metadata(collection_name, item)

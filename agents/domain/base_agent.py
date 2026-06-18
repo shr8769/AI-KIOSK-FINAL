@@ -11,6 +11,8 @@ try:
 except ImportError:
     pass
 
+from agents.domain.gemini_rag import GeminiSynthesizer
+
 def log_evaluation_trace(
     query: str,
     selected_agent: str,
@@ -18,7 +20,8 @@ def log_evaluation_trace(
     routing_confidence: float,
     selected_doc_id: str,
     retrieved_docs: List[Dict[str, Any]],
-    answer: str
+    answer: str,
+    relevance_decision: str = "SUFFICIENT"
 ):
     """
     Utility function to log query, routing, and retrieval details to a JSONL file
@@ -38,11 +41,14 @@ def log_evaluation_trace(
         "retrieved_documents": [
             {
                 "id": doc["id"],
+                "document": doc.get("document", ""),
                 "distance": doc["distance"],
+                "similarity_score": 1.0 / (1.0 + doc["distance"]),
                 "keyword_score": doc["keyword_score"],
                 "combined_score": doc["combined_score"]
             } for doc in retrieved_docs
         ],
+        "relevance_decision": relevance_decision,
         "answer": answer
     }
     
@@ -157,7 +163,15 @@ class BaseAgent(ABC):
     Implements a unified retrieval and re-ranking pipeline using semantic similarity
     and keyword overlap scoring.
     """
-    def __init__(self, collection_name: str, client: Any = None, db_path: str = None):
+    def __init__(
+        self, 
+        collection_name: str, 
+        client: Any = None, 
+        db_path: str = None,
+        similarity_weight: float = 1.0,
+        keyword_weight: float = 1.5,
+        rag_enabled: bool = True
+    ):
         """
         Initializes the BaseAgent with a ChromaDB collection.
         
@@ -165,8 +179,18 @@ class BaseAgent(ABC):
             collection_name (str): Name of the ChromaDB collection.
             client (chromadb.PersistentClient, optional): Shared client instance.
             db_path (str, optional): Path to persistent ChromaDB storage.
+            similarity_weight (float): Weight for semantic similarity score.
+            keyword_weight (float): Weight for token overlap score.
+            rag_enabled (bool): Whether to enable Gemini RAG response generation.
         """
         self.collection_name = collection_name
+        self.similarity_weight = similarity_weight
+        self.keyword_weight = keyword_weight
+        self.rag_enabled = rag_enabled
+        self.similarity_threshold = 0.58
+        
+        if self.rag_enabled:
+            self.synthesizer = GeminiSynthesizer()
         
         if client is not None:
             self.client = client
@@ -304,6 +328,7 @@ class BaseAgent(ABC):
                 
                 # Calculate score: weight topic match higher (2.0) and question match (1.0)
                 combined_score = (topic_match * 2.0) + (question_match * 1.0)
+
                 
                 # Keep only items that have at least some match
                 if combined_score > 0:
@@ -369,6 +394,11 @@ class BaseAgent(ABC):
         Returns:
             str: The final formatted answer.
         """
+        fallback_msg = (
+            "Sorry, I could not find information regarding this in the university knowledge base. "
+            "Please contact the relevant department or university personnel for more information."
+        )
+        
         docs = self.retrieve(query)
         if not docs:
             # Log failure
@@ -379,9 +409,10 @@ class BaseAgent(ABC):
                 routing_confidence=routing_confidence if routing_confidence is not None else 0.0,
                 selected_doc_id="None",
                 retrieved_docs=[],
-                answer="No suitable documents found."
+                answer=fallback_msg,
+                relevance_decision="INSUFFICIENT"
             )
-            return f"I'm sorry, I couldn't find any information regarding that query in the {self.get_domain()} section."
+            return f"{fallback_msg}\n\n[Source: None]"
         
         # Select best document (first in the re-ranked list)
         best_doc = docs[0]
@@ -389,9 +420,11 @@ class BaseAgent(ABC):
         # Print debugging details as required by PART 3
         print("\nRetrieved Documents:\n")
         for i, doc in enumerate(docs, 1):
+            sim_score = 1.0 / (1.0 + doc['distance'])
             print(f"Document {i}:")
             print(f"* ID: {doc['id']}")
             print(f"* Distance: {doc['distance']:.4f}")
+            print(f"* Similarity Score: {sim_score:.4f}")
             print(f"* Keyword Score: {doc['keyword_score']:.4f}")
             print(f"* Final Score: {doc['combined_score']:.4f}")
             print() # empty line
@@ -399,7 +432,65 @@ class BaseAgent(ABC):
         print("Selected Document:")
         print(f"* ID: {best_doc['id']}")
         
+        # Determine relevance decision
+        relevance_decision = "SUFFICIENT"
+        
+        # First filter: check similarity score against threshold (0.58)
+        best_sim_score = 1.0 / (1.0 + best_doc["distance"])
+        if best_sim_score < getattr(self, "similarity_threshold", 0.58):
+            print(f"[Warning] Similarity score {best_sim_score:.4f} is below threshold {self.similarity_threshold:.2f}.")
+            relevance_decision = "INSUFFICIENT"
+            
+        # Second filter: if RAG is enabled and similarity is sufficient, run the Gemini relevance check
+        if relevance_decision == "SUFFICIENT" and getattr(self, "rag_enabled", False):
+            try:
+                check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
+                if check_result is not None:
+                    relevance_decision = check_result
+                    print(f"Gemini relevance check decision: {relevance_decision}")
+            except Exception as e:
+                print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
+                
+        # If either check decides INSUFFICIENT, bypass LLM answer synthesis and return fallback
+        if relevance_decision == "INSUFFICIENT":
+            log_evaluation_trace(
+                query=query,
+                selected_agent=self.__class__.__name__,
+                selected_domain=self.get_domain(),
+                routing_confidence=routing_confidence if routing_confidence is not None else 0.0,
+                selected_doc_id="None",
+                retrieved_docs=docs,
+                answer=fallback_msg,
+                relevance_decision=relevance_decision
+            )
+            return f"{fallback_msg}\n\n[Source: None]"
+        
         # Log evaluation trace as required by PART 4
+        if getattr(self, "rag_enabled", False):
+            try:
+                # Synthesize answer using Gemini/fallback RAG
+                rag_answer = self.synthesizer.synthesize(query, docs, domain=self.get_domain())
+                if rag_answer is None:
+                    raise ValueError("Gemini RAG synthesis returned None.")
+                
+                log_evaluation_trace(
+                    query=query,
+                    selected_agent=self.__class__.__name__,
+                    selected_domain=self.get_domain(),
+                    routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
+                    selected_doc_id=best_doc["id"],
+                    retrieved_docs=docs,
+                    answer=rag_answer,
+                    relevance_decision="SUFFICIENT"
+                )
+                # Combine the source references for context docs
+                refs = ", ".join(d["id"] for d in docs[:3])
+                response = f"{rag_answer}\n\n[Source: {self.get_domain().title().replace('_', ' ')} (RAG Synth) | Refs: {refs}]"
+                return response
+            except Exception as e:
+                print(f"[Warning] Gemini RAG synthesis failed: {e}. Falling back to retrieval-only mode.")
+                
+        # Retrieval-only mode (fallback or disabled)
         log_evaluation_trace(
             query=query,
             selected_agent=self.__class__.__name__,
@@ -407,9 +498,9 @@ class BaseAgent(ABC):
             routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
             selected_doc_id=best_doc["id"],
             retrieved_docs=docs,
-            answer=best_doc["answer"]
+            answer=best_doc["answer"],
+            relevance_decision="SUFFICIENT"
         )
-        
         response = f"{best_doc['answer']}\n\n[Source: {self.get_domain().title().replace('_', ' ')} | Ref: {best_doc['id']}]"
         return response
 
