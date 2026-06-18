@@ -16,7 +16,7 @@ from agents.domain.gemini_rag import GeminiSynthesizer  # noqa: E402
 from app.core.dependencies import get_riar_pipeline  # noqa: E402
 
 
-@patch("langchain_community.chat_models.ollama.ChatOllama")
+@patch("langchain_ollama.ChatOllama")
 def test_get_riar_pipeline_offline_fallback(mock_chat_ollama):
     """Test get_riar_pipeline uses ChatOllama when GOOGLE_API_KEY is not set."""
     # Temporarily remove GOOGLE_API_KEY from environment
@@ -31,7 +31,7 @@ def test_get_riar_pipeline_offline_fallback(mock_chat_ollama):
         assert pipeline.llm_client == mock_chat_ollama.return_value
 
 
-@patch("langchain_community.chat_models.ollama.ChatOllama")
+@patch("langchain_ollama.ChatOllama")
 def test_gemini_synthesizer_offline_fallback_init(mock_chat_ollama):
     """Test GeminiSynthesizer falls back to local ChatOllama when GEMINI_API_KEY is missing."""
     # Temporarily remove GEMINI_API_KEY
@@ -43,7 +43,7 @@ def test_gemini_synthesizer_offline_fallback_init(mock_chat_ollama):
         assert synthesizer.ollama_client == mock_chat_ollama.return_value
 
 
-@patch("langchain_community.chat_models.ollama.ChatOllama")
+@patch("langchain_ollama.ChatOllama")
 def test_gemini_synthesizer_synthesize_and_sufficiency_fallback(mock_chat_ollama):
     """Test GeminiSynthesizer.synthesize and check_sufficiency call ChatOllama fallback."""
     mock_ollama_instance = mock_chat_ollama.return_value

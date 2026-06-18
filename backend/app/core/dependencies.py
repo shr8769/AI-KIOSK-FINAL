@@ -135,7 +135,7 @@ def get_riar_pipeline():
         llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
     else:
         logger.info("GOOGLE_API_KEY missing. Initializing RIAR LLM with local Ollama (qwen3:latest)")
-        from langchain_community.chat_models.ollama import ChatOllama  # noqa
+        from langchain_ollama import ChatOllama  # noqa
         llm = ChatOllama(model="qwen3:latest")
 
     chroma_mock = MagicMock()
