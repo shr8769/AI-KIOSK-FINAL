@@ -12,6 +12,8 @@ except ImportError:
     pass
 
 from agents.domain.gemini_rag import GeminiSynthesizer
+from config import llm_config
+from agents.llm.qwen_client import QwenClient
 
 def log_evaluation_trace(
     query: str,
@@ -91,6 +93,7 @@ class BaseAgent(ABC):
         self.similarity_threshold = 0.58
         
         if self.rag_enabled:
+            self.qwen_client = QwenClient()
             self.synthesizer = GeminiSynthesizer()
         
         if client is not None:
@@ -253,7 +256,7 @@ class BaseAgent(ABC):
                 answer=fallback_msg,
                 relevance_decision="INSUFFICIENT"
             )
-            return f"{fallback_msg}\n\n[Source: None]"
+            return f"Answer:\n{fallback_msg}\n\nSources:\n    None"
         
         # Select best document (first in the re-ranked list)
         best_doc = docs[0]
@@ -284,13 +287,16 @@ class BaseAgent(ABC):
             
         # Second filter: if RAG is enabled and similarity is sufficient, run the Gemini relevance check
         if relevance_decision == "SUFFICIENT" and getattr(self, "rag_enabled", False):
-            try:
-                check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
-                if check_result is not None:
-                    relevance_decision = check_result
-                    print(f"Gemini relevance check decision: {relevance_decision}")
-            except Exception as e:
-                print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
+            if not getattr(self.qwen_client, "is_degraded", False):
+                try:
+                    check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
+                    if check_result is not None:
+                        relevance_decision = check_result
+                        print(f"Gemini relevance check decision: {relevance_decision}")
+                except Exception as e:
+                    print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
+            else:
+                print("[Info] LLM client is degraded. Bypassing Gemini relevance check and falling back to similarity filter.")
                 
         # If either check decides INSUFFICIENT, bypass LLM answer synthesis and return fallback
         if relevance_decision == "INSUFFICIENT":
@@ -304,16 +310,53 @@ class BaseAgent(ABC):
                 answer=fallback_msg,
                 relevance_decision=relevance_decision
             )
-            return f"{fallback_msg}\n\n[Source: None]"
+            return f"Answer:\n{fallback_msg}\n\nSources:\n    None"
         
         # Log evaluation trace as required by PART 4
         if getattr(self, "rag_enabled", False):
+            # Format context documents for prompt template
+            formatted_context = ""
+            for i, doc in enumerate(docs, 1):
+                formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
+            
+            # Load template
             try:
-                # Synthesize answer using Gemini/fallback RAG
-                rag_answer = self.synthesizer.synthesize(query, docs, domain=self.get_domain())
-                if rag_answer is None:
-                    raise ValueError("Gemini RAG synthesis returned None.")
+                from agents.concierge.prompt_templates import TEMPLATES
+                template = TEMPLATES.get(self.get_domain(), TEMPLATES.get("default"))
+            except ImportError:
+                template = "Answer the user query based ONLY on the provided context.\nContext:\n{context}\nQuery: {query}\nAnswer:"
                 
+            prompt = template.format(context=formatted_context, query=query)
+            
+            rag_answer = None
+            # Try Qwen first if it is the primary LLM
+            if getattr(llm_config, "PRIMARY_LLM", "qwen") == "qwen":
+                try:
+                    rag_answer = self.qwen_client.generate(prompt)
+                except Exception as e:
+                    print(f"[Warning] Qwen generation failed: {e}. Falling back to Gemini.")
+            
+            # If Qwen is disabled or failed, use Gemini synthesizer
+            if not rag_answer:
+                try:
+                    rag_answer = self.synthesizer.synthesize(query, docs, domain=self.get_domain())
+                except Exception as e:
+                    print(f"[Warning] Gemini RAG synthesis failed: {e}. Falling back to retrieval-only mode.")
+            
+            if rag_answer:
+                # Standardize clean up of Answer: prefix if present
+                if rag_answer.startswith("Answer:"):
+                    rag_answer = rag_answer[len("Answer:"):].strip()
+                
+                source_file = f"{self.get_domain()}.json"
+                if self.get_domain() == "navigation":
+                    source_file = "locations.json"
+                
+                # If model replied with the fallback message, set source to None
+                if "Sorry, I could not find information regarding this" in rag_answer or fallback_msg in rag_answer:
+                    rag_answer = fallback_msg
+                    source_file = "None"
+                    
                 log_evaluation_trace(
                     query=query,
                     selected_agent=self.__class__.__name__,
@@ -324,14 +367,13 @@ class BaseAgent(ABC):
                     answer=rag_answer,
                     relevance_decision="SUFFICIENT"
                 )
-                # Combine the source references for context docs
-                refs = ", ".join(d["id"] for d in docs[:3])
-                response = f"{rag_answer}\n\n[Source: {self.get_domain().title().replace('_', ' ')} (RAG Synth) | Refs: {refs}]"
-                return response
-            except Exception as e:
-                print(f"[Warning] Gemini RAG synthesis failed: {e}. Falling back to retrieval-only mode.")
+                return f"Answer:\n{rag_answer}\n\nSources:\n    {source_file}"
                 
         # Retrieval-only mode (fallback or disabled)
+        source_file = f"{self.get_domain()}.json"
+        if self.get_domain() == "navigation":
+            source_file = "locations.json"
+            
         log_evaluation_trace(
             query=query,
             selected_agent=self.__class__.__name__,
@@ -342,8 +384,12 @@ class BaseAgent(ABC):
             answer=best_doc["answer"],
             relevance_decision="SUFFICIENT"
         )
-        response = f"{best_doc['answer']}\n\n[Source: {self.get_domain().title().replace('_', ' ')} | Ref: {best_doc['id']}]"
-        return response
+        
+        ans_text = best_doc['answer']
+        if ans_text.startswith("Answer:"):
+            ans_text = ans_text[len("Answer:"):].strip()
+            
+        return f"Answer:\n{ans_text}\n\nSources:\n    {source_file}"
 
     @abstractmethod
     def get_domain(self) -> str:

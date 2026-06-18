@@ -47,6 +47,9 @@ class CoordinatorAgent:
             "student_services": StudentServicesAgent(client=self.client),
             "navigation": NavigationAgent(client=self.client)
         }
+        
+        from agents.concierge.language_fallback import GeminiTranslator
+        self.translator = GeminiTranslator()
 
         # Define keyword routing mappings for each domain agent.
         self.routing_rules = {
@@ -222,8 +225,7 @@ class CoordinatorAgent:
         """
         # Translate query if it is in Kannada or Hindi
         try:
-            from agents.concierge.language_fallback import GeminiTranslator
-            translator = GeminiTranslator()
+            translator = self.translator
             english_query, detected_lang = translator.translate_to_english(query)
         except Exception as e:
             print(f"[Warning] Translation initialization failed: {e}. Passing query through.")
@@ -294,7 +296,7 @@ class CoordinatorAgent:
                 answer=fallback_msg,
                 relevance_decision="INSUFFICIENT"
             )
-            return f"{fallback_msg}\n\n[Source: None]"
+            return f"Answer:\n{fallback_msg}\n\nSources:\n    None"
             
         agent = self.agents[selected_domain]
         selected_agent_name = agent.__class__.__name__
@@ -332,12 +334,17 @@ class CoordinatorAgent:
         raw_ans = agent.answer(english_query, routing_confidence=confidence)
         
         # Parse returned answer to separate answer and source
-        if "\n\n[Source: " in raw_ans:
-            answer_part, source_part = raw_ans.split("\n\n[Source: ", 1)
-            source_part = "\n\n[Source: " + source_part
+        if "\n\nSources:\n    " in raw_ans:
+            answer_part, source_part = raw_ans.split("\n\nSources:\n    ", 1)
+            if answer_part.startswith("Answer:\n"):
+                answer_part = answer_part[len("Answer:\n"):]
+            source_part = "Sources:\n    " + source_part
         else:
             answer_part = raw_ans
-            source_part = f"\n\n[Source: {selected_domain.title().replace('_', ' ')}]"
+            source_file = f"{selected_domain}.json" if selected_domain else "None"
+            if selected_domain == "navigation":
+                source_file = "locations.json"
+            source_part = f"Sources:\n    {source_file}"
             
         # Translate the answer back if needed
         if detected_lang in ["kn", "hi"]:
@@ -348,7 +355,7 @@ class CoordinatorAgent:
                 print(f"[Warning] Translation of response failed: {e}")
                 
         # Reconstruct response
-        raw_ans = answer_part + source_part
+        raw_ans = f"Answer:\n{answer_part}\n\n{source_part}"
 
         # Print ANSWER and SOURCE sections
         print("ANSWER")
@@ -360,7 +367,7 @@ class CoordinatorAgent:
         print("SOURCE")
         print("======")
         print()
-        print(source_part.replace("\n\n[Source: ", "").rstrip("]"))
+        print(source_part.replace("Sources:\n    ", "").strip())
         print()
         print("=" * 52)
         
@@ -395,8 +402,10 @@ if __name__ == "__main__":
             raw_ans = coordinator.answer(query)
             
             # Extract clean answer text
-            if "\n\n[Source: " in raw_ans:
-                ans_text, _ = raw_ans.split("\n\n[Source: ", 1)
+            if "\n\nSources:\n    " in raw_ans:
+                ans_text, _ = raw_ans.split("\n\nSources:\n    ", 1)
+                if ans_text.startswith("Answer:\n"):
+                    ans_text = ans_text[len("Answer:\n"):]
             else:
                 ans_text = raw_ans
                 

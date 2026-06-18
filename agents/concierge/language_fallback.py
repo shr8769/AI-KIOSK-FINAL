@@ -49,8 +49,24 @@ class GeminiTranslator(BaseTranslator):
                 logger.error(f"Failed to initialize Gemini Client for translation: {e}")
         else:
             logger.warning("GEMINI_API_KEY not found. Translator running in passthrough mode.")
+        self.cache = {}
+        self.is_degraded = False
 
     def translate_to_english(self, text: str) -> Tuple[str, str]:
+        # Check cache first
+        if hasattr(self, "cache") and text in self.cache:
+            return self.cache[text]
+
+        if getattr(self, "is_degraded", False):
+            return text, "en"
+
+        # Fast path for English queries to save API quota and latency
+        try:
+            text.encode('ascii')
+            return text, "en"
+        except UnicodeEncodeError:
+            pass
+
         if not self.client:
             return text, "en"
 
@@ -88,9 +104,14 @@ Return your response strictly in the following JSON format, with no markdown sty
             return translated, detected
         except Exception as e:
             logger.error(f"Gemini translation to English failed: {e}. Falling back to passthrough.")
+            if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
+                self.is_degraded = True
             return text, "en"
 
     def translate_from_english(self, text: str, target_lang: str) -> str:
+        if getattr(self, "is_degraded", False):
+            return text
+
         if not self.client or target_lang == "en" or not text:
             return text
 
@@ -113,6 +134,8 @@ Translation:"""
             return text
         except Exception as e:
             logger.error(f"Gemini translation from English to '{target_lang}' failed: {e}. Returning original text.")
+            if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
+                self.is_degraded = True
             return text
 
 

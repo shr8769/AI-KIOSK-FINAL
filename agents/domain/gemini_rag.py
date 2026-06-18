@@ -15,6 +15,7 @@ class GeminiSynthesizer:
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
         self.client = None
+        self.is_degraded = False
         
         if self.api_key:
             try:
@@ -31,6 +32,9 @@ class GeminiSynthesizer:
         Synthesizes an answer using the query and a list of context documents based on the domain prompt template.
         If Gemini is unavailable or errors out, returns None to signal fallback to retrieval-only mode.
         """
+        if self.is_degraded:
+            return None
+
         if not context_docs:
             logger.warning("No context documents supplied to synthesizer.")
             return None
@@ -74,6 +78,8 @@ Answer:"""
                 return None
         except Exception as e:
             logger.error(f"Gemini generation failed: {e}. Falling back to retrieval-only mode.")
+            if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
+                self.is_degraded = True
             return None
 
     def check_sufficiency(self, query: str, context_docs: list, domain: str) -> str:
@@ -81,6 +87,9 @@ Answer:"""
         Determines whether the context contains sufficient information to answer the question.
         Returns 'SUFFICIENT', 'INSUFFICIENT', or None on failure/errors.
         """
+        if self.is_degraded:
+            return None
+
         if not context_docs:
             return "INSUFFICIENT"
             
@@ -123,4 +132,6 @@ INSUFFICIENT"""
                 return None
         except Exception as e:
             logger.error(f"Gemini relevance check failed: {e}")
+            if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
+                self.is_degraded = True
             return None
