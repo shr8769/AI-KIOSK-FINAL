@@ -1,5 +1,5 @@
 """
-ASR Service — Speech-To-Text wrapper using Whisper.
+ASR Service ΓÇö Speech-To-Text wrapper using Whisper.
 Owner: Harsha
 """
 
@@ -25,10 +25,13 @@ class ASRService:
         """Lazy load Whisper model to avoid slow server startup."""
         if self.model is None:
             model_size = settings.WHISPER_MODEL_SIZE
-            logger.info(f"Loading faster-whisper model '{model_size}' on CPU...")
+            import torch
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            compute_type = "float16" if device == "cuda" else "int8"
+            logger.info(f"Loading faster-whisper model '{model_size}' on {device}...")
             from faster_whisper import WhisperModel
-            # Using configured model with int8 quantization for speed on CPU
-            self.model = WhisperModel(model_size, device="cpu", compute_type="int8")
+            # Using configured model with float16 quantization on GPU
+            self.model = WhisperModel(model_size, device=device, compute_type=compute_type)
             logger.info(f"faster-whisper model '{model_size}' loaded.")
         return self.model
 
@@ -120,16 +123,18 @@ class ASRService:
             # Define language-specific prompt to guide the script/spelling of Whisper
             initial_prompt = None
             if lang_hint == "kn":
-                initial_prompt = "ಕನ್ನಡ"
+                initial_prompt = "α▓òα▓¿α│ìα▓¿α▓í"
             elif lang_hint == "hi":
-                initial_prompt = "हिंदी"
+                initial_prompt = "αñ╣αñ┐αñéαñªαÑÇ"
             elif lang_hint == "en":
                 initial_prompt = "English"
 
             # Transcribe audio array with VAD filtering and script prompt guidance
             segments, info = model.transcribe(
                 audio_data,
-                beam_size=5,
+                beam_size=1,
+                best_of=1,
+                temperature=0.0,
                 language=lang_hint,
                 initial_prompt=initial_prompt,
                 vad_filter=True

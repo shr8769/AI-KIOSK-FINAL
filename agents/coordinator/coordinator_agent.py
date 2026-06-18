@@ -49,12 +49,13 @@ class CoordinatorAgent:
         }
 
         # Define keyword routing mappings for each domain agent.
+        # Define keyword routing mappings for each domain agent.
         self.routing_rules = {
-            "admissions": ["gpa", "transcript", "ielts", "toefl", "duolingo", "recommendation", "recommendation letter", "international student", "predicted grades", "educational gap", "tuition", "fee", "admission", "scholarship", "eligibility", "deadline", "application", "predicted grade"],
-            "academics": ["attendance", "exam", "revaluation", "sgpa", "cgpa calculation", "transcript", "grading", "credits", "grade", "timetable", "course", "section", "lecture"],
+            "admissions": ["gpa", "transcript", "ielts", "toefl", "duolingo", "recommendation", "recommendation letter", "international student", "predicted grades", "educational gap", "tuition", "fee", "admission", "scholarship", "eligibility", "deadline", "application", "predicted grade", "grades"],
+            "academics": ["attendance", "exam", "revaluation", "sgpa", "cgpa calculation", "transcript", "grading", "credits", "grade", "timetable", "course", "section", "lecture", "request transcript", "academic transcript", "official transcript", "get transcript"],
             "placements": ["microsoft", "amazon", "internship", "placement", "recruitment", "oa", "online assessment", "coding test", "backlog eligibility", "dream offer", "cgpa", "interview", "resume", "ppo", "salary", "job"],
-            "research": ["publication", "journal", "conference", "research grant", "travel grant", "faculty project", "urop", "research lab", "hpc", "gpu cluster", "research", "lab", "symposium", "thesis", "funding", "stipend"],
-            "student_services": ["hostel", "library", "id card", "counseling", "maintenance", "certificate", "visitor", "curfew", "book borrowing", "bonafide", "health center"],
+            "research": ["publication", "journal", "conference", "research grant", "travel grant", "faculty project", "urop", "research lab", "hpc", "gpu cluster", "research", "lab", "symposium", "thesis", "funding", "stipend", "participating in research", "research credits", "research project"],
+            "student_services": ["hostel", "library", "id card", "counseling", "maintenance", "certificate", "visitor", "curfew", "book borrowing", "bonafide", "health center", "book", "books", "borrow", "borrowing", "e-book", "e-books", "database", "databases", "journal", "journals", "off-campus", "opening hours", "library hours", "central library", "university library", "open 24/7"],
             "navigation": ["where", "location", "directions", "located", "reach", "how do I get to", "building", "office", "floor", "where is", "auditorium", "landmark", "facility", "gate", "block"]
         }
 
@@ -75,11 +76,14 @@ class CoordinatorAgent:
         matched_details = {}
         all_matches = []
         
-        # Check for Navigation override keywords
-        nav_override_keywords = ["where", "located", "directions", "reach", "get to", "location"]
+        # Check for Navigation override keywords (specifically location queries)
+        nav_override_keywords = ["where is", "where are", "located", "directions", "how do i get to", "get to"]
         has_nav_override = False
         for kw in nav_override_keywords:
-            pattern = r'\b' + re.escape(kw) + r'\b'
+            if " " in kw:
+                pattern = r'\b' + re.escape(kw) + r'\b'
+            else:
+                pattern = r'\b' + re.escape(kw) + r'(?:s|es|ed|ing)?\b'
             if re.search(pattern, query_lower):
                 has_nav_override = True
                 break
@@ -87,7 +91,10 @@ class CoordinatorAgent:
         for domain, keywords in self.routing_rules.items():
             matches = []
             for keyword in keywords:
-                pattern = r'\b' + re.escape(keyword) + r'\b'
+                if " " in keyword:
+                    pattern = r'\b' + re.escape(keyword) + r'\b'
+                else:
+                    pattern = r'\b' + re.escape(keyword) + r'(?:s|es|ed|ing)?\b'
                 if re.search(pattern, query_lower):
                     matches.append(keyword)
                     all_matches.append(keyword)
@@ -104,7 +111,10 @@ class CoordinatorAgent:
             scores["navigation"] = scores.get("navigation", 0.0) + 100.0
             # Ensure matched navigation override keywords are recorded
             for kw in nav_override_keywords:
-                pattern = r'\b' + re.escape(kw) + r'\b'
+                if " " in kw:
+                    pattern = r'\b' + re.escape(kw) + r'\b'
+                else:
+                    pattern = r'\b' + re.escape(kw) + r'(?:s|es|ed|ing)?\b'
                 if re.search(pattern, query_lower):
                     if kw not in matched_details["navigation"]:
                         matched_details["navigation"].append(kw)

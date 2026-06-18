@@ -19,6 +19,8 @@ class Session:
         self.created_at = created_at
         self.status = status
         self.metadata = metadata or {}
+        if "history" not in self.metadata:
+            self.metadata["history"] = []
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -143,4 +145,38 @@ async def close_session(session_id: str) -> bool:
         pass
 
     logger.info(f"Session closed: {session_id}")
+    return True
+
+async def add_user_turn(session_id: str, content: str) -> bool:
+    session = await get_session(session_id)
+    if not session:
+        return False
+    session.metadata["history"].append({"role": "user", "content": content})
+    # Update SQLite
+    async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
+        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.commit()
+    # Update Redis
+    try:
+        redis = await get_redis()
+        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+    except Exception:
+        pass
+    return True
+
+async def add_agent_turn(session_id: str, content: str) -> bool:
+    session = await get_session(session_id)
+    if not session:
+        return False
+    session.metadata["history"].append({"role": "agent", "content": content})
+    # Update SQLite
+    async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
+        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.commit()
+    # Update Redis
+    try:
+        redis = await get_redis()
+        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+    except Exception:
+        pass
     return True

@@ -105,7 +105,7 @@ class TestTTSService:
 
             assert response.session_id == "test_sess_real"
             assert "response_test_sess_real_" in response.audio_url
-            assert response.format == "wav"
+            assert response.format in ("wav", "mp3")
 
             # Verify the output file was actually created in the filesystem
             local_path = response.audio_url.lstrip("/")

@@ -117,8 +117,6 @@ class RIARResult:
     ambiguity_type: str  # From AMBIGUITY_TYPES
     clarification_question: Optional[str]
     refined_query: str
-    domain: Optional[str]  # From SUPPORTED_DOMAINS
-    routing_confidence: float
     probe_chunks: List[ProbeChunk] = field(default_factory=list)
 
     def __post_init__(self):
@@ -128,8 +126,6 @@ class RIARResult:
         assert (
             0.0 <= self.ambiguity_score <= 1.0
         ), f"Ambiguity score must be in [0, 1]: {self.ambiguity_score}"
-        if self.domain:
-            assert self.domain in SUPPORTED_DOMAINS, f"Invalid domain: {self.domain}"
 
 
 @dataclass
@@ -137,12 +133,7 @@ class RefinedQuery:
     """Output of RIAR refinement step. Produced after user provides clarification."""
 
     refined_query: str
-    domain: str
-    routing_confidence: float
     ready_for_rag: bool
-
-    def __post_init__(self):
-        assert self.domain in SUPPORTED_DOMAINS, f"Invalid domain: {self.domain}"
 
 
 # ─────────────────────────────────────────────────────────────────────────────

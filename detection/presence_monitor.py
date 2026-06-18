@@ -25,9 +25,9 @@ class PresenceMonitor:
         except ValueError:
             self.camera_index = camera_idx_str # Could be a video file or stream URL
             
-        self.presence_threshold = 0.5  # seconds
-        self.absence_threshold = 3.0   # seconds
-        self.confidence_threshold = 0.5
+        self.presence_threshold = 1.5  # seconds
+        self.absence_threshold = 5.0   # seconds
+        self.confidence_threshold = 0.45
         
         self._running = False
         self._thread: Optional[threading.Thread] = None
@@ -55,20 +55,26 @@ class PresenceMonitor:
         if self._thread:
             self._thread.join(timeout=2.0)
         logger.info("PresenceMonitor stopped.")
-
+ 
     def _monitor_loop(self):
         cap = cv2.VideoCapture(self.camera_index)
         
         if not cap.isOpened():
+            print("\n" + "!" * 60)
+            print(f"[ERROR] CAMERA {self.camera_index} FAILED TO OPEN.")
+            print("Please ensure your webcam is plugged in and not open in another app.")
+            print("!" * 60 + "\n")
             logger.error(f"Failed to open camera {self.camera_index}")
             self._running = False
             return
             
+        print(f"\n>>> Camera index {self.camera_index} successfully opened and active!")
         logger.info("Camera feed opened successfully.")
         
         while self._running:
             ret, frame = cap.read()
             if not ret:
+                print(">>> [Warning] Failed to read frame from camera. Retrying...")
                 logger.warning("Failed to read frame from camera. Retrying in 1s...")
                 time.sleep(1)
                 continue

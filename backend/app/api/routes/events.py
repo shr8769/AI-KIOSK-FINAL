@@ -8,8 +8,10 @@ import uuid
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+
+from app.core.dependencies import ConnectionManager, get_connection_manager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -30,37 +32,30 @@ class EventResponse(BaseModel):
 
 
 @router.post("/events", response_model=EventResponse)
-async def ingest_event(request: EventRequest):
+async def ingest_event(
+    request: EventRequest,
+    mgr: ConnectionManager = Depends(get_connection_manager),
+):
     """
     Unified ingestion endpoint for all edge sensor events.
     The backend remains the Single Source of Truth for session management.
     """
-    from app.websockets.session_ws import manager
-
     logger.info(f"Received Event: {request.event_type} | Camera: {request.camera_id}")
 
     if request.event_type == "PERSON_DETECTED":
-        # Check if a session already exists for this camera (pseudo-code)
-        # active_session = await redis.get(f"active_camera:{request.camera_id}")
-        # if active_session:
-        #    logger.info("Session already active, ignoring duplicate PERSON_DETECTED.")
-        #    return EventResponse(status="success", action_taken="ignored_duplicate", session_id=active_session)
-
         session_id = f"ses_{uuid.uuid4().hex[:12]}"
         logger.info(f"Creating new session {session_id} for camera {request.camera_id}")
 
-        # TODO: Save session to Redis via SessionManager
-
-        # Trigger avatar greeting state change via WebSocket
         try:
-            await manager.broadcast({
-                "type": "detection",
-                "payload": {"person_detected": True, "session_id": session_id}
-            })
-            await manager.broadcast({
-                "type": "greeting",
-                "payload": {"message": "Welcome to PES University."}
-            })
+            from app.models.schemas import TTSRequest
+            from app.services.speech.tts_service import tts_service
+            
+            greeting_msg = "Welcome to PES University."
+            tts_req = TTSRequest(session_id=session_id, text=greeting_msg)
+            tts_res = await tts_service.synthesize(tts_req)
+            
+            await mgr.broadcast({"type": "detection", "payload": {"person_detected": True, "session_id": session_id}})
+            await mgr.broadcast({"type": "greeting", "payload": {"message": greeting_msg, "audio_url": tts_res.audio_url}})
         except Exception as e:
             logger.warning(f"Failed to broadcast detection to WebSocket: {e}")
 
@@ -72,20 +67,9 @@ async def ingest_event(request: EventRequest):
         )
 
     elif request.event_type == "PERSON_LEFT":
-        # Check if session exists (pseudo-code)
-        # active_session = await redis.get(f"active_camera:{request.camera_id}")
-        # if not active_session:
-        #    return EventResponse(status="success", action_taken="ignored_no_session")
-
         logger.info(f"Closing session for camera {request.camera_id}")
-        # TODO: Retrieve session, compute duration, close in Redis + write to SQLite
-
-        # Trigger avatar idle state change via WebSocket
         try:
-            await manager.broadcast({
-                "type": "detection",
-                "payload": {"person_detected": False}
-            })
+            await mgr.broadcast({"type": "detection", "payload": {"person_detected": False}})
         except Exception as e:
             logger.warning(f"Failed to broadcast departure to WebSocket: {e}")
 

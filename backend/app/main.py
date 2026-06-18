@@ -114,10 +114,17 @@ app.include_router(tts.router, prefix="/api/v1", tags=["TTS"])
 app.include_router(session.router, prefix="/api/v1", tags=["Session"])
 
 
+from fastapi import Depends
+from app.core.dependencies import ConnectionManager, get_connection_manager
+
 # WebSocket Route
 @app.websocket("/ws/session/{session_id}")
-async def websocket_endpoint(websocket: WebSocket, session_id: str):
-    await websocket_session_handler(websocket, session_id)
+async def websocket_endpoint(
+    websocket: WebSocket, 
+    session_id: str,
+    mgr: ConnectionManager = Depends(get_connection_manager)
+):
+    await websocket_session_handler(websocket, session_id, mgr)
 
 
 @app.get("/health", tags=["Health"])

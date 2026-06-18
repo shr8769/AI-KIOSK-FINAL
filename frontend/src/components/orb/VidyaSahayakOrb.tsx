@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { OrbState, OrbStateConfig, ORB_STATES, STATE_SEQUENCE } from './orbStates';
 import { initWebGL, updateUniforms, WebGLContext } from './orbWebGL';
 import { drawGlassShell, drawAura } from './orbCanvas2D';
-import { startMicAnalysis, stopMicAnalysis, MicHandle } from './orbAudio';
+import { startMicAnalysis, stopMicAnalysis, getWavBase64, MicHandle } from './orbAudio';
 import { Typewriter } from '@/components/ui/typewriter-text';
 
 interface VidyaSahayakOrbProps {
@@ -22,6 +22,12 @@ interface VidyaSahayakOrbProps {
   showMic?: boolean;
   /** Orb diameter in px */
   size?: number;
+  /** Custom label to show instead of standard state label */
+  customLabel?: string;
+  /** Custom description to show in Typewriter */
+  customDesc?: string;
+  /** Callback fired when user stops mic recording and WAV is generated */
+  onAudioReady?: (audioBase64: string) => void;
 }
 
 /** Linearly interpolate between a and b by k */
@@ -49,6 +55,9 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   showControls = true,
   showMic = true,
   size = 300,
+  customLabel,
+  customDesc,
+  onAudioReady,
 }) => {
   const glCanvasRef  = useRef<HTMLCanvasElement>(null);
   const glassCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -73,6 +82,12 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   const [micOn, setMicOn]         = useState(false);
   const [micAvail, setMicAvail]   = useState(true);
 
+  // References to keep state values fresh inside render loops
+  const activeIdRef   = useRef<OrbState>('idle');
+  const micOnRef      = useRef<boolean>(false);
+  const hasSpokenRef  = useRef<boolean>(false);
+  const silenceStartRef = useRef<number | null>(null);
+
   /* ─── set state ─── */
   const applyState = useCallback((id: OrbState) => {
     const cfg = ORB_STATES.find(s => s.id === id) ?? ORB_STATES[0];
@@ -80,8 +95,16 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
     targetRef.current    = cfg;
     transStartRef.current = performance.now();
     setActiveId(id);
+    activeIdRef.current = id;
     setLabel(cfg.label);
     setDesc(cfg.desc);
+
+    // Reset VAD state when starting to listen
+    if (id === 'listening') {
+      hasSpokenRef.current = false;
+      silenceStartRef.current = null;
+    }
+
     onStateChange?.(id);
   }, [onStateChange]);
 
@@ -104,19 +127,36 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   /* ─── mic ─── */
   const toggleMic = useCallback(async () => {
     stopDemo();
-    if (micOn) {
+    if (micOnRef.current) {
+      // 1. Generate base64 encoded audio of what was recorded
+      const audioBase64 = getWavBase64(micHandleRef.current);
+      
+      // 2. Tear down the stream/context
       stopMicAnalysis(micHandleRef.current);
       micHandleRef.current = null;
       setMicOn(false);
-      applyState('idle');
+      micOnRef.current = false;
+      applyState('thinking');
+      
+      // 3. Fire callback if successful
+      if (audioBase64) {
+        onAudioReady?.(audioBase64);
+      }
     } else {
       const handle = await startMicAnalysis();
       if (!handle) { setMicAvail(false); return; }
       micHandleRef.current = handle;
       setMicOn(true);
+      micOnRef.current = true;
       applyState('listening');
     }
-  }, [micOn, applyState, stopDemo]);
+  }, [applyState, stopDemo, onAudioReady]);
+
+  // Keep a mutable reference to toggleMic so the render frame loop can call it without stale closures
+  const toggleMicRef = useRef<() => Promise<void>>();
+  useEffect(() => {
+    toggleMicRef.current = toggleMic;
+  }, [toggleMic]);
 
   /* ─── render loop ─── */
   useEffect(() => {
@@ -171,6 +211,29 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       /* WebGL core */
       updateUniforms(glCtx as WebGLContext, timeRef.current, eff, v);
 
+      /* Client-side VAD (Voice Activity Detection) */
+      if (activeIdRef.current === 'listening' && micOnRef.current) {
+        const silenceThreshold = 0.018; // Silence baseline
+        const silenceDurationMs = 2000;  // 2 seconds of silence
+
+        if (v > silenceThreshold) {
+          if (!hasSpokenRef.current) {
+            console.log('[VAD] Speech detected');
+            hasSpokenRef.current = true;
+          }
+          silenceStartRef.current = null;
+        } else if (hasSpokenRef.current) {
+          if (silenceStartRef.current === null) {
+            silenceStartRef.current = performance.now();
+          } else if (performance.now() - silenceStartRef.current > silenceDurationMs) {
+            console.log('[VAD] Silence timeout reached. Automatically submitting speech...');
+            setTimeout(() => {
+              toggleMicRef.current?.();
+            }, 0);
+          }
+        }
+      }
+
       /* 2D overlays */
       const gCtx2d = glassCanvas.getContext('2d')!;
       const aCtx2d = auraCanvas.getContext('2d')!;
@@ -195,8 +258,28 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
     if (controlledState) {
       stopDemo();
       applyState(controlledState);
+
+      // Handle physical mic activation/deactivation based on controlled state
+      if (controlledState === 'listening') {
+        if (!micOnRef.current) {
+          (async () => {
+            const handle = await startMicAnalysis();
+            if (!handle) { setMicAvail(false); return; }
+            micHandleRef.current = handle;
+            setMicOn(true);
+            micOnRef.current = true;
+          })();
+        }
+      } else {
+        if (micOnRef.current) {
+          stopMicAnalysis(micHandleRef.current);
+          micHandleRef.current = null;
+          setMicOn(false);
+          micOnRef.current = false;
+        }
+      }
     }
-  }, [controlledState]);
+  }, [controlledState, applyState, stopDemo]);
 
   const canvasSize = size * 2; // HiDPI
   const auraSize   = Math.round(size * 1.34);
@@ -240,10 +323,10 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       {showLabels && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 32, minHeight: 90 }}>
           <p style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 11, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', fontWeight: 600, transition: 'all 0.6s ease' }}>
-            {label}
+            {customLabel || label}
           </p>
           <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 22, color: 'rgba(255,255,255,0.95)', marginTop: 16, textAlign: 'center', fontWeight: 500, letterSpacing: '0.01em', transition: 'all 0.6s ease', maxWidth: '80%' }}>
-            <Typewriter key={desc} text={desc} speed={30} delay={3000} cursor="|" className="inline-block" />
+            <Typewriter key={customDesc || desc} text={customDesc || desc} speed={30} delay={3000} cursor="|" className="inline-block" />
           </div>
         </div>
       )}
