@@ -10,12 +10,13 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, WebSocket
+from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import asr, events, rag, riar, route, session, tts
 from app.core.config import settings
+from app.core.dependencies import ConnectionManager, get_connection_manager
 from app.websockets.session_ws import websocket_session_handler
 
 logging.basicConfig(
@@ -114,13 +115,13 @@ app.include_router(tts.router, prefix="/api/v1", tags=["TTS"])
 app.include_router(session.router, prefix="/api/v1", tags=["Session"])
 
 
-from fastapi import Depends
-from app.core.dependencies import ConnectionManager, get_connection_manager
+
+
 
 # WebSocket Route
 @app.websocket("/ws/session/{session_id}")
 async def websocket_endpoint(
-    websocket: WebSocket, 
+    websocket: WebSocket,
     session_id: str,
     mgr: ConnectionManager = Depends(get_connection_manager)
 ):

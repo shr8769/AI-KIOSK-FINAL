@@ -16,11 +16,10 @@ of the lazy getters in app.core.dependencies. Find it with:
     Where-Object {$_ -notmatch "def |#"}
 """
 
+import os
 import subprocess
 import sys
 import time
-import os
-
 
 STARTUP_BUDGET_SECONDS = 3.0
 

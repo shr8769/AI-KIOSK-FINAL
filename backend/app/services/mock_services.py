@@ -48,14 +48,14 @@ class ASRService:
 class RIARService:
     async def classify(self, request: RIARRequest) -> RIARResponse:
         query = request.query.lower()
-        
+
         # Keyword-based domain classification
         domain = "general"
-        
+
         # English, Kannada, and Hindi stem keywords (including Romanized/transliterated variations)
         admissions_kws = [
             "admission", "apply", "seat", "pessat", "eligib", "cutoff", "cut-off", "register",
-            "ಪ್ರವೇಶ", "ಅಡ್ಮಿ", "ಅರ್ಜಿ", "ಸೀಟು", "ನೋಂದ", "ಅರ್ಹತೆ", 
+            "ಪ್ರವೇಶ", "ಅಡ್ಮಿ", "ಅರ್ಜಿ", "ಸೀಟು", "ನೋಂದ", "ಅರ್ಹತೆ",
             "प्रवेश", "एडमि", "आवेदन", "सीट", "पंजी", "पात्र",
             "pravesh", "nondan", "arhat"
         ]
@@ -73,7 +73,7 @@ class RIARService:
         ]
         research_kws = [
             "research", "phd", "ph.d", "project", "paper", "publicat",
-            "ಸಂಶೋಧನೆ", "ಪ್ರಬಂಧ", 
+            "ಸಂಶೋಧನೆ", "ಪ್ರಬಂಧ",
             "अनुसंधान", "शोध",
             "shodh", "sansodhan"
         ]
@@ -149,7 +149,7 @@ class RAGService:
         query = request.query
         domain = request.domain
         lang = (request.language or "en").lower()
-        
+
         # Multilingual database
         answers_db = {
             "en": {
@@ -180,11 +180,11 @@ class RAGService:
                 "general": "पूछने के लिए धन्यवाद। पीईएस विश्वविद्यालय इंजीनियरिंग, चिकित्सा, प्रबंधन और कानून के पाठ्यक्रमों के साथ विश्व स्तरीय शिक्षा प्रदान करता है।"
             }
         }
-        
+
         # Get language specific dictionary, fallback to English
         lang_db = answers_db.get(lang, answers_db["en"])
         answer = lang_db.get(domain, lang_db["general"])
-        
+
         # Custom rule-based queries translation
         query_lower = query.lower()
         if "where" in query_lower and "office" in query_lower or "ಕಚೇರಿ" in query_lower or "कार्यालय" in query_lower or ("ಅಡ್ಮಿಷನ್" in query_lower and "ಎಲ್ಲಿದೆ" in query_lower) or "praveshathi" in query_lower or "ಪ್ರವೇಶ" in query_lower:

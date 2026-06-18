@@ -7,6 +7,7 @@ This file contains ZERO heavy imports — it delegates entirely to dependencies.
 """
 
 import logging
+
 from app.models.schemas import RIARRequest
 
 logger = logging.getLogger(__name__)
@@ -15,7 +16,9 @@ logger = logging.getLogger(__name__)
 class RIARService:
     async def classify(self, request: RIARRequest):
         # Delegates to the lazily-initialized pipeline from dependencies.py
-        from app.core.dependencies import get_riar_pipeline  # noqa: lazy per-call OK — lru_cache makes it instant after first load
+        from app.core.dependencies import (
+            get_riar_pipeline,  # noqa: E402
+        )
         pipeline = get_riar_pipeline()
         return pipeline.run(
             query=request.query,

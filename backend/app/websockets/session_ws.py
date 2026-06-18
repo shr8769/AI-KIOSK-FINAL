@@ -20,11 +20,8 @@ Message protocol:
 """
 
 import json
-import logging
-from typing import TYPE_CHECKING
 
 from fastapi import Depends, WebSocket, WebSocketDisconnect
-
 
 from app.core.dependencies import (
     RIAR_ENABLED,
@@ -135,7 +132,7 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
         detected_lang = (asr_resp.detected_language or "en").lower().split("-")[0]
         raw_transcript = asr_resp.transcript
         clean_transcript = raw_transcript
-        
+
         if detected_lang in ["kn", "hi"]:
             try:
                 from deep_translator import GoogleTranslator
