@@ -6,6 +6,8 @@ import json
 import urllib.request
 import urllib.error
 import logging
+import traceback
+import time
 from config import llm_config
 from agents.domain.gemini_rag import GeminiSynthesizer
 
@@ -22,6 +24,35 @@ class QwenClient:
         self.fallback_synthesizer = GeminiSynthesizer(model_name=llm_config.GEMINI_MODEL)
         self.is_degraded = False
         
+        # Perform warmup request to load model into memory
+        if self.is_ollama_available():
+            logger.info(f"Ollama is available. Performing warmup request for model {self.model_name}...")
+            try:
+                # Prompt to warmup/load the model into memory
+                payload = {
+                    "model": self.model_name,
+                    "prompt": "warmup",
+                    "stream": False,
+                    "options": {
+                        "num_predict": 1
+                    }
+                }
+                data_bytes = json.dumps(payload).encode("utf-8")
+                req = urllib.request.Request(
+                    f"{self.ollama_url}/api/generate",
+                    data=data_bytes,
+                    headers={"Content-Type": "application/json"},
+                    method="POST"
+                )
+                # Keep timeout short for warmup, 30s is more than enough to load a model
+                with urllib.request.urlopen(req, timeout=30.0) as response:
+                    if response.status == 200:
+                        logger.info("Warmup request completed successfully.")
+            except Exception as e:
+                logger.warning(f"Warmup request failed: {e}. Exception trace:\n{traceback.format_exc()}")
+        else:
+            logger.warning(f"Ollama or model {self.model_name} is not available at startup. Warmup bypassed.")
+        
     def is_ollama_available(self) -> bool:
         """
         Checks if the Ollama service is running and has the configured model available.
@@ -29,7 +60,7 @@ class QwenClient:
         url = f"{self.ollama_url}/api/tags"
         try:
             req = urllib.request.Request(url, method="GET")
-            with urllib.request.urlopen(req, timeout=1.5) as response:
+            with urllib.request.urlopen(req, timeout=3.0) as response:
                 if response.status == 200:
                     data = json.loads(response.read().decode("utf-8"))
                     models = [m.get("name") for m in data.get("models", [])]
@@ -41,7 +72,7 @@ class QwenClient:
                     logger.warning(f"Ollama is running, but model '{self.model_name}' was not found in tags: {models}")
                     return False
         except Exception as e:
-            logger.warning(f"Ollama service check failed: {e}")
+            logger.warning(f"Ollama service check failed: {e}. Exception stack trace:\n{traceback.format_exc()}")
             return False
         return False
 
@@ -52,10 +83,12 @@ class QwenClient:
         """
         # First check if degraded or unavailable
         if self.is_degraded:
+            logger.info("Qwen client is marked degraded. Using Gemini fallback.")
             return self._fallback_generate(prompt)
 
         if not self.is_ollama_available():
             logger.warning("Ollama or Qwen3-8B is unavailable. Falling back to Gemini synthesizer.")
+            # Automatically use Gemini fallback
             return self._fallback_generate(prompt)
 
         url = f"{self.ollama_url}/api/generate"
@@ -65,6 +98,7 @@ class QwenClient:
             "stream": False
         }
         
+        start_time = time.perf_counter()
         try:
             data_bytes = json.dumps(payload).encode("utf-8")
             req = urllib.request.Request(
@@ -73,19 +107,40 @@ class QwenClient:
                 headers={"Content-Type": "application/json"},
                 method="POST"
             )
-            with urllib.request.urlopen(req, timeout=10.0) as response:
+            # Increased timeout to 120.0 seconds
+            with urllib.request.urlopen(req, timeout=120.0) as response:
+                latency = time.perf_counter() - start_time
                 if response.status == 200:
                     res_data = json.loads(response.read().decode("utf-8"))
                     answer = res_data.get("response", "").strip()
+                    
+                    # Log details
+                    prompt_tokens = res_data.get("prompt_eval_count", 0)
+                    response_tokens = res_data.get("eval_count", 0)
+                    total_tokens = prompt_tokens + response_tokens
+                    
+                    logger.info(
+                        f"Successfully generated answer using local model: {self.model_name} | "
+                        f"Latency: {latency:.4f}s | "
+                        f"Tokens: {total_tokens} (Prompt: {prompt_tokens}, Resp: {response_tokens})"
+                    )
+                    
                     if answer:
-                        logger.info(f"Successfully generated answer using local model {self.model_name}")
                         return answer
                     else:
                         raise ValueError("Ollama returned empty response.")
                 else:
                     raise urllib.error.HTTPError(url, response.status, "HTTP error", response.headers, None)
         except Exception as e:
-            logger.error(f"Error during Ollama Qwen generation: {e}. Marking Qwen client degraded and falling back to Gemini.")
+            latency = time.perf_counter() - start_time
+            stack_trace = traceback.format_exc()
+            logger.error(
+                f"Error during Ollama Qwen generation: {e} | "
+                f"Model: {self.model_name} | "
+                f"Latency so far: {latency:.4f}s. "
+                f"Marking Qwen client degraded and falling back to Gemini.\n"
+                f"Stack Trace:\n{stack_trace}"
+            )
             self.is_degraded = True
             return self._fallback_generate(prompt)
 
@@ -94,6 +149,7 @@ class QwenClient:
         Executes generation using Gemini client.
         """
         if getattr(self.fallback_synthesizer, "is_degraded", False):
+            logger.warning("Gemini fallback synthesizer is degraded. Returning None.")
             return None
 
         if not self.fallback_synthesizer.client:
@@ -110,7 +166,7 @@ class QwenClient:
                 return response.text.strip()
             return None
         except Exception as e:
-            logger.critical(f"Gemini fallback generation failed: {e}")
+            logger.critical(f"Gemini fallback generation failed: {e}. Traceback:\n{traceback.format_exc()}")
             if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
                 self.fallback_synthesizer.is_degraded = True
             return None
