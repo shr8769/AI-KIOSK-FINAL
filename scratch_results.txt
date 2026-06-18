@@ -1,0 +1,28 @@
+=== MULTILINGUAL CLASSIFICATION & RAG TESTS ===
+Query: 'ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಪ್ರವೇಶಾತಿ ಹೇಗಿದೆ?' (kn)
+  -> Domain: admissions
+  -> Answer: ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಪ್ರವೇಶಾತಿಗಾಗಿ ಪೆಸ್ಸಾಟ್ (PESSAT) ಪ್ರವೇಶ ಪರೀಕ್ಷೆ ಬರೆಯಬೇಕು. ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ಗೋಲ್ಡನ್ ಜುಬಿಲಿ ಬ್ಲಾಕ್‌ನ ನೆಲಮಹಡಿಯಲ್ಲಿರುವ ಪ್ರವೇಶಾತಿ ಕಚೇರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ.
+
+Query: 'ಪ್ರವೇಶಾತಿ ವಿಧಾನ ಏನು?' (kn)
+  -> Domain: admissions
+  -> Answer: ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಪ್ರವೇಶಾತಿಗಾಗಿ ಪೆಸ್ಸಾಟ್ (PESSAT) ಪ್ರವೇಶ ಪರೀಕ್ಷೆ ಬರೆಯಬೇಕು. ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ಗೋಲ್ಡನ್ ಜುಬಿಲಿ ಬ್ಲಾಕ್‌ನ ನೆಲಮಹಡಿಯಲ್ಲಿರುವ ಪ್ರವೇಶಾತಿ ಕಚೇರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ.
+
+Query: 'ಪ್ಲೇಸ್‌ಮೆಂಟ್ ಹೇಗಿದೆ?' (kn)
+  -> Domain: placements
+  -> Answer: ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯವು ಅತ್ಯುತ್ತಮ ಪ್ಲೇಸ್‌ಮೆಂಟ್ ಹೊಂದಿದ್ದು, ಮೈಕ್ರೋಸಾಫ್ಟ್, ಅಮೆಜಾನ್ ಮತ್ತು ಸಿಸ್ಕೋ ಕಂಪನಿಗಳು ಭೇಟಿ ನೀಡುತ್ತವೆ. ಸರಾಸರಿ ಪ್ಯಾಕೇಜ್ 8 ರಿಂದ 12 LPA ಆಗಿದೆ.
+
+Query: 'ಕ್ಯಾಂಟೀನ್ ಎಲ್ಲಿದೆ?' (kn)
+  -> Domain: navigation
+  -> Answer: ಮುಖ್ಯ ಕ್ಯಾಂಪಸ್ ಕೆಫೆಟೇರಿಯಾ ಕೇಂದ್ರ ಗ್ರಂಥಾಲಯದ ಪಕ್ಕದಲ್ಲಿದೆ, ಫುಟ್‌ಬಾಲ್ ಮೈದಾನದ ಹತ್ತಿರ. ಇದು ಬೆಳಿಗ್ಗೆ 8:00 ರಿಂದ ರಾತ್ರಿ 8:00 ರವರೆಗೆ ತೆರೆದಿರುತ್ತದೆ.
+
+Query: 'ಅಡ್ಮಿಷನ್ ಎಲ್ಲಿದೆ?' (kn)
+  -> Domain: admissions
+  -> Answer: ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಪ್ರವೇಶಾತಿಗಾಗಿ ಪೆಸ್ಸಾಟ್ (PESSAT) ಪ್ರವೇಶ ಪರೀಕ್ಷೆ ಬರೆಯಬೇಕು. ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ಗೋಲ್ಡನ್ ಜುಬಿಲಿ ಬ್ಲಾಕ್‌ನ ನೆಲಮಹಡಿಯಲ್ಲಿರುವ ಪ್ರವೇಶಾತಿ ಕಚೇರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ.
+
+Query: 'admission details' (en)
+  -> Domain: admissions
+  -> Answer: For admissions, PES University conducts PESSAT. Registration details, eligibility criteria, and fee structures can be found on our admissions portal.
+
+Query: 'college placement query' (en)
+  -> Domain: placements
+  -> Answer: Over 100 top companies recruit from PES University every year, including Microsoft, Amazon, and Cisco. The average package is 8 to 12 LPA.

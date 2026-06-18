@@ -46,16 +46,38 @@ async def ingest_event(
         session_id = f"ses_{uuid.uuid4().hex[:12]}"
         logger.info(f"Creating new session {session_id} for camera {request.camera_id}")
 
+        # Generate TTS for the greeting
+        from app.models.schemas import TTSRequest
+        from app.services.speech.tts_service import tts_service
+        
+        greeting_text = "Welcome to PES University. Please tell me which language you would like to interact with: English, Kannada, or Hindi?"
+        audio_url = None
         try:
-            from app.models.schemas import TTSRequest
-            from app.services.speech.tts_service import tts_service
-            
-            greeting_msg = "Welcome to PES University."
-            tts_req = TTSRequest(session_id=session_id, text=greeting_msg)
-            tts_res = await tts_service.synthesize(tts_req)
-            
-            await mgr.broadcast({"type": "detection", "payload": {"person_detected": True, "session_id": session_id}})
-            await mgr.broadcast({"type": "greeting", "payload": {"message": greeting_msg, "audio_url": tts_res.audio_url}})
+            tts_req = TTSRequest(
+                session_id=session_id,
+                text=greeting_text,
+                language="en"
+            )
+            tts_resp = await tts_service.synthesize(tts_req)
+            audio_url = tts_resp.audio_url
+            logger.info(f"Generated greeting TTS: {audio_url}")
+        except Exception as e:
+            logger.warning(f"Failed to generate TTS for greeting: {e}")
+
+        # Trigger avatar greeting state change via WebSocket using mgr dependency
+        try:
+            await mgr.broadcast({
+                "type": "detection",
+                "payload": {"person_detected": True, "session_id": session_id}
+            })
+            await mgr.broadcast({
+                "type": "greeting",
+                "payload": {
+                    "message": greeting_text,
+                    "audio_url": audio_url
+                }
+            })
+
         except Exception as e:
             logger.warning(f"Failed to broadcast detection to WebSocket: {e}")
 
@@ -63,7 +85,7 @@ async def ingest_event(
             status="success",
             action_taken="session_created",
             session_id=session_id,
-            message="Welcome to PES University.",
+            message=greeting_text,
         )
 
     elif request.event_type == "PERSON_LEFT":

@@ -36,7 +36,7 @@ class DetectResponse(BaseModel):
 class ASRRequest(BaseModel):
     audio_base64: str = Field(..., description="Base64-encoded WAV/WEBM audio chunk")
     session_id: str
-    language_hint: Optional[str] = "en"
+    language_hint: Optional[str] = None
     turn_id: int
 
 

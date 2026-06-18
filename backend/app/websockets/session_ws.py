@@ -20,10 +20,23 @@ Message protocol:
 """
 
 import json
+<<<<<<< HEAD
 import logging
 from typing import TYPE_CHECKING
 
 from fastapi import Depends, WebSocket, WebSocketDisconnect
+=======
+import os
+import sys
+from typing import Dict
+
+# Add project root to sys.path to allow importing from agents
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+if root_dir not in sys.path:
+    sys.path.append(root_dir)
+
+from fastapi import WebSocket, WebSocketDisconnect
+>>>>>>> origin/feature/harsha/speech-pipeline
 
 from app.core.dependencies import (
     RIAR_ENABLED,
@@ -40,9 +53,44 @@ from app.services.riar_service import riar_service
 from app.services.speech.asr_service import asr_service
 from app.services.speech.tts_service import tts_service
 
+<<<<<<< HEAD
 # Re-export manager for events.py (backwards-compat shim — will be removed once
 # events.py is fully migrated to Depends(get_connection_manager))
 manager = get_connection_manager()
+=======
+from agents.coordinator.coordinator_agent import CoordinatorAgent
+from deep_translator import GoogleTranslator
+
+# Initialize the coordinator agent singleton
+coordinator_agent = CoordinatorAgent()
+
+
+def translate_to_english(text: str, source_lang: str = "auto") -> str:
+    if not text or not text.strip() or source_lang == "en":
+        return text
+    try:
+        translated = GoogleTranslator(source=source_lang, target="en").translate(text)
+        logger.info(f"Translated query '{text}' ({source_lang}) -> '{translated}' (en)")
+        return translated
+    except Exception as e:
+        logger.error(f"Translation to English failed: {e}")
+        return text
+
+
+def translate_from_english(text: str, target_lang: str) -> str:
+    if not text or not text.strip() or target_lang == "en":
+        return text
+    try:
+        translated = GoogleTranslator(source="en", target=target_lang).translate(text)
+        logger.info(f"Translated response '{text}' (en) -> '{translated}' ({target_lang})")
+        return translated
+    except Exception as e:
+        logger.error(f"Translation from English failed: {e}")
+        return text
+
+
+# ── Connection Manager ────────────────────────
+>>>>>>> origin/feature/harsha/speech-pipeline
 
 
 # ── WebSocket endpoint ────────────────────────────────────────────────
@@ -81,9 +129,10 @@ async def websocket_session_handler(
             if msg_type == "ping":
                 await mgr.send(session_id, {"type": "pong", "payload": {}})
 
-            # ── Audio chunk (main pipeline) ───────────────────────────
             elif msg_type == "audio_chunk":
                 await _handle_audio_chunk(mgr, session_id, payload)
+
+
 
             # ── Camera frame (stub) ───────────────────────────────────
             elif msg_type == "frame":
@@ -130,21 +179,33 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
         )
         logger.info(f"ASR: '{asr_resp.transcript}' lang={asr_resp.detected_language}")
 
+        detected_lang = (asr_resp.detected_language or "en").lower().split("-")[0]
+        raw_transcript = asr_resp.transcript
+        clean_transcript = raw_transcript
+        
+        if detected_lang in ["kn", "hi"]:
+            try:
+                from deep_translator import GoogleTranslator
+                clean_transcript = GoogleTranslator(source="auto", target=detected_lang).translate(raw_transcript)
+                logger.info(f"Corrected ASR script: '{raw_transcript}' -> '{clean_transcript}' ({detected_lang})")
+            except Exception as e:
+                logger.error(f"ASR script correction failed: {e}")
+                clean_transcript = raw_transcript
+            query_en = translate_to_english(clean_transcript, source_lang="auto")
+        else:
+            query_en = raw_transcript
+            detected_lang = "en"
+            clean_transcript = raw_transcript
+
         await mgr.send(session_id, {
             "type": "transcript",
-            "payload": {"text": asr_resp.transcript, "confidence": asr_resp.confidence, "final": True},
+            "payload": {"text": clean_transcript, "confidence": asr_resp.confidence, "final": True},
         })
 
-        # ── 2. Normalize language + translate to English ───────────────
-        detected_lang = (asr_resp.detected_language or "en").lower().split("-")[0]
-        query_en = (
-            translate_to_english(asr_resp.transcript, source_lang=detected_lang)
-            if detected_lang in ("kn", "hi")
-            else asr_resp.transcript
-        )
 
         # ── 3. Persist user turn ──────────────────────────────────────
-        await add_user_turn(session_id, asr_resp.transcript)
+        await add_user_turn(session_id, clean_transcript)
+
 
         updated_session = await get_session(session_id)
         raw_history = updated_session.metadata.get("history", []) if updated_session else []

@@ -238,6 +238,7 @@
     {
         "query": "Where is the Vice Chancellor's office located in the Administrative Block?",
         "domain": "navigation"
+<<<<<<< HEAD
     },
     {
         "domain": "admissions",
@@ -839,4 +840,4 @@
         "domain": "navigation",
         "query": "cafeteria"
     }
-]
+]

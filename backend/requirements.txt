@@ -33,8 +33,10 @@ faster-whisper>=1.0.0
 gtts>=2.5.0
 deep_translator>=1.11.4
 
+
 # RIAR Pipeline (LLM / embeddings)
 langchain>=0.2.0
 langchain-google-genai>=1.0.0
 sentence-transformers>=3.0.0
 chromadb>=0.5.0
+

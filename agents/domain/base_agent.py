@@ -323,6 +323,7 @@ class BaseAgent(ABC):
         
         # If nothing matched via keyword overlap, fall back to ChromaDB query
         if not retrieved_docs and self.collection is not None:
+
             try:
                 results = self.collection.query(
                     query_texts=[query],
