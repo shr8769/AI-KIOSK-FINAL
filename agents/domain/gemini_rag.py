@@ -32,7 +32,7 @@ class GeminiSynthesizer:
 
     def _init_ollama(self):
         try:
-            from langchain_community.chat_models import ChatOllama
+            from langchain_community.chat_models.ollama import ChatOllama
             self.ollama_client = ChatOllama(model="qwen3:latest")
             logger.info("Initialized local Ollama client successfully with model qwen3:latest.")
         except Exception as e:
