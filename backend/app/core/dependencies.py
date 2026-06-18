@@ -115,8 +115,8 @@ def get_coordinator_agent():
 @lru_cache(maxsize=1)
 def get_riar_pipeline():
     """
-    Lazy-loads RIARPipeline with Gemini LLM + mocked ChromaDB/embeddings.
-    Only executed when GOOGLE_API_KEY is set AND first audio_chunk arrives.
+    Lazy-loads RIARPipeline with Gemini LLM or local Ollama (Qwen) + mocked ChromaDB/embeddings.
+    Only executed when first audio_chunk arrives.
     """
     logger.info("Lazy-loading RIAR Pipeline...")
     import sys
@@ -126,10 +126,17 @@ def get_riar_pipeline():
     if root not in sys.path:
         sys.path.insert(0, root)
 
-    from langchain_google_genai import ChatGoogleGenerativeAI  # noqa
     from riar.pipeline import RIARPipeline  # noqa
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+    google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
+    if google_key:
+        logger.info("Initializing RIAR LLM with Gemini (ChatGoogleGenerativeAI)")
+        from langchain_google_genai import ChatGoogleGenerativeAI  # noqa
+        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+    else:
+        logger.info("GOOGLE_API_KEY missing. Initializing RIAR LLM with local Ollama (qwen3:latest)")
+        from langchain_community.chat_models import ChatOllama  # noqa
+        llm = ChatOllama(model="qwen3:latest")
 
     chroma_mock = MagicMock()
     col = MagicMock()
@@ -180,4 +187,4 @@ def translate_from_english(text: str, target_lang: str) -> str:
 
 
 # ── RIAR enabled flag ─────────────────────────────────────────────────
-RIAR_ENABLED: bool = bool(os.environ.get("GOOGLE_API_KEY", "").strip())
+RIAR_ENABLED: bool = True

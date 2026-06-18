@@ -10,11 +10,13 @@ class GeminiSynthesizer:
     A wrapper class to interface with Google's Gemini models for synthesizing
     retrieved context documents into natural language answers (RAG).
     Provides compatibility fallbacks if Google GenAI SDK or API keys are missing.
+    Fallback to local Qwen (Ollama) is used if GEMINI_API_KEY is not set.
     """
     def __init__(self, api_key: str = None, model_name: str = "gemini-2.5-flash"):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
         self.client = None
+        self.ollama_client = None
         
         if self.api_key:
             try:
@@ -22,21 +24,28 @@ class GeminiSynthesizer:
                 self.client = genai.Client(api_key=self.api_key)
                 logger.info(f"Initialized Gemini client successfully with model {model_name}.")
             except Exception as e:
-                logger.error(f"Failed to initialize Gemini client: {e}. RAG synthesis will fallback to retrieval-only.")
+                logger.error(f"Failed to initialize Gemini client: {e}. Falling back to local Ollama (qwen3:latest).")
+                self._init_ollama()
         else:
-            logger.warning("GEMINI_API_KEY not found in environment. Running in retrieval-only fallback mode.")
+            logger.info("GEMINI_API_KEY not found in environment. Initializing local Ollama (qwen3:latest) fallback.")
+            self._init_ollama()
+
+    def _init_ollama(self):
+        try:
+            from langchain_community.chat_models import ChatOllama
+            self.ollama_client = ChatOllama(model="qwen3:latest")
+            logger.info("Initialized local Ollama client successfully with model qwen3:latest.")
+        except Exception as e:
+            logger.error(f"Failed to initialize Ollama client: {e}. RAG synthesis will be unavailable.")
 
     def synthesize(self, query: str, context_docs: list, domain: str) -> str:
         """
         Synthesizes an answer using the query and a list of context documents based on the domain prompt template.
-        If Gemini is unavailable or errors out, returns None to signal fallback to retrieval-only mode.
+        If Gemini is unavailable or errors out, falls back to local Ollama (Qwen) synthesis.
+        If both are unavailable, returns None.
         """
         if not context_docs:
             logger.warning("No context documents supplied to synthesizer.")
-            return None
-
-        if not self.client:
-            logger.warning("Gemini client is not initialized. RAG synthesis unavailable.")
             return None
 
         # Dynamically import templates to prevent circular dependencies
@@ -62,19 +71,32 @@ Answer:"""
 
         prompt = template.format(context=formatted_context, query=query)
 
-        try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-            )
-            if response.text:
-                return response.text.strip()
-            else:
-                logger.warning("Gemini model returned empty response text.")
-                return None
-        except Exception as e:
-            logger.error(f"Gemini generation failed: {e}. Falling back to retrieval-only mode.")
-            return None
+        if self.client:
+            try:
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                )
+                if response.text:
+                    return response.text.strip()
+                else:
+                    logger.warning("Gemini model returned empty response text.")
+            except Exception as e:
+                logger.error(f"Gemini generation failed: {e}. Falling back to Ollama.")
+
+        # Fallback to Ollama if client missing or Gemini failed
+        if self.ollama_client:
+            try:
+                logger.info("Synthesizing response using local Ollama (qwen3:latest)...")
+                response = self.ollama_client.invoke(prompt)
+                if response and response.content:
+                    return response.content.strip()
+                else:
+                    logger.warning("Ollama returned empty response.")
+            except Exception as e:
+                logger.error(f"Ollama generation failed: {e}")
+
+        return None
 
     def check_sufficiency(self, query: str, context_docs: list, domain: str) -> str:
         """
@@ -83,10 +105,6 @@ Answer:"""
         """
         if not context_docs:
             return "INSUFFICIENT"
-            
-        if not self.client:
-            logger.warning("Gemini client is not initialized. Sufficiency check bypassed.")
-            return None
             
         formatted_context = ""
         for i, doc in enumerate(context_docs, 1):
@@ -108,19 +126,35 @@ or
 
 INSUFFICIENT"""
 
-        try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-            )
-            if response.text:
-                result = response.text.strip().upper()
-                if "SUFFICIENT" in result and "INSUFFICIENT" not in result:
-                    return "SUFFICIENT"
-                return "INSUFFICIENT"
-            else:
-                logger.warning("Gemini relevance check returned empty response.")
-                return None
-        except Exception as e:
-            logger.error(f"Gemini relevance check failed: {e}")
-            return None
+        if self.client:
+            try:
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                )
+                if response.text:
+                    result = response.text.strip().upper()
+                    if "SUFFICIENT" in result and "INSUFFICIENT" not in result:
+                        return "SUFFICIENT"
+                    return "INSUFFICIENT"
+                else:
+                    logger.warning("Gemini relevance check returned empty response.")
+            except Exception as e:
+                logger.error(f"Gemini relevance check failed: {e}. Falling back to Ollama.")
+
+        # Fallback to Ollama
+        if self.ollama_client:
+            try:
+                logger.info("Checking sufficiency using local Ollama (qwen3:latest)...")
+                response = self.ollama_client.invoke(prompt)
+                if response and response.content:
+                    result = response.content.strip().upper()
+                    if "SUFFICIENT" in result and "INSUFFICIENT" not in result:
+                        return "SUFFICIENT"
+                    return "INSUFFICIENT"
+                else:
+                    logger.warning("Ollama relevance check returned empty response.")
+            except Exception as e:
+                logger.error(f"Ollama relevance check failed: {e}")
+
+        return None
