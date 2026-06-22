@@ -1,0 +1,602 @@
+[
+    {
+        "query": "क्या मैं आवेदन कर सकता हूँ?",
+        "domain": "admissions",
+        "difficulty": "ambiguous",
+        "english_original": "Can I apply?"
+    },
+    {
+        "query": "जीपीए की आवश्यकताएँ",
+        "domain": "admissions",
+        "difficulty": "ambiguous",
+        "english_original": "GPA requirements"
+    },
+    {
+        "query": "अंतिम तिथियाँ",
+        "domain": "admissions",
+        "difficulty": "ambiguous",
+        "english_original": "Deadlines"
+    },
+    {
+        "query": "स्नातक प्रवेश के लिए आवेदन करने हेतु न्यूनतम जीपीए कितना चाहिए?",
+        "domain": "admissions",
+        "difficulty": "simple",
+        "english_original": "What is the minimum GPA required to apply for undergraduate admissions?"
+    },
+    {
+        "query": "क्या आप अंतर्राष्ट्रीय आवेदकों के लिए टीओईएफएल (TOEFL) के बजाय आईईएलटीएस (IELTS) या डुओलिंगो (Duolingo) स्कोर स्वीकार करते हैं?",
+        "domain": "admissions",
+        "difficulty": "simple",
+        "english_original": "Do you accept IELTS or Duolingo scores instead of TOEFL for international applicants?"
+    },
+    {
+        "query": "हाई स्कूल के बाद मेरी पढ़ाई में दो साल का गैप है। क्या मैं अभी भी आवेदन करने के योग्य हूँ?",
+        "domain": "admissions",
+        "difficulty": "simple",
+        "english_original": "I have a two-year educational gap after high school. Am I still eligible to apply?"
+    },
+    {
+        "query": "अंतर्राष्ट्रीय छात्रों के लिए प्रति सेमेस्टर ट्यूशन फीस कितनी है?",
+        "domain": "admissions",
+        "difficulty": "medium",
+        "english_original": "How much is the tuition fee per semester for international students?"
+    },
+    {
+        "query": "क्या ट्यूशन फीस का भुगतान करने के लिए मासिक किस्त योजना उपलब्ध है?",
+        "domain": "admissions",
+        "difficulty": "medium",
+        "english_original": "Is there a monthly installment plan available for paying the tuition fees?"
+    },
+    {
+        "query": "जब मैं अपना सामान्य आवेदन जमा करूँगा/करूँगी, तो क्या मुझे मेरिट स्कॉलरशिप के लिए अपने आप विचार किया जाएगा?",
+        "domain": "admissions",
+        "difficulty": "medium",
+        "english_original": "Will I be automatically considered for merit scholarships when I submit my general application?"
+    },
+    {
+        "query": "इंजीनियरिंग प्रोग्राम के लिए मेरे सिफारिश पत्र किसे लिखने होंगे?",
+        "domain": "admissions",
+        "difficulty": "complex",
+        "english_original": "Who is required to write my letters of recommendation for the engineering program?"
+    },
+    {
+        "query": "अर्ली एक्शन और अर्ली डिसीजन आवेदन जमा करने की अंतिम तिथियों में क्या अंतर है?",
+        "domain": "admissions",
+        "difficulty": "complex",
+        "english_original": "What is the difference between Early Action and Early Decision application deadlines?"
+    },
+    {
+        "query": "फॉल सेमेस्टर के लिए ऑनलाइन आवेदन जमा करने की आखिरी तारीख कब है?",
+        "domain": "admissions",
+        "difficulty": "complex",
+        "english_original": "When is the final deadline to submit the online application for the Fall semester?"
+    },
+    {
+        "query": "नमस्ते, कंप्यूटर साइंस स्नातक कार्यक्रम में दाखिला पाने के लिए मुझे कितना सीजीपीए चाहिए?",
+        "domain": "admissions",
+        "difficulty": "conversational",
+        "english_original": "Hey, what CGPA do I need to get in for the CS undergrad program?"
+    },
+    {
+        "query": "क्या आप टीओईएफएल स्वीकार करते हैं या भारत के छात्रों के लिए आईईएलटीएस को प्राथमिकता दी जाती है?",
+        "domain": "admissions",
+        "difficulty": "conversational",
+        "english_original": "Do you accept TOEFL or is IELTS preferred for students from India?"
+    },
+    {
+        "query": "मैंने 2024 में 12वीं पूरी की थी और काम करने के लिए एक साल का गैप लिया था। क्या मैं अभी भी आवेदन कर सकता हूँ?",
+        "domain": "admissions",
+        "difficulty": "conversational",
+        "english_original": "I finished high school in 2024 and took a gap year to work. Can I still apply?"
+    },
+    {
+        "query": "इंजीनियरिंग में एक विदेशी छात्र के लिए प्रति सेमेस्टर ट्यूशन फीस कितनी है?",
+        "domain": "admissions",
+        "difficulty": "conversational",
+        "english_original": "What's the per-semester tuition fee for a foreign student in Engineering?"
+    },
+    {
+        "query": "क्या मैं अपनी ट्यूशन फीस एक साथ चुकाने के बजाय तीन मासिक किश्तों में दे सकता हूँ?",
+        "domain": "admissions",
+        "difficulty": "conversational",
+        "english_original": "Can I pay my tuition in three monthly installments instead of all at once?"
+    },
+    {
+        "query": "कैलकुलेटर",
+        "domain": "academics",
+        "difficulty": "ambiguous",
+        "english_original": "Calculator"
+    },
+    {
+        "query": "अटेंडेंस",
+        "domain": "academics",
+        "difficulty": "ambiguous",
+        "english_original": "Attendance"
+    },
+    {
+        "query": "अगर मैं इसे चूक जाऊं तो क्या होगा?",
+        "domain": "academics",
+        "difficulty": "ambiguous",
+        "english_original": "What if I miss it?"
+    },
+    {
+        "query": "अंतिम परीक्षा देने के लिए कम से कम कितनी उपस्थिति (अटेंडेंस) प्रतिशत ज़रूरी है?",
+        "domain": "academics",
+        "difficulty": "simple",
+        "english_original": "What is the minimum attendance percentage required to be eligible to write final exams?"
+    },
+    {
+        "query": "अगर किसी कोर्स में मेरी उपस्थिति 75% से कम हो जाए, तो क्या होगा?",
+        "domain": "academics",
+        "difficulty": "simple",
+        "english_original": "What happens if my attendance in a course falls below 75%?"
+    },
+    {
+        "query": "अगर मेडिकल इमरजेंसी की वजह से मेरा फाइनल एग्जाम छूट गया, तो मैं मेकअप एग्जाम (पूरक परीक्षा) के लिए कैसे आवेदन करूँ?",
+        "domain": "academics",
+        "difficulty": "simple",
+        "english_original": "How do I apply for a makeup exam if I missed a final exam due to a medical emergency?"
+    },
+    {
+        "query": "फाइनल एग्जाम का शेड्यूल और मेरा सीटिंग अरेंजमेंट (बैठने की व्यवस्था) मुझे कहाँ मिलेगा?",
+        "domain": "academics",
+        "difficulty": "medium",
+        "english_original": "Where can I find the final exam schedule and my seating arrangement?"
+    },
+    {
+        "query": "क्या हमें मैथ्स और फिजिक्स के एग्जाम में साइंटिफिक कैलकुलेटर इस्तेमाल करने की अनुमति है?",
+        "domain": "academics",
+        "difficulty": "medium",
+        "english_original": "Are we allowed to use scientific calculators during math and physics exams?"
+    },
+    {
+        "query": "अपने एग्जाम मार्क्स की री-वैल्यूएशन (पुनर्मूल्यांकन) या री-टोटलिंग के लिए मैं कैसे आवेदन करूँ, और क्या इसकी कोई फीस भी है?",
+        "domain": "academics",
+        "difficulty": "medium",
+        "english_original": "How do I apply for paper revaluation or re-totalling of my exam marks, and is there a fee?"
+    },
+    {
+        "query": "एक सेमेस्टर में मैं ज़्यादा से ज़्यादा कितने क्रेडिट्स के लिए रजिस्टर कर सकता हूँ?",
+        "domain": "academics",
+        "difficulty": "complex",
+        "english_original": "What is the maximum number of credits I can register for in a single semester?"
+    },
+    {
+        "query": "CGPA कैसे कैलकुलेट होता है, और SGPA और CGPA में क्या अंतर है?",
+        "domain": "academics",
+        "difficulty": "complex",
+        "english_original": "How is CGPA calculated, and what is the difference between SGPA and CGPA?"
+    },
+    {
+        "query": "अगर मैं अपना ग्रेड सुधारने के लिए कोई कोर्स दोबारा करता हूँ, तो इसका मेरे CGPA कैलकुलेशन पर क्या असर पड़ेगा?",
+        "domain": "academics",
+        "difficulty": "complex",
+        "english_original": "How does repeating a course to improve my grade affect my CGPA calculation?"
+    },
+    {
+        "query": "क्या अटेंडेंस ज़रूरी है? इसका कटऑफ परसेंट क्या है?",
+        "domain": "academics",
+        "difficulty": "conversational",
+        "english_original": "Is attendance mandatory? What is the cutoff percentage?"
+    },
+    {
+        "query": "मैं बीमार था/थी और 3 दिन क्लास नहीं आ पाया/पाई। मैं यह कैसे सुनिश्चित करूँ कि मुझे परीक्षा देने से रोका न जाए?",
+        "domain": "academics",
+        "difficulty": "conversational",
+        "english_original": "I'm sick and missed 3 days of class. How do I make sure I don't get barred from exams?"
+    },
+    {
+        "query": "क्या मैं फिजिक्स के फाइनल एग्जाम में कैलकुलेटर का उपयोग कर सकता हूँ?",
+        "domain": "academics",
+        "difficulty": "conversational",
+        "english_original": "Can I use my calculator in the Physics final exam?"
+    },
+    {
+        "query": "केमिस्ट्री के मिडटर्म परीक्षा के लिए सीटिंग अरेंजमेंट कहाँ लगाया गया है?",
+        "domain": "academics",
+        "difficulty": "conversational",
+        "english_original": "Where is the seating arrangement for the chemistry midterms posted?"
+    },
+    {
+        "query": "सोमवार को मेरी दो परीक्षाएँ एक ही समय पर हैं। इसे बदलने के लिए मैं किससे संपर्क करूँ?",
+        "domain": "academics",
+        "difficulty": "conversational",
+        "english_original": "I have two exams scheduled at the same time on Monday. Who do I contact to change this?"
+    },
+    {
+        "query": "माइक्रोसॉफ्ट",
+        "domain": "placements",
+        "difficulty": "ambiguous",
+        "english_original": "Microsoft"
+    },
+    {
+        "query": "प्लेसमेंट",
+        "domain": "placements",
+        "difficulty": "ambiguous",
+        "english_original": "Placement"
+    },
+    {
+        "query": "अमेज़न",
+        "domain": "placements",
+        "difficulty": "ambiguous",
+        "english_original": "Amazon"
+    },
+    {
+        "query": "माइक्रोसॉफ्ट में सॉफ्टवेयर इंजीनियरिंग पदों के लिए सामान्य भर्ती प्रक्रिया क्या है?",
+        "domain": "placements",
+        "difficulty": "simple",
+        "english_original": "What is the typical recruitment process for software engineering roles at Microsoft?"
+    },
+    {
+        "query": "माइक्रोसॉफ्ट के प्लेसमेंट ड्राइव्स में आवेदन करने के लिए सीजीपीए और शैक्षणिक योग्यता की क्या आवश्यकताएँ हैं?",
+        "domain": "placements",
+        "difficulty": "simple",
+        "english_original": "What are the CGPA and academic eligibility requirements to apply for Microsoft placement drives?"
+    },
+    {
+        "query": "अमेज़न SDE (सॉफ्टवेयर डेवलपमेंट इंजीनियर) पदों के लिए ऑनलाइन असेसमेंट का स्वरूप क्या है?",
+        "domain": "placements",
+        "difficulty": "simple",
+        "english_original": "What is the structure of the online assessment for Amazon SDE roles?"
+    },
+    {
+        "query": "क्या जिन छात्रों के अभी बैकलॉग चल रहे हैं, वे कैंपस की आधिकारिक गर्मियों की इंटर्नशिप के लिए आवेदन कर सकते हैं?",
+        "domain": "placements",
+        "difficulty": "medium",
+        "english_original": "Are students with active backlogs eligible to apply for official campus summer internships?"
+    },
+    {
+        "query": "मैं पोर्टल पर आने वाले कैंपस प्लेसमेंट सीज़न के लिए कैसे और कब रजिस्टर करूँ?",
+        "domain": "placements",
+        "difficulty": "medium",
+        "english_original": "How and when do I register for the upcoming campus placement season on the portal?"
+    },
+    {
+        "query": "'एक छात्र, एक नौकरी' की नीति क्या है, और 'ड्रीम ऑप्शन' कैसे काम करता है?",
+        "domain": "placements",
+        "difficulty": "medium",
+        "english_original": "What is the 'One Student, One Job' policy, and how does the Dream Option work?"
+    },
+    {
+        "query": "कंपनियों में अप्लाई करने से पहले, मैं अपना रेज़्यूमे प्लेसमेंट सेल से कैसे वेरिफाई और अप्रूव करवाऊँ?",
+        "domain": "placements",
+        "difficulty": "complex",
+        "english_original": "How do I get my resume verified and approved by the placement cell before applying to companies?"
+    },
+    {
+        "query": "क्या मैं प्लेसमेंट पोर्टल पर अलग-अलग जॉब प्रोफाइल के लिए अलग-अलग रेज़्यूमे जमा कर सकता हूँ?",
+        "domain": "placements",
+        "difficulty": "complex",
+        "english_original": "Can I submit different customized resumes for different job profiles on the placement portal?"
+    },
+    {
+        "query": "अमेज़न के रिक्रूटमेंट प्रोसेस में 'बार रेज़र' राउंड का क्या महत्व है?",
+        "domain": "placements",
+        "difficulty": "complex",
+        "english_original": "What is the significance of the 'Bar Raiser' round in the Amazon recruitment process?"
+    },
+    {
+        "query": "कैंपस में माइक्रोसॉफ्ट के सॉफ्टवेयर रोल्स के लिए हायरिंग प्रोसेस कैसा होता है?",
+        "domain": "placements",
+        "difficulty": "conversational",
+        "english_original": "What is the hiring process like for software roles at Microsoft on campus?"
+    },
+    {
+        "query": "अगर मेरे पहले बैकलॉग थे लेकिन मैंने वे सभी क्लियर कर दिए हैं, तो क्या मैं अमेज़न के लिए अप्लाई कर सकता हूँ?",
+        "domain": "placements",
+        "difficulty": "conversational",
+        "english_original": "Can I apply for Amazon if I have a history of backlogs but cleared them all?"
+    },
+    {
+        "query": "मैं प्लेसमेंट कोऑर्डिनेटर से अपना रेज़्यूमे कैसे अप्रूव करवाऊँ?",
+        "domain": "placements",
+        "difficulty": "conversational",
+        "english_original": "How do I get the placement coordinator to approve my resume?"
+    },
+    {
+        "query": "क्या यह सच है कि हम एक समय में केवल एक ही जॉब ऑफर रख सकते हैं?",
+        "domain": "placements",
+        "difficulty": "conversational",
+        "english_original": "Is it true that we can only hold one job offer at a time?"
+    },
+    {
+        "query": "मेरा 7.2 CGPA है। क्या मैं माइक्रोसॉफ्ट के प्लेसमेंट ड्राइव के लिए योग्य हूँ?",
+        "domain": "placements",
+        "difficulty": "conversational",
+        "english_original": "I have a 7.2 CGPA. Am I eligible for the Microsoft placement drive?"
+    },
+    {
+        "query": "रिसर्च",
+        "domain": "research",
+        "difficulty": "ambiguous",
+        "english_original": "Research"
+    },
+    {
+        "query": "UROP",
+        "domain": "research",
+        "difficulty": "ambiguous",
+        "english_original": "UROP"
+    },
+    {
+        "query": "लैब एक्सेस",
+        "domain": "research",
+        "difficulty": "ambiguous",
+        "english_original": "Lab access"
+    },
+    {
+        "query": "यूनिवर्सिटी के फैकल्टी द्वारा चलाए जा रहे मौजूदा रिसर्च प्रोजेक्ट्स का मैं कैसे पता लगा सकता हूँ?",
+        "domain": "research",
+        "difficulty": "simple",
+        "english_original": "How can I find active research projects currently being conducted by university faculty?"
+    },
+    {
+        "query": "क्या अंडरग्रेजुएट छात्रों के लिए फंडेड रिसर्च असिस्टेंटशिप्स या स्टाइपेंड उपलब्ध हैं?",
+        "domain": "research",
+        "difficulty": "simple",
+        "english_original": "Are there funded research assistantships or stipends available for undergraduate students?"
+    },
+    {
+        "query": "कंप्यूटर साइंस और इंजीनियरिंग विभाग में कौन सी रिसर्च लैब हैं?",
+        "domain": "research",
+        "difficulty": "simple",
+        "english_original": "What research labs exist within the Computer Science and Engineering department?"
+    },
+    {
+        "query": "AI रिसर्च लैब में काम करने के लिए कोई छात्र फिजिकल कीकार्ड एक्सेस कैसे प्राप्त कर सकता है?",
+        "domain": "research",
+        "difficulty": "medium",
+        "english_original": "How can a student gain physical keycard access to work in the AI Research Lab?"
+    },
+    {
+        "query": "रिसर्च लैब सुविधाओं में काम शुरू करने से पहले मुझे कौन से सुरक्षा प्रशिक्षण कोर्स पूरे करने होंगे?",
+        "domain": "research",
+        "difficulty": "medium",
+        "english_original": "What safety training courses must I complete before starting work in the research lab facilities?"
+    },
+    {
+        "query": "क्या यूनिवर्सिटी अंतरराष्ट्रीय कॉन्फरेंस में पेपर प्रस्तुत करने के लिए छात्रों के यात्रा खर्च का वहन करती है?",
+        "domain": "research",
+        "difficulty": "medium",
+        "english_original": "Does the university fund student travel to present papers at international conferences?"
+    },
+    {
+        "query": "What computing resources and GPU clusters are available for machine learning research projects?",
+        "domain": "research",
+        "difficulty": "complex",
+        "english_original": "What computing resources and GPU clusters are available for machine learning research projects?"
+    },
+    {
+        "query": "What is the Undergraduate Research Opportunities Program (UROP) and how do I apply?",
+        "domain": "research",
+        "difficulty": "complex",
+        "english_original": "What is the Undergraduate Research Opportunities Program (UROP) and how do I apply?"
+    },
+    {
+        "query": "Can I earn academic course credits for participating in research during the semester?",
+        "domain": "research",
+        "difficulty": "complex",
+        "english_original": "Can I earn academic course credits for participating in research during the semester?"
+    },
+    {
+        "query": "How do I join a research project under a professor in the CS department?",
+        "domain": "research",
+        "difficulty": "conversational",
+        "english_original": "How do I join a research project under a professor in the CS department?"
+    },
+    {
+        "query": "Are undergraduate research assistants paid a monthly stipend?",
+        "domain": "research",
+        "difficulty": "conversational",
+        "english_original": "Are undergraduate research assistants paid a monthly stipend?"
+    },
+    {
+        "query": "How do I get keycard access to the AI Research Lab for late night work?",
+        "domain": "research",
+        "difficulty": "conversational",
+        "english_original": "How do I get keycard access to the AI Research Lab for late night work?"
+    },
+    {
+        "query": "What safety courses do I need to complete before entering the chemistry research lab?",
+        "domain": "research",
+        "difficulty": "conversational",
+        "english_original": "What safety courses do I need to complete before entering the chemistry research lab?"
+    },
+    {
+        "query": "Does the university provide funding for students to travel and present papers at international conferences?",
+        "domain": "research",
+        "difficulty": "conversational",
+        "english_original": "Does the university provide funding for students to travel and present papers at international conferences?"
+    },
+    {
+        "query": "That form",
+        "domain": "student_services",
+        "difficulty": "ambiguous",
+        "english_original": "That form"
+    },
+    {
+        "query": "Hostel",
+        "domain": "student_services",
+        "difficulty": "ambiguous",
+        "english_original": "Hostel"
+    },
+    {
+        "query": "पुस्तकालय",
+        "domain": "student_services",
+        "difficulty": "ambiguous",
+        "english_original": "Library"
+    },
+    {
+        "query": "मैं कैंपस के हॉस्टल में रहने के लिए आवेदन कैसे करूँ, और इसके अलॉटमेंट के क्या मापदंड हैं?",
+        "domain": "student_services",
+        "difficulty": "simple",
+        "english_original": "How do I apply for on-campus hostel accommodation, and what is the allotment criteria?"
+    },
+    {
+        "query": "छात्रों के हॉस्टलों में बाहर निकलने-आने (कर्फ्यू) और आगंतुकों के प्रवेश के क्या नियम और समय हैं?",
+        "domain": "student_services",
+        "difficulty": "simple",
+        "english_original": "What are the rules and timings regarding curfew and visitor entry in the student hostels?"
+    },
+    {
+        "query": "मेरे हॉस्टल के कमरे में पानी (प्लंबिंग), बिजली या वाई-फाई जैसी रख-रखाव संबंधी समस्याओं की शिकायत मैं कैसे करूँ?",
+        "domain": "student_services",
+        "difficulty": "simple",
+        "english_original": "How can I report maintenance issues like plumbing, electricity, or Wi-Fi in my hostel room?"
+    },
+    {
+        "query": "विश्वविद्यालय की केंद्रीय लाइब्रेरी कितने बजे खुलती है, और क्या यह परीक्षाओं के दौरान 24 घंटे खुली रहती है?",
+        "domain": "student_services",
+        "difficulty": "medium",
+        "english_original": "What are the opening hours of the university central library, and is it open 24/7 during exams?"
+    },
+    {
+        "query": "एक स्नातक छात्र एक बार में कितनी किताबें ले सकता है, और उन्हें वापस करने की समय-सीमा क्या है?",
+        "domain": "student_services",
+        "difficulty": "medium",
+        "english_original": "How many books can an undergraduate student borrow at a time, and what is the loan period?"
+    },
+    {
+        "query": "मैं कैंपस के बाहर से ऑनलाइन रिसर्च जर्नल, डेटाबेस और ई-बुक्स तक कैसे पहुँच सकता हूँ?",
+        "domain": "student_services",
+        "difficulty": "medium",
+        "english_original": "How can I access online research journals, databases, and e-books from off-campus?"
+    },
+    {
+        "query": "अगर मेरा छात्र पहचान पत्र (आईडी कार्ड) खो जाए तो मुझे क्या करना चाहिए, और उसे दोबारा बनवाने का शुल्क कितना है?",
+        "domain": "student_services",
+        "difficulty": "complex",
+        "english_original": "What should I do if I lose my student ID card, and how much is the replacement fee?"
+    },
+    {
+        "query": "क्या मैं अपने फ़ोन में अपने आईडी कार्ड के डिजिटल संस्करण का उपयोग लाइब्रेरी में प्रवेश या परीक्षाओं के लिए कर सकता हूँ?",
+        "domain": "student_services",
+        "difficulty": "complex",
+        "english_original": "Can I use a digital version of my ID card on my phone for library access or exams?"
+    },
+    {
+        "query": "मैं वीज़ा या लोन जैसे कामों के लिए बोनाफाइड सर्टिफिकेट या दाखिले के प्रमाण पत्र के लिए आवेदन कैसे करूँ?",
+        "domain": "student_services",
+        "difficulty": "complex",
+        "english_original": "How do I apply for a Bonafide Certificate or proof of enrollment for visa or loan purposes?"
+    },
+    {
+        "query": "How do I apply for a hostel room and what is the allotment basis?",
+        "domain": "student_services",
+        "difficulty": "conversational",
+        "english_original": "How do I apply for a hostel room and what is the allotment basis?"
+    },
+    {
+        "query": "What are the rules about visitors in the girls' hostel?",
+        "domain": "student_services",
+        "difficulty": "conversational",
+        "english_original": "What are the rules about visitors in the girls' hostel?"
+    },
+    {
+        "query": "My room's AC isn't cooling. Where do I register a maintenance complaint?",
+        "domain": "student_services",
+        "difficulty": "conversational",
+        "english_original": "My room's AC isn't cooling. Where do I register a maintenance complaint?"
+    },
+    {
+        "query": "Is the central library open 24 hours during final exams?",
+        "domain": "student_services",
+        "difficulty": "conversational",
+        "english_original": "Is the central library open 24 hours during final exams?"
+    },
+    {
+        "query": "Where is it?",
+        "domain": "navigation",
+        "difficulty": "ambiguous",
+        "english_original": "Where is it?"
+    },
+    {
+        "query": "Directions",
+        "domain": "navigation",
+        "difficulty": "ambiguous",
+        "english_original": "Directions"
+    },
+    {
+        "query": "Block C",
+        "domain": "navigation",
+        "difficulty": "ambiguous",
+        "english_original": "Block C"
+    },
+    {
+        "query": "Where is the Central Library located and how do I get there from the main gate?",
+        "domain": "navigation",
+        "difficulty": "simple",
+        "english_original": "Where is the Central Library located and how do I get there from the main gate?"
+    },
+    {
+        "query": "How do I reach the Placement Cell in the Administrative Block?",
+        "domain": "navigation",
+        "difficulty": "simple",
+        "english_original": "How do I reach the Placement Cell in the Administrative Block?"
+    },
+    {
+        "query": "Where is the AI Research Lab located and on which floor of Engineering Block C is it?",
+        "domain": "navigation",
+        "difficulty": "simple",
+        "english_original": "Where is the AI Research Lab located and on which floor of Engineering Block C is it?"
+    },
+    {
+        "query": "Where is the Campus Health Center and is it near the hostels?",
+        "domain": "navigation",
+        "difficulty": "medium",
+        "english_original": "Where is the Campus Health Center and is it near the hostels?"
+    },
+    {
+        "query": "Where is the Central Cafeteria and how do I get there from the sports ground?",
+        "domain": "navigation",
+        "difficulty": "medium",
+        "english_original": "Where is the Central Cafeteria and how do I get there from the sports ground?"
+    },
+    {
+        "query": "How do I find the Computer Science Department Office in Engineering Block C?",
+        "domain": "navigation",
+        "difficulty": "medium",
+        "english_original": "How do I find the Computer Science Department Office in Engineering Block C?"
+    },
+    {
+        "query": "Where is the Admissions Office and is it near the Accounts & Fee Counter?",
+        "domain": "navigation",
+        "difficulty": "complex",
+        "english_original": "Where is the Admissions Office and is it near the Accounts & Fee Counter?"
+    },
+    {
+        "query": "Where is the Moot Court Hall and how do I reach it in the Law Department Block?",
+        "domain": "navigation",
+        "difficulty": "complex",
+        "english_original": "Where is the Moot Court Hall and how do I reach it in the Law Department Block?"
+    },
+    {
+        "query": "How do I get to the Counseling & Mental Health Center in the Student Activity Center?",
+        "domain": "navigation",
+        "difficulty": "complex",
+        "english_original": "How do I get to the Counseling & Mental Health Center in the Student Activity Center?"
+    },
+    {
+        "query": "Where is the central library? Can you give me directions from the main gate?",
+        "domain": "navigation",
+        "difficulty": "conversational",
+        "english_original": "Where is the central library? Can you give me directions from the main gate?"
+    },
+    {
+        "query": "How do I get to the Placement Cell from the CS department?",
+        "domain": "navigation",
+        "difficulty": "conversational",
+        "english_original": "How do I get to the Placement Cell from the CS department?"
+    },
+    {
+        "query": "Which floor of Engineering Block C is the AI Research Lab on?",
+        "domain": "navigation",
+        "difficulty": "conversational",
+        "english_original": "Which floor of Engineering Block C is the AI Research Lab on?"
+    },
+    {
+        "query": "Where is the health center? Is it close to the student hostels?",
+        "domain": "navigation",
+        "difficulty": "conversational",
+        "english_original": "Where is the health center? Is it close to the student hostels?"
+    }
+]

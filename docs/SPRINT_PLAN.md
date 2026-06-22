@@ -61,11 +61,11 @@ All three engineers have working dev environment and can run the skeleton backen
 | G1.5 | Research and select TTS models for Kannada and Hindi | 2h | Decision logged in meeting notes |
 
 ### Deliverables by Friday
-- [ ] GitHub repository live with full structure
-- [ ] FastAPI backend running with skeleton responses on all endpoints
-- [ ] Docker Compose works for all three engineers
-- [ ] `develop` branch has everyone's Week 1 code merged
-- [ ] 50+ seed evaluation queries created
+- [x] GitHub repository live with full structure
+- [x] FastAPI backend running with skeleton responses on all endpoints
+- [x] Docker Compose works for all three engineers
+- [x] `develop` branch has everyone's Week 1 code merged
+- [x] 50+ seed evaluation queries created
 
 ### Dependencies
 - GitHub repository must be created by Haseeb on Monday
@@ -118,11 +118,11 @@ All three engineers have working dev environment and can run the skeleton backen
 - Walk in front of camera → Person detected → Session created → Avatar greets
 
 ### Deliverables by Friday
-- [ ] Whisper ASR working with real audio input
-- [ ] Person detection triggering real sessions
-- [ ] ChromaDB populated with university documents
-- [ ] Admissions agent can answer simple queries
-- [ ] Navigation agent can return room locations
+- [x] Whisper ASR working with real audio input
+- [x] Person detection triggering real sessions
+- [x] ChromaDB populated with university documents
+- [x] Admissions agent can answer simple queries
+- [x] Navigation agent can return room locations
 
 ### Dependencies
 - Harsha needs working mic/camera hardware access
@@ -176,10 +176,10 @@ All three engineers have working dev environment and can run the skeleton backen
 - Deliberately ask ambiguous query → System asks clarification question
 
 ### Deliverables by Friday
-- [ ] RIAR ambiguity detection and classification working
-- [ ] Coordinator routing to correct domain agent
-- [ ] All 6 domain agents implemented
-- [ ] First baseline evaluation run completed
+- [x] RIAR ambiguity detection and classification working
+- [x] Coordinator routing to correct domain agent
+- [x] All 6 domain agents implemented
+- [x] First baseline evaluation run completed
 
 ---
 
@@ -220,11 +220,11 @@ All three engineers have working dev environment and can run the skeleton backen
 | G1.6 | Implement evaluation metrics (RAGAS or custom) | 4h | `evaluation/metrics/` |
 
 ### Deliverables by Friday
-- [ ] Complete RIAR pipeline (all 7 steps) functional
-- [ ] Clarification → refinement → routing working end-to-end
-- [ ] Citation in every answer
-- [ ] Multilingual test sets ready
-- [ ] Latency measurements taken
+- [x] Complete RIAR pipeline (all 7 steps) functional
+- [x] Clarification → refinement → routing working end-to-end
+- [x] Citation in every answer
+- [x] Multilingual test sets ready
+- [x] Latency measurements taken
 
 ---
 
@@ -344,11 +344,11 @@ All three engineers have working dev environment and can run the skeleton backen
 | G1.4 | Archive all evaluation datasets | 1h | Data preserved in repo |
 
 ### Final Checklist
-- [ ] System runs on kiosk hardware for 4+ hours without crash
-- [ ] Research paper first draft complete
-- [ ] All 12 documents in `docs/` finalized
-- [ ] `v1.0.0` tagged on `main`
-- [ ] Demo video recorded
-- [ ] Presentation prepared
-- [ ] Evaluation results documented
-- [ ] Repository README reflects final state
+- [x] System runs on kiosk hardware for 4+ hours without crash
+- [x] Research paper first draft complete
+- [x] All 12 documents in `docs/` finalized
+- [x] `v1.0.0` tagged on `main`
+- [x] Demo video recorded
+- [x] Presentation prepared
+- [x] Evaluation results documented
+- [x] Repository README reflects final state
