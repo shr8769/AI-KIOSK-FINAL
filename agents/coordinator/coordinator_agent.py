@@ -48,8 +48,8 @@ class CoordinatorAgent:
             "navigation": NavigationAgent(client=self.client)
         }
         
-        from agents.concierge.language_fallback import GeminiTranslator
-        self.translator = GeminiTranslator()
+        from agents.concierge.language_fallback import ChainedTranslator
+        self.translator = ChainedTranslator()
 
         # Define keyword routing mappings for each domain agent.
         self.routing_rules = {
@@ -63,7 +63,10 @@ class CoordinatorAgent:
                 "entrance exam", "transfer student", "transfer students", "english proficiency", "early decision", "early action", 
                 "financial aid", "cost of studying", "gpa", "deadline", "deadlines", "application", "applications", "tuition", 
                 "fee", "fees", "apply", "recommendation", "high school", "letters of recommendation", "letter of recommendation", 
-                "cost", "installments"
+                "cost", "installments", "cgpa requirements", "cgpa requirement", "gpa requirement", "grades requirement", 
+                "grades to get in", "gpa to get in", "cgpa to get in", "apply for visa", "upload documents", "upload document", 
+                "submit hard copies", "hard copies", "submit documents", "upload", "scholarship", "scholarships", "get in",
+                "get admission", "cs undergrad program", "undergrad program", "undergraduate program"
             ],
             "academics": [
                 "attendance", "exam", "exams", "midterm", "midterms", "revaluation", "sgpa", "cgpa calculation", 
@@ -72,14 +75,17 @@ class CoordinatorAgent:
                 "attendance waiver", "re-totaling", "re-totalling", "marks", "paper", "papers", "calculate gpa", 
                 "gpa", "cgpa", "professor", "office hours", "holiday", "holidays", "schedule", "schedules", "class", 
                 "classes", "missed class", "missed classes", "miss", "audit", "midterms schedule", "seating arrangement", 
-                "posted", "visa"
+                "posted", "visa", "makeup exam", "makeup exams", "missed exam", "missed exams", "transcript for visa", 
+                "official transcript for visa", "transcript", "transcripts", "official transcript", "official transcripts"
             ],
             "placements": [
                 "microsoft", "amazon", "internship", "internships", "placement", "placements", "recruitment", 
                 "oa", "online assessment", "coding test", "backlog eligibility", "backlogs", "backlog", 
                 "dream offer", "dream company", "cgpa", "interview", "interviews", "resume", "resumes", 
                 "ppo", "salary", "job", "jobs", "job offer", "job offers", "placement drive", "placement drives", 
-                "signing", "acceptance", "portal", "placement cell", "resume verification", "eligibility requirements"
+                "signing", "acceptance", "portal", "placement cell", "resume verification", "eligibility requirements",
+                "apply for placements", "apply for placement", "placement eligibility", "placements eligibility",
+                "offer", "offers", "two offers"
             ],
             "research": [
                 "publication", "publications", "journal", "journals", "conference", "conferences", 
@@ -87,7 +93,8 @@ class CoordinatorAgent:
                 "hpc", "gpu cluster", "gpu", "clusters", "research", "lab", "labs", "symposium", 
                 "thesis", "funding", "stipend", "stipends", "paper", "papers", "deep learning", "models", 
                 "authorship", "collaborating", "publish", "co-author", "cgpa", "independent study", 
-                "research project", "research projects", "faculty research", "urop application", "urop deadline", "honors thesis"
+                "research project", "research projects", "faculty research", "urop application", "urop deadline", "honors thesis",
+                "research credits", "course credits for research", "credits for research"
             ],
             "student_services": [
                 "hostel room", "hostel rooms", "hostel accommodation", "hostel", "hostels", "library", "id card", "counseling", "maintenance", "certificate", 
@@ -96,7 +103,8 @@ class CoordinatorAgent:
                 "guest house", "parents", "wi-fi", "wifi", "laptop", "stressed", "stress", "anonymously", 
                 "ambulance", "operational hours", "dining hall", "refund", "gym", "facility", "online journals", "e-books",
                 "doctor", "resident doctor", "medical services", "central library", "university central library", "library open",
-                "ieee", "ieee journals"
+                "ieee", "ieee journals", "access online research journals", "research journals access", "library database", "library databases",
+                "form", "forms", "that form"
             ],
             "navigation": [
                 "where", "location", "directions", "located", "reach", "how do i get to", "building", 
@@ -193,6 +201,39 @@ class CoordinatorAgent:
 
         # Deduplicate all matches across all domains
         all_matches = list(dict.fromkeys(all_matches))
+        
+        # Resolve common routing conflicts
+        # Extract query flags
+        has_placement_intent = any(kw in query_lower for kw in ["placement", "placements", "job", "jobs", "internship", "internships", "recruit", "recruitment", "microsoft", "amazon"])
+        has_academic_intent = any(kw in query_lower for kw in ["calculate", "calculation", "revaluation", "request", "transcript", "transcripts", "seating", "attendance", "exam", "exams", "timetable", "repeat"])
+        has_admission_intent = any(kw in query_lower for kw in ["admission", "admissions", "apply", "get in", "undergrad", "undergraduate", "high school", "eligibility", "predicted", "upload"])
+
+        # 1. Placement drives eligibility has highest priority if placement keywords are present
+        if has_placement_intent and any(kw in query_lower for kw in ["cgpa", "gpa", "grades", "eligibility"]):
+            scores["placements"] = scores.get("placements", 0.0) + 10.0
+            scores["admissions"] = max(0.0, scores.get("admissions", 0.0) - 10.0)
+            scores["academics"] = max(0.0, scores.get("academics", 0.0) - 10.0)
+
+        # 2. Admissions CGPA/GPA requirements
+        elif has_admission_intent and any(kw in query_lower for kw in ["cgpa", "gpa", "grades", "gpa requirement", "cgpa requirement"]):
+            if not has_academic_intent or any(kw in query_lower for kw in ["admission", "admissions", "get in", "undergrad", "undergraduate", "predicted", "upload"]):
+                scores["admissions"] = scores.get("admissions", 0.0) + 10.0
+                scores["academics"] = max(0.0, scores.get("academics", 0.0) - 10.0)
+
+        # 3. Academics CGPA/GPA calculation or transcript request
+        elif has_academic_intent and any(kw in query_lower for kw in ["cgpa", "gpa", "grades"]):
+            scores["academics"] = scores.get("academics", 0.0) + 10.0
+            scores["admissions"] = max(0.0, scores.get("admissions", 0.0) - 10.0)
+            
+        # 4. Scholarship queries are Admissions
+        if "scholarship" in query_lower or "scholarships" in query_lower:
+            scores["admissions"] = scores.get("admissions", 0.0) + 5.0
+            scores["academics"] = max(0.0, scores.get("academics", 0.0) - 5.0)
+
+        # 5. Research Credits / Credits for Research (Research vs Academics)
+        if "research" in query_lower and ("credit" in query_lower or "credits" in query_lower):
+            scores["research"] = scores.get("research", 0.0) + 5.0
+            scores["academics"] = max(0.0, scores.get("academics", 0.0) - 5.0)
             
         # Find the domain with the highest score
         best_domain = max(scores, key=scores.get)

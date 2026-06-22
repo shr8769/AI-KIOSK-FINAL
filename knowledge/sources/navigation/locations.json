@@ -348,5 +348,61 @@
         "floor": "1st Floor",
         "landmark": "Next to Examination Cell",
         "directions": "Go to the 1st floor of the Administrative Block, turn left, and the Controller's office is the secure cabin at the end of the hallway."
+    },
+    {
+        "facility": "MRD Auditorium",
+        "building": "Main Block",
+        "floor": "Ground Floor",
+        "landmark": "Near Main Entrance",
+        "directions": "From the campus entry gate, walk straight toward the Main Block. The MRD Auditorium is located on the ground floor, just to the left of the main lobby entrance."
+    },
+    {
+        "facility": "Library",
+        "building": "Knowledge Resource Center",
+        "floor": "Ground Floor",
+        "landmark": "Opposite Administrative Block",
+        "directions": "Enter through the main campus gate, walk straight past the central fountain, and the library is the large glass building on your left."
+    },
+    {
+        "facility": "Hostel Office",
+        "building": "Student Services Block",
+        "floor": "Ground Floor",
+        "landmark": "Next to Hostel Block A",
+        "directions": "Head past the engineering block toward the residential zone. The Hostel Office is on the ground floor of the Student Services Block, adjacent to Hostel Block A."
+    },
+    {
+        "facility": "Main Gate",
+        "building": "Security Gate House",
+        "floor": "Ground Floor",
+        "landmark": "Campus Entrance",
+        "directions": "The Main Gate is the primary entry point to the campus, located on the main road, with the security gate house on the right."
+    },
+    {
+        "facility": "Food Court",
+        "building": "Student Activity Center (SAC)",
+        "floor": "Ground Floor",
+        "landmark": "Adjacent to Central Cafeteria",
+        "directions": "Walk past the main sports complex to the Student Activity Center. The Food Court is located on the ground floor next to the cafeteria."
+    },
+    {
+        "facility": "Research Block",
+        "building": "Science and Innovation Center",
+        "floor": "Ground Floor",
+        "landmark": "Opposite Engineering Block C",
+        "directions": "From the library, head east past the fountain. The Research Block is located in the Science and Innovation Center directly opposite Engineering Block C."
+    },
+    {
+        "facility": "Academic Block",
+        "building": "Academic Block A",
+        "floor": "Ground Floor",
+        "landmark": "Near Central Lawn",
+        "directions": "Walk straight past the Main Gate toward the central lawn. Academic Block A is the large building facing the lawn."
+    },
+    {
+        "facility": "Medical Center",
+        "building": "Hostel Block D Annex",
+        "floor": "Ground Floor",
+        "landmark": "Opposite the Basketball Court",
+        "directions": "Head toward the Hostel Block D residential area. The Medical Center is located in the annex building next to the pharmacy."
     }
 ]

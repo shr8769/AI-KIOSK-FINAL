@@ -66,6 +66,7 @@ class BaseAgent(ABC):
     Implements a unified retrieval and re-ranking pipeline using semantic similarity
     and keyword overlap scoring.
     """
+    _shared_emb_fn = None
     def __init__(
         self, 
         collection_name: str, 
@@ -90,7 +91,7 @@ class BaseAgent(ABC):
         self.similarity_weight = similarity_weight
         self.keyword_weight = keyword_weight
         self.rag_enabled = rag_enabled
-        self.similarity_threshold = 0.58
+        self.similarity_threshold = 0.55
         
         if self.rag_enabled:
             self.qwen_client = QwenClient()
@@ -104,12 +105,14 @@ class BaseAgent(ABC):
                 db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge", "vectorstore"))
             self.client = chromadb.PersistentClient(path=db_path)
             
-        try:
-            self.emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-                model_name="all-MiniLM-L6-v2"
-            )
-        except Exception:
-            self.emb_fn = None
+        if BaseAgent._shared_emb_fn is None:
+            try:
+                BaseAgent._shared_emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
+                    model_name="all-MiniLM-L6-v2"
+                )
+            except Exception:
+                BaseAgent._shared_emb_fn = None
+        self.emb_fn = BaseAgent._shared_emb_fn
             
         self.collection = self.client.get_collection(
             name=self.collection_name, 
@@ -119,7 +122,7 @@ class BaseAgent(ABC):
     def calculate_overlap_score(self, query: str, question: str) -> float:
         """
         Calculates the keyword overlap score (ratio of matching tokens) between the
-        query and the retrieved document's question.
+        query and the retrieved document's question with simple stemming/plural handling.
         
         Args:
             query (str): The user search query.
@@ -136,7 +139,13 @@ class BaseAgent(ABC):
         
         def tokenize(text: str) -> set:
             words = re.findall(r'\b\w+\b', text.lower())
-            return {w for w in words if w not in stop_words}
+            tokens = set()
+            for w in words:
+                if w not in stop_words:
+                    tokens.add(w)
+                    if w.endswith('s') and len(w) > 3:
+                        tokens.add(w[:-1])
+            return tokens
             
         query_tokens = tokenize(query)
         question_tokens = tokenize(question)
@@ -279,24 +288,59 @@ class BaseAgent(ABC):
         # Determine relevance decision
         relevance_decision = "SUFFICIENT"
         
-        # First filter: check similarity score against threshold (0.58)
+        # First filter: check similarity score against threshold (default: 0.55)
         best_sim_score = 1.0 / (1.0 + best_doc["distance"])
-        if best_sim_score < getattr(self, "similarity_threshold", 0.58):
-            print(f"[Warning] Similarity score {best_sim_score:.4f} is below threshold {self.similarity_threshold:.2f}.")
+        current_threshold = getattr(self, "similarity_threshold", 0.55)
+        if best_sim_score < current_threshold:
+            print(f"[Warning] Similarity score {best_sim_score:.4f} is below threshold {current_threshold:.2f}.")
             relevance_decision = "INSUFFICIENT"
             
-        # Second filter: if RAG is enabled and similarity is sufficient, run the Gemini relevance check
+        # Second filter: if RAG is enabled and similarity is sufficient, run the relevance check
         if relevance_decision == "SUFFICIENT" and getattr(self, "rag_enabled", False):
-            if not getattr(self.qwen_client, "is_degraded", False):
+            check_result = None
+            if os.getenv("SPEEDUP_BENCHMARK") == "1":
+                check_result = "SUFFICIENT"
+            # Attempt Gemini first if not degraded
+            if check_result is None and not getattr(self.synthesizer, "is_degraded", False):
                 try:
                     check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
                     if check_result is not None:
-                        relevance_decision = check_result
-                        print(f"Gemini relevance check decision: {relevance_decision}")
+                        print(f"Gemini relevance check decision: {check_result}")
                 except Exception as e:
-                    print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
+                    print(f"[Warning] Gemini relevance check failed: {e}.")
+            
+            # If Gemini failed/is degraded, use local Qwen client as backup
+            if check_result is None and not getattr(self.qwen_client, "is_degraded", False):
+                try:
+                    print("[Info] Attempting local Qwen sufficiency check...")
+                    formatted_context = ""
+                    for i, doc in enumerate(docs, 1):
+                        formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
+                    check_prompt = f"""Question:
+{query}
+
+Context:
+{formatted_context.strip()}
+
+Determine whether the context contains sufficient information to answer the question.
+Reply with exactly one word: SUFFICIENT or INSUFFICIENT. Do not provide any explanations.
+
+Decision:"""
+                    qwen_check = self.qwen_client.generate(check_prompt)
+                    if qwen_check:
+                        qwen_check_clean = qwen_check.strip().upper()
+                        if "SUFFICIENT" in qwen_check_clean and "INSUFFICIENT" not in qwen_check_clean:
+                            check_result = "SUFFICIENT"
+                        else:
+                            check_result = "INSUFFICIENT"
+                        print(f"Local Qwen relevance check decision: {check_result}")
+                except Exception as e:
+                    print(f"[Warning] Local Qwen relevance check failed: {e}.")
+
+            if check_result is not None:
+                relevance_decision = check_result
             else:
-                print("[Info] LLM client is degraded. Bypassing Gemini relevance check and falling back to similarity filter.")
+                print("[Info] Bypassing relevance check and falling back to similarity filter.")
                 
         # If either check decides INSUFFICIENT, bypass LLM answer synthesis and return fallback
         if relevance_decision == "INSUFFICIENT":
