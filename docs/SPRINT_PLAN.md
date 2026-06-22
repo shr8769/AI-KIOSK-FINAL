@@ -344,11 +344,11 @@ All three engineers have working dev environment and can run the skeleton backen
 | G1.4 | Archive all evaluation datasets | 1h | Data preserved in repo |
 
 ### Final Checklist
-- [ ] System runs on kiosk hardware for 4+ hours without crash
-- [ ] Research paper first draft complete
-- [ ] All 12 documents in `docs/` finalized
-- [ ] `v1.0.0` tagged on `main`
-- [ ] Demo video recorded
-- [ ] Presentation prepared
-- [ ] Evaluation results documented
-- [ ] Repository README reflects final state
+- [x] System runs on kiosk hardware for 4+ hours without crash
+- [x] Research paper first draft complete
+- [x] All 12 documents in `docs/` finalized
+- [x] `v1.0.0` tagged on `main`
+- [x] Demo video recorded
+- [x] Presentation prepared
+- [x] Evaluation results documented
+- [x] Repository README reflects final state
