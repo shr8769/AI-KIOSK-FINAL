@@ -17,6 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.routes import asr, events, rag, riar, route, session, tts
 from app.core.config import settings
 from app.core.dependencies import ConnectionManager, get_connection_manager
+from app.core.warmup import warmup_services, startup_state
 from app.websockets.session_ws import websocket_session_handler
 
 logging.basicConfig(
@@ -71,6 +72,9 @@ async def lifespan(app: FastAPI):
                 pass
     except Exception as e:
         logger.warning(f"Could not seed demo session: {e}")
+
+    # Warm up all models and connections
+    await warmup_services()
 
     yield
 
@@ -131,3 +135,13 @@ async def websocket_endpoint(
 @app.get("/health", tags=["Health"])
 async def health():
     return {"status": "ok", "version": "0.1.0", "project": "VidyaSahayak"}
+
+@app.get("/ready", tags=["Health"])
+async def ready():
+    return {
+        "ready": startup_state.ready,
+        "warming": startup_state.warming,
+        "errors": startup_state.errors,
+        "messages": startup_state.messages,
+        "metrics": startup_state.metrics,
+    }

@@ -18,7 +18,11 @@ export async function startMicAnalysis(): Promise<MicHandle | null> {
     if (!AudioContextClass) return null;
 
     const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      },
       video: false,
     });
 

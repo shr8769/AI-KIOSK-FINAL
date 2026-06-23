@@ -28,6 +28,10 @@ interface VidyaSahayakOrbProps {
   customDesc?: string;
   /** Callback fired when user stops mic recording and WAV is generated */
   onAudioReady?: (audioBase64: string) => void;
+  /** Active TTS audio element for lip sync */
+  activeAudioElement?: HTMLAudioElement | null;
+  /** Callback fired when user interrupts the avatar */
+  onBargeIn?: () => void;
 }
 
 /** Linearly interpolate between a and b by k */
@@ -58,6 +62,8 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   customLabel,
   customDesc,
   onAudioReady,
+  onBargeIn,
+  activeAudioElement,
 }) => {
   const glCanvasRef  = useRef<HTMLCanvasElement>(null);
   const glassCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -65,6 +71,7 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
 
   const webglCtxRef  = useRef<WebGLContext | null>(null);
   const micHandleRef = useRef<MicHandle | null>(null);
+  const ttsAnalyserRef = useRef<{ analyser: AnalyserNode, freqData: Uint8Array, ctx: AudioContext } | null>(null);
   const rafRef       = useRef<number>(0);
 
   const prevStateRef  = useRef<OrbStateConfig>({ ...ORB_STATES[0] });
@@ -87,6 +94,8 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   const micOnRef      = useRef<boolean>(false);
   const hasSpokenRef  = useRef<boolean>(false);
   const silenceStartRef = useRef<number | null>(null);
+  const bargeInStartRef = useRef<number | null>(null);
+  const bargeInCooldownRef = useRef<number>(0);
 
   /* ─── set state ─── */
   const applyState = useCallback((id: OrbState) => {
@@ -158,6 +167,37 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
     toggleMicRef.current = toggleMic;
   }, [toggleMic]);
 
+  /* ─── TTS Analyser ─── */
+  useEffect(() => {
+    if (!activeAudioElement) {
+      if (ttsAnalyserRef.current) {
+        if (ttsAnalyserRef.current.ctx.state !== 'closed') ttsAnalyserRef.current.ctx.close();
+        ttsAnalyserRef.current = null;
+      }
+      return;
+    }
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContext();
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      const source = ctx.createMediaElementSource(activeAudioElement);
+      source.connect(analyser);
+      analyser.connect(ctx.destination);
+      const freqData = new Uint8Array(analyser.frequencyBinCount);
+      ttsAnalyserRef.current = { analyser, freqData, ctx };
+      
+      return () => {
+        source.disconnect();
+        analyser.disconnect();
+        if (ctx.state !== 'closed') ctx.close();
+        ttsAnalyserRef.current = null;
+      };
+    } catch (e) {
+      console.warn("Failed to create TTS analyser", e);
+    }
+  }, [activeAudioElement]);
+
   /* ─── render loop ─── */
   useEffect(() => {
     const glCanvas    = glCanvasRef.current!;
@@ -186,16 +226,32 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       curRef.current = next as OrbStateConfig;
 
       /* voice */
-      const handle = micHandleRef.current;
-      if (handle?.analyser && handle?.freqData) {
-        handle.analyser.getByteFrequencyData(handle.freqData as any);
+      const micHandle = micHandleRef.current;
+      const ttsHandle = ttsAnalyserRef.current;
+      
+      let targetAmp = 0;
+      let ttsAmp = 0;
+      let userAmp = 0;
+      
+      if (ttsHandle?.analyser && ttsHandle?.freqData) {
+        ttsHandle.analyser.getByteFrequencyData(ttsHandle.freqData);
         let sum = 0;
-        const n = Math.min(80, handle.freqData.length);
-        for (let i = 0; i < n; i++) sum += handle.freqData[i];
-        voiceAmpRef.current = lerp(voiceAmpRef.current, (sum / n) / 255, 0.2);
-      } else {
-        voiceAmpRef.current = lerp(voiceAmpRef.current, 0, 0.07);
+        const n = Math.min(80, ttsHandle.freqData.length);
+        for (let i = 0; i < n; i++) sum += ttsHandle.freqData[i];
+        ttsAmp = (sum / n) / 255;
       }
+      
+      if (micHandle?.analyser && micHandle?.freqData) {
+        micHandle.analyser.getByteFrequencyData(micHandle.freqData as any);
+        let sum = 0;
+        const n = Math.min(80, micHandle.freqData.length);
+        for (let i = 0; i < n; i++) sum += micHandle.freqData[i];
+        userAmp = (sum / n) / 255;
+      }
+
+      targetAmp = activeIdRef.current === 'speaking' ? ttsAmp : userAmp;
+
+      voiceAmpRef.current = lerp(voiceAmpRef.current, targetAmp, 0.2);
 
       const v = voiceAmpRef.current;
       const c = curRef.current;
@@ -216,7 +272,7 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
         const silenceThreshold = 0.018; // Silence baseline
         const silenceDurationMs = 2000;  // 2 seconds of silence
 
-        if (v > silenceThreshold) {
+        if (userAmp > silenceThreshold) {
           if (!hasSpokenRef.current) {
             console.log('[VAD] Speech detected');
             hasSpokenRef.current = true;
@@ -227,11 +283,41 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
             silenceStartRef.current = performance.now();
           } else if (performance.now() - silenceStartRef.current > silenceDurationMs) {
             console.log('[VAD] Silence timeout reached. Automatically submitting speech...');
+            hasSpokenRef.current = false;
             setTimeout(() => {
               toggleMicRef.current?.();
             }, 0);
           }
         }
+      }
+
+      /* Client-side VAD Barge-in (Sustained Energy Check) */
+      if (activeIdRef.current === 'speaking' && micOnRef.current) {
+        if (performance.now() < bargeInCooldownRef.current) {
+          // Skip VAD during cooldown window to prevent TTS tail-end echo triggering
+          bargeInStartRef.current = null;
+        } else {
+          const bargeInThreshold = 0.05; // Speech-like energy threshold
+          const bargeInDurationMs = 400; // Require sustained energy for 400ms to avoid random noise cutoffs
+
+          if (userAmp > bargeInThreshold) {
+            if (bargeInStartRef.current === null) {
+              bargeInStartRef.current = performance.now();
+            } else if (performance.now() - bargeInStartRef.current > bargeInDurationMs) {
+              console.log('[VAD] Sustained barge-in detected! User interrupted the avatar.');
+              bargeInStartRef.current = null; // Reset
+              bargeInCooldownRef.current = performance.now() + 500; // 500ms cooldown
+              if (onBargeIn) {
+                setTimeout(() => onBargeIn(), 0);
+              }
+            }
+          } else {
+            // Reset duration counter if amplitude drops
+            bargeInStartRef.current = null;
+          }
+        }
+      } else {
+        bargeInStartRef.current = null;
       }
 
       /* 2D overlays */

@@ -1,7 +1,8 @@
 import os
 import sys
 import re
-from typing import Dict, Any, Tuple
+import concurrent.futures
+from typing import Dict, Any, Tuple, List
 
 # Ensure parent directory is in search path if run directly
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -47,6 +48,7 @@ class CoordinatorAgent:
             "student_services": StudentServicesAgent(client=self.client),
             "navigation": NavigationAgent(client=self.client)
         }
+        self.merger = None
 
         # Define keyword routing mappings for each domain agent.
         self.routing_rules = {
@@ -117,7 +119,7 @@ class CoordinatorAgent:
             query (str): The user search query.
             
         Returns:
-            Tuple[str, float, str, list]: (selected_domain, confidence_score, routing_reason, matched_keywords)
+            Tuple[list, float, str, list]: (selected_domains, confidence_score, routing_reason, matched_keywords)
         """
         query_lower = query.lower()
         scores = {}
@@ -207,18 +209,21 @@ class CoordinatorAgent:
         best_score = scores[best_domain]
         
         if best_score > 0:
+            # Find all domains within 40% of the best score
+            top_domains = [d for d, s in scores.items() if s > 0 and s >= best_score * 0.4]
+            
             matched_words = ", ".join(f"'{w}'" for w in matched_details[best_domain])
-            reason = f"Matched keyword(s) {matched_words} in domain '{best_domain}'"
+            reason = f"Matched keyword(s) {matched_words}. Selected domains: {', '.join(top_domains)}"
             
             # Compute confidence score
             total_score = sum(scores.values())
             other_score = total_score - best_score
             confidence = best_score / (best_score + 0.176 * other_score)
             
-            return best_domain, confidence, reason, all_matches
+            return top_domains, confidence, reason, all_matches
         else:
             reason = "No matching keywords found across any domain"
-            return None, 0.0, reason, []
+            return [], 0.0, reason, []
 
     def answer(self, query: str) -> str:
         """
@@ -241,10 +246,10 @@ class CoordinatorAgent:
             english_query = query
             detected_lang = "en"
 
-        selected_domain, confidence, reason, all_matches = self.route(english_query)
+        selected_domains, confidence, reason, all_matches = self.route(english_query)
         
         # Check if a strong match exists
-        if selected_domain is None or confidence <= 0.0:
+        if not selected_domains or confidence <= 0.0:
             fallback_msg = (
                 "Sorry, I could not find information regarding this in the university knowledge base. "
                 "Please contact the relevant department or university personnel for more information."
@@ -307,8 +312,9 @@ class CoordinatorAgent:
             )
             return f"{fallback_msg}\n\n[Source: None]"
             
-        agent = self.agents[selected_domain]
-        selected_agent_name = agent.__class__.__name__
+        selected_agent_names = [self.agents[d].__class__.__name__ for d in selected_domains]
+        selected_agent_name = ", ".join(selected_agent_names)
+        selected_domain_str = ", ".join(selected_domains)
         matched_keywords_str = ", ".join(all_matches) if all_matches else "None"
         
         # Print USER QUERY and ROUTING DECISION
@@ -328,19 +334,54 @@ class CoordinatorAgent:
         print("Matched Keywords:")
         print(matched_keywords_str)
         print()
-        print("Selected Agent:")
+        print("Selected Agent(s):")
         print(selected_agent_name)
         print()
-        print("Domain Selected:")
-        print(selected_domain)
+        print("Domain(s) Selected:")
+        print(selected_domain_str)
         print()
         print("Confidence:")
         print(f"{confidence:.2f}")
         print()
         print("=" * 52)
         
-        # Perform retrieval and printing of candidate documents
-        raw_ans = agent.answer(english_query, routing_confidence=confidence)
+        # Perform retrieval and printing of candidate documents concurrently
+        domain_responses = {}
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_to_domain = {
+                executor.submit(self.agents[d].answer, english_query, routing_confidence=confidence): d
+                for d in selected_domains
+            }
+            for future in concurrent.futures.as_completed(future_to_domain):
+                d = future_to_domain[future]
+                try:
+                    domain_responses[d] = future.result()
+                except Exception as exc:
+                    print(f"[Error] Agent {d} generated an exception: {exc}")
+                    
+        # Merge if multiple domains
+        if len(selected_domains) > 1:
+            if not getattr(self, "merger", None):
+                try:
+                    from langchain_google_genai import ChatGoogleGenerativeAI
+                    import os
+                    if os.environ.get("GOOGLE_API_KEY"):
+                        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+                    else:
+                        from langchain_community.chat_models import ChatOllama
+                        llm = ChatOllama(model="qwen3:latest", temperature=0)
+                    from riar.mergers.cross_domain_merger import CrossDomainMerger
+                    self.merger = CrossDomainMerger(llm)
+                except Exception as e:
+                    print(f"[Error] Failed to initialize merger: {e}")
+                    self.merger = None
+                    
+            if self.merger:
+                raw_ans = self.merger.merge(english_query, domain_responses)
+            else:
+                raw_ans = "\n\n".join(domain_responses.values())
+        else:
+            raw_ans = list(domain_responses.values())[0]
         
         # Parse returned answer to separate answer and source
         if "\n\n[Source: " in raw_ans:
@@ -348,7 +389,7 @@ class CoordinatorAgent:
             source_part = "\n\n[Source: " + source_part
         else:
             answer_part = raw_ans
-            source_part = f"\n\n[Source: {selected_domain.title().replace('_', ' ')}]"
+            source_part = f"\n\n[Source: {selected_domain_str.title().replace('_', ' ')}]"
             
         # Translate the answer back if needed
         if detected_lang in ["kn", "hi"]:
@@ -394,13 +435,13 @@ if __name__ == "__main__":
             if not query:
                 continue
                 
-            selected_domain, confidence, reason, _ = coordinator.route(query)
+            selected_domains, confidence, reason, _ = coordinator.route(query)
             
             selected_agent = "None"
-            if selected_domain:
-                agent = coordinator.agents.get(selected_domain)
-                if agent:
-                    selected_agent = agent.__class__.__name__
+            if selected_domains:
+                agents_found = [coordinator.agents.get(d) for d in selected_domains if coordinator.agents.get(d)]
+                if agents_found:
+                    selected_agent = ", ".join([a.__class__.__name__ for a in agents_found])
             
             # Get response
             raw_ans = coordinator.answer(query)

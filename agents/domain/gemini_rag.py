@@ -116,7 +116,7 @@ Answer:"""
 Context:
 {formatted_context.strip()}
 
-Determine whether the context contains sufficient information to answer the question.
+Determine whether the context contains information relevant to answering ANY PART of the question.
 
 Reply only:
 

@@ -180,3 +180,56 @@ async def add_agent_turn(session_id: str, content: str) -> bool:
     except Exception:
         pass
     return True
+
+async def mark_turn_interrupted(session_id: str) -> bool:
+    session = await get_session(session_id)
+    if not session:
+        return False
+    
+    # Find the last agent turn and mark it interrupted
+    for turn in reversed(session.metadata["history"]):
+        if turn["role"] == "agent":
+            turn["interrupted"] = True
+            break
+            
+    # Update SQLite
+    async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
+        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.commit()
+    # Update Redis
+    try:
+        redis = await get_redis()
+        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+    except Exception:
+        pass
+    return True
+
+async def log_barge_in(session_id: str, reason: str, position_ms: float) -> bool:
+    session = await get_session(session_id)
+    if not session:
+        return False
+    metrics = session.metadata.get("metrics", {})
+    count = metrics.get("barge_in_count", 0)
+    avg_pos = metrics.get("average_interruption_position_ms", 0.0)
+    
+    # Calculate new average
+    new_avg = ((avg_pos * count) + position_ms) / (count + 1)
+    
+    metrics["barge_in_count"] = count + 1
+    metrics["average_interruption_position_ms"] = new_avg
+    metrics["last_interruption_reason"] = reason
+    metrics["barge_in_false_positive_count"] = metrics.get("barge_in_false_positive_count", 0)
+    
+    session.metadata["metrics"] = metrics
+    
+    # Update SQLite
+    async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
+        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.commit()
+    # Update Redis
+    try:
+        redis = await get_redis()
+        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+    except Exception:
+        pass
+    return True

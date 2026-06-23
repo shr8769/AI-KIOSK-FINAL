@@ -26,10 +26,15 @@ export default function KioskPage() {
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'kn' | 'hi' | null>(null);
   const [isLanguageSelected, setIsLanguageSelected] = useState(false);
   
+  // Readiness state
+  const [isBackendReady, setIsBackendReady] = useState(false);
+  const [startupMessage, setStartupMessage] = useState("Initializing AI...");
+  
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttempts = useRef(0);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [activeAudioElement, setActiveAudioElement] = useState<HTMLAudioElement | null>(null);
   
   const isLanguageSelectedRef = useRef(false);
   const isSelectingLangRef = useRef(false);
@@ -46,6 +51,7 @@ export default function KioskPage() {
         console.warn('[Audio] Failed to pause active audio:', e);
       }
       activeAudioRef.current = null;
+      setActiveAudioElement(null);
     }
 
     const fullAudioUrl = getAudioAbsoluteUrl(audioUrl);
@@ -53,7 +59,9 @@ export default function KioskPage() {
     
     setOrbState('speaking');
     const audio = new Audio(fullAudioUrl);
+    audio.crossOrigin = "anonymous";
     activeAudioRef.current = audio;
+    setActiveAudioElement(audio);
 
     audio.onended = () => {
       console.log('[Audio] Finished response playback, transitioning to listening');
@@ -65,6 +73,7 @@ export default function KioskPage() {
         return 'idle';
       });
       activeAudioRef.current = null;
+      setActiveAudioElement(null);
     };
 
     audio.onerror = (err) => {
@@ -73,6 +82,7 @@ export default function KioskPage() {
       setCustomLabel('Playback Error');
       setCustomDesc('Could not play synthesized audio response.');
       activeAudioRef.current = null;
+      setActiveAudioElement(null);
     };
 
     audio.play().catch((err) => {
@@ -266,7 +276,8 @@ export default function KioskPage() {
             console.error('[WS] Backend Error:', msg.payload);
             setOrbState('error');
             setCustomLabel('Processing Error');
-            setCustomDesc(msg.payload?.message || 'Something went wrong. Please try again.');
+            const errCode = msg.payload?.code ? ` (${msg.payload.code})` : '';
+            setCustomDesc((msg.payload?.message || 'Something went wrong. Please try again.') + errCode);
             break;
           default:
             console.warn('[WS] Unknown message type:', msg.type);
@@ -339,6 +350,65 @@ export default function KioskPage() {
     }
   }, [selectedLanguage]);
 
+  const handleBargeIn = useCallback(() => {
+    console.log('[App] Barge-in triggered. Killing audio turn.');
+    if (activeAudioRef.current) {
+      try {
+        activeAudioRef.current.pause();
+        activeAudioRef.current.currentTime = 0;
+        activeAudioRef.current.removeAttribute('src');
+        activeAudioRef.current.load();
+      } catch (e) {}
+      activeAudioRef.current = null;
+      setActiveAudioElement(null);
+    }
+    
+    setOrbState('listening');
+    setCustomLabel('🎤 Listening...');
+    // Intentionally leaving customDesc intact so the previous answer stays visible
+
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ 
+        type: 'interrupt', 
+        payload: {
+          session_id: sessionId,
+          turn_id: 1,
+          reason: "user_barge_in",
+          position_ms: activeAudioRef.current ? Math.floor(activeAudioRef.current.currentTime * 1000) : 0
+        } 
+      }));
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    // Poll /ready endpoint if we haven't interacted yet
+    let isMounted = true;
+    const pollReady = async () => {
+      if (hasInteracted) return;
+      try {
+        const httpBase = WS_BASE_URL.replace(/^ws/, 'http').replace(/\/ws\/session.*$/, '');
+        const res = await fetch(`${httpBase}/ready`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) {
+            setIsBackendReady(data.ready);
+            if (data.messages && data.messages.length > 0) {
+              setStartupMessage(data.messages[data.messages.length - 1]);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Waiting for backend readiness...', e);
+      }
+      if (isMounted && !isBackendReady) {
+        setTimeout(pollReady, 1000);
+      }
+    };
+    
+    pollReady();
+    return () => { isMounted = false; };
+  }, [hasInteracted, isBackendReady]);
+
   useEffect(() => {
     if (hasInteracted) {
       connectWebSocket();
@@ -389,15 +459,25 @@ export default function KioskPage() {
             </p>
           </div>
 
-          <button
-            onClick={() => {
-              unlockAudio();
-              setHasInteracted(true);
-            }}
-            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-          >
-            Start Interaction
-          </button>
+          {!isBackendReady ? (
+            <div className="w-full py-4 px-6 rounded-2xl bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center space-y-2">
+              <svg className="w-6 h-6 text-indigo-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span className="text-sm text-zinc-300 font-medium animate-pulse">{startupMessage}</span>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                unlockAudio();
+                setHasInteracted(true);
+              }}
+              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            >
+              Start Interaction
+            </button>
+          )}
         </div>
       </main>
     );
@@ -442,6 +522,8 @@ export default function KioskPage() {
           customLabel={customLabel}
           customDesc={customDesc}
           onAudioReady={handleAudioReady}
+          onBargeIn={handleBargeIn}
+          activeAudioElement={activeAudioElement}
         />
 
         {/* ── Language Selection Buttons ── */}

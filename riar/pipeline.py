@@ -87,12 +87,12 @@ class RIARPipeline:
         probe_chunks, domain_scores = self.probe.retrieve(query)
 
         # 2 & 3. Ambiguity Detection & Classification
-        classification = self.classifier.classify(query, domain_scores)
+        classification = self.classifier.classify(query, domain_scores, session_history=session_history)
 
         # 4. Clarification Generation
         clarification_question = None
         if classification.requires_clarification:
-            clarification_question = self.clarifier.generate_question(query, classification, probe_chunks)
+            clarification_question = self.clarifier.generate_question(query, classification, probe_chunks, session_history=session_history)
 
         elapsed_ms = int((time.time() - start) * 1000)
         if elapsed_ms > self.MAX_LATENCY_MS:

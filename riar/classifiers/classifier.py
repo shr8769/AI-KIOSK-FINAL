@@ -21,6 +21,9 @@ Analyze the user's query along with the domain signals collected from a vector d
 Your job is to determine if the query is clear enough to route directly to a domain expert, 
 or if it is ambiguous and requires clarification from the user.
 
+CONVERSATION HISTORY:
+{history}
+
 USER QUERY: "{query}"
 
 PROBE DOMAIN SIGNALS (0.0 to 1.0):
@@ -57,7 +60,7 @@ class RIARClassifier:
             ("system", CLASSIFIER_PROMPT)
         ])
         
-    def classify(self, query: str, domain_scores: Dict[str, float]) -> RIARClassification:
+    def classify(self, query: str, domain_scores: Dict[str, float], session_history: List[Any] = None) -> RIARClassification:
         """
         Classify the ambiguity of the query.
         
@@ -76,8 +79,15 @@ class RIARClassifier:
         signals_str = "\n".join([f"- {d}: {s:.2f}" for d, s in domain_scores.items()]) if domain_scores else "No strong signals."
         top_domains = [d for d, s in domain_scores.items() if s > 0.45]
         
+        
+        # Format history
+        history_str = "No prior context."
+        if session_history:
+            history_str = "\n".join([f"{t.role.upper()}: {t.text}" for t in session_history])
+
         try:
             formatted_messages = self.prompt.format_messages(
+                history=history_str,
                 query=query,
                 domain_signals=signals_str,
                 top_domains=", ".join(top_domains) if top_domains else "None"

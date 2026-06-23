@@ -32,7 +32,7 @@ from app.core.dependencies import (
     translate_to_english,
 )
 from app.core.logging import logger
-from app.core.session_store import add_agent_turn, add_user_turn, get_session
+from app.core.session_store import add_agent_turn, add_user_turn, get_session, log_barge_in, mark_turn_interrupted
 from app.models.schemas import ASRRequest, RIARRequest, TTSRequest, TurnModel
 from app.services.riar_service import riar_service
 from app.services.speech.asr_service import asr_service
@@ -54,7 +54,7 @@ async def websocket_session_handler(
     session = await get_session(session_id)
     if not session:
         await websocket.accept()
-        await websocket.send_json({"type": "error", "payload": {"message": "Session not found"}})
+        await websocket.send_json({"type": "error", "payload": {"message": "Session not found", "code": "session_not_found"}})
         await websocket.close(code=4004)
         return
 
@@ -68,7 +68,7 @@ async def websocket_session_handler(
             try:
                 msg = json.loads(raw)
             except json.JSONDecodeError:
-                await mgr.send(session_id, {"type": "error", "payload": {"message": "Invalid JSON"}})
+                await mgr.send(session_id, {"type": "error", "payload": {"message": "Invalid JSON", "code": "invalid_json"}})
                 continue
 
             msg_type = msg.get("type", "unknown")
@@ -82,9 +82,21 @@ async def websocket_session_handler(
             elif msg_type == "audio_chunk":
                 await _handle_audio_chunk(mgr, session_id, payload)
 
-
-
-            # ── Camera frame (stub) ───────────────────────────────────
+            elif msg_type == "interrupt":
+                turn_id = payload.get("turn_id", "unknown")
+                reason = payload.get("reason", "unknown")
+                position_ms = payload.get("position_ms", 0)
+                logger.info(f"WS [{session_id}] Barge-in interrupt received for turn {turn_id} (Reason: {reason}, Pos: {position_ms}ms).")
+                
+                # Mark current turn as interrupted
+                await mark_turn_interrupted(session_id)
+                
+                # Log the metric to the database
+                await log_barge_in(session_id, reason, position_ms)
+                
+                # In Phase 2 (streaming), we would cancel the active generation task here.
+                # For Phase 1, the frontend has already halted playback and reset to listening.
+                await mgr.send(session_id, {"type": "info", "payload": {"message": "Interrupt acknowledged and logged"}})            # ── Camera frame (stub) ───────────────────────────────────
             elif msg_type == "frame":
                 await mgr.send(session_id, {"type": "detection", "payload": {"person_detected": True, "confidence": 0.91}})
 
@@ -94,7 +106,7 @@ async def websocket_session_handler(
                 await mgr.send(session_id, {"type": "answer", "payload": {"text": f"[dev] {text}", "sources": []}})
 
             else:
-                await mgr.send(session_id, {"type": "error", "payload": {"message": f"Unknown type: {msg_type}"}})
+                await mgr.send(session_id, {"type": "error", "payload": {"message": f"Unknown type: {msg_type}", "code": "unknown_type"}})
 
     except WebSocketDisconnect:
         mgr.disconnect(session_id)
@@ -109,7 +121,7 @@ async def websocket_session_handler(
 async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: dict) -> None:
     audio_base64 = payload.get("audio_base64")
     if not audio_base64:
-        await mgr.send(session_id, {"type": "error", "payload": {"message": "Missing audio_base64"}})
+        await mgr.send(session_id, {"type": "error", "payload": {"message": "Missing audio_base64", "code": "missing_audio"}})
         return
 
     turn_id = payload.get("turn_id", 1)
@@ -209,25 +221,16 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             await mgr.send(session_id, {"type": "retrieving", "payload": {}})
 
             coordinator = get_coordinator_agent()  # lazy — loads on first call
-            domain, confidence, _reason, _all = coordinator.route(refined_query)
-
-            if domain is None or confidence <= 0.0:
-                answer_en = (
-                    "I'm sorry, I couldn't identify the right department for your query. "
-                    "Please try asking about: Admissions, Academics, Placements, Research, "
-                    "Student Services, or Navigation."
-                )
-                citations = []
+            # Use the coordinator's built-in parallel dispatch and merging logic
+            full_answer = coordinator.answer(refined_query)
+            
+            citations = []
+            if "\n\n[Source: " in full_answer:
+                parts = full_answer.split("\n\n[Source: ", 1)
+                answer_en = parts[0]
+                citations = [parts[1].rstrip("]")]
             else:
-                agent = coordinator.agents.get(domain)
-                docs = agent.retrieve(refined_query) if agent else []
-                if docs:
-                    best = docs[0]
-                    answer_en = best["answer"]
-                    citations = [f"{domain.title().replace('_', ' ')} | Ref: {best['id']}"]
-                else:
-                    answer_en = f"I couldn't find information about that in the {domain} section."
-                    citations = []
+                answer_en = full_answer
 
             # ── 5. Back-translate ──────────────────────────────────
             answer_native = (
@@ -237,9 +240,13 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             )
             await add_agent_turn(session_id, answer_native)
 
+            import re
+            # Strip markdown for TTS so it doesn't speak "asterisk"
+            tts_text = re.sub(r'[*_#]', '', answer_native)
+            
             # ── 6. TTS ────────────────────────────────────────────
             tts_resp = await tts_service.synthesize(
-                TTSRequest(session_id=session_id, text=answer_native, language=detected_lang)
+                TTSRequest(session_id=session_id, text=tts_text, language=detected_lang)
             )
             await mgr.send(session_id, {
                 "type": "answer",
@@ -248,4 +255,19 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
 
     except Exception as e:
         logger.exception(f"Pipeline error [{session_id}]: {e}")
-        await mgr.send(session_id, {"type": "error", "payload": {"message": f"Pipeline failed: {e}"}})
+        fallback_msg = "I'm sorry, I encountered a temporary issue while processing your request. Please try again."
+        
+        # Send error state to UI
+        await mgr.send(session_id, {"type": "error", "payload": {"message": fallback_msg, "code": "pipeline_error"}})
+        
+        # Synthesize the error message so the avatar speaks the fallback instead of silently freezing
+        try:
+            tts_resp = await tts_service.synthesize(
+                TTSRequest(session_id=session_id, text=fallback_msg, language="en")
+            )
+            await mgr.send(session_id, {
+                "type": "answer",
+                "payload": {"text": fallback_msg, "audio_url": tts_resp.audio_url, "sources": []},
+            })
+        except Exception as tts_e:
+            logger.error(f"Failed to synthesize error fallback: {tts_e}")

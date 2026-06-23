@@ -35,6 +35,27 @@ class ASRService:
             logger.info(f"faster-whisper model '{model_size}' loaded.")
         return self.model
 
+    def preload(self):
+        """Force load the Whisper model into GPU/CPU memory."""
+        self._get_model()
+
+    def warmup_inference(self):
+        """Run a dummy transcription of 1 second silence to compile CUDA kernels and optimize graph."""
+        logger.info("Warming up Whisper model with dummy audio...")
+        import numpy as np
+        # 1 second of silence at 16kHz
+        dummy_audio = np.zeros(16000, dtype=np.float32)
+        model = self._get_model()
+        # Discard output, just force inference
+        model.transcribe(
+            dummy_audio,
+            beam_size=1,
+            best_of=1,
+            temperature=0.0,
+            language="en"
+        )
+        logger.info("Whisper model warm-up complete.")
+
     def _load_wav_to_numpy(self, audio_bytes: bytes) -> np.ndarray:
         """
         Decodes WAV file bytes directly into a normalized float32 numpy array.

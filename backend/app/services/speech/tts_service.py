@@ -76,23 +76,25 @@ class TTSService:
                 latency_ms=latency_ms,
             )
 
-        # 1. Try gTTS first for high-quality multilingual output
+        # 1. Try edge-tts for ultra-realistic neural voices
         try:
-            from gtts import gTTS
+            import edge_tts
 
-            lang = "en"
             req_lang = (request.language or "en").lower()
             if req_lang in ("kn", "kannada"):
-                lang = "kn"
+                voice = "kn-IN-SapnaNeural"
             elif req_lang in ("hi", "hindi"):
-                lang = "hi"
+                voice = "hi-IN-SwaraNeural"
+            else:
+                # Default to Indian English female neural voice
+                voice = "en-IN-NeerjaNeural"
 
             filename = f"response_{request.session_id}_{int(time.time())}.mp3"
             filepath = os.path.join(static_dir, filename)
 
-            logger.info(f"Synthesizing speech via gTTS (lang={lang})...")
-            tts = gTTS(text=request.text, lang=lang)
-            await asyncio.to_thread(tts.save, filepath)
+            logger.info(f"Synthesizing speech via edge-tts (voice={voice})...")
+            communicate = edge_tts.Communicate(request.text, voice)
+            await communicate.save(filepath)
 
             words = len(request.text.split())
             duration = max(1.0, round(words * 0.45, 2))
@@ -106,7 +108,7 @@ class TTSService:
                 latency_ms=latency_ms,
             )
         except Exception as e:
-            logger.warning(f"gTTS synthesis failed or not installed: {e}. Falling back to pyttsx3.")
+            logger.warning(f"edge-tts synthesis failed: {e}. Falling back to pyttsx3.")
 
         # 2. Fallback to pyttsx3 SAPI5 local generation
         try:
