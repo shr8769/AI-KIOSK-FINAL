@@ -27,8 +27,11 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${cinzel.variable} ${outfit.variable} ${jbMono.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-white selection:text-black`}>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body 
+        suppressHydrationWarning
+        className={`${cinzel.variable} ${outfit.variable} ${jbMono.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-white selection:text-black`}
+      >
         {children}
       </body>
     </html>

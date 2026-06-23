@@ -234,7 +234,7 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       let userAmp = 0;
       
       if (ttsHandle?.analyser && ttsHandle?.freqData) {
-        ttsHandle.analyser.getByteFrequencyData(ttsHandle.freqData);
+        ttsHandle.analyser.getByteFrequencyData(ttsHandle.freqData as any);
         let sum = 0;
         const n = Math.min(80, ttsHandle.freqData.length);
         for (let i = 0; i < n; i++) sum += ttsHandle.freqData[i];

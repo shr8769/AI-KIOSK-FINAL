@@ -50,8 +50,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Constants
-DEFAULT_DB_PATH = os.path.join("knowledge", "vectorstore")
-DEFAULT_SOURCES_DIR = os.path.join("knowledge", "sources")
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DEFAULT_DB_PATH = os.path.join(BASE_DIR, "knowledge", "vectorstore")
+DEFAULT_SOURCES_DIR = os.path.join(BASE_DIR, "knowledge", "sources")
 
 COLLECTIONS_MAP = {
     "admissions": os.path.join("admissions", "faq.json"),
@@ -59,7 +60,7 @@ COLLECTIONS_MAP = {
     "placements": os.path.join("placements", "faq.json"),
     "research": os.path.join("research", "faq.json"),
     "student_services": os.path.join("student_services", "faq.json"),
-    "navigation": os.path.join("navigation", "locations.json"),
+    "navigation": os.path.join("navigation", "navigation_locations.json"),
 }
 
 def generate_unique_id(collection_name: str, item: Dict[str, Any], index: int) -> str:
@@ -83,14 +84,14 @@ def format_document(collection_name: str, item: Dict[str, Any]) -> str:
     """
     if collection_name == "navigation":
         # Formulate a Q&A representation for navigation locations
-        facility = item.get("facility", "Unknown Facility")
+        name = item.get("name", "Unknown Facility")
         building = item.get("building", "Unknown Building")
         floor = item.get("floor", "Unknown Floor")
-        landmark = item.get("landmark", "Unknown Landmark")
-        directions = item.get("directions", "No directions provided.")
+        room = item.get("room", "")
+        directions = ", ".join(item.get("directions", []))
         
-        question = f"Where is the {facility}?"
-        answer = f"The {facility} is located in {building} on the {floor} (landmark: {landmark}). Directions: {directions}"
+        question = f"Where is the {name}?"
+        answer = f"The {name} is located in {building} on floor {floor} (room {room}). Directions: {directions}"
     else:
         question = item.get("question", "").strip()
         answer = item.get("answer", "").strip()
@@ -103,10 +104,17 @@ def get_metadata(collection_name: str, item: Dict[str, Any]) -> Dict[str, Any]:
     """
     metadata = {"category": collection_name}
     
-    # Store topic/facility/building/floor details in metadata for granular filtering if needed
-    for key in ["topic", "facility", "building", "floor", "landmark"]:
+    for key in ["topic", "building", "floor", "room", "id"]:
         if key in item and item[key]:
-            metadata[key] = item[key]
+            metadata[key] = str(item[key])
+            
+    if collection_name == "navigation":
+        metadata["name"] = str(item.get("name", ""))
+        metadata["aliases"] = ",".join(item.get("aliases", []))
+        coords = item.get("map_coords", {})
+        metadata["map_x"] = coords.get("x", 0)
+        metadata["map_y"] = coords.get("y", 0)
+        metadata["directions_json"] = json.dumps(item.get("directions", []))
             
     return metadata
 
@@ -142,8 +150,8 @@ def ingest_file(
             logger.error(f"Item at index {idx} in {file_path} is not a JSON object/dict. Skipping.")
             continue
         if collection_name == "navigation":
-            if "facility" not in item or "directions" not in item:
-                logger.error(f"Item at index {idx} in {file_path} is missing required navigation fields ('facility', 'directions'). Skipping.")
+            if "name" not in item or "directions" not in item:
+                logger.error(f"Item at index {idx} in {file_path} is missing required navigation fields ('name', 'directions'). Skipping.")
                 continue
         else:
             if "question" not in item or "answer" not in item:

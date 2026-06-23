@@ -2,7 +2,7 @@
 API Route Handlers
 """
 
-from . import asr, events, rag, riar, route, session, tts
+from . import asr, events, navigation, rag, riar, route, session, tts
 
 __all__ = [
     "events",
@@ -12,4 +12,5 @@ __all__ = [
     "rag",
     "tts",
     "session",
+    "navigation",
 ]

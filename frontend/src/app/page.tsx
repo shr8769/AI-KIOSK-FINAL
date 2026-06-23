@@ -3,8 +3,18 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VidyaSahayakOrb } from '@/components/orb';
 import type { OrbState } from '@/components/orb/orbStates';
+import { NavigationCard } from '@/components/ui/NavigationCard';
 
-const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws/session';
+const getWsBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    if (process.env.NEXT_PUBLIC_WS_URL) return process.env.NEXT_PUBLIC_WS_URL;
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${window.location.hostname}:8000/ws/session`;
+  }
+  return process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws/session';
+};
+
+const WS_BASE_URL = getWsBaseUrl();
 
 /**
  * Derives HTTP absolute URL from WebSocket base URL for static file serving.
@@ -25,6 +35,7 @@ export default function KioskPage() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'kn' | 'hi' | null>(null);
   const [isLanguageSelected, setIsLanguageSelected] = useState(false);
+  const [navigationData, setNavigationData] = useState<any>(null);
   
   // Readiness state
   const [isBackendReady, setIsBackendReady] = useState(false);
@@ -189,6 +200,7 @@ export default function KioskPage() {
             setOrbState('greeting');
             setCustomLabel('VidyaSahayak');
             setCustomDesc(msg.payload?.message || msg.payload?.text || 'Welcome!');
+            setNavigationData(null);
             if (msg.payload?.audio_url) {
               playResponseAudio(msg.payload.audio_url);
             }
@@ -250,6 +262,13 @@ export default function KioskPage() {
             setOrbState('speaking');
             setCustomLabel('VidyaSahayak');
             setCustomDesc(msg.payload?.text || '');
+            
+            if (msg.payload?.navigation) {
+              setNavigationData(msg.payload.navigation);
+            } else {
+              setNavigationData(null);
+            }
+            
             if (msg.payload?.audio_url) {
               playResponseAudio(msg.payload.audio_url);
             }
@@ -352,6 +371,10 @@ export default function KioskPage() {
 
   const handleBargeIn = useCallback(() => {
     console.log('[App] Barge-in triggered. Killing audio turn.');
+    
+    // Extract position before destroying the context
+    const currentPositionMs = activeAudioRef.current ? Math.floor(activeAudioRef.current.currentTime * 1000) : 0;
+    
     if (activeAudioRef.current) {
       try {
         activeAudioRef.current.pause();
@@ -365,6 +388,7 @@ export default function KioskPage() {
     
     setOrbState('listening');
     setCustomLabel('🎤 Listening...');
+    setNavigationData(null);
     // Intentionally leaving customDesc intact so the previous answer stays visible
 
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -374,7 +398,7 @@ export default function KioskPage() {
           session_id: sessionId,
           turn_id: 1,
           reason: "user_barge_in",
-          position_ms: activeAudioRef.current ? Math.floor(activeAudioRef.current.currentTime * 1000) : 0
+          position_ms: currentPositionMs
         } 
       }));
     }
@@ -525,6 +549,17 @@ export default function KioskPage() {
           onBargeIn={handleBargeIn}
           activeAudioElement={activeAudioElement}
         />
+
+        {navigationData && (
+          <NavigationCard 
+            navigationId={navigationData.navigation_id}
+            destinationName={navigationData.destination_name}
+            building={navigationData.building}
+            floor={navigationData.floor}
+            room={navigationData.room}
+            onClose={() => setNavigationData(null)}
+          />
+        )}
 
         {/* ── Language Selection Buttons ── */}
         {!isLanguageSelected && (

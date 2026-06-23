@@ -28,6 +28,7 @@ from backend.app.models.shared_models import (
 from riar.retrievers.probe import ProbeRetriever
 from riar.classifiers.classifier import RIARClassifier
 from riar.clarifiers.clarifier import RIARClarifier
+from riar.routers.router import RIARRouter
 from riar.mergers.merger import RIARMerger
 
 logger = logging.getLogger(__name__)
@@ -54,6 +55,7 @@ class RIARPipeline:
         self.probe = ProbeRetriever(chroma_client=vector_store, embedding_model=embedding_model)
         self.classifier = RIARClassifier(llm=llm_client)
         self.clarifier = RIARClarifier(llm=llm_client)
+        self.router = RIARRouter(llm=llm_client)
         self.merger = RIARMerger(llm=llm_client)
         logger.info("RIAR Pipeline initialized.")
 
@@ -89,10 +91,14 @@ class RIARPipeline:
         # 2 & 3. Ambiguity Detection & Classification
         classification = self.classifier.classify(query, domain_scores, session_history=session_history)
 
-        # 4. Clarification Generation
+        # 4. Clarification Generation or Routing
         clarification_question = None
+        selected_domain = None
         if classification.requires_clarification:
             clarification_question = self.clarifier.generate_question(query, classification, probe_chunks, session_history=session_history)
+        else:
+            routing_result = self.router.route(query, domain_scores)
+            selected_domain = routing_result.domain
 
         elapsed_ms = int((time.time() - start) * 1000)
         if elapsed_ms > self.MAX_LATENCY_MS:
@@ -104,6 +110,7 @@ class RIARPipeline:
             ambiguity_type=classification.ambiguity_type,
             clarification_question=clarification_question,
             refined_query=query,
+            selected_domain=selected_domain,
             probe_chunks=probe_chunks
         )
 

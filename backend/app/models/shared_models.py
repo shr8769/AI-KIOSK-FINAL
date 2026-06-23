@@ -117,6 +117,7 @@ class RIARResult:
     ambiguity_type: str  # From AMBIGUITY_TYPES
     clarification_question: Optional[str]
     refined_query: str
+    selected_domain: Optional[str] = None
     probe_chunks: List[ProbeChunk] = field(default_factory=list)
 
     def __post_init__(self):
