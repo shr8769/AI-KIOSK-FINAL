@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 
-from app.api.routes import detect, asr, riar, route, rag, tts, session
+from app.api.routes import detect, asr, riar, route, rag, tts, session, profile
 from app.core.config import settings
 
 logging.basicConfig(
@@ -59,8 +59,10 @@ app.include_router(route.router, prefix="/api/v1", tags=["Routing"])
 app.include_router(rag.router, prefix="/api/v1", tags=["RAG"])
 app.include_router(tts.router, prefix="/api/v1", tags=["TTS"])
 app.include_router(session.router, prefix="/api/v1", tags=["Session"])
+app.include_router(profile.router, prefix="/api/v1", tags=["Profile"])
 
 
 @app.get("/health", tags=["Health"])
+@app.get("/api/v1/health", tags=["Health"])
 async def health():
     return {"status": "ok", "version": "0.1.0", "project": "VidyaSahayak"}

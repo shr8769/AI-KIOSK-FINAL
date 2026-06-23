@@ -8,7 +8,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///./vidyasahayak.db
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/vidyasahayak
       - REDIS_URL=redis://redis:6379
       - USE_REAL_DETECTOR=false
       - USE_REAL_RIAR=false
@@ -21,6 +21,7 @@ services:
       - ./knowledge/vectorstore:/app/knowledge/vectorstore
     depends_on:
       - redis
+      - db
     command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:
@@ -42,5 +43,17 @@ services:
     volumes:
       - redis_data:/data
 
+  db:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=vidyasahayak
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
   redis_data:
+  postgres_data:

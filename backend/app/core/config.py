@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # ─── Database ────────────────────────────────────────────────────────────
-    DATABASE_URL: str = "sqlite:///./vidyasahayak.db"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/vidyasahayak"
     REDIS_URL: str = "redis://localhost:6379"
 
     # ─── Vector Store ────────────────────────────────────────────────────────
@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "ignore"
 
 
 settings = Settings()
