@@ -147,8 +147,8 @@ def analyze_failures():
             latencies.append(float(lat))
             
     avg_lat = sum(latencies) / len(latencies) if latencies else 0.0
-    min_lat = min(latencies) if latencies else 0.0
-    max_lat = max(latencies) if latencies else 0.0
+    min(latencies) if latencies else 0.0
+    max(latencies) if latencies else 0.0
 
     # Load custom metrics if baseline json is available
     baseline_json_path = os.path.join(results_dir, "week3_baseline.json")

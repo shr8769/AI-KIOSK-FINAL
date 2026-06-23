@@ -17,12 +17,14 @@ async def run_migrations():
     print(f"Connecting to database: {database_url}")
     engine = create_async_engine(database_url, echo=True)
     
-    migration_path = os.path.join(os.path.dirname(__file__), "001_init.sql")
-    with open(migration_path, "r", encoding="utf-8") as f:
-        sql_commands = f.read()
-        
+    migrations = ["001_init.sql", "002_memory.sql"]
     async with engine.begin() as conn:
-        await conn.execute(text(sql_commands))
+        for migration in migrations:
+            print(f"Executing: {migration}")
+            migration_path = os.path.join(os.path.dirname(__file__), migration)
+            with open(migration_path, "r", encoding="utf-8") as f:
+                sql_commands = f.read()
+            await conn.execute(text(sql_commands))
         
     print("Migrations completed successfully!")
     await engine.dispose()

@@ -1,6 +1,5 @@
 import os
 import json
-import time
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -22,7 +21,7 @@ def generate_report():
         weak_data = json.load(f)
         
     with open(pilot_plan_path, "r", encoding="utf-8") as f:
-        pilot_plan_content = f.read()
+        f.read()
 
     # Files lists
     modified_files = [

@@ -218,7 +218,7 @@ def run_evaluation():
     avg_faithfulness = total_faithfulness / total_queries if total_queries > 0 else 0.0
     avg_precision = total_precision / total_queries if total_queries > 0 else 0.0
     avg_recall = total_recall / total_queries if total_queries > 0 else 0.0
-    avg_grounding = total_grounding / total_queries if total_queries > 0 else 0.0
+    total_grounding / total_queries if total_queries > 0 else 0.0
     avg_unknown_success = total_unknown_success / unknown_queries_count if unknown_queries_count > 0 else 1.0
     hallucination_rate = 1.0 - avg_faithfulness
     retrieval_acc = (avg_precision + avg_recall) / 2.0

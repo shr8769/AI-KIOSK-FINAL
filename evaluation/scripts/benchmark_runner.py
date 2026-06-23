@@ -203,7 +203,7 @@ def run_benchmark():
     for idx, item in enumerate(queries_data, 1):
         query = item.get("query", "")
         expected = item.get("domain", "")
-        difficulty = item.get("difficulty", "standard")
+        item.get("difficulty", "standard")
         if not query:
             continue
             
@@ -313,7 +313,7 @@ def run_benchmark():
     avg_precision = total_precision / total_queries if total_queries > 0 else 0.0
     avg_recall = total_recall / total_queries if total_queries > 0 else 0.0
     avg_grounding = total_grounding / total_queries if total_queries > 0 else 0.0
-    avg_unknown_success = total_unknown_success / unknown_queries_count if unknown_queries_count > 0 else 1.0
+    total_unknown_success / unknown_queries_count if unknown_queries_count > 0 else 1.0
 
     print(f"\nBenchmark completed successfully! Results saved to {results_csv_path}.")
     

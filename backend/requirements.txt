@@ -8,22 +8,35 @@ redis==5.0.7
 sqlalchemy==2.0.31
 aiosqlite==0.20.0
 openai==1.35.3
+
 langchain==0.2.6
 langchain-openai==0.1.14
 langchain-community==0.2.6
+
 chromadb==0.5.3
 sentence-transformers==3.0.1
-openai-whisper==20231117
+
+# Use this instead of openai-whisper
 faster-whisper==1.0.1
-TTS==0.22.0
+ctranslate2>=4.4.0
+
+# TTS
+# TTS==0.22.0  # Optional: Commented out because VITS monotonic_align C-extension requires Microsoft Visual C++ 14.0+ Build Tools to compile
+
 opencv-python==4.9.0.80
-ultralytics==8.2.50
+
+# YOLO
+ultralytics==8.2.103
+
 numpy==1.26.4
+
+# Testing and formatting
 pytest==8.2.2
 pytest-asyncio==0.23.7
 pytest-cov==5.0.0
 ruff==0.5.0
 black==24.4.2
+
 python-dotenv==1.0.1
 asyncpg>=0.29.0
 pgvector>=0.3.1

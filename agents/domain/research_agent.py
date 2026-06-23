@@ -1,6 +1,4 @@
-import os
-import sys
-from typing import List, Dict, Any
+from typing import Any
 
 try:
     import chromadb

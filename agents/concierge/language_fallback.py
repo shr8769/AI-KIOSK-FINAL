@@ -429,7 +429,7 @@ class ChainedTranslator(BaseTranslator):
             logger.warning(f"[Translation] Qwen3 translate_from_english failed: {e}. Returning original.")
 
         # 3. Passthrough
-        logger.warning(f"[Translation] engine=passthrough | translate_from_english returning original.")
+        logger.warning("[Translation] engine=passthrough | translate_from_english returning original.")
         return text
 
 

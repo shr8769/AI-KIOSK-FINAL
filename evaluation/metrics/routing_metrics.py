@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 import pandas as pd
 
 def calculate_metrics():

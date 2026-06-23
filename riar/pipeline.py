@@ -22,7 +22,7 @@ from typing import List, Optional, Any
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../"))
 
 from backend.app.models.shared_models import (
-    RIARResult, RefinedQuery, ProbeChunk, Turn, AMBIGUITY_TYPES, SUPPORTED_DOMAINS
+    RIARResult, RefinedQuery, ProbeChunk, Turn
 )
 
 logger = logging.getLogger(__name__)
@@ -243,9 +243,9 @@ class RIARPipeline:
 
         # STUB: Returns a generic clarification
         clarifications = {
-            "SEMANTIC": f"Could you clarify what you mean by that? For example, are you asking about [option A] or [option B]?",
-            "CONTEXTUAL": f"Could you provide more context? For example, which department or program are you referring to?",
-            "CROSS_DOMAIN": f"Your question seems to touch multiple areas. Which is most important to you right now?",
+            "SEMANTIC": "Could you clarify what you mean by that? For example, are you asking about [option A] or [option B]?",
+            "CONTEXTUAL": "Could you provide more context? For example, which department or program are you referring to?",
+            "CROSS_DOMAIN": "Your question seems to touch multiple areas. Which is most important to you right now?",
         }
         return clarifications.get(ambiguity_type, "Could you please clarify your question?")
 
