@@ -1,0 +1,958 @@
+[
+    {
+        "id": "central_library",
+        "name": "Central Library",
+        "building": "Knowledge Resource Center",
+        "floor": 0,
+        "room": "RM-10",
+        "aliases": [
+            "central library"
+        ],
+        "map_coords": {
+            "x": 672,
+            "y": 411
+        },
+        "directions": [
+            "Enter through the main campus gate",
+            "walk straight past the central fountain",
+            "the library is the large glass building on your left."
+        ]
+    },
+    {
+        "id": "placement_cell",
+        "name": "Placement Cell",
+        "building": "Administrative Block",
+        "floor": 1,
+        "room": "RM-20",
+        "aliases": [
+            "placement cell"
+        ],
+        "map_coords": {
+            "x": 328,
+            "y": 381
+        },
+        "directions": [
+            "Enter the Administrative Block",
+            "take the stairs on your left to the 1st floor",
+            "walk down the corridor to Room 104."
+        ]
+    },
+    {
+        "id": "ai_research_lab",
+        "name": "AI Research Lab",
+        "building": "Engineering Block C",
+        "floor": 3,
+        "room": "RM-30",
+        "aliases": [
+            "ai research lab",
+            "ai research laboratory"
+        ],
+        "map_coords": {
+            "x": 285,
+            "y": 343
+        },
+        "directions": [
+            "Enter Engineering Block C",
+            "take the elevator to the 3rd floor",
+            "turn right",
+            "walk to the end of the hallway."
+        ]
+    },
+    {
+        "id": "registrars_office",
+        "name": "Registrar's Office",
+        "building": "Administrative Block",
+        "floor": 0,
+        "room": "RM-40",
+        "aliases": [
+            "registrar's office"
+        ],
+        "map_coords": {
+            "x": 547,
+            "y": 402
+        },
+        "directions": [
+            "Enter the Administrative Block",
+            "take an immediate right after the reception desk",
+            "it is the first office on the right."
+        ]
+    },
+    {
+        "id": "chemistry_lab",
+        "name": "Chemistry Lab",
+        "building": "Science Block A",
+        "floor": 2,
+        "room": "RM-50",
+        "aliases": [
+            "chemistry lab",
+            "chemistry laboratory"
+        ],
+        "map_coords": {
+            "x": 604,
+            "y": 251
+        },
+        "directions": [
+            "Go to Science Block A",
+            "take the stairs to the 2nd floor",
+            "turn left",
+            "walk past the faculty cabins to the double-door lab."
+        ]
+    },
+    {
+        "id": "physics_lab",
+        "name": "Physics Lab",
+        "building": "Science Block A",
+        "floor": 2,
+        "room": "RM-60",
+        "aliases": [
+            "physics lab",
+            "physics laboratory"
+        ],
+        "map_coords": {
+            "x": 297,
+            "y": 187
+        },
+        "directions": [
+            "Head to the 2nd floor of Science Block A",
+            "the lab is located directly opposite the elevator exit."
+        ]
+    },
+    {
+        "id": "central_cafeteria",
+        "name": "Central Cafeteria",
+        "building": "Student Activity Center (SAC)",
+        "floor": 0,
+        "room": "RM-70",
+        "aliases": [
+            "central cafeteria"
+        ],
+        "map_coords": {
+            "x": 230,
+            "y": 193
+        },
+        "directions": [
+            "Walk to the Student Activity Center behind the sports ground; the cafeteria entrance is on the right side of the main lobby."
+        ]
+    },
+    {
+        "id": "indoor_sports_complex",
+        "name": "Indoor Sports Complex",
+        "building": "Student Activity Center (SAC)",
+        "floor": 0,
+        "room": "RM-80",
+        "aliases": [
+            "indoor sports complex"
+        ],
+        "map_coords": {
+            "x": 227,
+            "y": 419
+        },
+        "directions": [
+            "From the main entrance",
+            "follow the path past the football field",
+            "enter the SAC building",
+            "the sports complex is on the ground floor."
+        ]
+    },
+    {
+        "id": "campus_health_center",
+        "name": "Campus Health Center",
+        "building": "Hostel Block D Annex",
+        "floor": 0,
+        "room": "RM-90",
+        "aliases": [
+            "campus health center",
+            "campus health centre"
+        ],
+        "map_coords": {
+            "x": 337,
+            "y": 437
+        },
+        "directions": [
+            "Head towards the Hostel Block D entrance; the health center is in the adjacent annex building next to the pharmacy."
+        ]
+    },
+    {
+        "id": "dean_of_student_affairs_office",
+        "name": "Dean of Student Affairs Office",
+        "building": "Administrative Block",
+        "floor": 2,
+        "room": "RM-100",
+        "aliases": [
+            "dean of student affairs office"
+        ],
+        "map_coords": {
+            "x": 421,
+            "y": 153
+        },
+        "directions": [
+            "Enter the Administrative Block",
+            "take the elevator to the 2nd floor",
+            "turn left",
+            "walk past the main meeting room."
+        ]
+    },
+    {
+        "id": "seminar_hall_a",
+        "name": "Seminar Hall A",
+        "building": "Main Block",
+        "floor": 1,
+        "room": "RM-110",
+        "aliases": [
+            "seminar hall a"
+        ],
+        "map_coords": {
+            "x": 160,
+            "y": 444
+        },
+        "directions": [
+            "Walk to the 1st floor of the Main Block",
+            "walk straight past the lounge",
+            "the double doors to Seminar Hall A are on your left."
+        ]
+    },
+    {
+        "id": "computer_science_department_office",
+        "name": "Computer Science Department Office",
+        "building": "Engineering Block C",
+        "floor": 2,
+        "room": "RM-120",
+        "aliases": [
+            "computer science department office"
+        ],
+        "map_coords": {
+            "x": 208,
+            "y": 490
+        },
+        "directions": [
+            "Enter Engineering Block C",
+            "take the stairs to the 2nd floor",
+            "turn left",
+            "the department office is the third door on the right."
+        ]
+    },
+    {
+        "id": "mathematics_department_office",
+        "name": "Mathematics Department Office",
+        "building": "Science Block B",
+        "floor": 1,
+        "room": "RM-130",
+        "aliases": [
+            "mathematics department office"
+        ],
+        "map_coords": {
+            "x": 360,
+            "y": 406
+        },
+        "directions": [
+            "Walk to the 1st floor of Science Block B",
+            "turn right at the notice board",
+            "the office is next to the library room."
+        ]
+    },
+    {
+        "id": "biotechnology_lab",
+        "name": "Biotechnology Lab",
+        "building": "Bio-Science Block",
+        "floor": 3,
+        "room": "RM-140",
+        "aliases": [
+            "biotechnology lab",
+            "biotechnology laboratory"
+        ],
+        "map_coords": {
+            "x": 398,
+            "y": 397
+        },
+        "directions": [
+            "Head to the 3rd floor of the Bio-Science Block",
+            "walk straight down the corridor",
+            "the lab is on the left before the greenhouse."
+        ]
+    },
+    {
+        "id": "robotics_and_automation_lab",
+        "name": "Robotics & Automation Lab",
+        "building": "Mechanical Engineering Block",
+        "floor": 0,
+        "room": "RM-150",
+        "aliases": [
+            "robotics & automation lab",
+            "robotics & automation laboratory"
+        ],
+        "map_coords": {
+            "x": 479,
+            "y": 380
+        },
+        "directions": [
+            "Enter the Mechanical Engineering Block from the rear entrance",
+            "walk past the CNC machine shop",
+            "the lab is on your right."
+        ]
+    },
+    {
+        "id": "admissions_office",
+        "name": "Admissions Office",
+        "building": "Administrative Block",
+        "floor": 0,
+        "room": "RM-160",
+        "aliases": [
+            "admissions office"
+        ],
+        "map_coords": {
+            "x": 393,
+            "y": 311
+        },
+        "directions": [
+            "Walk into the Administrative Block main entrance",
+            "the admissions office is located directly behind the main inquiry desk."
+        ]
+    },
+    {
+        "id": "accounts_and_fee_counter",
+        "name": "Accounts & Fee Counter",
+        "building": "Administrative Block",
+        "floor": 0,
+        "room": "RM-170",
+        "aliases": [
+            "accounts & fee counter"
+        ],
+        "map_coords": {
+            "x": 441,
+            "y": 374
+        },
+        "directions": [
+            "Walk into the Administrative Block lobby",
+            "the accounts desk is located directly to your left across from the admissions desk."
+        ]
+    },
+    {
+        "id": "campus_main_auditorium",
+        "name": "Campus Main Auditorium",
+        "building": "Auditorium Block",
+        "floor": 0,
+        "room": "RM-180",
+        "aliases": [
+            "campus main auditorium"
+        ],
+        "map_coords": {
+            "x": 241,
+            "y": 405
+        },
+        "directions": [
+            "Immediately after entering the campus main gate",
+            "take the first right turn; the auditorium is the large dome-shaped building."
+        ]
+    },
+    {
+        "id": "language_lab",
+        "name": "Language Lab",
+        "building": "Humanities Block",
+        "floor": 2,
+        "room": "RM-190",
+        "aliases": [
+            "language lab",
+            "language laboratory"
+        ],
+        "map_coords": {
+            "x": 488,
+            "y": 328
+        },
+        "directions": [
+            "Head to the 2nd floor of the Humanities Block",
+            "turn right",
+            "the lab is the second door on the left."
+        ]
+    },
+    {
+        "id": "graphics_design_studio",
+        "name": "Graphics Design Studio",
+        "building": "Architecture & Design Block",
+        "floor": 4,
+        "room": "RM-200",
+        "aliases": [
+            "graphics design studio"
+        ],
+        "map_coords": {
+            "x": 441,
+            "y": 240
+        },
+        "directions": [
+            "Take the elevator to the 4th floor of the Design Block",
+            "turn left",
+            "it is located at the end of the corridor."
+        ]
+    },
+    {
+        "id": "counseling_and_mental_health_center",
+        "name": "Counseling & Mental Health Center",
+        "building": "Student Activity Center (SAC)",
+        "floor": 1,
+        "room": "RM-210",
+        "aliases": [
+            "counseling & mental health center",
+            "counseling & mental health centre"
+        ],
+        "map_coords": {
+            "x": 688,
+            "y": 247
+        },
+        "directions": [
+            "Go to the 1st floor of the SAC building",
+            "turn right",
+            "the counseling center is located in a quiet corridor at the end."
+        ]
+    },
+    {
+        "id": "alumni_association_office",
+        "name": "Alumni Association Office",
+        "building": "Administrative Block",
+        "floor": 3,
+        "room": "RM-220",
+        "aliases": [
+            "alumni association office"
+        ],
+        "map_coords": {
+            "x": 108,
+            "y": 369
+        },
+        "directions": [
+            "Take the elevator to the 3rd floor of the Administrative Block",
+            "turn right",
+            "walk past the board room entrance."
+        ]
+    },
+    {
+        "id": "student_senate_hall",
+        "name": "Student Senate Hall",
+        "building": "Student Activity Center (SAC)",
+        "floor": 2,
+        "room": "RM-230",
+        "aliases": [
+            "student senate hall"
+        ],
+        "map_coords": {
+            "x": 197,
+            "y": 344
+        },
+        "directions": [
+            "Take the stairs to the 2nd floor of the SAC",
+            "turn left",
+            "the Senate Hall is the large double-door room on the left."
+        ]
+    },
+    {
+        "id": "examination_cell",
+        "name": "Examination Cell",
+        "building": "Administrative Block",
+        "floor": 1,
+        "room": "RM-240",
+        "aliases": [
+            "examination cell"
+        ],
+        "map_coords": {
+            "x": 311,
+            "y": 459
+        },
+        "directions": [
+            "Take the stairs to the 1st floor of the Administrative Block",
+            "turn left",
+            "walk straight to the secure access zone."
+        ]
+    },
+    {
+        "id": "mechanical_workshop",
+        "name": "Mechanical Workshop",
+        "building": "Mechanical Engineering Block",
+        "floor": 0,
+        "room": "RM-250",
+        "aliases": [
+            "mechanical workshop"
+        ],
+        "map_coords": {
+            "x": 419,
+            "y": 408
+        },
+        "directions": [
+            "Walk to the ground floor of the Mechanical Block",
+            "follow the signs to the workshop corridor",
+            "enter the double doors on the left."
+        ]
+    },
+    {
+        "id": "electrical_machines_lab",
+        "name": "Electrical Machines Lab",
+        "building": "Electrical Engineering Block",
+        "floor": 0,
+        "room": "RM-260",
+        "aliases": [
+            "electrical machines lab",
+            "electrical machines laboratory"
+        ],
+        "map_coords": {
+            "x": 674,
+            "y": 461
+        },
+        "directions": [
+            "Enter the Electrical Engineering Block",
+            "walk down the main ground floor corridor",
+            "the lab is the last room on the right."
+        ]
+    },
+    {
+        "id": "civil_engineering_survey_lab",
+        "name": "Civil Engineering Survey Lab",
+        "building": "Civil Engineering Block",
+        "floor": 0,
+        "room": "RM-270",
+        "aliases": [
+            "civil engineering survey lab",
+            "civil engineering survey laboratory"
+        ],
+        "map_coords": {
+            "x": 218,
+            "y": 103
+        },
+        "directions": [
+            "Go to the ground floor of the Civil Block",
+            "walk to the rear exit near the testing yard",
+            "the lab is on the left."
+        ]
+    },
+    {
+        "id": "executive_board_room",
+        "name": "Executive Board Room",
+        "building": "Administrative Block",
+        "floor": 3,
+        "room": "RM-280",
+        "aliases": [
+            "executive board room"
+        ],
+        "map_coords": {
+            "x": 390,
+            "y": 188
+        },
+        "directions": [
+            "Take the elevator to the 3rd floor of the Administrative Block",
+            "turn left",
+            "the board room is directly opposite the VC's office."
+        ]
+    },
+    {
+        "id": "vice_chancellor_vc_office",
+        "name": "Vice Chancellor (VC) Office",
+        "building": "Administrative Block",
+        "floor": 3,
+        "room": "RM-290",
+        "aliases": [
+            "vice chancellor (vc) office"
+        ],
+        "map_coords": {
+            "x": 376,
+            "y": 332
+        },
+        "directions": [
+            "Go to the 3rd floor of the Administrative Block",
+            "take a left from the elevator",
+            "the VC office suite is at the end of the corridor."
+        ]
+    },
+    {
+        "id": "career_guidance_cell",
+        "name": "Career Guidance Cell",
+        "building": "Library Block",
+        "floor": 1,
+        "room": "RM-300",
+        "aliases": [
+            "career guidance cell"
+        ],
+        "map_coords": {
+            "x": 417,
+            "y": 252
+        },
+        "directions": [
+            "Go to the 1st floor of the Library Block",
+            "turn left",
+            "the Career Guidance Cell is located next to the reference book racks."
+        ]
+    },
+    {
+        "id": "photocopy_and_stationery_shop",
+        "name": "Photocopy & Stationery Shop",
+        "building": "Student Activity Center (SAC)",
+        "floor": 0,
+        "room": "RM-310",
+        "aliases": [
+            "photocopy & stationery shop"
+        ],
+        "map_coords": {
+            "x": 519,
+            "y": 460
+        },
+        "directions": [
+            "Enter the SAC building from the front entrance",
+            "walk past the seating area",
+            "the shop is on the left next to the food stall."
+        ]
+    },
+    {
+        "id": "main_security_office",
+        "name": "Main Security Office",
+        "building": "Main Gate Security Block",
+        "floor": 0,
+        "room": "RM-320",
+        "aliases": [
+            "main security office"
+        ],
+        "map_coords": {
+            "x": 254,
+            "y": 334
+        },
+        "directions": [
+            "Located immediately at the main campus entrance",
+            "in the small security building on the right side of the gates."
+        ]
+    },
+    {
+        "id": "guest_house_reception",
+        "name": "Guest House Reception",
+        "building": "University Guest House",
+        "floor": 0,
+        "room": "RM-330",
+        "aliases": [
+            "guest house reception"
+        ],
+        "map_coords": {
+            "x": 409,
+            "y": 308
+        },
+        "directions": [
+            "Walk past the faculty housing block to the Guest House building; the reception lobby is located just past the main glass doors."
+        ]
+    },
+    {
+        "id": "girls_common_room",
+        "name": "Girls' Common Room",
+        "building": "Humanities Block",
+        "floor": 0,
+        "room": "RM-340",
+        "aliases": [
+            "girls' common room"
+        ],
+        "map_coords": {
+            "x": 376,
+            "y": 180
+        },
+        "directions": [
+            "Go to the ground floor of the Humanities Block",
+            "turn right from the entrance",
+            "the common room is the second door on the left."
+        ]
+    },
+    {
+        "id": "boys_common_room",
+        "name": "Boys' Common Room",
+        "building": "Engineering Block A",
+        "floor": 0,
+        "room": "RM-350",
+        "aliases": [
+            "boys' common room"
+        ],
+        "map_coords": {
+            "x": 366,
+            "y": 340
+        },
+        "directions": [
+            "Walk to the ground floor of Engineering Block A",
+            "turn left at the entrance lobby",
+            "it is located next to the sports locker room."
+        ]
+    },
+    {
+        "id": "placement_interview_room_1",
+        "name": "Placement Interview Room 1",
+        "building": "Placement Cell Block",
+        "floor": 1,
+        "room": "RM-360",
+        "aliases": [
+            "placement interview room 1"
+        ],
+        "map_coords": {
+            "x": 412,
+            "y": 456
+        },
+        "directions": [
+            "Walk to the 1st floor of the Placement Block",
+            "the interview room is the first glass cabin on the left."
+        ]
+    },
+    {
+        "id": "placement_interview_room_2",
+        "name": "Placement Interview Room 2",
+        "building": "Placement Cell Block",
+        "floor": 1,
+        "room": "RM-370",
+        "aliases": [
+            "placement interview room 2"
+        ],
+        "map_coords": {
+            "x": 201,
+            "y": 232
+        },
+        "directions": [
+            "Head to the 1st floor of the Placement Block",
+            "walk past Interview Room 1",
+            "Room 2 is the next cabin on the left."
+        ]
+    },
+    {
+        "id": "data_center___server_room",
+        "name": "Data Center / Server Room",
+        "building": "Engineering Block C",
+        "floor": 3,
+        "room": "RM-380",
+        "aliases": [
+            "data center / server room",
+            "data centre / server room"
+        ],
+        "map_coords": {
+            "x": 198,
+            "y": 457
+        },
+        "directions": [
+            "Take the elevator to the 3rd floor of Block C",
+            "turn right",
+            "the secured-access Data Center is on the left."
+        ]
+    },
+    {
+        "id": "iqac_office",
+        "name": "IQAC Office",
+        "building": "Administrative Block",
+        "floor": 2,
+        "room": "RM-390",
+        "aliases": [
+            "iqac office"
+        ],
+        "map_coords": {
+            "x": 528,
+            "y": 419
+        },
+        "directions": [
+            "Go to the 2nd floor of the Administrative Block",
+            "turn right",
+            "the IQAC office is the second door on the left."
+        ]
+    },
+    {
+        "id": "ncc___nss_office",
+        "name": "NCC / NSS Office",
+        "building": "Student Activity Center (SAC)",
+        "floor": 0,
+        "room": "RM-400",
+        "aliases": [
+            "ncc / nss office"
+        ],
+        "map_coords": {
+            "x": 310,
+            "y": 400
+        },
+        "directions": [
+            "Walk to the back exit of the SAC cafeteria",
+            "take the corridor to the left",
+            "the NCC/NSS office is at the end."
+        ]
+    },
+    {
+        "id": "music_room",
+        "name": "Music Room",
+        "building": "Student Activity Center (SAC)",
+        "floor": 2,
+        "room": "RM-410",
+        "aliases": [
+            "music room"
+        ],
+        "map_coords": {
+            "x": 627,
+            "y": 209
+        },
+        "directions": [
+            "Take the stairs to the 2nd floor of the SAC",
+            "turn right",
+            "the soundproofed music room is the third door on the right."
+        ]
+    },
+    {
+        "id": "fine_arts_gallery",
+        "name": "Fine Arts Gallery",
+        "building": "Architecture & Design Block",
+        "floor": 0,
+        "room": "RM-420",
+        "aliases": [
+            "fine arts gallery"
+        ],
+        "map_coords": {
+            "x": 410,
+            "y": 222
+        },
+        "directions": [
+            "Enter the Design Block",
+            "walk straight through the main lobby",
+            "the entry to the gallery is directly ahead."
+        ]
+    },
+    {
+        "id": "dean_of_academics_office",
+        "name": "Dean of Academics Office",
+        "building": "Administrative Block",
+        "floor": 2,
+        "room": "RM-430",
+        "aliases": [
+            "dean of academics office"
+        ],
+        "map_coords": {
+            "x": 559,
+            "y": 418
+        },
+        "directions": [
+            "Head to the 2nd floor of the Administrative Block",
+            "turn left from the elevator",
+            "the Academic office is the second door on the right."
+        ]
+    },
+    {
+        "id": "research_and_development_cell",
+        "name": "Research & Development Cell",
+        "building": "Science Block B",
+        "floor": 0,
+        "room": "RM-440",
+        "aliases": [
+            "research & development cell"
+        ],
+        "map_coords": {
+            "x": 107,
+            "y": 288
+        },
+        "directions": [
+            "Enter Science Block B",
+            "walk down the ground floor hallway",
+            "the R&D cell is on the right side."
+        ]
+    },
+    {
+        "id": "iot_innovation_lab",
+        "name": "IoT Innovation Lab",
+        "building": "Engineering Block D",
+        "floor": 2,
+        "room": "RM-450",
+        "aliases": [
+            "iot innovation lab",
+            "iot innovation laboratory"
+        ],
+        "map_coords": {
+            "x": 499,
+            "y": 171
+        },
+        "directions": [
+            "Go to the 2nd floor of Engineering Block D",
+            "turn left",
+            "the IoT lab is the third room on the left."
+        ]
+    },
+    {
+        "id": "moot_court_hall",
+        "name": "Moot Court Hall",
+        "building": "Law Department Block",
+        "floor": 1,
+        "room": "RM-460",
+        "aliases": [
+            "moot court hall"
+        ],
+        "map_coords": {
+            "x": 123,
+            "y": 160
+        },
+        "directions": [
+            "Walk to the 1st floor of the Law Block",
+            "the Moot Court hall with the wooden double doors is on the right."
+        ]
+    },
+    {
+        "id": "business_incubation_center",
+        "name": "Business Incubation Center",
+        "building": "Management Studies Block",
+        "floor": 2,
+        "room": "RM-470",
+        "aliases": [
+            "business incubation center",
+            "business incubation centre"
+        ],
+        "map_coords": {
+            "x": 611,
+            "y": 359
+        },
+        "directions": [
+            "Take the stairs to the 2nd floor of the Management Block",
+            "turn right",
+            "walk straight into the incubation open space."
+        ]
+    },
+    {
+        "id": "electronics_and_communication_lab",
+        "name": "Electronics & Communication Lab",
+        "building": "Engineering Block D",
+        "floor": 1,
+        "room": "RM-480",
+        "aliases": [
+            "electronics & communication lab",
+            "electronics & communication laboratory"
+        ],
+        "map_coords": {
+            "x": 694,
+            "y": 496
+        },
+        "directions": [
+            "Head to the 1st floor of Block D",
+            "turn right",
+            "the lab is located halfway down the corridor on the left."
+        ]
+    },
+    {
+        "id": "digital_library_section",
+        "name": "Digital Library Section",
+        "building": "Knowledge Resource Center",
+        "floor": 1,
+        "room": "RM-490",
+        "aliases": [
+            "digital library section"
+        ],
+        "map_coords": {
+            "x": 612,
+            "y": 449
+        },
+        "directions": [
+            "Take the central library stairs to the 1st floor",
+            "walk past the book racks",
+            "turn right into the computer terminal zone."
+        ]
+    },
+    {
+        "id": "controller_of_examinations_office",
+        "name": "Controller of Examinations Office",
+        "building": "Administrative Block",
+        "floor": 1,
+        "room": "RM-500",
+        "aliases": [
+            "controller of examinations office"
+        ],
+        "map_coords": {
+            "x": 555,
+            "y": 474
+        },
+        "directions": [
+            "Go to the 1st floor of the Administrative Block",
+            "turn left",
+            "the Controller's office is the secure cabin at the end of the hallway."
+        ]
+    }
+]
