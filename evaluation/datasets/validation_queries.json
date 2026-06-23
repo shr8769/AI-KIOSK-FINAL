@@ -1,0 +1,202 @@
+[
+  {
+    "type": "direct",
+    "domain": "navigation",
+    "query": "Where is the placement cell?"
+  },
+  {
+    "type": "direct",
+    "domain": "navigation",
+    "query": "How do I get to the physics lab?"
+  },
+  {
+    "type": "direct",
+    "domain": "navigation",
+    "query": "Where is the central library located?"
+  },
+  {
+    "type": "direct",
+    "domain": "navigation",
+    "query": "I need directions to the cafeteria."
+  },
+  {
+    "type": "direct",
+    "domain": "navigation",
+    "query": "Can you point me to the auditorium?"
+  },
+  {
+    "type": "direct",
+    "domain": "admissions",
+    "query": "What are the admission requirements for international students?"
+  },
+  {
+    "type": "direct",
+    "domain": "academics",
+    "query": "How do I register for classes next semester?"
+  },
+  {
+    "type": "direct",
+    "domain": "research",
+    "query": "Who is the head of the AI Research Lab?"
+  },
+  {
+    "type": "direct",
+    "domain": "student_services",
+    "query": "Where can I get a replacement student ID card?"
+  },
+  {
+    "type": "direct",
+    "domain": "placements",
+    "query": "When does the campus recruitment drive start?"
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "Where is the lab?"
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "I want to apply."
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "Tell me about the fees."
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "When are the exams?"
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "Can I change my schedule?"
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "Where is the office?"
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "Who should I talk to about a problem?"
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "What are the rules?"
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "How do I get help?"
+  },
+  {
+    "type": "ambiguous",
+    "domain": "unknown",
+    "query": "Is it open today?"
+  },
+  {
+    "type": "paraphrased",
+    "domain": "navigation",
+    "query": "I need to meet the placement team."
+  },
+  {
+    "type": "paraphrased",
+    "domain": "navigation",
+    "query": "I'm looking for some books to study, where should I go?"
+  },
+  {
+    "type": "paraphrased",
+    "domain": "navigation",
+    "query": "My stomach is rumbling, where's the food at?"
+  },
+  {
+    "type": "paraphrased",
+    "domain": "admissions",
+    "query": "What's the process if I want to join this college from another country?"
+  },
+  {
+    "type": "paraphrased",
+    "domain": "academics",
+    "query": "I need to sign up for my subjects for the upcoming term."
+  },
+  {
+    "type": "paraphrased",
+    "domain": "research",
+    "query": "Who's in charge of the artificial intelligence stuff?"
+  },
+  {
+    "type": "paraphrased",
+    "domain": "student_services",
+    "query": "I lost my ID card, how do I get a new one?"
+  },
+  {
+    "type": "paraphrased",
+    "domain": "placements",
+    "query": "When do companies come to hire us?"
+  },
+  {
+    "type": "paraphrased",
+    "domain": "navigation",
+    "query": "Where is the big hall for events?"
+  },
+  {
+    "type": "paraphrased",
+    "domain": "navigation",
+    "query": "I need to withdraw some cash."
+  },
+  {
+    "type": "multilingual",
+    "domain": "navigation",
+    "query": "Placement office kahan hai?"
+  },
+  {
+    "type": "multilingual",
+    "domain": "navigation",
+    "query": "Placement cell elli ide?"
+  },
+  {
+    "type": "multilingual",
+    "domain": "navigation",
+    "query": "Library kahan padega?"
+  },
+  {
+    "type": "multilingual",
+    "domain": "navigation",
+    "query": "Cafeteria elli ide?"
+  },
+  {
+    "type": "multilingual",
+    "domain": "admissions",
+    "query": "Admission ka kya process hai?"
+  },
+  {
+    "type": "multilingual",
+    "domain": "admissions",
+    "query": "Admission ge enu madbeku?"
+  },
+  {
+    "type": "multilingual",
+    "domain": "academics",
+    "query": "Exams kab shuru honge?"
+  },
+  {
+    "type": "multilingual",
+    "domain": "academics",
+    "query": "Parikshe yavaga ide?"
+  },
+  {
+    "type": "multilingual",
+    "domain": "placements",
+    "query": "Companies kab aayengi placements ke liye?"
+  },
+  {
+    "type": "multilingual",
+    "domain": "placements",
+    "query": "Placements ge yav yav companies bartave?"
+  }
+]

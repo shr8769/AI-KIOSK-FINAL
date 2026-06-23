@@ -45,7 +45,8 @@ def log_evaluation_trace(
                 "distance": doc["distance"],
                 "similarity_score": 1.0 / (1.0 + doc["distance"]),
                 "keyword_score": doc["keyword_score"],
-                "combined_score": doc["combined_score"]
+                "combined_score": doc["combined_score"],
+                "retrieval_source": doc.get("retrieval_source", "unknown")
             } for doc in retrieved_docs
         ],
         "relevance_decision": relevance_decision,
@@ -200,24 +201,25 @@ class BaseAgent(ABC):
                 db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge", "vectorstore"))
             self.client = chromadb.PersistentClient(path=db_path)
             
+        import logging
+        logger = logging.getLogger(__name__)
+
         try:
             self.emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
                 model_name="all-MiniLM-L6-v2"
             )
-        except Exception:
-            self.emb_fn = None
+        except Exception as e:
+            logger.exception("SentenceTransformer initialization failed")
+            raise
             
         try:
             self.collection = self.client.get_collection(
                 name=self.collection_name,
                 embedding_function=self.emb_fn
             )
-        except Exception:
-            # Collection doesn't exist yet (Gowtham hasn't run ingestion).
-            # Agent will run in FAQ-only mode using faq.json keyword retrieval.
-            self.collection = None
-            print(f"[Warning] ChromaDB collection '{self.collection_name}' not found. Running in FAQ-only mode.")
-
+        except Exception as e:
+            logger.exception("Chroma initialization failed")
+            raise
 
         # Resolve path to the consolidated faq.json in the knowledge directory
         knowledge_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge"))
@@ -340,7 +342,8 @@ class BaseAgent(ABC):
                         "metadata": {"category": self.collection_name, "topic": topic_text},
                         "distance": 0.0,
                         "keyword_score": combined_score,
-                        "combined_score": combined_score
+                        "combined_score": combined_score,
+                        "retrieval_source": "faq_fallback"
                     })
                     
             # Re-rank based on combined_score descending
@@ -374,7 +377,8 @@ class BaseAgent(ABC):
                             "metadata": meta,
                             "distance": dist if dist is not None else 0.0,
                             "keyword_score": kw_score,
-                            "combined_score": comb_score
+                            "combined_score": comb_score,
+                            "retrieval_source": "chromadb"
                         })
                     retrieved_docs.sort(key=lambda x: x["combined_score"], reverse=True)
             except Exception:
@@ -427,6 +431,7 @@ class BaseAgent(ABC):
             print(f"* Similarity Score: {sim_score:.4f}")
             print(f"* Keyword Score: {doc['keyword_score']:.4f}")
             print(f"* Final Score: {doc['combined_score']:.4f}")
+            print(f"* Source: {doc.get('retrieval_source', 'unknown')}")
             print() # empty line
             
         print("Selected Document:")

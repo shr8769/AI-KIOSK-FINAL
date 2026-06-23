@@ -22,14 +22,11 @@ class NavigationService:
         session_data = {
             "navigation_id": nav_id,
             "created_at": time.time(),
-            "destination": metadata.get("name", "Unknown Location"),
+            "destination": metadata.get("destination_name", metadata.get("name", "Unknown Location")),
             "building": metadata.get("building", "Unknown Building"),
             "floor": metadata.get("floor", "0"),
             "room": metadata.get("room", ""),
-            "map_coords": {
-                "x": metadata.get("map_x", 0),
-                "y": metadata.get("map_y", 0)
-            },
+            "map_coords": metadata.get("map_coords", {"x": 0, "y": 0}),
             "directions": metadata.get("directions", [])
         }
 
