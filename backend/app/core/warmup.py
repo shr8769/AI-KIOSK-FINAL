@@ -1,6 +1,6 @@
-import time
 import logging
-from typing import Dict, Any
+import time
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ async def warmup_services():
         t0 = time.time()
         from app.core.dependencies import get_riar_pipeline
         pipeline = get_riar_pipeline()
-        
+
         # We can simulate a dummy query to warm up the LLM, the embedding model, and the agent
         try:
             # We will use a try-except here because the mock collections or actual agents might throw errors if not fully configured
@@ -61,7 +61,7 @@ async def warmup_services():
             coordinator.answer("warmup_query")
         except Exception as e:
             logger.warning(f"Coordinator dummy query completed with expected exception: {e}")
-            
+
         startup_state.metrics["coordinator_warmup_ms"] = int((time.time() - t0) * 1000)
         logger.info(f"Coordinator warmup complete in {startup_state.metrics['coordinator_warmup_ms']}ms")
     except Exception as e:
@@ -70,12 +70,12 @@ async def warmup_services():
 
     startup_state.metrics["total_startup_ms"] = int((time.time() - overall_start) * 1000)
     logger.info(f"All warmups complete. Total time: {startup_state.metrics['total_startup_ms']}ms")
-    
+
     if startup_state.errors:
         logger.error(f"Startup completed with errors: {startup_state.errors}")
         startup_state.ready = False
     else:
         startup_state.ready = True
         startup_state.messages.append("Ready")
-    
+
     startup_state.warming = False

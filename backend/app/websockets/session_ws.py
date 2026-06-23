@@ -32,7 +32,13 @@ from app.core.dependencies import (
     translate_to_english,
 )
 from app.core.logging import logger
-from app.core.session_store import add_agent_turn, add_user_turn, get_session, log_barge_in, mark_turn_interrupted
+from app.core.session_store import (
+    add_agent_turn,
+    add_user_turn,
+    get_session,
+    log_barge_in,
+    mark_turn_interrupted,
+)
 from app.models.schemas import ASRRequest, RIARRequest, TTSRequest, TurnModel
 from app.services.riar_service import riar_service
 from app.services.speech.asr_service import asr_service
@@ -87,13 +93,13 @@ async def websocket_session_handler(
                 reason = payload.get("reason", "unknown")
                 position_ms = payload.get("position_ms", 0)
                 logger.info(f"WS [{session_id}] Barge-in interrupt received for turn {turn_id} (Reason: {reason}, Pos: {position_ms}ms).")
-                
+
                 # Mark current turn as interrupted
                 await mark_turn_interrupted(session_id)
-                
+
                 # Log the metric to the database
                 await log_barge_in(session_id, reason, position_ms)
-                
+
                 # In Phase 2 (streaming), we would cancel the active generation task here.
                 # For Phase 1, the frontend has already halted playback and reset to listening.
                 await mgr.send(session_id, {"type": "info", "payload": {"message": "Interrupt acknowledged and logged"}})            # ── Camera frame (stub) ───────────────────────────────────
@@ -220,17 +226,42 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             )
             await mgr.send(session_id, {"type": "retrieving", "payload": {}})
 
+            target_domain = getattr(riar_resp, "selected_domain", None) if riar_resp else None
             coordinator = get_coordinator_agent()  # lazy — loads on first call
-            # Use the coordinator's built-in parallel dispatch and merging logic
-            full_answer = coordinator.answer(refined_query)
-            
+            # Use the explicit routing decision from RIAR. Run in thread to prevent event loop blocking.
+            import asyncio
+            full_answer = await asyncio.to_thread(coordinator.answer, refined_query, target_domain=target_domain)
+
+            nav_payload = None
             citations = []
-            if "\n\n[Source: " in full_answer:
-                parts = full_answer.split("\n\n[Source: ", 1)
-                answer_en = parts[0]
-                citations = [parts[1].rstrip("]")]
+
+            if target_domain == "navigation":
+                try:
+                    metadata = json.loads(full_answer)
+                    if "error" not in metadata:
+                        from app.services.navigation_service import navigation_service
+                        nav_id = await navigation_service.create_session(metadata)
+
+                        answer_en = f"The {metadata.get('destination_name')} is located in {metadata.get('building')}, Floor {metadata.get('floor')}. Please scan the QR code for detailed directions."
+                        nav_payload = {
+                            "navigation_id": nav_id,
+                            "destination_name": metadata.get("destination_name"),
+                            "building": metadata.get("building"),
+                            "floor": metadata.get("floor"),
+                            "room": metadata.get("room")
+                        }
+                    else:
+                        answer_en = metadata["error"]
+                except Exception as e:
+                    logger.error(f"Failed to parse navigation JSON: {e}")
+                    answer_en = "I'm sorry, I couldn't retrieve the location details."
             else:
-                answer_en = full_answer
+                if "\n\n[Source: " in full_answer:
+                    parts = full_answer.split("\n\n[Source: ", 1)
+                    answer_en = parts[0]
+                    citations = [parts[1].rstrip("]")]
+                else:
+                    answer_en = full_answer
 
             # ── 5. Back-translate ──────────────────────────────────
             answer_native = (
@@ -243,23 +274,28 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             import re
             # Strip markdown for TTS so it doesn't speak "asterisk"
             tts_text = re.sub(r'[*_#]', '', answer_native)
-            
+
             # ── 6. TTS ────────────────────────────────────────────
             tts_resp = await tts_service.synthesize(
                 TTSRequest(session_id=session_id, text=tts_text, language=detected_lang)
             )
+
+            payload = {"text": answer_native, "audio_url": tts_resp.audio_url, "sources": citations}
+            if nav_payload:
+                payload["navigation"] = nav_payload
+
             await mgr.send(session_id, {
                 "type": "answer",
-                "payload": {"text": answer_native, "audio_url": tts_resp.audio_url, "sources": citations},
+                "payload": payload,
             })
 
     except Exception as e:
         logger.exception(f"Pipeline error [{session_id}]: {e}")
         fallback_msg = "I'm sorry, I encountered a temporary issue while processing your request. Please try again."
-        
+
         # Send error state to UI
         await mgr.send(session_id, {"type": "error", "payload": {"message": fallback_msg, "code": "pipeline_error"}})
-        
+
         # Synthesize the error message so the avatar speaks the fallback instead of silently freezing
         try:
             tts_resp = await tts_service.synthesize(

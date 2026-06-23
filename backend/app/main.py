@@ -14,10 +14,10 @@ from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routes import asr, events, rag, riar, route, session, tts
+from app.api.routes import asr, events, navigation, rag, riar, route, session, tts
 from app.core.config import settings
 from app.core.dependencies import ConnectionManager, get_connection_manager
-from app.core.warmup import warmup_services, startup_state
+from app.core.warmup import startup_state, warmup_services
 from app.websockets.session_ws import websocket_session_handler
 
 logging.basicConfig(
@@ -117,6 +117,7 @@ app.include_router(route.router, prefix="/api/v1", tags=["Routing"])
 app.include_router(rag.router, prefix="/api/v1", tags=["RAG"])
 app.include_router(tts.router, prefix="/api/v1", tags=["TTS"])
 app.include_router(session.router, prefix="/api/v1", tags=["Session"])
+app.include_router(navigation.router, prefix="/api/v1", tags=["Navigation"])
 
 
 
