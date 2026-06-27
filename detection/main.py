@@ -2,6 +2,7 @@ import sys
 import os
 import time
 import logging
+from typing import Optional
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
@@ -27,20 +28,32 @@ def main():
     detector = PersonDetector(model_path="yolo11n.pt")
     
     # Wire the detector's callbacks to the event publisher
-    def on_detected(event: DetectionEvent):
+    def on_detected(event: DetectionEvent) -> Optional[str]:
         logger.info("Detector fired PERSON_DETECTED. Publishing to backend...")
-        publisher.publish_person_detected(
+        resp = publisher.publish_person_detected(
             camera_id=event.camera_id,
             confidence=event.confidence,
             box=event.bounding_box
         )
+        if resp and resp.get("status") == "success":
+            return resp.get("session_id")
+        return None
         
     def on_left(event: DetectionEvent):
         logger.info("Detector fired PERSON_LEFT. Publishing to backend...")
         publisher.publish_person_left(camera_id=event.camera_id)
 
+    def on_face(session_id: str, embedding: list) -> Optional[dict]:
+        logger.info(f"Detector fired FACE_DETECTED. Publishing to backend for session {session_id}...")
+        return publisher.publish_face_detected(
+            camera_id=detector.camera_id,
+            session_id=session_id,
+            embedding=embedding
+        )
+
     detector.on_person_detected(on_detected)
     detector.on_person_left(on_left)
+    detector.on_face_detected(on_face)
     
     # 3. Initialize Temporal Monitor (Hardware layer)
     monitor = PresenceMonitor(detector)

@@ -133,6 +133,13 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
     turn_id = payload.get("turn_id", 1)
     language_hint = payload.get("language_hint") or None
 
+    import time
+    start_time = time.perf_counter()
+    refined_query = None
+    response_text = None
+    domain = None
+    ambiguity_type = "CLEAR"
+
     await mgr.send(session_id, {"type": "thinking", "payload": {}})
 
     try:
@@ -207,6 +214,10 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             question_native = translate_from_english(question_en, target_lang=detected_lang)
             await add_agent_turn(session_id, question_native)
 
+            response_text = question_native
+            ambiguity_type = riar_resp.ambiguity_type if riar_resp else "CLEAR"
+            domain = None
+
             tts_resp = await tts_service.synthesize(
                 TTSRequest(session_id=session_id, text=question_native, language=detected_lang)
             )
@@ -227,6 +238,22 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             await mgr.send(session_id, {"type": "retrieving", "payload": {}})
 
             target_domain = getattr(riar_resp, "selected_domain", None) if riar_resp else None
+            if not target_domain or target_domain == "general":
+                query_lower = refined_query.lower()
+                if "admission" in query_lower:
+                    target_domain = "admissions"
+                elif "academic" in query_lower or "course" in query_lower or "grade" in query_lower:
+                    target_domain = "academics"
+                elif "placement" in query_lower or "salary" in query_lower or "job" in query_lower or "company" in query_lower or "recruit" in query_lower:
+                    target_domain = "placements"
+                elif "research" in query_lower or "paper" in query_lower or "publication" in query_lower or "project" in query_lower:
+                    target_domain = "research"
+                elif "student" in query_lower or "hostel" in query_lower or "fee" in query_lower or "scholarship" in query_lower:
+                    target_domain = "student_services"
+                elif "where" in query_lower or "locate" in query_lower or "direction" in query_lower or "floor" in query_lower or "room" in query_lower or "building" in query_lower or "map" in query_lower:
+                    target_domain = "navigation"
+                else:
+                    target_domain = "general"
             coordinator = get_coordinator_agent()  # lazy — loads on first call
             # Use the explicit routing decision from RIAR. Run in thread to prevent event loop blocking.
             import asyncio
@@ -271,6 +298,10 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             )
             await add_agent_turn(session_id, answer_native)
 
+            response_text = answer_native
+            ambiguity_type = getattr(riar_resp, "ambiguity_type", "CLEAR") if riar_resp else "CLEAR"
+            domain = target_domain
+
             import re
             # Strip markdown for TTS so it doesn't speak "asterisk"
             tts_text = re.sub(r'[*_#]', '', answer_native)
@@ -288,6 +319,40 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
                 "type": "answer",
                 "payload": payload,
             })
+
+        # ── PostgreSQL Turn Logging ───────────────────────────────────────────
+        try:
+            from database.models.models import Session as PGSession
+            from database.postgres.connection import AsyncSessionLocal
+            from sqlalchemy.future import select
+
+            from app.services.query_store import QueryStore
+
+            user_id = None
+            async with AsyncSessionLocal() as db_session:
+                sess_res = await db_session.execute(
+                    select(PGSession).filter(PGSession.session_id == session_id)
+                )
+                db_sess = sess_res.scalars().first()
+                if db_sess:
+                    user_id = db_sess.user_id
+
+            latency_ms = int((time.perf_counter() - start_time) * 1000)
+            async with AsyncSessionLocal() as db_session:
+                store = QueryStore(db_session)
+                await store.store_query(
+                    session_id=session_id,
+                    user_id=user_id,
+                    query_text=clean_transcript,
+                    refined_query=refined_query,
+                    response_text=response_text,
+                    domain=domain,
+                    language=detected_lang,
+                    ambiguity_type=ambiguity_type,
+                    latency_ms=latency_ms
+                )
+        except Exception as db_e:
+            logger.error(f"Failed to log user query to PostgreSQL: {db_e}")
 
     except Exception as e:
         logger.exception(f"Pipeline error [{session_id}]: {e}")

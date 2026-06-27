@@ -38,7 +38,7 @@ class EventPublisher:
         logger.error(f"Event dropped after {self.max_retries} attempts.")
         return None
 
-    def publish_person_detected(self, camera_id: str, confidence: float, box: Any) -> None:
+    def publish_person_detected(self, camera_id: str, confidence: float, box: Any) -> Optional[dict]:
         """Publishes PERSON_DETECTED event."""
         payload = {
             "event_type": "PERSON_DETECTED",
@@ -50,7 +50,19 @@ class EventPublisher:
                 }
             }
         }
-        self._post_with_retry(payload)
+        return self._post_with_retry(payload)
+
+    def publish_face_detected(self, camera_id: str, session_id: str, embedding: list) -> Optional[dict]:
+        """Publishes FACE_DETECTED event."""
+        payload = {
+            "event_type": "FACE_DETECTED",
+            "camera_id": camera_id,
+            "payload": {
+                "session_id": session_id,
+                "embedding": embedding
+            }
+        }
+        return self._post_with_retry(payload)
 
     def publish_person_left(self, camera_id: str) -> None:
         """Publishes PERSON_LEFT event."""

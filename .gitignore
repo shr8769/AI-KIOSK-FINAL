@@ -60,7 +60,17 @@ knowledge/embeddings/__pycache__/
 
 # ─── Session Audio Files ───────────────────────────────────────────────────
 backend/static/sessions/
+backend/static/audio/          # Generated TTS mp3/wav files — never commit
+static/                        # Top-level static dump
 sessions/
+
+# ─── Firebase Credentials (NEVER commit) ───────────────────────────────────
+firebase-credentials.json
+*-credentials.json
+*-service-account.json
+
+# ─── TypeScript Build Cache ─────────────────────────────────────────────────
+*.tsbuildinfo
 
 # ─── Test Artifacts ────────────────────────────────────────────────────────
 test.db

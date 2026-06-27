@@ -73,9 +73,9 @@ async def init_db():
     logger.info("SQLite DB initialised")
 
 
-async def create_session(metadata: Dict = None) -> Session:
+async def create_session(session_id: Optional[str] = None, metadata: Dict = None) -> Session:
     session = Session(
-        session_id=str(uuid.uuid4()),
+        session_id=session_id or str(uuid.uuid4()),
         created_at=datetime.utcnow().isoformat(),
         metadata=metadata or {},
     )
@@ -233,3 +233,22 @@ async def log_barge_in(session_id: str, reason: str, position_ms: float) -> bool
     except Exception:
         pass
     return True
+
+
+async def update_session_metadata(session_id: str, updates: dict) -> bool:
+    session = await get_session(session_id)
+    if not session:
+        return False
+    session.metadata.update(updates)
+    # Update SQLite
+    async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
+        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.commit()
+    # Update Redis
+    try:
+        redis = await get_redis()
+        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+    except Exception:
+        pass
+    return True
+

@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import List
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -23,7 +23,9 @@ class Settings(BaseSettings):
 
     # SQLite
     SQLITE_DB_PATH: str = "./data/kiosk.db"
-    DATABASE_URL: str = "sqlite+aiosqlite:///./data/kiosk.db"
+
+    # PostgreSQL
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/vidyasahayak"
 
     # Session
     SESSION_TTL_SECONDS: int = 1800  # 30 minutes
@@ -32,9 +34,11 @@ class Settings(BaseSettings):
     USE_MOCK_SERVICES: bool = True
     WHISPER_MODEL_SIZE: str = "base"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
 
 
 @lru_cache()
@@ -43,3 +47,4 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
+
