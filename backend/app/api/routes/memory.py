@@ -11,10 +11,11 @@ if TYPE_CHECKING:
 router = APIRouter()
 
 
-def _get_db():
-    """Lazy import so that database.postgres is not required at module import time."""
+async def _db_dep():
+    """Async dependency that lazy-imports postgres connection to avoid ImportError in CI."""
     from database.postgres.connection import get_db  # noqa: PLC0415
-    return get_db
+    async for session in get_db():
+        yield session
 
 
 class StoreMemoryRequest(BaseModel):
@@ -37,7 +38,7 @@ class MemoryItem(BaseModel):
 
 
 @router.post("/memory/store", response_model=StoreMemoryResponse)
-async def store_memory(request: StoreMemoryRequest, db: AsyncSession = Depends(_get_db())):
+async def store_memory(request: StoreMemoryRequest, db: AsyncSession = Depends(_db_dep)):
     from app.services.memory_manager import MemoryManager  # noqa: PLC0415
     """
     Orchestrate summarizing, embedding, and storing conversation content into user's past memories.
@@ -62,7 +63,7 @@ async def get_memories(
     user_id: str,
     query: Optional[str] = "",
     limit: Optional[int] = 3,
-    db: AsyncSession = Depends(_get_db())
+    db: AsyncSession = Depends(_db_dep)
 ):
     """
     Query the long-term memory vector store for user memories related to a topic.

@@ -18,10 +18,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-def _get_db():
-    """Lazy import so database.postgres is not required at module import time."""
+async def _db_dep():
+    """Async dependency that lazy-imports postgres connection to avoid ImportError in CI."""
     from database.postgres.connection import get_db  # noqa: PLC0415
-    return get_db
+    async for session in get_db():
+        yield session
 
 
 class RegisterRequest(BaseModel):
@@ -49,7 +50,7 @@ class ProfileResponse(BaseModel):
 
 
 @router.post("/register", response_model=RegisterResponse)
-async def register(request: RegisterRequest, db: AsyncSession = Depends(_get_db())):
+async def register(request: RegisterRequest, db: AsyncSession = Depends(_db_dep)):
     logger.info(f"Registration request for user_id={request.user_id}, name={request.name}, role={request.role}")
 
     # 1. Validate inputs
@@ -160,7 +161,7 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(_get_db(
 
 
 @router.get("/profile/{user_id}", response_model=ProfileResponse)
-async def get_profile(user_id: str, db: AsyncSession = Depends(_get_db())):
+async def get_profile(user_id: str, db: AsyncSession = Depends(_db_dep)):
     """
     Retrieve user profile information by user_id.
     """
