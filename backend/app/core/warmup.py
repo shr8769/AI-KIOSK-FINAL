@@ -36,7 +36,7 @@ def warmup_services():
     try:
         t0 = time.time()
         from app.core.dependencies import get_riar_pipeline
-        pipeline = get_riar_pipeline()
+        get_riar_pipeline()
 
         # We can simulate a dummy query to warm up the LLM, the embedding model, and the agent
         # (Skipped dummy query in local startup to avoid slow CPU inference delay)
@@ -55,7 +55,7 @@ def warmup_services():
     try:
         t0 = time.time()
         from app.core.dependencies import get_coordinator_agent
-        coordinator = get_coordinator_agent()
+        get_coordinator_agent()
         # Warmup the coordinator by checking its initialization or running a simple dummy query
         # (Skipped dummy query in local startup to avoid slow CPU inference loop)
         # try:
