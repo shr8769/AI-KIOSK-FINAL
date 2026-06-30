@@ -1,10 +1,12 @@
-from typing import List, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.services.memory_manager import MemoryManager
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -36,6 +38,7 @@ class MemoryItem(BaseModel):
 
 @router.post("/memory/store", response_model=StoreMemoryResponse)
 async def store_memory(request: StoreMemoryRequest, db: AsyncSession = Depends(_get_db())):
+    from app.services.memory_manager import MemoryManager  # noqa: PLC0415
     """
     Orchestrate summarizing, embedding, and storing conversation content into user's past memories.
     """
@@ -64,6 +67,7 @@ async def get_memories(
     """
     Query the long-term memory vector store for user memories related to a topic.
     """
+    from app.services.memory_manager import MemoryManager  # noqa: PLC0415
     manager = MemoryManager(db)
     try:
         memories = await manager.retriever_service.retrieve_memories(

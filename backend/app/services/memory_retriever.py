@@ -1,9 +1,13 @@
-import logging
+from __future__ import annotations
 
-from database.models.models import Memory
-from sqlalchemy import or_
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+import logging
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from database.models.models import Memory
+    from sqlalchemy import or_
+    from sqlalchemy.ext.asyncio import AsyncSession
+    from sqlalchemy.future import select
 
 # We access the cached embedding model from memory_store
 from app.services.memory_store import get_embedding_model
