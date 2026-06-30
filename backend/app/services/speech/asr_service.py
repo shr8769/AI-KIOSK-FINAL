@@ -13,7 +13,10 @@ import re
 import time
 import wave
 from collections import Counter
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import numpy as np
 
 from app.core.config import settings
 
