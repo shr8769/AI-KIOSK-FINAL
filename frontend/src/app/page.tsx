@@ -41,6 +41,31 @@ export default function KioskPage() {
   const [isBackendReady, setIsBackendReady] = useState(false);
   const [startupMessage, setStartupMessage] = useState("Initializing AI...");
   
+  // Registration States
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [regUserId, setRegUserId] = useState('');
+  const [regName, setRegName] = useState('');
+  const [regRole, setRegRole] = useState<'student' | 'professor'>('student');
+  const [regDepartment, setRegDepartment] = useState('');
+  const [regInterests, setRegInterests] = useState('');
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [regImageSrc, setRegImageSrc] = useState<string | null>(null);
+  const [regLoading, setRegLoading] = useState(false);
+  const [regStatus, setRegStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Identified user state (FR-8)
+  const [identifiedUser, setIdentifiedUser] = useState<{
+    userId: string;
+    name: string;
+    role: string;
+    isReturning: boolean;
+    recommendations: any[];
+  } | null>(null);
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttempts = useRef(0);
@@ -50,8 +75,112 @@ export default function KioskPage() {
   const isLanguageSelectedRef = useRef(false);
   const isSelectingLangRef = useRef(false);
   
-  // Hardcoded session ID for demo purposes until orchestration is complete
-  const sessionId = 'demo_session_id';
+  // Dynamic session ID mapped to backend-assigned sessions
+  const [sessionId, setSessionId] = useState('demo_session_id');
+
+  // Webcam stream lifecycle
+  useEffect(() => {
+    if (isRegisterOpen) {
+      const startCamera = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 640, height: 480, facingMode: 'user' }
+          });
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+          streamRef.current = stream;
+          setCameraError(null);
+        } catch (err) {
+          console.error("Failed to open webcam:", err);
+          setCameraError("Unable to access webcam. Please check permissions.");
+        }
+      };
+      startCamera();
+    } else {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+      setRegImageSrc(null);
+      setRegStatus(null);
+    }
+  }, [isRegisterOpen]);
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        setRegImageSrc(dataUrl);
+      }
+    }
+  };
+
+  const retakePhoto = () => {
+    setRegImageSrc(null);
+    setRegStatus(null);
+  };
+
+  const submitRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regUserId || !regName || !regDepartment || !regImageSrc) {
+      setRegStatus({ type: 'error', message: 'Please fill in all fields and capture your face.' });
+      return;
+    }
+
+    setRegLoading(true);
+    setRegStatus(null);
+
+    try {
+      const httpBase = WS_BASE_URL.replace(/^ws/, 'http').replace(/\/ws\/session.*$/, '');
+      const registerUrl = `${httpBase}/api/v1/register`;
+      
+      const response = await fetch(registerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: regUserId,
+          name: regName,
+          role: regRole,
+          department: regDepartment,
+          interests: regInterests,
+          image_base64: regImageSrc,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setRegStatus({ type: 'success', message: 'Registration successful! Face enrolled.' });
+        // Clear fields on success
+        setRegUserId('');
+        setRegName('');
+        setRegDepartment('');
+        setRegInterests('');
+        setRegImageSrc(null);
+        
+        // Auto-close modal after 2 seconds
+        setTimeout(() => {
+          setIsRegisterOpen(false);
+        }, 2000);
+      } else {
+        setRegStatus({ type: 'error', message: data.detail || 'Registration failed.' });
+      }
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      setRegStatus({ type: 'error', message: 'Connection to server failed.' });
+    } finally {
+      setRegLoading(false);
+    }
+  };
 
   const playResponseAudio = useCallback((audioUrl: string) => {
     // Stop any currently playing audio response
@@ -277,17 +406,46 @@ export default function KioskPage() {
           case 'speaking':
             setOrbState('speaking');
             break;
+          case 'user_identified':
+            if (msg.payload) {
+              setIdentifiedUser({
+                userId: msg.payload.user_id,
+                name: msg.payload.name,
+                role: msg.payload.role,
+                isReturning: msg.payload.is_returning,
+                recommendations: msg.payload.recommendations || []
+              });
+            }
+            break;
           case 'detection':
             if (msg.payload?.person_detected) {
               setOrbState('detected');
+              if (msg.payload.session_id && msg.payload.session_id !== sessionId) {
+                console.log('[WS] Reconnecting to new session:', msg.payload.session_id);
+                if (wsRef.current) {
+                  wsRef.current.onclose = null;
+                  wsRef.current.close();
+                }
+                setSessionId(msg.payload.session_id);
+              }
             } else {
               setOrbState('idle');
               // Clear custom text on idle
               setCustomLabel(undefined);
               setCustomDesc(undefined);
+              setIdentifiedUser(null);
               if (activeAudioRef.current) {
                 activeAudioRef.current.pause();
                 activeAudioRef.current = null;
+              }
+              // Reset back to demo_session_id when person leaves
+              if (sessionId !== 'demo_session_id') {
+                console.log('[WS] Resetting to default session');
+                if (wsRef.current) {
+                  wsRef.current.onclose = null;
+                  wsRef.current.close();
+                }
+                setSessionId('demo_session_id');
               }
             }
             break;
@@ -492,17 +650,241 @@ export default function KioskPage() {
               <span className="text-sm text-zinc-300 font-medium animate-pulse">{startupMessage}</span>
             </div>
           ) : (
-            <button
-              onClick={() => {
-                unlockAudio();
-                setHasInteracted(true);
-              }}
-              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-            >
-              Start Interaction
-            </button>
+            <div className="w-full flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  unlockAudio();
+                  setHasInteracted(true);
+                }}
+                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              >
+                Start Interaction
+              </button>
+              
+              <button
+                onClick={() => {
+                  setIsRegisterOpen(true);
+                }}
+                className="w-full py-4 px-6 rounded-2xl border border-zinc-800 bg-zinc-950/40 text-zinc-300 hover:text-white font-semibold hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus:outline-none"
+              >
+                Register Face & Profile
+              </button>
+            </div>
           )}
         </div>
+
+        {/* Registration Modal Overlay */}
+        {isRegisterOpen && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
+            <style>{`
+              @keyframes scanline {
+                0% { top: 0%; }
+                50% { top: 100%; }
+                100% { top: 0%; }
+              }
+              .scanner-line {
+                position: absolute;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: linear-gradient(to right, transparent, #6366f1, transparent);
+                box-shadow: 0 0 15px rgba(99, 102, 241, 0.8);
+                animation: scanline 3s linear infinite;
+              }
+            `}</style>
+            
+            <div className="bg-zinc-950 border border-zinc-800 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 md:p-8 flex flex-col md:flex-row gap-8 relative text-left">
+              <button 
+                onClick={() => setIsRegisterOpen(false)}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-full hover:bg-zinc-900 transition-colors animate-pulse"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Form Side */}
+              <div className="flex-1 space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400">Register Profile</h2>
+                  <p className="text-xs text-zinc-400 mt-1">Enroll your face and academic info for automatic personalized greeting and recommendations.</p>
+                </div>
+                
+                <form onSubmit={submitRegistration} className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Role</label>
+                    <div className="flex gap-4">
+                      <label className="flex items-center space-x-2 text-sm text-zinc-200 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="role" 
+                          value="student" 
+                          checked={regRole === 'student'} 
+                          onChange={() => setRegRole('student')}
+                          className="accent-indigo-500 w-4 h-4"
+                        />
+                        <span>Student</span>
+                      </label>
+                      <label className="flex items-center space-x-2 text-sm text-zinc-200 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="role" 
+                          value="professor" 
+                          checked={regRole === 'professor'} 
+                          onChange={() => setRegRole('professor')}
+                          className="accent-indigo-500 w-4 h-4"
+                        />
+                        <span>Faculty</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                      {regRole === 'student' ? 'SRN (Student Register Number)' : 'Employee ID'}
+                    </label>
+                    <input 
+                      type="text" 
+                      required
+                      value={regUserId}
+                      onChange={(e) => setRegUserId(e.target.value)}
+                      placeholder={regRole === 'student' ? "e.g., PES1202300001" : "e.g., EMP1001"}
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Full Name</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={regName}
+                      onChange={(e) => setRegName(e.target.value)}
+                      placeholder="e.g., Harsha S"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Department</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={regDepartment}
+                      onChange={(e) => setRegDepartment(e.target.value)}
+                      placeholder="e.g., CSE, ECE, Mechanical, Physics"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Interests / Focus Areas</label>
+                    <input 
+                      type="text" 
+                      value={regInterests}
+                      onChange={(e) => setRegInterests(e.target.value)}
+                      placeholder="e.g., AI, Robotics, Placements (comma separated)"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
+                    />
+                  </div>
+
+                  {regStatus && (
+                    <div className={`p-4 rounded-xl border text-xs font-medium ${
+                      regStatus.type === 'success' 
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+                        : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                    }`}>
+                      {regStatus.message}
+                    </div>
+                  )}
+
+                  <div className="flex gap-4 pt-2">
+                    <button 
+                      type="button"
+                      onClick={() => setIsRegisterOpen(false)}
+                      className="flex-1 py-3 px-4 rounded-xl border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all duration-200 font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit"
+                      disabled={regLoading || !regImageSrc}
+                      className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      {regLoading ? 'Registering...' : 'Enroll & Register'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Camera Side */}
+              <div className="flex-1 flex flex-col items-center justify-between border-t md:border-t-0 md:border-l border-zinc-800 pt-6 md:pt-0 md:pl-8">
+                <div className="w-full flex flex-col items-center">
+                  <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-3 text-center self-start">Face Capture</label>
+                  
+                  <div className="relative w-full aspect-video rounded-2xl border border-zinc-800 bg-zinc-950 overflow-hidden shadow-inner group">
+                    {cameraError ? (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                        <svg className="w-12 h-12 text-rose-500 mb-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <p className="text-xs font-semibold text-rose-400">{cameraError}</p>
+                      </div>
+                    ) : regImageSrc ? (
+                      <img 
+                        src={regImageSrc} 
+                        alt="Face Scan Preview" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <>
+                        <video 
+                          ref={videoRef} 
+                          autoPlay 
+                          playsInline 
+                          muted
+                          className="w-full h-full object-cover scale-x-[-1]" 
+                        />
+                        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_50%,rgba(99,102,241,0.05)_50%)] bg-[length:100%_4px] pointer-events-none" />
+                        <div className="scanner-line" />
+                      </>
+                    )}
+                  </div>
+                  
+                  <canvas ref={canvasRef} className="hidden" />
+                </div>
+
+                <div className="w-full mt-6 flex gap-4">
+                  {regImageSrc ? (
+                    <button
+                      type="button"
+                      onClick={retakePhoto}
+                      className="w-full py-3 px-4 rounded-xl border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-900 transition-all duration-200 font-semibold flex items-center justify-center space-x-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" />
+                      </svg>
+                      <span>Retake Photo</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={!!cameraError}
+                      onClick={capturePhoto}
+                      className="w-full py-3 px-4 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-500 hover:shadow-lg transition-all duration-200 disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center space-x-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span>Capture Photo</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     );
   }
@@ -559,6 +941,47 @@ export default function KioskPage() {
             room={navigationData.room}
             onClose={() => setNavigationData(null)}
           />
+        )}
+
+        {identifiedUser && typeof identifiedUser.name === 'string' && identifiedUser.name.length > 0 && (
+          <div className="mt-4 p-4 w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950/60 backdrop-blur-xl shadow-lg flex flex-col space-y-3 animate-fade-in text-left">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-emerald-500 flex items-center justify-center p-[1px]">
+                  <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center text-xs font-bold text-white uppercase">
+                    {identifiedUser.name?.slice(0, 2)}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">{identifiedUser.name}</h3>
+                  <p className="text-[10px] text-zinc-400 capitalize">{identifiedUser.role} • {identifiedUser.userId}</p>
+                </div>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] uppercase font-bold tracking-wider border border-emerald-500/20">
+                Recognized
+              </span>
+            </div>
+            
+            {identifiedUser.recommendations && identifiedUser.recommendations.length > 0 && (
+              <div className="pt-2.5 border-t border-zinc-900 space-y-2">
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Recommended Opportunities:</p>
+                <div className="space-y-1.5">
+                  {identifiedUser.recommendations.map((rec: any, idx: number) => (
+                    <div key={idx} className="p-2 rounded-xl bg-zinc-900/40 hover:bg-zinc-900 transition-colors border border-zinc-800">
+                      <div className="flex justify-between items-start">
+                        <h4 className="text-xs font-medium text-white">{rec.title}</h4>
+                        <span className="text-[8px] text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded uppercase font-semibold border border-indigo-500/10">{rec.category}</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-400 mt-1 line-clamp-2 leading-relaxed">{rec.description}</p>
+                      {rec.contact && (
+                        <p className="text-[9px] text-zinc-500 mt-1 font-sans">Contact: {rec.contact}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {/* ── Language Selection Buttons ── */}

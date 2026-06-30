@@ -14,7 +14,7 @@ from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routes import asr, events, navigation, rag, riar, route, session, tts
+from app.api.routes import asr, events, memory, navigation, profile, rag, riar, route, session, tts
 from app.core.config import settings
 from app.core.dependencies import ConnectionManager, get_connection_manager
 from app.core.warmup import startup_state, warmup_services
@@ -73,8 +73,10 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Could not seed demo session: {e}")
 
-    # Warm up all models and connections
-    await warmup_services()
+    # Warm up all models and connections in a background thread executor
+    import asyncio
+    loop = asyncio.get_running_loop()
+    loop.run_in_executor(None, warmup_services)
 
     yield
 
@@ -118,6 +120,8 @@ app.include_router(rag.router, prefix="/api/v1", tags=["RAG"])
 app.include_router(tts.router, prefix="/api/v1", tags=["TTS"])
 app.include_router(session.router, prefix="/api/v1", tags=["Session"])
 app.include_router(navigation.router, prefix="/api/v1", tags=["Navigation"])
+app.include_router(profile.router, prefix="/api/v1", tags=["Profile"])
+app.include_router(memory.router, prefix="/api/v1", tags=["Memory"])
 
 
 

@@ -13,7 +13,7 @@ class StartupState:
 
 startup_state = StartupState()
 
-async def warmup_services():
+def warmup_services():
     """Centralized warmup orchestration to avoid cold-starts on first user query."""
     overall_start = time.time()
     startup_state.messages.append("Loading Speech Engine...")
@@ -39,11 +39,11 @@ async def warmup_services():
         pipeline = get_riar_pipeline()
 
         # We can simulate a dummy query to warm up the LLM, the embedding model, and the agent
-        try:
-            # We will use a try-except here because the mock collections or actual agents might throw errors if not fully configured
-            pipeline.process_query("warmup_session", 1, "What is the fee structure?", "en", [])
-        except Exception as e:
-            logger.warning(f"RIAR dummy query completed with expected exception during warmup: {e}")
+        # (Skipped dummy query in local startup to avoid slow CPU inference delay)
+        # try:
+        #     pipeline.process_query("warmup_session", 1, "What is the fee structure?", "en", [])
+        # except Exception as e:
+        #     logger.warning(f"RIAR dummy query completed with expected exception during warmup: {e}")
 
         startup_state.metrics["riar_warmup_ms"] = int((time.time() - t0) * 1000)
         logger.info(f"RIAR Pipeline warmup complete in {startup_state.metrics['riar_warmup_ms']}ms")
@@ -57,10 +57,11 @@ async def warmup_services():
         from app.core.dependencies import get_coordinator_agent
         coordinator = get_coordinator_agent()
         # Warmup the coordinator by checking its initialization or running a simple dummy query
-        try:
-            coordinator.answer("warmup_query")
-        except Exception as e:
-            logger.warning(f"Coordinator dummy query completed with expected exception: {e}")
+        # (Skipped dummy query in local startup to avoid slow CPU inference loop)
+        # try:
+        #     coordinator.answer("warmup_query")
+        # except Exception as e:
+        #     logger.warning(f"Coordinator dummy query completed with expected exception: {e}")
 
         startup_state.metrics["coordinator_warmup_ms"] = int((time.time() - t0) * 1000)
         logger.info(f"Coordinator warmup complete in {startup_state.metrics['coordinator_warmup_ms']}ms")

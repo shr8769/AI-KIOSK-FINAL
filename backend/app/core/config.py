@@ -33,6 +33,11 @@ class Settings(BaseSettings):
     # Service flags (toggle real vs mock)
     USE_MOCK_SERVICES: bool = True
     WHISPER_MODEL_SIZE: str = "base"
+    USE_BHASHINI: bool = False
+    BHASHINI_USER_ID: str = ""
+    BHASHINI_API_KEY: str = ""
+    BHASHINI_INFERENCE_KEY: str = ""
+    BHASHINI_PIPELINE_ID: str = "64392f96daac500b55c543cd"
 
     model_config = SettingsConfigDict(
         env_file=".env",

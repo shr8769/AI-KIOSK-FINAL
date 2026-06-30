@@ -159,6 +159,19 @@ async def ingest_event(
                         }
         except Exception as e:
             logger.error(f"[FR-8] Face matching via PostgreSQL failed: {e}")
+            logger.info("Falling back to firebase_client (local mock_firestore.json)...")
+            try:
+                from app.services.firebase_client import match_face as firebase_match_face
+                fb_user = firebase_match_face(embedding)
+                if fb_user:
+                    matched_user = {
+                        "user_id": fb_user.get("user_id"),
+                        "name": fb_user.get("name"),
+                        "role": fb_user.get("role"),
+                        "preferences": fb_user.get("preferences", {})
+                    }
+            except Exception as fb_e:
+                logger.error(f"Fallback face matching failed: {fb_e}")
 
         if matched_user:
             user_id = matched_user["user_id"]

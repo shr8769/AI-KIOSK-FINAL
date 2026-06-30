@@ -158,6 +158,30 @@ def tokenize_text(text: str) -> set:
     words = re.findall(r'\b\w+\b', text.lower())
     return {stem_token(w) for w in words if w not in stop_words}
 
+_shared_emb_fn = None
+_shared_synthesizer = None
+
+def get_shared_embedding_function():
+    global _shared_emb_fn
+    if _shared_emb_fn is None:
+        try:
+            from chromadb.utils import embedding_functions
+            _shared_emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
+                model_name="all-MiniLM-L6-v2"
+            )
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).exception("SentenceTransformer initialization failed")
+            raise
+    return _shared_emb_fn
+
+def get_shared_synthesizer():
+    global _shared_synthesizer
+    if _shared_synthesizer is None:
+        _shared_synthesizer = GeminiSynthesizer()
+    return _shared_synthesizer
+
+
 class BaseAgent(ABC):
     """
     Abstract base class representing a domain-specific QA agent.
@@ -191,7 +215,7 @@ class BaseAgent(ABC):
         self.similarity_threshold = 0.58
         
         if self.rag_enabled:
-            self.synthesizer = GeminiSynthesizer()
+            self.synthesizer = get_shared_synthesizer()
         
         if client is not None:
             self.client = client
@@ -205,9 +229,7 @@ class BaseAgent(ABC):
         logger = logging.getLogger(__name__)
 
         try:
-            self.emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-                model_name="all-MiniLM-L6-v2"
-            )
+            self.emb_fn = get_shared_embedding_function()
         except Exception as e:
             logger.exception("SentenceTransformer initialization failed")
             raise
@@ -448,13 +470,16 @@ class BaseAgent(ABC):
             
         # Second filter: if RAG is enabled and similarity is sufficient, run the Gemini relevance check
         if relevance_decision == "SUFFICIENT" and getattr(self, "rag_enabled", False):
-            try:
-                check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
-                if check_result is not None:
-                    relevance_decision = check_result
-                    print(f"Gemini relevance check decision: {relevance_decision}")
-            except Exception as e:
-                print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
+            if self.synthesizer.client is not None or self.synthesizer.ollama_client is not None:
+                try:
+                    check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
+                    if check_result is not None:
+                        relevance_decision = check_result
+                        print(f"Gemini relevance check decision: {relevance_decision}")
+                except Exception as e:
+                    print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
+            else:
+                print("[Warning] No active LLM client (Gemini or Ollama). Skipping relevance check.")
                 
         # If either check decides INSUFFICIENT, bypass LLM answer synthesis and return fallback
         if relevance_decision == "INSUFFICIENT":
@@ -471,7 +496,7 @@ class BaseAgent(ABC):
             return f"{fallback_msg}\n\n[Source: None]"
         
         # Log evaluation trace as required by PART 4
-        if getattr(self, "rag_enabled", False):
+        if getattr(self, "rag_enabled", False) and (self.synthesizer.client is not None or self.synthesizer.ollama_client is not None):
             try:
                 # Synthesize answer using Gemini/fallback RAG
                 rag_answer = self.synthesizer.synthesize(query, docs, domain=self.get_domain())
