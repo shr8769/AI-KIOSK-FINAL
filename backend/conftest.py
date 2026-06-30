@@ -7,7 +7,13 @@ Runs BEFORE any test session to set up environment and provide shared fixtures.
 """
 
 import os
+import sys
 from typing import Generator
+
+# Add repository root directory to search path to allow importing top-level packages like 'database'
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
 
 import pytest
 

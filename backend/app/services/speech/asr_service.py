@@ -15,10 +15,7 @@ import wave
 from collections import Counter
 from typing import Any
 
-import numpy as np
-
 from app.core.config import settings
-from app.services.speech.bhashini_service import bhashini_service
 
 logger = logging.getLogger(__name__)
 
@@ -115,11 +112,12 @@ class ASRService:
             pass
         logger.info("Whisper model warm-up complete.")
 
-    def _load_wav_to_numpy(self, audio_bytes: bytes) -> np.ndarray:
+    def _load_wav_to_numpy(self, audio_bytes: bytes) -> "np.ndarray":
         """
         Decodes WAV file bytes directly into a normalized float32 numpy array.
         Bypasses FFmpeg dependency entirely. Falls back to raw 16-bit PCM.
         """
+        import numpy as np
         try:
             with wave.open(io.BytesIO(audio_bytes), "rb") as wav_file:
                 n_channels = wav_file.getnchannels()
@@ -194,6 +192,7 @@ class ASRService:
 
         try:
             # 1. Attempt Bhashini Speech-To-Text if enabled and credentials exist
+            from app.services.speech.bhashini_service import bhashini_service
             if settings.USE_BHASHINI and bhashini_service.has_credentials():
                 lang_hint = request.language_hint if request.language_hint in ["en", "kn", "hi"] else "hi"
                 transcript = bhashini_service.transcribe_audio(request.audio_base64, language=lang_hint)

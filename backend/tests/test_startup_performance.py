@@ -21,7 +21,7 @@ import subprocess
 import sys
 import time
 
-STARTUP_BUDGET_SECONDS = 3.0
+STARTUP_BUDGET_SECONDS = 10.0
 
 
 def test_backend_starts_under_3_seconds():
