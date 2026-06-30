@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-from database.postgres.connection import get_db
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,6 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.memory_manager import MemoryManager
 
 router = APIRouter()
+
+
+def _get_db():
+    """Lazy import so that database.postgres is not required at module import time."""
+    from database.postgres.connection import get_db  # noqa: PLC0415
+    return get_db
 
 
 class StoreMemoryRequest(BaseModel):
@@ -30,7 +35,7 @@ class MemoryItem(BaseModel):
 
 
 @router.post("/memory/store", response_model=StoreMemoryResponse)
-async def store_memory(request: StoreMemoryRequest, db: AsyncSession = Depends(get_db)):
+async def store_memory(request: StoreMemoryRequest, db: AsyncSession = Depends(_get_db())):
     """
     Orchestrate summarizing, embedding, and storing conversation content into user's past memories.
     """
@@ -54,7 +59,7 @@ async def get_memories(
     user_id: str,
     query: Optional[str] = "",
     limit: Optional[int] = 3,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(_get_db())
 ):
     """
     Query the long-term memory vector store for user memories related to a topic.
