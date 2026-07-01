@@ -129,49 +129,13 @@ async def ingest_event(
             logger.warning("FACE_DETECTED received with no session_id — ignored.")
             return EventResponse(status="error", action_taken="missing_session_id")
 
-        # Query PostgreSQL via pgvector cosine distance sorting to find matched face
+        # Query via Firebase to find matched face
         matched_user = None
         try:
-            from database.models.models import User as PGUser
-            from database.postgres.connection import AsyncSessionLocal
-            from sqlalchemy.future import select
-
-            async with AsyncSessionLocal() as db_session:
-                result = await db_session.execute(
-                    select(PGUser)
-                    .order_by(PGUser.face_embedding.cosine_distance(embedding))
-                    .limit(1)
-                )
-                user = result.scalars().first()
-                if user and user.face_embedding is not None:
-                    dist_res = await db_session.execute(
-                        select(PGUser.face_embedding.cosine_distance(embedding))
-                        .filter(PGUser.user_id == user.user_id)
-                    )
-                    distance = dist_res.scalar()
-                    # Distance <= 0.4 corresponds to similarity >= 0.6
-                    if distance is not None and distance <= 0.4:
-                        matched_user = {
-                            "user_id": user.user_id,
-                            "name": user.name,
-                            "role": user.role_id,
-                            "preferences": user.preferences
-                        }
+            from app.services.firebase_client import match_face
+            matched_user = match_face(embedding)
         except Exception as e:
-            logger.error(f"[FR-8] Face matching via PostgreSQL failed: {e}")
-            logger.info("Falling back to firebase_client (local mock_firestore.json)...")
-            try:
-                from app.services.firebase_client import match_face as firebase_match_face
-                fb_user = firebase_match_face(embedding)
-                if fb_user:
-                    matched_user = {
-                        "user_id": fb_user.get("user_id"),
-                        "name": fb_user.get("name"),
-                        "role": fb_user.get("role"),
-                        "preferences": fb_user.get("preferences", {})
-                    }
-            except Exception as fb_e:
-                logger.error(f"Fallback face matching failed: {fb_e}")
+            logger.error(f"[FR-8] Face matching via Firebase failed: {e}")
 
         if matched_user:
             user_id = matched_user["user_id"]

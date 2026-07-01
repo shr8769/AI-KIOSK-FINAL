@@ -32,6 +32,10 @@ class PersonDetector:
     def on_person_left(self, callback: Callable[[DetectionEvent], None]):
         """Register callback for when a person leaves."""
         self._on_person_left = callback
+
+    def on_face_detected(self, callback: Callable[[str, list], None]):
+        """Register callback for when a face is detected and extracted."""
+        self._on_face_detected = callback
         
     def analyze_frame(self, frame) -> Optional[DetectionEvent]:
         """
@@ -74,9 +78,17 @@ class PersonDetector:
     def trigger_detected(self, event: DetectionEvent):
         """Called by the PresenceMonitor to officially trigger the session."""
         if self._on_person_detected:
-            self._on_person_detected(event)
+            return self._on_person_detected(event)
+        return None
             
     def trigger_left(self, event: DetectionEvent):
         """Called by the PresenceMonitor to officially end the session."""
         if self._on_person_left:
-            self._on_person_left(event)
+            return self._on_person_left(event)
+        return None
+
+    def trigger_face_detected(self, session_id: str, embedding: list):
+        """Called by PresenceMonitor to officially report a face embedding."""
+        if getattr(self, '_on_face_detected', None):
+            return self._on_face_detected(session_id, embedding)
+        return None

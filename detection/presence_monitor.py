@@ -94,7 +94,32 @@ class PresenceMonitor:
                         # Person has been present long enough!
                         self.is_person_present = True
                         logger.info("Person presence confirmed! Triggering start event.")
-                        self.detector.trigger_detected(event)
+                        session_id = self.detector.trigger_detected(event)
+                        if session_id:
+                            def extract_and_publish(frame_copy, sid):
+                                try:
+                                    from detection.face_extractor import face_extractor
+                                    import time
+                                    # Wait up to 30s for the model to load
+                                    for _ in range(60):
+                                        if face_extractor.is_ready:
+                                            break
+                                        time.sleep(0.5)
+                                        
+                                    if not face_extractor.is_ready:
+                                        logger.warning("InsightFace failed to load in time.")
+                                        return
+                                        
+                                    embedding = face_extractor.extract(frame_copy)
+                                    if embedding:
+                                        self.detector.trigger_face_detected(sid, embedding)
+                                    else:
+                                        logger.warning("No face embedding extracted for session.")
+                                except Exception as e:
+                                    logger.error(f"Face extraction failed: {e}")
+                                    
+                            import threading
+                            threading.Thread(target=extract_and_publish, args=(frame.copy(), session_id), daemon=True).start()
             else:
                 # No valid person detected in this frame
                 self.first_detected_time = None
