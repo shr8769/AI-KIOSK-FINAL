@@ -1,14 +1,13 @@
 import json
-import logging
-import time
 import re
-from typing import Optional, Dict, Any
+import time
+from typing import Any, Dict, Optional
 
 from app.core.dependencies import (
     RIAR_ENABLED,
     get_coordinator_agent,
-    translate_to_english,
     translate_from_english,
+    translate_to_english,
 )
 from app.core.logging import logger
 from app.core.session_store import (
@@ -19,6 +18,7 @@ from app.core.session_store import (
 from app.models.schemas import RIARRequest, TTSRequest, TurnModel
 from app.services.riar_service import riar_service
 from app.services.speech.tts_service import tts_service
+
 
 async def run_query_pipeline(session_id: str, text: str, language_hint: Optional[str] = None) -> Dict[str, Any]:
     """
@@ -72,26 +72,26 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
         detected_lang = 'hi'
     else:
         detected_lang = language_hint or 'en'
-            
+
     clean_transcript = text
-    
+
     # Translate to English if native language
     if detected_lang in ["kn", "hi"]:
         query_en = translate_to_english(clean_transcript, source_lang=detected_lang)
     else:
         query_en = clean_transcript
         detected_lang = "en"
-        
+
     # Persist user turn
     await add_user_turn(session_id, clean_transcript)
-    
+
     updated_session = await get_session(session_id)
     raw_history = updated_session.metadata.get("history", []) if updated_session else []
     history_turns = [
         TurnModel(turn_id=i + 1, role=t["role"], text=t["content"])
         for i, t in enumerate(raw_history)
     ]
-    
+
     # 2. RIAR classification
     ambiguous = False
     riar_resp = None
@@ -110,16 +110,16 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
                                 getattr(riar_resp, "ambiguity_detected", False))
         except Exception as e:
             logger.error(f"RIAR classification failed, falling back to clear search: {e}")
-            
+
     if ambiguous:
         question_en = riar_resp.clarification_question or "Could you clarify your question?"
         question_native = translate_from_english(question_en, target_lang=detected_lang)
         await add_agent_turn(session_id, question_native)
-        
+
         response_text = question_native
         ambiguity_type = riar_resp.ambiguity_type if riar_resp else "CLEAR"
         domain = None
-        
+
         try:
             tts_resp = await tts_service.synthesize(
                 TTSRequest(session_id=session_id, text=question_native, language=detected_lang)
@@ -128,7 +128,7 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
         except Exception as e:
             logger.error(f"TTS Synthesis failed for clarification: {e}")
             audio_url = None
-            
+
         result = {
             "type": "clarifying",
             "text": question_native,
@@ -143,7 +143,7 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
             getattr(riar_resp, "refined_query", None) or query_en
             if riar_resp else query_en
         )
-        
+
         target_domain = getattr(riar_resp, "selected_domain", None) if riar_resp else None
         if not target_domain or target_domain == "general":
             query_lower = refined_query.lower()
@@ -161,21 +161,21 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
                 target_domain = "navigation"
             else:
                 target_domain = "general"
-                
+
         coordinator = get_coordinator_agent()
         import asyncio
         full_answer = await asyncio.to_thread(coordinator.answer, refined_query, target_domain=target_domain)
-        
+
         nav_payload = None
         citations = []
-        
+
         if target_domain == "navigation":
             try:
                 metadata = json.loads(full_answer)
                 if "error" not in metadata:
                     from app.services.navigation_service import navigation_service
                     nav_id = await navigation_service.create_session(metadata)
-                    
+
                     answer_en = f"The {metadata.get('destination_name')} is located in {metadata.get('building')}, Floor {metadata.get('floor')}. Please scan the QR code for detailed directions."
                     nav_payload = {
                         "navigation_id": nav_id,
@@ -196,18 +196,18 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
                 citations = [parts[1].rstrip("]")]
             else:
                 answer_en = full_answer
-                
+
         answer_native = (
             translate_from_english(answer_en, target_lang=detected_lang)
             if detected_lang in ("kn", "hi")
             else answer_en
         )
         await add_agent_turn(session_id, answer_native)
-        
+
         response_text = answer_native
         ambiguity_type = getattr(riar_resp, "ambiguity_type", "CLEAR") if riar_resp else "CLEAR"
         domain = target_domain
-        
+
         tts_text = re.sub(r'[*_#]', '', answer_native)
         try:
             tts_resp = await tts_service.synthesize(
@@ -217,7 +217,7 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
         except Exception as e:
             logger.error(f"TTS Synthesis failed: {e}")
             audio_url = None
-            
+
         result = {
             "type": "answer",
             "text": answer_native,
@@ -226,14 +226,15 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
             "navigation": nav_payload,
             "language": detected_lang
         }
-        
+
     # PostgreSQL Turn Logging
     try:
         from database.models.models import Session as PGSession
         from database.postgres.connection import AsyncSessionLocal
         from sqlalchemy.future import select
+
         from app.services.query_store import QueryStore
-        
+
         user_id = None
         async with AsyncSessionLocal() as db_session:
             sess_res = await db_session.execute(
@@ -242,7 +243,7 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
             db_sess = sess_res.scalars().first()
             if db_sess:
                 user_id = db_sess.user_id
-                
+
         latency_ms = int((time.perf_counter() - start_time) * 1000)
         async with AsyncSessionLocal() as db_session:
             store = QueryStore(db_session)
@@ -259,5 +260,5 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
             )
     except Exception as db_e:
         logger.error(f"Failed to log user query to PostgreSQL: {db_e}")
-        
+
     return result

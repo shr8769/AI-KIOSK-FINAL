@@ -3,10 +3,10 @@ RAG Route — POST /rag (Retrieval-Augmented Generation) & POST /query (Text Que
 Owner: Harsha
 """
 
+import json
 import logging
 import os
-import json
-from typing import Optional, List
+from typing import List, Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -104,7 +104,7 @@ async def get_all_faqs():
     faqs = {}
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "knowledge", "sources"))
     domains = ["admissions", "academics", "placements", "research", "student_services"]
-    
+
     for domain in domains:
         faq_file = os.path.join(base_dir, domain, "faq.json")
         if os.path.exists(faq_file):
@@ -115,5 +115,5 @@ async def get_all_faqs():
                     faqs[domain_title] = data
             except Exception as e:
                 logger.error(f"Failed to load FAQ for {domain}: {e}")
-                
+
     return faqs

@@ -50,7 +50,6 @@ manager = get_connection_manager()
 
 
 def _is_language_command(text: str):
-    from typing import Optional
     if not text:
         return None
     text_lower = text.strip().lower().rstrip(".").rstrip("?")
