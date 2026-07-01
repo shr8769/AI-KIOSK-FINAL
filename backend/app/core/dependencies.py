@@ -187,4 +187,23 @@ def translate_from_english(text: str, target_lang: str) -> str:
 
 
 # ── RIAR enabled flag ─────────────────────────────────────────────────
-RIAR_ENABLED: bool = True
+def _check_ollama_running() -> bool:
+    import socket
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            s.connect(("localhost", 11434))
+        return True
+    except Exception:
+        return False
+
+def _is_riar_enabled() -> bool:
+    google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
+    if google_key:
+        return True
+    if _check_ollama_running():
+        return True
+    return False
+
+RIAR_ENABLED: bool = _is_riar_enabled()
+logger.info(f"RIAR Pipeline activation status: {RIAR_ENABLED}")

@@ -179,14 +179,14 @@ async def ingest_event(
             user_role = matched_user.get("role", "guest")
             is_returning = True
             first_name = user_name.split()[0] if user_name.strip() else "there"
-            greeting_text = f"Welcome back, {first_name}! Great to see you again."
+            greeting_text = f"Welcome back, {first_name}! Great to see you again. Which language would you prefer to continue in — English, Kannada, or Hindi?"
             logger.info(f"[FR-8] Identified: {user_name} | role={user_role} | session={session_id}")
         else:
             user_id = None
             user_name = None
             user_role = "guest"
             is_returning = False
-            greeting_text = "Welcome to PES University! How can I help you today?"
+            greeting_text = "Welcome to PES University! Please tell me which language you would like to interact with: English, Kannada, or Hindi?"
             logger.info(f"[FR-8] Unknown face — treating as guest (session={session_id})")
 
         # Persist identity into SQLite/Redis session store
@@ -238,9 +238,10 @@ async def ingest_event(
 
                 if recommendations:
                     rec = recommendations[0]
-                    greeting_text += (
-                        f" Based on your interest in {rec.get('tags', ['your field'])[0]}, "
-                        f"you might want to check out: {rec.get('title', 'a new opportunity')}."
+                    greeting_text = (
+                        f"Welcome back, {first_name}! Based on your interest in {rec.get('tags', ['your field'])[0]}, "
+                        f"you might want to check out: {rec.get('title', 'a new opportunity')}. "
+                        f"Which language would you prefer to continue in — English, Kannada, or Hindi?"
                     )
             except Exception as e:
                 logger.warning(f"[FR-10] Recommendations fetch failed: {e}")

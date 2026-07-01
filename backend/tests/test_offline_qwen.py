@@ -31,8 +31,9 @@ def test_get_riar_pipeline_offline_fallback(mock_chat_ollama):
         assert pipeline.llm_client == mock_chat_ollama.return_value
 
 
+@patch("socket.socket")
 @patch("langchain_ollama.ChatOllama")
-def test_gemini_synthesizer_offline_fallback_init(mock_chat_ollama):
+def test_gemini_synthesizer_offline_fallback_init(mock_chat_ollama, mock_socket):
     """Test GeminiSynthesizer falls back to local ChatOllama when GEMINI_API_KEY is missing."""
     # Temporarily remove GEMINI_API_KEY
     with patch.dict(os.environ, {}, clear=True):
@@ -43,8 +44,9 @@ def test_gemini_synthesizer_offline_fallback_init(mock_chat_ollama):
         assert synthesizer.ollama_client == mock_chat_ollama.return_value
 
 
+@patch("socket.socket")
 @patch("langchain_ollama.ChatOllama")
-def test_gemini_synthesizer_synthesize_and_sufficiency_fallback(mock_chat_ollama):
+def test_gemini_synthesizer_synthesize_and_sufficiency_fallback(mock_chat_ollama, mock_socket):
     """Test GeminiSynthesizer.synthesize and check_sufficiency call ChatOllama fallback."""
     mock_ollama_instance = mock_chat_ollama.return_value
 

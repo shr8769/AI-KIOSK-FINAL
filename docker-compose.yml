@@ -58,6 +58,21 @@ services:
   #   depends_on:
   #     - backend
 
+  # ── Postgres (pgvector) ───────────────────────
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: kiosk_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=vidyasahayak
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
 volumes:
   redis_data:
   backend_data:
+  postgres_data:

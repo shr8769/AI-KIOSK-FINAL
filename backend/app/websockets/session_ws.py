@@ -49,6 +49,20 @@ from app.services.speech.tts_service import tts_service
 manager = get_connection_manager()
 
 
+def _is_language_command(text: str):
+    from typing import Optional
+    if not text:
+        return None
+    text_lower = text.strip().lower().rstrip(".").rstrip("?")
+    if text_lower in ["english", "eng"] or "select english" in text_lower:
+        return "en"
+    if text_lower in ["kannada", "kn", "ಕನ್ನಡ"] or "ಕನ್ನಡ ಭಾಷೆ" in text_lower or "select kannada" in text_lower:
+        return "kn"
+    if text_lower in ["hindi", "hi", "हिंदी", "hind"] or "हिंदी भाषा" in text_lower or "select hindi" in text_lower:
+        return "hi"
+    return None
+
+
 # ── WebSocket endpoint ────────────────────────────────────────────────
 
 
@@ -108,8 +122,7 @@ async def websocket_session_handler(
 
             # ── Dev text shortcut ─────────────────────────────────────
             elif msg_type == "text_query":
-                text = payload.get("text", "")
-                await mgr.send(session_id, {"type": "answer", "payload": {"text": f"[dev] {text}", "sources": []}})
+                await _handle_text_query(mgr, session_id, payload)
 
             else:
                 await mgr.send(session_id, {"type": "error", "payload": {"message": f"Unknown type: {msg_type}", "code": "unknown_type"}})
@@ -154,9 +167,38 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
         )
         logger.info(f"ASR: '{asr_resp.transcript}' lang={asr_resp.detected_language}")
 
-        detected_lang = (asr_resp.detected_language or "en").lower().split("-")[0]
+        # Prioritize explicitly selected session language (language_hint) over ASR auto-detection
+        detected_lang = language_hint or (asr_resp.detected_language or "en").lower().split("-")[0]
         raw_transcript = asr_resp.transcript
         clean_transcript = raw_transcript
+
+        # Check if this is a language selection command
+        lang_cmd = _is_language_command(clean_transcript)
+        if lang_cmd:
+            confirmation_texts = {
+                "en": "You selected English. How can I help you today?",
+                "kn": "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
+                "hi": "आपने हिंदी भाषा चुनी है। ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?" # wait, let's keep Hindi confirmation text correct:
+            }
+            # Wait, let's write correct Hindi text: "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकता हूँ?"
+            confirmation_texts = {
+                "en": "You selected English. How can I help you today?",
+                "kn": "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
+                "hi": "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकता हूँ?"
+            }
+            text_response = confirmation_texts[lang_cmd]
+            tts_resp = await tts_service.synthesize(
+                TTSRequest(session_id=session_id, text=text_response, language=lang_cmd)
+            )
+            await mgr.send(session_id, {
+                "type": "answer",
+                "payload": {
+                    "text": text_response,
+                    "audio_url": tts_resp.audio_url,
+                    "sources": []
+                }
+            })
+            return
 
         if detected_lang in ["kn", "hi"]:
             try:
@@ -372,3 +414,50 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             })
         except Exception as tts_e:
             logger.error(f"Failed to synthesize error fallback: {tts_e}")
+
+
+async def _handle_text_query(mgr: ConnectionManager, session_id: str, payload: dict) -> None:
+    text = payload.get("text")
+    if not text:
+        await mgr.send(session_id, {"type": "error", "payload": {"message": "Missing text query", "code": "missing_text"}})
+        return
+
+    language_hint = payload.get("language_hint") or None
+
+    await mgr.send(session_id, {"type": "thinking", "payload": {}})
+    await mgr.send(session_id, {
+        "type": "transcript",
+        "payload": {"text": text, "confidence": 1.0, "final": True},
+    })
+
+    try:
+        from app.services.query_pipeline import run_query_pipeline
+        result = await run_query_pipeline(session_id, text, language_hint)
+
+        if result["type"] == "clarifying":
+            await mgr.send(session_id, {
+                "type": "clarifying",
+                "payload": {
+                    "text": result["text"],
+                    "audio_url": result["audio_url"],
+                    "ambiguity_type": result["ambiguity_type"]
+                }
+            })
+        else:
+            ans_payload = {
+                "text": result["text"],
+                "audio_url": result["audio_url"],
+                "sources": result["sources"]
+            }
+            if result.get("navigation"):
+                ans_payload["navigation"] = result["navigation"]
+
+            await mgr.send(session_id, {
+                "type": "answer",
+                "payload": ans_payload
+            })
+    except Exception as e:
+        logger.exception(f"Pipeline error for text query [{session_id}]: {e}")
+        fallback_msg = "I'm sorry, I encountered a temporary issue while processing your request. Please try again."
+        await mgr.send(session_id, {"type": "error", "payload": {"message": fallback_msg, "code": "pipeline_error"}})
+

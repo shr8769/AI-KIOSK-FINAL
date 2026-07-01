@@ -22,6 +22,46 @@ class NavigationAgent:
     def get_domain(self) -> str:
         return self.collection_name
 
+    def retrieve(self, query: str) -> list:
+        """
+        Retrieves matching location metadata structured similarly to base agent retrieval.
+        Allows coordinator to route dynamic query matches to the navigation agent.
+        """
+        query_lower = query.lower()
+        best_match = None
+        for loc in self.locations:
+            for alias in loc.get("aliases", []):
+                if alias.lower() in query_lower:
+                    best_match = loc
+                    break
+            if best_match:
+                break
+                
+        if best_match:
+            name = best_match.get("name", "Unknown")
+            building = best_match.get("building", "Unknown")
+            floor = str(best_match.get("floor", "0"))
+            room = best_match.get("room", "Unknown")
+            return [{
+                "id": f"navigation_{name.lower().replace(' ', '_')}",
+                "document": f"Topic: Navigation\nQuestion: Where is {name}?\nAnswer: The {name} is located in {building}, Floor {floor}, Room {room}.",
+                "question": f"Where is {name}?",
+                "answer": json.dumps({
+                    "destination_name": name,
+                    "building": building,
+                    "floor": floor,
+                    "room": room,
+                    "map_coords": best_match.get("map_coords", {"x": 0, "y": 0}),
+                    "directions": best_match.get("directions", [])
+                }),
+                "metadata": {"category": "navigation", "topic": name},
+                "distance": 0.0,
+                "keyword_score": 10.0,
+                "combined_score": 10.0,
+                "retrieval_source": "alias_matching"
+            }]
+        return []
+
     def answer(self, query: str, routing_confidence: float = 1.0) -> str:
         """
         Bypasses LLM generation. Uses deterministic substring alias matching to
