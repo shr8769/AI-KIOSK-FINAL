@@ -27,6 +27,9 @@ export async function startMicAnalysis(): Promise<MicHandle | null> {
     });
 
     const audioCtx = new AudioContextClass() as AudioContext;
+    if (audioCtx.state === 'suspended') {
+      await audioCtx.resume();
+    }
     const source   = audioCtx.createMediaStreamSource(stream);
     const analyser = audioCtx.createAnalyser();
 
@@ -93,11 +96,14 @@ export function stopMicAnalysis(handle: MicHandle | null | undefined) {
  * Call this every frame inside your render loop.
  */
 export function readVoiceAmplitude(handle: MicHandle): number {
-  handle.analyser.getByteFrequencyData(handle.freqData as any);
-  let sum = 0;
-  const n = Math.min(80, handle.freqData.length);
-  for (let i = 0; i < n; i++) sum += handle.freqData[i];
-  return (sum / n) / 255;
+  const timeData = new Uint8Array(handle.analyser.fftSize);
+  handle.analyser.getByteTimeDomainData(timeData);
+  let sumSquares = 0;
+  for (let i = 0; i < timeData.length; i++) {
+    const val = (timeData[i] - 128) / 128;
+    sumSquares += val * val;
+  }
+  return Math.sqrt(sumSquares / timeData.length);
 }
 
 /**

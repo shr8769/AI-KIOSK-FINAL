@@ -32,11 +32,16 @@ class GeminiSynthesizer:
 
     def _init_ollama(self):
         try:
+            import socket
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(0.5)
+                s.connect(("localhost", 11434))
             from langchain_ollama import ChatOllama
             self.ollama_client = ChatOllama(model="qwen3:latest")
             logger.info("Initialized local Ollama client successfully with model qwen3:latest.")
         except Exception as e:
-            logger.error(f"Failed to initialize Ollama client: {e}. RAG synthesis will be unavailable.")
+            logger.warning(f"Ollama service is not running on localhost:11434 ({e}). RAG synthesis fallback will be unavailable.")
+            self.ollama_client = None
 
     def synthesize(self, query: str, context_docs: list, domain: str) -> str:
         """

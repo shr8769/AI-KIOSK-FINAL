@@ -33,6 +33,8 @@ class PresenceMonitor:
         self._thread: Optional[threading.Thread] = None
         
         self.is_person_present = False
+        self.session_id: Optional[str] = None
+        self.face_matched = False
         
         # Timing state
         self.first_detected_time: Optional[float] = None
@@ -94,32 +96,8 @@ class PresenceMonitor:
                         # Person has been present long enough!
                         self.is_person_present = True
                         logger.info("Person presence confirmed! Triggering start event.")
-                        session_id = self.detector.trigger_detected(event)
-                        if session_id:
-                            def extract_and_publish(frame_copy, sid):
-                                try:
-                                    from detection.face_extractor import face_extractor
-                                    import time
-                                    # Wait up to 30s for the model to load
-                                    for _ in range(60):
-                                        if face_extractor.is_ready:
-                                            break
-                                        time.sleep(0.5)
-                                        
-                                    if not face_extractor.is_ready:
-                                        logger.warning("InsightFace failed to load in time.")
-                                        return
-                                        
-                                    embedding = face_extractor.extract(frame_copy)
-                                    if embedding:
-                                        self.detector.trigger_face_detected(sid, embedding)
-                                    else:
-                                        logger.warning("No face embedding extracted for session.")
-                                except Exception as e:
-                                    logger.error(f"Face extraction failed: {e}")
-                                    
-                            import threading
-                            threading.Thread(target=extract_and_publish, args=(frame.copy(), session_id), daemon=True).start()
+                        self.session_id = self.detector.trigger_detected(event)
+                        self.face_matched = False
             else:
                 # No valid person detected in this frame
                 self.first_detected_time = None
@@ -129,12 +107,34 @@ class PresenceMonitor:
                         # Person has been absent long enough!
                         self.is_person_present = False
                         logger.info("Person absence confirmed! Triggering left event.")
+                        self.session_id = None
+                        self.face_matched = False
                         empty_event = DetectionEvent(
                             camera_id=self.detector.camera_id,
                             confidence=0.0,
                             bounding_box=BoundingBox(x=0, y=0, w=0, h=0)
                         )
                         self.detector.trigger_left(empty_event)
+
+            # Face extraction loop (throttled to once every 1.5s to prevent CPU overload and YOLO lag)
+            if self.is_person_present and self.session_id and not self.face_matched:
+                if not hasattr(self, "last_face_extraction_time"):
+                    self.last_face_extraction_time = 0.0
+                
+                if current_time - self.last_face_extraction_time >= 1.5:
+                    self.last_face_extraction_time = current_time
+                    try:
+                        from detection.face_extractor import face_extractor
+                        if face_extractor.is_ready:
+                            embedding = face_extractor.extract(frame)
+                            if embedding:
+                                logger.info("[FR-8] Face embedding extracted on edge. Triggering face detected event...")
+                                resp = self.detector.trigger_face_detected(self.session_id, embedding)
+                                if resp and resp.get("status") == "success":
+                                    self.face_matched = True
+                                    logger.info(f"[FR-8] Face successfully matched on backend: {resp.get('action_taken')}")
+                    except Exception as fe_e:
+                        logger.warning(f"Error running face extraction or posting event: {fe_e}")
                         
             if self.debug:
                 # Draw bounding box if person detected

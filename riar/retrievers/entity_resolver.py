@@ -86,6 +86,11 @@ class EntityResolver:
         logger.info(f"EntityResolver: top match for '{query}' is '{top_loc['name']}' with score {top_score}")
         
         if top_score >= self.direct_threshold:
+            # If it's a near-perfect match, skip the delta check
+            if top_score >= 95:
+                logger.info("EntityResolver: Perfect match, skipping delta check. Match is DIRECT.")
+                return "DIRECT", top_loc
+                
             # Check delta against second best if exists
             if len(matches) > 1:
                 second_score, _ = matches[1]

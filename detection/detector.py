@@ -24,6 +24,7 @@ class PersonDetector:
         
         self._on_person_detected: Optional[Callable[[DetectionEvent], None]] = None
         self._on_person_left: Optional[Callable[[DetectionEvent], None]] = None
+        self._on_face_detected: Optional[Callable[[str, list], Optional[dict]]] = None
 
     def on_person_detected(self, callback: Callable[[DetectionEvent], None]):
         """Register callback for when a person is detected."""
@@ -33,10 +34,15 @@ class PersonDetector:
         """Register callback for when a person leaves."""
         self._on_person_left = callback
 
-    def on_face_detected(self, callback: Callable[[str, list], None]):
+    def on_face_detected(self, callback: Callable[[str, list], Optional[dict]]):
         """Register callback for when a face is detected and extracted."""
         self._on_face_detected = callback
-        
+
+    def trigger_face_detected(self, session_id: str, embedding: list) -> Optional[dict]:
+        """Trigger face detection callback."""
+        if self._on_face_detected:
+            return self._on_face_detected(session_id, embedding)
+        return None
     def analyze_frame(self, frame) -> Optional[DetectionEvent]:
         """
         Run YOLO11 inference on a single frame.
@@ -75,7 +81,7 @@ class PersonDetector:
             
         return None
         
-    def trigger_detected(self, event: DetectionEvent):
+    def trigger_detected(self, event: DetectionEvent) -> Optional[str]:
         """Called by the PresenceMonitor to officially trigger the session."""
         if self._on_person_detected:
             return self._on_person_detected(event)
@@ -85,10 +91,4 @@ class PersonDetector:
         """Called by the PresenceMonitor to officially end the session."""
         if self._on_person_left:
             return self._on_person_left(event)
-        return None
-
-    def trigger_face_detected(self, session_id: str, embedding: list):
-        """Called by PresenceMonitor to officially report a face embedding."""
-        if getattr(self, '_on_face_detected', None):
-            return self._on_face_detected(session_id, embedding)
         return None

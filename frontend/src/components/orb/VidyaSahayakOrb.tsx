@@ -97,6 +97,12 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   const bargeInStartRef = useRef<number | null>(null);
   const bargeInCooldownRef = useRef<number>(0);
 
+  // VAD & Noise Calibration Refs
+  const smoothedUserAmpRef = useRef<number>(0);
+  const listeningTimeStartRef = useRef<number>(0);
+  const noiseSamplesRef = useRef<number[]>([]);
+  const silenceThresholdRef = useRef<number>(0.018);
+
   /* ─── set state ─── */
   const applyState = useCallback((id: OrbState) => {
     const cfg = ORB_STATES.find(s => s.id === id) ?? ORB_STATES[0];
@@ -112,6 +118,9 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
     if (id === 'listening') {
       hasSpokenRef.current = false;
       silenceStartRef.current = null;
+      listeningTimeStartRef.current = performance.now();
+      noiseSamplesRef.current = [];
+      silenceThresholdRef.current = 0.018;
     }
 
     onStateChange?.(id);
@@ -233,20 +242,26 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       let ttsAmp = 0;
       let userAmp = 0;
       
-      if (ttsHandle?.analyser && ttsHandle?.freqData) {
-        ttsHandle.analyser.getByteFrequencyData(ttsHandle.freqData as any);
-        let sum = 0;
-        const n = Math.min(80, ttsHandle.freqData.length);
-        for (let i = 0; i < n; i++) sum += ttsHandle.freqData[i];
-        ttsAmp = (sum / n) / 255;
+      if (ttsHandle?.analyser) {
+        const timeData = new Uint8Array(ttsHandle.analyser.fftSize);
+        ttsHandle.analyser.getByteTimeDomainData(timeData);
+        let sumSquares = 0;
+        for (let i = 0; i < timeData.length; i++) {
+          const val = (timeData[i] - 128) / 128;
+          sumSquares += val * val;
+        }
+        ttsAmp = Math.sqrt(sumSquares / timeData.length);
       }
       
-      if (micHandle?.analyser && micHandle?.freqData) {
-        micHandle.analyser.getByteFrequencyData(micHandle.freqData as any);
-        let sum = 0;
-        const n = Math.min(80, micHandle.freqData.length);
-        for (let i = 0; i < n; i++) sum += micHandle.freqData[i];
-        userAmp = (sum / n) / 255;
+      if (micHandle?.analyser) {
+        const timeData = new Uint8Array(micHandle.analyser.fftSize);
+        micHandle.analyser.getByteTimeDomainData(timeData);
+        let sumSquares = 0;
+        for (let i = 0; i < timeData.length; i++) {
+          const val = (timeData[i] - 128) / 128;
+          sumSquares += val * val;
+        }
+        userAmp = Math.sqrt(sumSquares / timeData.length);
       }
 
       targetAmp = activeIdRef.current === 'speaking' ? ttsAmp : userAmp;
@@ -267,26 +282,47 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       /* WebGL core */
       updateUniforms(glCtx as WebGLContext, timeRef.current, eff, v);
 
-      /* Client-side VAD (Voice Activity Detection) */
-      if (activeIdRef.current === 'listening' && micOnRef.current) {
-        const silenceThreshold = 0.018; // Silence baseline
-        const silenceDurationMs = 2000;  // 2 seconds of silence
+      /* Update smoothed user amplitude */
+      smoothedUserAmpRef.current = lerp(smoothedUserAmpRef.current, userAmp, 0.2);
 
-        if (userAmp > silenceThreshold) {
-          if (!hasSpokenRef.current) {
-            console.log('[VAD] Speech detected');
-            hasSpokenRef.current = true;
+      /* Client-side VAD (Voice Activity Detection) with Noise Calibration */
+      if (activeIdRef.current === 'listening' && micOnRef.current) {
+        const silenceDurationMs = 800;  // 800ms of silence (very snappy VAD)
+        const timeSinceStart = performance.now() - listeningTimeStartRef.current;
+
+        if (timeSinceStart < 400) {
+          // Calibration phase: gather ambient noise samples
+          if (noiseSamplesRef.current.length === 0) {
+            console.log('[VAD] Calibrating noise floor...');
           }
-          silenceStartRef.current = null;
-        } else if (hasSpokenRef.current) {
-          if (silenceStartRef.current === null) {
-            silenceStartRef.current = performance.now();
-          } else if (performance.now() - silenceStartRef.current > silenceDurationMs) {
-            console.log('[VAD] Silence timeout reached. Automatically submitting speech...');
-            hasSpokenRef.current = false;
-            setTimeout(() => {
-              toggleMicRef.current?.();
-            }, 0);
+          noiseSamplesRef.current.push(userAmp);
+          const avgNoise = noiseSamplesRef.current.reduce((a, b) => a + b, 0) / noiseSamplesRef.current.length;
+          // Set threshold slightly above noise floor (at least 0.008, up to 0.12 max for safety)
+          silenceThresholdRef.current = Math.min(0.12, Math.max(0.008, avgNoise + 0.005));
+          
+          // Print calibration summary towards the end of calibration
+          if (noiseSamplesRef.current.length > 5 && timeSinceStart > 370 && timeSinceStart < 390) {
+            console.log(`[VAD] Calibration complete. Noise Floor: ${avgNoise.toFixed(3)} | Threshold: ${silenceThresholdRef.current.toFixed(3)}`);
+          }
+        } else {
+          // VAD Detection phase
+          const threshold = silenceThresholdRef.current;
+          if (smoothedUserAmpRef.current > threshold) {
+            if (!hasSpokenRef.current) {
+              console.log(`[VAD] Speech detected (amplitude: ${smoothedUserAmpRef.current.toFixed(3)} > threshold: ${threshold.toFixed(3)})`);
+              hasSpokenRef.current = true;
+            }
+            silenceStartRef.current = null;
+          } else if (hasSpokenRef.current) {
+            if (silenceStartRef.current === null) {
+              silenceStartRef.current = performance.now();
+            } else if (performance.now() - silenceStartRef.current > silenceDurationMs) {
+              console.log('[VAD] Silence timeout reached. Automatically submitting speech...');
+              hasSpokenRef.current = false;
+              setTimeout(() => {
+                toggleMicRef.current?.();
+              }, 0);
+            }
           }
         }
       }
@@ -297,10 +333,10 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
           // Skip VAD during cooldown window to prevent TTS tail-end echo triggering
           bargeInStartRef.current = null;
         } else {
-          const bargeInThreshold = 0.05; // Speech-like energy threshold
+          const bargeInThreshold = Math.max(0.05, silenceThresholdRef.current + 0.02); // Dynamically scale above noise floor
           const bargeInDurationMs = 400; // Require sustained energy for 400ms to avoid random noise cutoffs
 
-          if (userAmp > bargeInThreshold) {
+          if (smoothedUserAmpRef.current > bargeInThreshold) {
             if (bargeInStartRef.current === null) {
               bargeInStartRef.current = performance.now();
             } else if (performance.now() - bargeInStartRef.current > bargeInDurationMs) {
@@ -412,7 +448,7 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
             {customLabel || label}
           </p>
           <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 22, color: 'rgba(255,255,255,0.95)', marginTop: 16, textAlign: 'center', fontWeight: 500, letterSpacing: '0.01em', transition: 'all 0.6s ease', maxWidth: '80%' }}>
-            <Typewriter key={customDesc || desc} text={customDesc || desc} speed={30} delay={3000} cursor="|" className="inline-block" />
+            <Typewriter key={customDesc || desc} text={customDesc || desc} speed={30} delay={showMic ? 3000 : 0} cursor="|" className="inline-block" />
           </div>
         </div>
       )}

@@ -62,29 +62,50 @@ class CoordinatorAgent:
 
         # Check if a strong match exists
         if not target_domain or target_domain == "general" or target_domain not in self.agents:
-            fallback_msg = (
-                "Sorry, I could not find information regarding this in the university knowledge base. "
-                "Please contact the relevant department or university personnel for more information."
-            )
+            best_agent_domain = None
+            best_score = -1.0
             
-            if detected_lang in ["kn", "hi"]:
+            for domain_name, agent in self.agents.items():
                 try:
-                    fallback_msg = translator.translate_from_english(fallback_msg, detected_lang)
-                except Exception:
-                    pass
-
-            from agents.domain.base_agent import log_evaluation_trace
-            log_evaluation_trace(
-                query=english_query,
-                selected_agent="None",
-                selected_domain="None",
-                routing_confidence=0.0,
-                selected_doc_id="None",
-                retrieved_docs=[],
-                answer=fallback_msg,
-                relevance_decision="INSUFFICIENT"
-            )
-            return f"{fallback_msg}\n\n[Source: None]"
+                    docs = agent.retrieve(english_query)
+                    if docs:
+                        best_doc = docs[0]
+                        sim_score = 1.0 / (1.0 + best_doc["distance"])
+                        if sim_score >= getattr(agent, "similarity_threshold", 0.58):
+                            combined_score = best_doc["combined_score"]
+                            if combined_score > best_score:
+                                best_score = combined_score
+                                best_agent_domain = domain_name
+                except Exception as e:
+                    print(f"[Warning] Failed to query agent {domain_name} in general search: {e}")
+                    
+            if best_agent_domain:
+                target_domain = best_agent_domain
+                print(f"[Coordinator] Routed dynamically to domain: {target_domain} (score: {best_score})")
+            else:
+                fallback_msg = (
+                    "Sorry, I could not find information regarding this in the university knowledge base. "
+                    "Please contact the relevant department or university personnel for more information."
+                )
+                
+                if detected_lang in ["kn", "hi"]:
+                    try:
+                        fallback_msg = translator.translate_from_english(fallback_msg, detected_lang)
+                    except Exception:
+                        pass
+    
+                from agents.domain.base_agent import log_evaluation_trace
+                log_evaluation_trace(
+                    query=english_query,
+                    selected_agent="None",
+                    selected_domain="None",
+                    routing_confidence=0.0,
+                    selected_doc_id="None",
+                    retrieved_docs=[],
+                    answer=fallback_msg,
+                    relevance_decision="INSUFFICIENT"
+                )
+                return f"{fallback_msg}\n\n[Source: None]"
             
         selected_agent = self.agents[target_domain]
         selected_agent_name = selected_agent.__class__.__name__

@@ -1,15 +1,23 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CampusMap } from '@/components/ui/CampusMap';
 
 export default function NavigationPage({ params }: { params: any }) {
   const unwrappedParams = React.use(params) as { id: string };
   const navId = unwrappedParams.id;
   
+  const router = useRouter();
+  
   const [navData, setNavData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Agent Query States
+  const [textQuery, setTextQuery] = useState('');
+  const [agentResponse, setAgentResponse] = useState<string | null>(null);
+  const [queryLoading, setQueryLoading] = useState(false);
 
   useEffect(() => {
     async function fetchNavigation() {
@@ -36,8 +44,53 @@ export default function NavigationPage({ params }: { params: any }) {
       }
     }
     
-    fetchNavigation();
   }, [navId]);
+
+  // Submit handler for text query
+  const handleQuerySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!textQuery.trim()) return;
+
+    setQueryLoading(true);
+    setAgentResponse(null);
+
+    try {
+      const getApiUrl = () => {
+        if (typeof window !== 'undefined') {
+          const protocol = window.location.protocol;
+          return `${protocol}//${window.location.hostname}:8000/api/v1`;
+        }
+        return 'http://localhost:8000/api/v1';
+      };
+
+      const res = await fetch(`${getApiUrl()}/query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          session_id: 'demo_session_id',
+          text: textQuery,
+          language_hint: 'en'
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.navigation) {
+          router.push(`/navigation/${data.navigation.navigation_id}`);
+        } else {
+          setAgentResponse(data.text);
+        }
+      } else {
+        setAgentResponse("I'm sorry, I couldn't process your request right now.");
+      }
+    } catch (err) {
+      console.error("Failed to query agent:", err);
+      setAgentResponse("Failed to connect to the assistant service.");
+    } finally {
+      setQueryLoading(false);
+      setTextQuery('');
+    }
+  };
 
   if (loading) {
     return (
@@ -114,6 +167,37 @@ export default function NavigationPage({ params }: { params: any }) {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Ask Kiosk Section */}
+        <div className="p-6 border-t border-zinc-100 bg-zinc-50/50">
+          <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">
+            Ask VidyaSahayak
+          </h3>
+          <form onSubmit={handleQuerySubmit} className="relative flex items-center bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm focus-within:border-indigo-500/50 focus-within:ring-1 focus-within:ring-indigo-500/30 transition-all duration-300">
+            <input
+              type="text"
+              value={textQuery}
+              onChange={(e) => setTextQuery(e.target.value)}
+              placeholder="e.g., Where is library? / Placement stats..."
+              disabled={queryLoading}
+              className="w-full py-3 px-4 bg-transparent text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none disabled:opacity-50"
+            />
+            <button
+              type="submit"
+              disabled={queryLoading}
+              className="mr-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-xs font-semibold text-white shadow transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
+            >
+              {queryLoading ? '...' : 'Ask'}
+            </button>
+          </form>
+
+          {agentResponse && (
+            <div className="mt-4 p-4 rounded-2xl bg-indigo-50 border border-indigo-100/50 text-zinc-700 text-xs leading-relaxed animate-fade-in">
+              <p className="font-semibold text-indigo-800 mb-1">Answer:</p>
+              {agentResponse}
+            </div>
+          )}
         </div>
 
       </div>

@@ -49,6 +49,19 @@ from app.services.speech.tts_service import tts_service
 manager = get_connection_manager()
 
 
+def _is_language_command(text: str):
+    if not text:
+        return None
+    text_lower = text.strip().lower().rstrip(".").rstrip("?")
+    if text_lower in ["english", "eng"] or "select english" in text_lower:
+        return "en"
+    if text_lower in ["kannada", "kn", "ಕನ್ನಡ"] or "ಕನ್ನಡ ಭಾಷೆ" in text_lower or "select kannada" in text_lower:
+        return "kn"
+    if text_lower in ["hindi", "hi", "हिंदी", "hind"] or "हिंदी भाषा" in text_lower or "select hindi" in text_lower:
+        return "hi"
+    return None
+
+
 # ── WebSocket endpoint ────────────────────────────────────────────────
 
 
@@ -108,13 +121,7 @@ async def websocket_session_handler(
 
             # ── Text query ────────────────────────────────────────────
             elif msg_type == "text_query":
-                text = payload.get("text", "")
-                turn_id = payload.get("turn_id", 1)
-                language_hint = payload.get("language_hint", "en")
-                if text:
-                    import asyncio
-                    # Run it through the same logic as transcribed audio
-                    asyncio.create_task(_process_text_pipeline(mgr, session_id, text, language_hint, turn_id))
+                await _handle_text_query(mgr, session_id, payload)
 
             else:
                 await mgr.send(session_id, {"type": "error", "payload": {"message": f"Unknown type: {msg_type}", "code": "unknown_type"}})
@@ -142,8 +149,6 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
     start_time = time.perf_counter()
     refined_query = None
     response_text = None
-    domain = None
-    ambiguity_type = "CLEAR"
 
     await mgr.send(session_id, {"type": "thinking", "payload": {}})
 
@@ -159,11 +164,35 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
         )
         logger.info(f"ASR: '{asr_resp.transcript}' lang={asr_resp.detected_language}")
 
-        detected_lang = (asr_resp.detected_language or "en").lower().split("-")[0]
+        # Prioritize explicitly selected session language (language_hint) over ASR auto-detection
+        detected_lang = language_hint or (asr_resp.detected_language or "en").lower().split("-")[0]
         raw_transcript = asr_resp.transcript
         
-        await _process_core_pipeline(mgr, session_id, raw_transcript, detected_lang, turn_id, start_time)
-        
+        from app.services.query_pipeline import run_query_pipeline
+        result = await run_query_pipeline(session_id, raw_transcript, detected_lang)
+
+        if result["type"] == "clarifying":
+            await mgr.send(session_id, {
+                "type": "clarifying",
+                "payload": {
+                    "text": result["text"],
+                    "audio_url": result["audio_url"],
+                    "ambiguity_type": result["ambiguity_type"]
+                }
+            })
+        else:
+            ans_payload = {
+                "text": result["text"],
+                "audio_url": result["audio_url"],
+                "sources": result["sources"]
+            }
+            if result.get("navigation"):
+                ans_payload["navigation"] = result["navigation"]
+
+            await mgr.send(session_id, {
+                "type": "answer",
+                "payload": ans_payload
+            })
     except Exception as e:
         logger.exception(f"Pipeline error [{session_id}]: {e}")
         fallback_msg = "I'm sorry, I encountered a temporary issue while processing your request. Please try again."
@@ -179,232 +208,48 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
         except Exception as tts_e:
             logger.error(f"Failed to synthesize error fallback: {tts_e}")
 
-async def _process_text_pipeline(mgr: ConnectionManager, session_id: str, text: str, language_hint: str, turn_id: int) -> None:
-    import time
-    start_time = time.perf_counter()
+
+async def _handle_text_query(mgr: ConnectionManager, session_id: str, payload: dict) -> None:
+    text = payload.get("text")
+    if not text:
+        await mgr.send(session_id, {"type": "error", "payload": {"message": "Missing text query", "code": "missing_text"}})
+        return
+
+    language_hint = payload.get("language_hint") or None
+
     await mgr.send(session_id, {"type": "thinking", "payload": {}})
-    
-    # For text, we assume language_hint or default to English
-    detected_lang = language_hint if language_hint else "en"
-    
-    try:
-        await _process_core_pipeline(mgr, session_id, text, detected_lang, turn_id, start_time)
-    except Exception as e:
-        logger.exception(f"Text Pipeline error [{session_id}]: {e}")
-        fallback_msg = "I'm sorry, I encountered a temporary issue while processing your text. Please try again."
-        await mgr.send(session_id, {"type": "error", "payload": {"message": fallback_msg, "code": "pipeline_error"}})
-        try:
-            tts_resp = await tts_service.synthesize(
-                TTSRequest(session_id=session_id, text=fallback_msg, language="en")
-            )
-            await mgr.send(session_id, {
-                "type": "answer",
-                "payload": {"text": fallback_msg, "audio_url": tts_resp.audio_url, "sources": []},
-            })
-        except Exception as tts_e:
-            logger.error(f"Failed to synthesize error fallback: {tts_e}")
-
-async def _process_core_pipeline(mgr: ConnectionManager, session_id: str, raw_transcript: str, detected_lang: str, turn_id: int, start_time: float) -> None:
-    refined_query = None
-    response_text = None
-    domain = None
-    ambiguity_type = "CLEAR"
-    
-    clean_transcript = raw_transcript
-    
-    if detected_lang in ["kn", "hi"]:
-        try:
-            from deep_translator import GoogleTranslator
-            clean_transcript = GoogleTranslator(source="auto", target=detected_lang).translate(raw_transcript)
-            logger.info(f"Corrected script: '{raw_transcript}' -> '{clean_transcript}' ({detected_lang})")
-        except Exception as e:
-            logger.error(f"Script correction failed: {e}")
-            clean_transcript = raw_transcript
-        query_en = translate_to_english(clean_transcript, source_lang="auto")
-    else:
-        query_en = raw_transcript
-        detected_lang = "en"
-        clean_transcript = raw_transcript
-
     await mgr.send(session_id, {
         "type": "transcript",
-        "payload": {"text": clean_transcript, "confidence": 1.0, "final": True},
+        "payload": {"text": text, "confidence": 1.0, "final": True},
     })
 
-    # ── 3. Persist user turn ──────────────────────────────────────
-    await add_user_turn(session_id, clean_transcript)
-
-
-    updated_session = await get_session(session_id)
-    raw_history = updated_session.metadata.get("history", []) if updated_session else []
-    # Use TurnModel (Pydantic) — the ONLY schema for turn data crossing API boundaries
-    history_turns = [
-        TurnModel(turn_id=i + 1, role=t["role"], text=t["content"])
-        for i, t in enumerate(raw_history)
-    ]
-
-    # ── 4. RIAR ambiguity gate (skipped when no API key) ──────────
-    ambiguous = False
-    riar_resp = None
-    if RIAR_ENABLED:
-        riar_resp = await riar_service.classify(
-            RIARRequest(
-                session_id=session_id,
-                turn_id=turn_id,
-                query=query_en,
-                language="en",
-                session_history=history_turns,
-            )
-        )
-        ambiguous = getattr(riar_resp, "requires_clarification",
-                            getattr(riar_resp, "ambiguity_detected", False))
-    else:
-        logger.debug("RIAR skipped — no GOOGLE_API_KEY")
-
-    if ambiguous:
-        # ── 4a. Clarification ──────────────────────────────────
-        question_en = riar_resp.clarification_question or "Could you clarify your question?"
-        question_native = translate_from_english(question_en, target_lang=detected_lang)
-        await add_agent_turn(session_id, question_native)
-
-        response_text = question_native
-        ambiguity_type = riar_resp.ambiguity_type if riar_resp else "CLEAR"
-        domain = None
-
-        tts_resp = await tts_service.synthesize(
-            TTSRequest(session_id=session_id, text=question_native, language=detected_lang)
-        )
-        await mgr.send(session_id, {
-            "type": "clarifying",
-            "payload": {
-                "text": question_native,
-                "audio_url": tts_resp.audio_url,
-                "ambiguity_type": riar_resp.ambiguity_type,
-            },
-        })
-    else:
-        # ── 4b. FAQ retrieval ──────────────────────────────────
-        refined_query = (
-            getattr(riar_resp, "refined_query", None) or query_en
-            if riar_resp else query_en
-        )
-        await mgr.send(session_id, {"type": "retrieving", "payload": {}})
-
-        target_domain = getattr(riar_resp, "selected_domain", None) if riar_resp else None
-        if not target_domain or target_domain == "general":
-            query_lower = refined_query.lower()
-            if "admission" in query_lower:
-                target_domain = "admissions"
-            elif "academic" in query_lower or "course" in query_lower or "grade" in query_lower:
-                target_domain = "academics"
-            elif "placement" in query_lower or "salary" in query_lower or "job" in query_lower or "company" in query_lower or "recruit" in query_lower:
-                target_domain = "placements"
-            elif "research" in query_lower or "paper" in query_lower or "publication" in query_lower or "project" in query_lower:
-                target_domain = "research"
-            elif "student" in query_lower or "hostel" in query_lower or "fee" in query_lower or "scholarship" in query_lower:
-                target_domain = "student_services"
-            elif "where" in query_lower or "locate" in query_lower or "direction" in query_lower or "floor" in query_lower or "room" in query_lower or "building" in query_lower or "map" in query_lower:
-                target_domain = "navigation"
-            else:
-                target_domain = "general"
-        coordinator = get_coordinator_agent()  # lazy — loads on first call
-        # Use the explicit routing decision from RIAR. Run in thread to prevent event loop blocking.
-        import asyncio
-        full_answer = await asyncio.to_thread(coordinator.answer, refined_query, target_domain=target_domain)
-
-        nav_payload = None
-        citations = []
-
-        if target_domain == "navigation":
-            try:
-                metadata = json.loads(full_answer)
-                if "error" not in metadata:
-                    from app.services.navigation_service import navigation_service
-                    nav_id = await navigation_service.create_session(metadata)
-
-                    answer_en = f"The {metadata.get('destination_name')} is located in {metadata.get('building')}, Floor {metadata.get('floor')}. Please scan the QR code for detailed directions."
-                    nav_payload = {
-                        "navigation_id": nav_id,
-                        "destination_name": metadata.get("destination_name"),
-                        "building": metadata.get("building"),
-                        "floor": metadata.get("floor"),
-                        "room": metadata.get("room")
-                    }
-                else:
-                    answer_en = metadata["error"]
-            except Exception as e:
-                logger.error(f"Failed to parse navigation JSON: {e}")
-                answer_en = "I'm sorry, I couldn't retrieve the location details."
-        else:
-            if "\n\n[Source: " in full_answer:
-                parts = full_answer.split("\n\n[Source: ", 1)
-                answer_en = parts[0]
-                citations = [parts[1].rstrip("]")]
-            else:
-                answer_en = full_answer
-
-        # ── 5. Back-translate ──────────────────────────────────
-        answer_native = (
-            translate_from_english(answer_en, target_lang=detected_lang)
-            if detected_lang in ("kn", "hi")
-            else answer_en
-        )
-        await add_agent_turn(session_id, answer_native)
-
-        response_text = answer_native
-        ambiguity_type = getattr(riar_resp, "ambiguity_type", "CLEAR") if riar_resp else "CLEAR"
-        domain = target_domain
-
-        import re
-        # Strip markdown for TTS so it doesn't speak "asterisk"
-        tts_text = re.sub(r'[*_#]', '', answer_native)
-
-        # ── 6. TTS ────────────────────────────────────────────
-        tts_resp = await tts_service.synthesize(
-            TTSRequest(session_id=session_id, text=tts_text, language=detected_lang)
-        )
-
-        payload = {"text": answer_native, "audio_url": tts_resp.audio_url, "sources": citations}
-        if nav_payload:
-            payload["navigation"] = nav_payload
-
-        await mgr.send(session_id, {
-            "type": "answer",
-            "payload": payload,
-        })
-
-    # ── PostgreSQL Turn Logging ───────────────────────────────────────────
     try:
-        from database.models.models import Session as PGSession
-        from database.postgres.connection import AsyncSessionLocal
-        from sqlalchemy.future import select
+        from app.services.query_pipeline import run_query_pipeline
+        result = await run_query_pipeline(session_id, text, language_hint)
 
-        from app.services.query_store import QueryStore
+        if result["type"] == "clarifying":
+            await mgr.send(session_id, {
+                "type": "clarifying",
+                "payload": {
+                    "text": result["text"],
+                    "audio_url": result["audio_url"],
+                    "ambiguity_type": result["ambiguity_type"]
+                }
+            })
+        else:
+            ans_payload = {
+                "text": result["text"],
+                "audio_url": result["audio_url"],
+                "sources": result["sources"]
+            }
+            if result.get("navigation"):
+                ans_payload["navigation"] = result["navigation"]
 
-        user_id = None
-        async with AsyncSessionLocal() as db_session:
-            sess_res = await db_session.execute(
-                select(PGSession).filter(PGSession.session_id == session_id)
-            )
-            db_sess = sess_res.scalars().first()
-            if db_sess:
-                user_id = db_sess.user_id
-
-        latency_ms = int((time.perf_counter() - start_time) * 1000)
-        async with AsyncSessionLocal() as db_session:
-            store = QueryStore(db_session)
-            await store.store_query(
-                session_id=session_id,
-                user_id=user_id,
-                query_text=clean_transcript,
-                refined_query=refined_query,
-                response_text=response_text,
-                domain=domain,
-                language=detected_lang,
-                ambiguity_type=ambiguity_type,
-                latency_ms=latency_ms
-            )
-    except Exception as db_e:
-        logger.error(f"Failed to log user query to PostgreSQL: {db_e}")
-
-# trigger reload
+            await mgr.send(session_id, {
+                "type": "answer",
+                "payload": ans_payload
+            })
+    except Exception as e:
+        logger.exception(f"Pipeline error for text query [{session_id}]: {e}")
+        fallback_msg = "I'm sorry, I encountered a temporary issue while processing your request. Please try again."
+        await mgr.send(session_id, {"type": "error", "payload": {"message": fallback_msg, "code": "pipeline_error"}})
