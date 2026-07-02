@@ -30,6 +30,7 @@ from riar.classifiers.classifier import RIARClassifier
 from riar.clarifiers.clarifier import RIARClarifier
 from riar.routers.router import RIARRouter
 from riar.mergers.merger import RIARMerger
+from riar.retrievers.entity_resolver import EntityResolver
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,7 @@ class RIARPipeline:
         
         logger.info("Initializing RIAR Pipeline modules...")
         self.probe = ProbeRetriever(chroma_client=vector_store, embedding_model=embedding_model)
+        self.entity_resolver = EntityResolver()
         self.classifier = RIARClassifier(llm=llm_client)
         self.clarifier = RIARClarifier(llm=llm_client)
         self.router = RIARRouter(llm=llm_client)
@@ -85,6 +87,36 @@ class RIARPipeline:
                 probe_chunks=[]
             )
 
+        # 0. Entity Resolution (Deterministic Fast-Path)
+        policy, payload = self.entity_resolver.resolve(query)
+        if policy == "DIRECT":
+            logger.info("RIAR intercepted query with DIRECT entity match.")
+            elapsed_ms = int((time.time() - start) * 1000)
+            return RIARResult(
+                ambiguity_detected=False,
+                ambiguity_score=0.0,
+                ambiguity_type="CLEAR",
+                clarification_question=None,
+                refined_query=str(payload),  # Passing the dictionary payload for Coordinator
+                selected_domain="navigation",
+                clarification_policy="DIRECT",
+                probe_chunks=[]
+            )
+        elif policy == "ENTITY_DISAMBIGUATION":
+            logger.info("RIAR intercepted query with ENTITY_DISAMBIGUATION match.")
+            elapsed_ms = int((time.time() - start) * 1000)
+            clarification_question = f"Did you mean the {payload['name']} in {payload['building']}?"
+            return RIARResult(
+                ambiguity_detected=True,
+                ambiguity_score=0.9,
+                ambiguity_type="ENTITY_DISAMBIGUATION",
+                clarification_question=clarification_question,
+                refined_query=query,
+                selected_domain="navigation",
+                clarification_policy="ENTITY_DISAMBIGUATION",
+                probe_chunks=[]
+            )
+
         # 1. Probe Retrieval
         probe_chunks, domain_scores = self.probe.retrieve(query)
 
@@ -111,6 +143,7 @@ class RIARPipeline:
             clarification_question=clarification_question,
             refined_query=query,
             selected_domain=selected_domain,
+            clarification_policy=classification.ambiguity_type,
             probe_chunks=probe_chunks
         )
 

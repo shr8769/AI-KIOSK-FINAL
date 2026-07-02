@@ -39,6 +39,11 @@ class Settings(BaseSettings):
     BHASHINI_INFERENCE_KEY: str = ""
     BHASHINI_PIPELINE_ID: str = "64392f96daac500b55c543cd"
 
+    # Entity Resolver
+    ENTITY_RESOLVER_DIRECT_THRESHOLD: float = 90.0
+    ENTITY_RESOLVER_DISAMBIG_THRESHOLD: float = 85.0
+    ENTITY_RESOLVER_DELTA: float = 10.0
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

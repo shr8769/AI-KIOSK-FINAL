@@ -27,22 +27,32 @@ class NavigationAgent:
         Bypasses LLM generation. Uses deterministic substring alias matching to
         find the canonical location.
         """
-        query_lower = query.lower()
-        
         best_match = None
-        for loc in self.locations:
-            for alias in loc.get("aliases", []):
-                # Ensure the alias is treated as a distinct word/phrase
-                if alias.lower() in query_lower:
-                    best_match = loc
-                    # Break out of inner loop
-                    break
-            if best_match:
-                # Break out of outer loop
-                break
-                
+        try:
+            # If the RIAR EntityResolver passed a pre-resolved location dictionary, use it directly.
+            # We used Python's str(dict) which uses single quotes, so use ast.literal_eval.
+            import ast
+            parsed_query = ast.literal_eval(query)
+            if isinstance(parsed_query, dict) and "id" in parsed_query:
+                best_match = parsed_query
+        except Exception:
+            pass
+
         if not best_match:
-            return json.dumps({"error": "Location not found in directory"})
+            query_lower = query.lower()
+            for loc in self.locations:
+                for alias in loc.get("aliases", []):
+                    # Ensure the alias is treated as a distinct word/phrase
+                    if alias.lower() in query_lower:
+                        best_match = loc
+                        # Break out of inner loop
+                        break
+                if best_match:
+                    # Break out of outer loop
+                    break
+                    
+            if not best_match:
+                return json.dumps({"error": "Location not found in directory"})
             
         result = {
             "destination_name": best_match.get("name", "Unknown"),
