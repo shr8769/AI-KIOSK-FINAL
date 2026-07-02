@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 # Defined here (not in session_ws.py) so that BOTH the WebSocket handler
 # AND the HTTP events route share the exact same object via Depends().
 
+
 class ConnectionManager:
     """
     Tracks active WebSocket connections per session_id.
@@ -34,8 +35,8 @@ class ConnectionManager:
     """
 
     def __init__(self):
-        self.active: dict[str, object] = {}          # session_id → WebSocket
-        self.pending: dict[str, list[dict]] = {}     # session_id → queued events
+        self.active: dict[str, object] = {}  # session_id → WebSocket
+        self.pending: dict[str, list[dict]] = {}  # session_id → queued events
 
     async def connect(self, session_id: str, websocket) -> None:
         await websocket.accept()
@@ -92,6 +93,7 @@ def get_connection_manager() -> ConnectionManager:
 
 # ── Coordinator Agent ─────────────────────────────────────────────────
 
+
 @lru_cache(maxsize=1)
 def get_coordinator_agent():
     """
@@ -101,16 +103,19 @@ def get_coordinator_agent():
     logger.info("Lazy-loading CoordinatorAgent...")
     # Heavy imports inside the function body
     import sys
+
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
     if root not in sys.path:
         sys.path.insert(0, root)
     from agents.coordinator.coordinator_agent import CoordinatorAgent  # noqa
+
     agent = CoordinatorAgent()
     logger.info("CoordinatorAgent ready.")
     return agent
 
 
 # ── RIAR Pipeline ─────────────────────────────────────────────────────
+
 
 @lru_cache(maxsize=1)
 def get_riar_pipeline():
@@ -132,10 +137,14 @@ def get_riar_pipeline():
     if google_key:
         logger.info("Initializing RIAR LLM with Gemini (ChatGoogleGenerativeAI)")
         from langchain_google_genai import ChatGoogleGenerativeAI  # noqa
+
         llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
     else:
-        logger.info("GOOGLE_API_KEY missing. Initializing RIAR LLM with local Ollama (qwen3:latest)")
+        logger.info(
+            "GOOGLE_API_KEY missing. Initializing RIAR LLM with local Ollama (qwen3:latest)"
+        )
         from langchain_ollama import ChatOllama  # noqa
+
         llm = ChatOllama(model="qwen3:latest")
 
     chroma_mock = MagicMock()
@@ -160,11 +169,13 @@ def get_riar_pipeline():
 
 # ── Translation helpers ───────────────────────────────────────────────
 
+
 def translate_to_english(text: str, source_lang: str = "auto") -> str:
     if not text or not text.strip() or source_lang == "en":
         return text
     try:
         from deep_translator import GoogleTranslator  # noqa: lazy
+
         translated = GoogleTranslator(source=source_lang, target="en").translate(text)
         logger.info(f"Translated '{text[:40]}' ({source_lang}) → en")
         return translated
@@ -178,6 +189,7 @@ def translate_from_english(text: str, target_lang: str) -> str:
         return text
     try:
         from deep_translator import GoogleTranslator  # noqa: lazy
+
         translated = GoogleTranslator(source="en", target=target_lang).translate(text)
         logger.info(f"Translated response (en) → {target_lang}")
         return translated
@@ -189,6 +201,7 @@ def translate_from_english(text: str, target_lang: str) -> str:
 # ── RIAR enabled flag ─────────────────────────────────────────────────
 def _check_ollama_running() -> bool:
     import socket
+
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.settimeout(0.5)
@@ -197,6 +210,7 @@ def _check_ollama_running() -> bool:
     except Exception:
         return False
 
+
 def _is_riar_enabled() -> bool:
     google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
     if google_key:
@@ -204,6 +218,7 @@ def _is_riar_enabled() -> bool:
     if _check_ollama_running():
         return True
     return False
+
 
 RIAR_ENABLED: bool = _is_riar_enabled()
 logger.info(f"RIAR Pipeline activation status: {RIAR_ENABLED}")

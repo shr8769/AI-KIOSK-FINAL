@@ -41,7 +41,9 @@ class MemoryRetriever:
             )
             return result.scalars().all()
         except Exception as e:
-            logger.error(f"Error performing vector similarity search: {e}. Falling back to keyword search.")
+            logger.error(
+                f"Error performing vector similarity search: {e}. Falling back to keyword search."
+            )
             return await self._fallback_retrieve(user_id, query_text, limit)
 
     async def _fallback_retrieve(self, user_id: str, query_text: str, limit: int) -> list:

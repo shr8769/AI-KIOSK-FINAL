@@ -26,7 +26,7 @@ class QueryStore:
         domain: Optional[str],
         language: str,
         ambiguity_type: str,
-        latency_ms: int
+        latency_ms: int,
     ) -> Query:
         """
         Inserts a processed user query and its response/metadata into the PostgreSQL database.
@@ -44,12 +44,14 @@ class QueryStore:
             language=language,
             ambiguity_type=ambiguity_type,
             latency_ms=latency_ms,
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
 
         self.db.add(db_query)
         await self.db.commit()
         await self.db.refresh(db_query)
 
-        logger.info(f"Query logged in Postgres: id={query_id} | session={session_id} | domain={domain}")
+        logger.info(
+            f"Query logged in Postgres: id={query_id} | session={session_id} | domain={domain}"
+        )
         return db_query

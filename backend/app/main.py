@@ -36,6 +36,7 @@ async def lifespan(app: FastAPI):
 
     # Initialize SQLite database schema
     from app.core.session_store import get_session, init_db
+
     await init_db()
 
     # Seed demo session for frontend local development
@@ -47,6 +48,7 @@ async def lifespan(app: FastAPI):
             from datetime import datetime
 
             import aiosqlite
+
             os.makedirs(os.path.dirname(settings.SQLITE_DB_PATH) or ".", exist_ok=True)
             async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
                 await db.execute(
@@ -57,16 +59,19 @@ async def lifespan(app: FastAPI):
 
             try:
                 from app.core.session_store import get_redis
+
                 redis = await get_redis()
                 await redis.set(
                     "session:demo_session_id",
-                    json.dumps({
-                        "session_id": "demo_session_id",
-                        "created_at": datetime.utcnow().isoformat(),
-                        "status": "active",
-                        "metadata": {}
-                    }),
-                    ex=settings.SESSION_TTL_SECONDS
+                    json.dumps(
+                        {
+                            "session_id": "demo_session_id",
+                            "created_at": datetime.utcnow().isoformat(),
+                            "status": "active",
+                            "metadata": {},
+                        }
+                    ),
+                    ex=settings.SESSION_TTL_SECONDS,
                 )
             except Exception:
                 pass
@@ -75,6 +80,7 @@ async def lifespan(app: FastAPI):
 
     # Warm up all models and connections in a background thread executor
     import asyncio
+
     loop = asyncio.get_running_loop()
     loop.run_in_executor(None, warmup_services)
 
@@ -83,6 +89,7 @@ async def lifespan(app: FastAPI):
     # Clean up connections
     try:
         from app.core.session_store import close_redis
+
         await close_redis()
     except Exception:
         pass
@@ -124,15 +131,10 @@ app.include_router(profile.router, prefix="/api/v1", tags=["Profile"])
 app.include_router(memory.router, prefix="/api/v1", tags=["Memory"])
 
 
-
-
-
 # WebSocket Route
 @app.websocket("/ws/session/{session_id}")
 async def websocket_endpoint(
-    websocket: WebSocket,
-    session_id: str,
-    mgr: ConnectionManager = Depends(get_connection_manager)
+    websocket: WebSocket, session_id: str, mgr: ConnectionManager = Depends(get_connection_manager)
 ):
     await websocket_session_handler(websocket, session_id, mgr)
 
@@ -140,6 +142,7 @@ async def websocket_endpoint(
 @app.get("/health", tags=["Health"])
 async def health():
     return {"status": "ok", "version": "0.1.0", "project": "VidyaSahayak"}
+
 
 @app.get("/ready", tags=["Health"])
 async def ready():

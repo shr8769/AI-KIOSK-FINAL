@@ -33,22 +33,18 @@ class MemoryManager:
 
         # 2. Store with vector embedding
         db_memory = await self.store_service.store_memory(
-            user_id=user_id,
-            content=summary,
-            topic=topic
+            user_id=user_id, content=summary, topic=topic
         )
 
-        return {
-            "memory_id": db_memory.memory_id,
-            "summary": summary,
-            "topic": topic
-        }
+        return {"memory_id": db_memory.memory_id, "summary": summary, "topic": topic}
 
     async def get_context_injection(self, user_id: str, query_text: str, limit: int = 3) -> str:
         """
         Retrieves top relevant past memories and formats them for context injection at session start/RAG.
         """
-        logger.info(f"Retrieving past memories injection context for user {user_id} with query '{query_text}'")
+        logger.info(
+            f"Retrieving past memories injection context for user {user_id} with query '{query_text}'"
+        )
         memories = await self.retriever_service.retrieve_memories(user_id, query_text, limit=limit)
 
         if not memories:

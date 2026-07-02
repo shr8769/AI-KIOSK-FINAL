@@ -26,8 +26,9 @@ logger = logging.getLogger(__name__)
 # Indic scripts (Kannada, Hindi) naturally have low char uniqueness because combining
 # characters (virama ್/् , vowel signs) appear in almost every syllable.
 # These thresholds must be loose enough to never reject valid Indic text.
-_DEGENERATE_UNIQUE_RATIO = 0.15   # flag only if < 15% unique chars
+_DEGENERATE_UNIQUE_RATIO = 0.15  # flag only if < 15% unique chars
 _DEGENERATE_REPEAT_THRESHOLD = 0.40  # flag only if a single ngram is > 40% of all ngrams
+
 
 def _is_degenerate(text: str) -> bool:
     """
@@ -55,7 +56,7 @@ def _is_degenerate(text: str) -> bool:
     # Only check ngram dominance when unique ratio is already suspicious
     max_ngram_dom = 0.0
     for n in (2, 3, 4):
-        ngrams = [stripped[i:i+n] for i in range(len(stripped) - n + 1)]
+        ngrams = [stripped[i : i + n] for i in range(len(stripped) - n + 1)]
         if ngrams:
             top_count = Counter(ngrams).most_common(1)[0][1]
             max_ngram_dom = max(max_ngram_dom, top_count / len(ngrams))
@@ -73,10 +74,10 @@ def _is_degenerate(text: str) -> bool:
 
 def _split_sentences(text: str) -> list[str]:
     """Split text on sentence boundaries for chunk-level translation."""
-    parts = re.split(r'(?<=[.!?])\s+', text.strip())
+    parts = re.split(r"(?<=[.!?])\s+", text.strip())
     result = []
     for part in parts:
-        sub = re.split(r'\n(?=\d+\.)', part)
+        sub = re.split(r"\n(?=\d+\.)", part)
         result.extend(sub)
     return [s.strip() for s in result if s.strip()]
 
@@ -111,6 +112,7 @@ def _get_marian(direction: str):
 
     try:
         from transformers import MarianMTModel, MarianTokenizer
+
         logger.info(f"Loading MarianMT model '{model_name}'...")
         tok = MarianTokenizer.from_pretrained(model_name)
         mdl = MarianMTModel.from_pretrained(model_name)
@@ -135,7 +137,10 @@ def _marian_translate_chunk(text: str, direction: str) -> Optional[str]:
 
     try:
         import torch
-        inputs = tokenizer([src_text], return_tensors="pt", padding=True, truncation=True, max_length=512)
+
+        inputs = tokenizer(
+            [src_text], return_tensors="pt", padding=True, truncation=True, max_length=512
+        )
         with torch.no_grad():
             translated_ids = model.generate(
                 **inputs,
@@ -149,7 +154,7 @@ def _marian_translate_chunk(text: str, direction: str) -> Optional[str]:
         # Strip language tokens if model echoed them
         for tok_prefix in [">>kan<<", ">>eng<<", ">>hin<<"]:
             if result.startswith(tok_prefix):
-                result = result[len(tok_prefix):].strip()
+                result = result[len(tok_prefix) :].strip()
 
         if _is_degenerate(result):
             return None
@@ -160,6 +165,7 @@ def _marian_translate_chunk(text: str, direction: str) -> Optional[str]:
 
 
 # ── Main service class ────────────────────────────────────────────────────────
+
 
 class OfflineTranslationService:
     def translate(self, text: str, source_lang: str, target_lang: str) -> str:
@@ -195,11 +201,14 @@ class OfflineTranslationService:
         # ── Tier 1: Google Translate ──────────────────────────────────────────
         try:
             from deep_translator import GoogleTranslator
+
             # Use 'auto' source only when source is unknown; explicit codes are faster & more reliable
             gt_source = "auto" if source not in ("en", "hi", "kn") else source
             translated = GoogleTranslator(source=gt_source, target=target).translate(text)
             if translated and not _is_degenerate(translated):
-                logger.info(f"Google Translate succeeded ({source}→{target}): '{text[:40]}' → '{translated[:40]}'")
+                logger.info(
+                    f"Google Translate succeeded ({source}→{target}): '{text[:40]}' → '{translated[:40]}'"
+                )
                 return translated
             logger.warning("Google Translate returned degenerate output. Falling back to MarianMT.")
         except Exception as e:

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
 import time
+
 
 @dataclass
 class BoundingBox:
@@ -8,6 +8,7 @@ class BoundingBox:
     y: int
     w: int
     h: int
+
 
 @dataclass
 class PersonDetectedEvent:
@@ -26,8 +27,8 @@ class PersonDetectedEvent:
                 "x": self.bounding_box.x,
                 "y": self.bounding_box.y,
                 "w": self.bounding_box.w,
-                "h": self.bounding_box.h
+                "h": self.bounding_box.h,
             },
             "frame_width": self.frame_width,
-            "frame_height": self.frame_height
+            "frame_height": self.frame_height,
         }

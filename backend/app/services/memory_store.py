@@ -12,12 +12,14 @@ logger = logging.getLogger(__name__)
 
 embedding_model = None
 
+
 def get_embedding_model():
     global embedding_model
     if embedding_model is None:
         try:
             from sentence_transformers import SentenceTransformer
-            embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+
+            embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
             logger.info("Loaded SentenceTransformer model 'all-MiniLM-L6-v2' successfully.")
         except Exception as e:
             logger.error(f"Failed to load SentenceTransformer: {e}")
@@ -45,11 +47,7 @@ class MemoryStore:
                 logger.error(f"Error encoding embedding: {e}")
 
         db_memory = Memory(
-            memory_id=memory_id,
-            user_id=user_id,
-            content=content,
-            topic=topic,
-            embedding=embedding
+            memory_id=memory_id, user_id=user_id, content=content, topic=topic, embedding=embedding
         )
 
         self.db.add(db_memory)

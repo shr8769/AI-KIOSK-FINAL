@@ -11,32 +11,31 @@ logger = logging.getLogger(__name__)
 # Fallback in-memory store if Redis is unavailable
 _memory_store: Dict[str, Dict[str, Any]] = {}
 
+
 class NavigationService:
     def __init__(self):
         self.ttl_seconds = 15 * 60  # 15 minutes
 
     async def create_session(self, metadata: Dict[str, Any]) -> str:
         """Creates a temporary navigation session and returns the navigation_id."""
-        nav_id = str(uuid.uuid4().hex)[:10] # Short ID
+        nav_id = str(uuid.uuid4().hex)[:10]  # Short ID
 
         session_data = {
             "navigation_id": nav_id,
             "created_at": time.time(),
-            "destination": metadata.get("destination_name", metadata.get("name", "Unknown Location")),
+            "destination": metadata.get(
+                "destination_name", metadata.get("name", "Unknown Location")
+            ),
             "building": metadata.get("building", "Unknown Building"),
             "floor": metadata.get("floor", "0"),
             "room": metadata.get("room", ""),
             "map_coords": metadata.get("map_coords", {"x": 0, "y": 0}),
-            "directions": metadata.get("directions", [])
+            "directions": metadata.get("directions", []),
         }
 
         try:
             redis = await get_redis()
-            await redis.set(
-                f"nav:{nav_id}",
-                json.dumps(session_data),
-                ex=self.ttl_seconds
-            )
+            await redis.set(f"nav:{nav_id}", json.dumps(session_data), ex=self.ttl_seconds)
             logger.info(f"Created Navigation Session (Redis): {nav_id}")
         except Exception as e:
             logger.warning(f"Redis unavailable, using memory store for navigation: {e}")
@@ -64,5 +63,6 @@ class NavigationService:
             return data
 
         return None
+
 
 navigation_service = NavigationService()

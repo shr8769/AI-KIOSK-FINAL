@@ -4,6 +4,7 @@ from app.services.navigation_service import navigation_service
 
 router = APIRouter()
 
+
 @router.get("/navigation/{nav_id}")
 async def get_navigation_session(nav_id: str):
     """

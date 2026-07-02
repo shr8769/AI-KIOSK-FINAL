@@ -14,6 +14,7 @@ router = APIRouter()
 async def _db_dep():
     """Async dependency that lazy-imports postgres connection to avoid ImportError in CI."""
     from database.postgres.connection import get_db  # noqa: PLC0415
+
     async for session in get_db():
         yield session
 
@@ -40,19 +41,17 @@ class MemoryItem(BaseModel):
 @router.post("/memory/store", response_model=StoreMemoryResponse)
 async def store_memory(request: StoreMemoryRequest, db: AsyncSession = Depends(_db_dep)):
     from app.services.memory_manager import MemoryManager  # noqa: PLC0415
+
     """
     Orchestrate summarizing, embedding, and storing conversation content into user's past memories.
     """
     manager = MemoryManager(db)
     try:
         result = await manager.store_conversation_segment(
-            user_id=request.user_id,
-            conversation_text=request.content
+            user_id=request.user_id, conversation_text=request.content
         )
         return StoreMemoryResponse(
-            memory_id=result["memory_id"],
-            summary=result["summary"],
-            topic=result["topic"]
+            memory_id=result["memory_id"], summary=result["summary"], topic=result["topic"]
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -63,28 +62,29 @@ async def get_memories(
     user_id: str,
     query: Optional[str] = "",
     limit: Optional[int] = 3,
-    db: AsyncSession = Depends(_db_dep)
+    db: AsyncSession = Depends(_db_dep),
 ):
     """
     Query the long-term memory vector store for user memories related to a topic.
     """
     from app.services.memory_manager import MemoryManager  # noqa: PLC0415
+
     manager = MemoryManager(db)
     try:
         memories = await manager.retriever_service.retrieve_memories(
-            user_id=user_id,
-            query_text=query,
-            limit=limit
+            user_id=user_id, query_text=query, limit=limit
         )
         response_list = []
         for mem in memories:
-            response_list.append(MemoryItem(
-                memory_id=mem.memory_id,
-                user_id=mem.user_id,
-                content=mem.content,
-                topic=mem.topic or "general",
-                created_at=mem.created_at.isoformat() if mem.created_at else ""
-            ))
+            response_list.append(
+                MemoryItem(
+                    memory_id=mem.memory_id,
+                    user_id=mem.user_id,
+                    content=mem.content,
+                    topic=mem.topic or "general",
+                    created_at=mem.created_at.isoformat() if mem.created_at else "",
+                )
+            )
         return response_list
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -19,6 +19,7 @@ class RIARService:
         from app.core.dependencies import (
             get_riar_pipeline,  # noqa: E402
         )
+
         pipeline = get_riar_pipeline()
         return pipeline.run(
             query=request.query,

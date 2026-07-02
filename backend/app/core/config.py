@@ -44,11 +44,7 @@ class Settings(BaseSettings):
     ENTITY_RESOLVER_DISAMBIG_THRESHOLD: float = 85.0
     ENTITY_RESOLVER_DELTA: float = 10.0
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 
 @lru_cache()
@@ -57,4 +53,3 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
-
