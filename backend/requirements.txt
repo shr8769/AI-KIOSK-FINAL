@@ -46,4 +46,6 @@ rapidfuzz>=3.5.0
 asyncpg>=0.29.0
 pgvector>=0.3.1
 
-
+# Computer Vision & Firebase
+opencv-python-headless>=4.8.0
+firebase-admin>=6.2.0
