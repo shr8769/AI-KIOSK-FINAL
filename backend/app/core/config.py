@@ -11,15 +11,20 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-
-    # CORS
+    
+    # CORS & Public Host
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
 
-    # Redis
+    # Redis (Local for Kiosk, Upstash for Navigation)
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
     REDIS_URL: str = "redis://localhost:6379/0"
+    UPSTASH_REDIS_REST_URL: str = ""
+    UPSTASH_REDIS_REST_TOKEN: str = ""
+
+    # Cloud Vercel App URL
+    PUBLIC_WEB_APP_URL: str = ""
 
     # SQLite
     SQLITE_DB_PATH: str = "./data/kiosk.db"

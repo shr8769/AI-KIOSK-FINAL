@@ -139,6 +139,7 @@ async def run_query_pipeline(
                 from app.services.navigation_service import navigation_service
 
                 nav_id = await navigation_service.create_session(top_loc)
+                nav_url = navigation_service.build_url(nav_id)
 
                 answer_en = f"The {top_loc.get('name')} is located in {top_loc.get('building')}, Floor {top_loc.get('floor')}. Please scan the QR code for detailed directions."
                 answer_native = (
@@ -164,6 +165,7 @@ async def run_query_pipeline(
                     "sources": [],
                     "navigation": {
                         "navigation_id": nav_id,
+                        "url": nav_url,
                         "destination_name": top_loc.get("name"),
                         "building": top_loc.get("building"),
                         "floor": top_loc.get("floor"),
@@ -287,10 +289,12 @@ async def run_query_pipeline(
                     from app.services.navigation_service import navigation_service
 
                     nav_id = await navigation_service.create_session(metadata)
+                    nav_url = navigation_service.build_url(nav_id)
 
                     answer_en = f"The {metadata.get('destination_name')} is located in {metadata.get('building')}, Floor {metadata.get('floor')}. Please scan the QR code for detailed directions."
                     nav_payload = {
                         "navigation_id": nav_id,
+                        "url": nav_url,
                         "destination_name": metadata.get("destination_name"),
                         "building": metadata.get("building"),
                         "floor": metadata.get("floor"),
