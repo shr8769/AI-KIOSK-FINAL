@@ -45,7 +45,7 @@ class NavigationService:
             if settings.UPSTASH_REDIS_REST_URL and settings.UPSTASH_REDIS_REST_TOKEN:
                 clean_url = settings.UPSTASH_REDIS_REST_URL.strip('"').strip("'").rstrip('/')
                 clean_token = settings.UPSTASH_REDIS_REST_TOKEN.strip('"').strip("'")
-                
+
                 url = f"{clean_url}/"
                 headers = {"Authorization": f"Bearer {clean_token}"}
                 payload = ["SET", f"nav:{nav_id}", json.dumps(session_data), "EX", self.ttl_seconds]

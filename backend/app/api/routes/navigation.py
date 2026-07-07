@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
-from app.services.navigation_service import navigation_service
 from app.core.config import settings
+from app.services.navigation_service import navigation_service
 
 router = APIRouter()
 
