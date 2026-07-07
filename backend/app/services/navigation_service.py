@@ -8,6 +8,7 @@ import httpx
 
 from app.core.config import settings
 from app.core.session_store import get_redis
+from app.navigation.navigation_engine import navigation_engine
 
 logger = logging.getLogger(__name__)
 
@@ -28,17 +29,20 @@ class NavigationService:
         """Creates a temporary navigation session and returns the navigation_id."""
         nav_id = str(uuid.uuid4().hex)[:10]  # Short ID
 
+        # Delegate route generation to the A* Navigation Engine
+        engine_payload = navigation_engine.generate_route(metadata)
+        
         session_data = {
             "navigation_id": nav_id,
             "created_at": time.time(),
-            "destination": metadata.get(
-                "destination_name", metadata.get("name", "Unknown Location")
-            ),
+            "destination": engine_payload.get("destination", metadata.get("name", "Unknown Location")),
             "building": metadata.get("building", "Unknown Building"),
             "floor": metadata.get("floor", "0"),
             "room": metadata.get("room", ""),
-            "map_coords": metadata.get("map_coords", {"x": 0, "y": 0}),
-            "directions": metadata.get("directions", []),
+            "path": engine_payload.get("path", []),
+            "estimated_distance": engine_payload.get("estimated_distance", 0),
+            "estimated_walk_time": engine_payload.get("estimated_walk_time", "0 min"),
+            "directions": engine_payload.get("directions", []),
         }
 
         try:
