@@ -25,6 +25,8 @@ class Settings(BaseSettings):
 
     # Cloud Vercel App URL
     PUBLIC_WEB_APP_URL: str = ""
+    # Public backend URL (ngrok or load-balancer) used as a fallback for direct QR links
+    PUBLIC_BASE_URL: str = ""
 
     # SQLite
     SQLITE_DB_PATH: str = "./data/kiosk.db"

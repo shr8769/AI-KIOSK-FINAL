@@ -46,7 +46,13 @@ _redis: Optional[aioredis.Redis] = None
 async def get_redis() -> aioredis.Redis:
     global _redis
     if _redis is None:
-        _redis = aioredis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
+        _redis = aioredis.from_url(
+            settings.REDIS_URL, 
+            encoding="utf-8", 
+            decode_responses=True,
+            socket_connect_timeout=0.5,
+            socket_timeout=0.5
+        )
     return _redis
 
 

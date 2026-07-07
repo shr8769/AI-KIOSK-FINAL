@@ -44,11 +44,14 @@ class ConnectionManager:
         logger.info(f"WS connected: {session_id}  (total={len(self.active)})")
         # Flush any events queued before the frontend connected
         if session_id in self.pending:
-            for event in self.pending.pop(session_id):
+            queued_events = self.pending.pop(session_id)
+            for event in queued_events:
                 try:
                     await websocket.send_json(event)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning(f"WS flush failed for {session_id}: {exc}")
+                    self.disconnect(session_id)
+                    break
 
     def disconnect(self, session_id: str) -> None:
         self.active.pop(session_id, None)
@@ -57,7 +60,11 @@ class ConnectionManager:
     async def send(self, session_id: str, message: dict) -> None:
         ws = self.active.get(session_id)
         if ws:
-            await ws.send_json(message)
+            try:
+                await ws.send_json(message)
+            except Exception as exc:
+                logger.warning(f"WS send failed for {session_id}: {exc}")
+                self.disconnect(session_id)
         else:
             self.pending.setdefault(session_id, []).append(message)
 
@@ -80,8 +87,8 @@ class ConnectionManager:
         if self._last_broadcast:
             try:
                 await websocket.send_json(self._last_broadcast)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(f"WS pending broadcast failed for {session_id}: {exc}")
 
 
 @lru_cache(maxsize=1)

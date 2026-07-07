@@ -32,7 +32,8 @@ export default function NavigationPage({ params }: { params: any }) {
           }
         } else {
           const data = await res.json();
-          if (isMounted) setNavData(data.data);
+          const payload = data?.data ?? data;
+          if (isMounted) setNavData(payload);
         }
       } catch (e) {
         if (isMounted) setError("Network timeout. Please check your connection and retry.");

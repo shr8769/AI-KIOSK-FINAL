@@ -22,7 +22,7 @@ class NavigationService:
 
     def build_url(self, nav_id: str) -> str:
         base_url = settings.PUBLIC_WEB_APP_URL.rstrip('/') if settings.PUBLIC_WEB_APP_URL else "http://localhost:3000"
-        return f"{base_url}/navigation/{nav_id}"
+        return f"{base_url}/navigation/{nav_id}?t={int(time.time())}"
 
     async def create_session(self, metadata: Dict[str, Any]) -> str:
         """Creates a temporary navigation session and returns the navigation_id."""
@@ -43,10 +43,13 @@ class NavigationService:
 
         try:
             if settings.UPSTASH_REDIS_REST_URL and settings.UPSTASH_REDIS_REST_TOKEN:
-                url = f"{settings.UPSTASH_REDIS_REST_URL.rstrip('/')}/"
-                headers = {"Authorization": f"Bearer {settings.UPSTASH_REDIS_REST_TOKEN}"}
+                clean_url = settings.UPSTASH_REDIS_REST_URL.strip('"').strip("'").rstrip('/')
+                clean_token = settings.UPSTASH_REDIS_REST_TOKEN.strip('"').strip("'")
+                
+                url = f"{clean_url}/"
+                headers = {"Authorization": f"Bearer {clean_token}"}
                 payload = ["SET", f"nav:{nav_id}", json.dumps(session_data), "EX", self.ttl_seconds]
-                async with httpx.AsyncClient() as client:
+                async with httpx.AsyncClient(verify=False) as client:
                     resp = await client.post(url, json=payload, headers=headers)
                     resp.raise_for_status()
                 logger.info(f"Created Navigation Session (Upstash REST): {nav_id} for destination '{session_data['destination']}'")
@@ -55,6 +58,7 @@ class NavigationService:
                 await redis.set(f"nav:{nav_id}", json.dumps(session_data), ex=self.ttl_seconds)
                 logger.info(f"Created Navigation Session (Local Redis): {nav_id} for destination '{session_data['destination']}'")
         except Exception as e:
+            logger.error(f"CRITICAL: Failed to write to Upstash Redis: {e}")
             logger.warning(f"Redis unavailable, using memory store for navigation: {e}")
             _memory_store[nav_id] = session_data
             logger.info(f"Created Navigation Session (Memory): {nav_id} for destination '{session_data['destination']}'")
