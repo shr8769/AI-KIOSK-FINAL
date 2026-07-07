@@ -47,7 +47,7 @@ class NavigationEngine:
         computes the path from KIOSK to the destination's graph_node,
         and constructs the payload to be saved in Redis.
         """
-        destination_name = destination_metadata.get("name", "Unknown Destination")
+        destination_name = destination_metadata.get("destination_name", destination_metadata.get("name", "Unknown Destination"))
         target_node_id = destination_metadata.get("graph_node")
 
         if not target_node_id:
