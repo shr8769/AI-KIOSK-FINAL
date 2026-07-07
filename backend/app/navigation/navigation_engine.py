@@ -51,6 +51,13 @@ class NavigationEngine:
         target_node_id = destination_metadata.get("graph_node")
 
         if not target_node_id:
+            # Fallback: attempt to find the node by destination name
+            for node in self.loader.graph.nodes:
+                if node.name.lower() == destination_name.lower() or node.id.lower() == destination_name.lower():
+                    target_node_id = node.id
+                    break
+
+        if not target_node_id:
             return {
                 "destination": destination_name,
                 "path": [],
