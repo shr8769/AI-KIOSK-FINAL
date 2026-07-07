@@ -134,7 +134,7 @@ def match_face(embedding: list, threshold: Optional[float] = None) -> Optional[d
         or None if no match above threshold / Firebase unavailable.
     """
     if threshold is None:
-        threshold = float(os.getenv("FACE_MATCH_THRESHOLD", "0.85"))
+        threshold = float(os.getenv("FACE_MATCH_THRESHOLD", "0.45"))
 
     db = _get_firestore()
     if db is None:
