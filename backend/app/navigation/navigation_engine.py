@@ -1,8 +1,9 @@
 import os
-from typing import Dict, Any, List, Optional
-from .models import Node
-from .graph_loader import GraphLoader
+from typing import Any, Dict, List, Optional
+
 from .astar import AStar
+from .graph_loader import GraphLoader
+from .models import Node
 
 
 class NavigationEngine:
@@ -26,23 +27,23 @@ class NavigationEngine:
     def generate_turn_instructions(self, path: List[Node]) -> List[str]:
         if not path:
             return []
-            
+
         if len(path) == 1:
             return [f"You are already at {path[0].name}."]
-            
+
         instructions = [f"Start from {path[0].name}"]
-        
+
         for i in range(1, len(path) - 1):
             instructions.append(f"Walk to {path[i].name}")
-            
+
         instructions.append(f"Proceed towards {path[-1].name}")
         instructions.append("Destination reached")
-        
+
         return instructions
 
     def generate_route(self, destination_metadata: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Given the destination metadata (from navigation_locations.json), 
+        Given the destination metadata (from navigation_locations.json),
         computes the path from KIOSK to the destination's graph_node,
         and constructs the payload to be saved in Redis.
         """
@@ -59,17 +60,17 @@ class NavigationEngine:
             }
 
         start_node_id = "KIOSK"
-        
+
         path_nodes, total_cost = self.astar.find_path(start_node_id, target_node_id)
-        
+
         # Format the path array for the frontend payload
         path_payload = [
-            {"id": node.id, "name": node.name, "x": node.x, "y": node.y} 
+            {"id": node.id, "name": node.name, "x": node.x, "y": node.y}
             for node in path_nodes
         ]
-        
+
         instructions = self.generate_turn_instructions(path_nodes)
-        
+
         # Simple estimation: 80 units ~ 1 min walking
         est_minutes = max(1, round(total_cost / 80))
 

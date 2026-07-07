@@ -31,7 +31,7 @@ class NavigationService:
 
         # Delegate route generation to the A* Navigation Engine
         engine_payload = navigation_engine.generate_route(metadata)
-        
+
         session_data = {
             "navigation_id": nav_id,
             "created_at": time.time(),

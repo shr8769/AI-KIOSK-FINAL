@@ -1,4 +1,5 @@
 from typing import List
+
 from pydantic import BaseModel, Field
 
 
@@ -13,7 +14,7 @@ class Edge(BaseModel):
     from_node: str = Field(alias="from")
     to_node: str = Field(alias="to")
     cost: int
-    
+
     class Config:
         populate_by_name = True
 

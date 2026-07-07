@@ -1,8 +1,9 @@
-import math
 import heapq
-from typing import List, Tuple, Dict
-from .models import Node, Edge
+import math
+from typing import Dict, List, Tuple
+
 from .graph_loader import GraphLoader
+from .models import Node
 
 
 class AStar:
@@ -29,10 +30,10 @@ class AStar:
         heapq.heappush(open_set, (0.0, start_id))
 
         came_from: Dict[str, str] = {}
-        
+
         # gScore tracks cheapest path from start to n currently known
         gScore: Dict[str, float] = {start_id: 0.0}
-        
+
         # fScore = gScore + heuristic
         fScore: Dict[str, float] = {start_id: self.heuristic(start_node, goal_node)}
 
@@ -46,7 +47,6 @@ class AStar:
             if current_id == goal_id:
                 return self._reconstruct_path(came_from, current_id), gScore[goal_id]
 
-            current_node = self.loader.get_node(current_id)
             neighbors = self.loader.get_neighbors(current_id)
 
             for neighbor_id, edge in neighbors.items():
@@ -56,10 +56,10 @@ class AStar:
                     # This path to neighbor is better than any previous one
                     came_from[neighbor_id] = current_id
                     gScore[neighbor_id] = tentative_gScore
-                    
+
                     neighbor_node = self.loader.get_node(neighbor_id)
                     fScore[neighbor_id] = tentative_gScore + self.heuristic(neighbor_node, goal_node)
-                    
+
                     if neighbor_id not in in_open_set:
                         heapq.heappush(open_set, (fScore[neighbor_id], neighbor_id))
                         in_open_set.add(neighbor_id)
@@ -72,5 +72,5 @@ class AStar:
             current_id = came_from[current_id]
             path_ids.append(current_id)
         path_ids.reverse()
-        
+
         return [self.loader.get_node(nid) for nid in path_ids]
