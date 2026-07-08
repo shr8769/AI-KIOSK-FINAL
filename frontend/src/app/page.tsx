@@ -640,17 +640,18 @@ export default function KioskPage() {
     };
   }, [connectWebSocket, hasInteracted]);
 
-  // Load FAQs from backend on mount
+  // Load FAQs from backend on mount and language selection
   useEffect(() => {
     const fetchFaqs = async () => {
       try {
         const httpBase = WS_BASE_URL.replace(/^ws/, 'http').replace(/\/ws\/session.*$/, '');
-        const res = await fetch(`${httpBase}/api/v1/faqs`);
+        const langParam = selectedLanguage ? `?lang=${selectedLanguage}` : '';
+        const res = await fetch(`${httpBase}/api/v1/faqs${langParam}`);
         if (res.ok) {
           const data = await res.json();
           setFaqData(data);
           const domains = Object.keys(data);
-          if (domains.length > 0) {
+          if (domains.length > 0 && !activeFaqDomain) {
             setActiveFaqDomain(domains[0]);
           }
         }
@@ -659,7 +660,7 @@ export default function KioskPage() {
       }
     };
     fetchFaqs();
-  }, []);
+  }, [selectedLanguage]);
 
   // Text submit handler
   const handleTextSubmit = (e: React.FormEvent) => {
@@ -1050,6 +1051,7 @@ export default function KioskPage() {
                 building={navigationData.building}
                 floor={navigationData.floor}
                 room={navigationData.room}
+                kioskIp={navigationData.kiosk_ip}
                 onClose={() => setNavigationData(null)}
               />
             </div>

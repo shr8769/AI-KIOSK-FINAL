@@ -52,11 +52,11 @@ class CoordinatorAgent:
             str: The final answer or fallback response.
         """
         try:
-            from agents.concierge.language_fallback import GeminiTranslator
-            translator = GeminiTranslator()
-            english_query, detected_lang = translator.translate_to_english(query)
+            from app.services.speech.translation_service import preprocess_and_detect_language, offline_translation_service
+            preprocessed_query, detected_lang = preprocess_and_detect_language(query)
+            english_query = offline_translation_service.translate(preprocessed_query, detected_lang, "en")
         except Exception as e:
-            print(f"[Warning] Translation initialization failed: {e}. Passing query through.")
+            print(f"[Warning] Local translation failed: {e}. Passing query through.")
             english_query = query
             detected_lang = "en"
 
@@ -157,7 +157,8 @@ class CoordinatorAgent:
         # Translate the answer back if needed (Skip for navigation JSON)
         if detected_lang in ["kn", "hi"] and target_domain != "navigation":
             try:
-                translated_ans = translator.translate_from_english(answer_part, detected_lang)
+                from app.services.speech.translation_service import offline_translation_service
+                translated_ans = offline_translation_service.translate(answer_part, "en", detected_lang)
                 answer_part = translated_ans
                 raw_ans = answer_part + source_part
             except Exception as e:

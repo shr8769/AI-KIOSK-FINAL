@@ -7,12 +7,20 @@ interface NavigationCardProps {
   building: string;
   floor: string;
   room?: string;
+  kioskIp?: string;
   onClose: () => void;
 }
 
-export function NavigationCard({ navigationId, destinationName, building, floor, room, onClose }: NavigationCardProps) {
+export function NavigationCard({ navigationId, destinationName, building, floor, room, kioskIp, onClose }: NavigationCardProps) {
   // Construct the absolute URL for the mobile handoff
-  const host = typeof window !== 'undefined' ? window.location.host : 'localhost:3000';
+  let host = typeof window !== 'undefined' ? window.location.host : 'localhost:3000';
+  
+  if (kioskIp && kioskIp !== 'localhost' && kioskIp !== '127.0.0.1') {
+    if (host.startsWith('localhost') || host.startsWith('127.0.0.1')) {
+      host = host.replace(/^(localhost|127\.0\.0\.1)/, kioskIp);
+    }
+  }
+
   const protocol = typeof window !== 'undefined' ? window.location.protocol : 'http:';
   const navUrl = `${protocol}//${host}/navigation/${navigationId}`;
 

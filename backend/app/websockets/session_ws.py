@@ -167,19 +167,16 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
         logger.info(f"ASR: '{asr_resp.transcript}' lang={asr_resp.detected_language}")
 
         # Prioritize explicitly selected session language (language_hint) over ASR auto-detection
-        detected_lang = language_hint or (asr_resp.detected_language or "en").lower().split("-")[0]
         raw_transcript = asr_resp.transcript
-        clean_transcript = raw_transcript
+        from app.services.speech.translation_service import preprocess_and_detect_language
+        clean_transcript, detected_lang = preprocess_and_detect_language(
+            raw_transcript,
+            language_hint or (asr_resp.detected_language or "en").lower().split("-")[0]
+        )
 
         # Check if this is a language selection command
         lang_cmd = _is_language_command(clean_transcript)
         if lang_cmd:
-            confirmation_texts = {
-                "en": "You selected English. How can I help you today?",
-                "kn": "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
-                "hi": "आपने हिंदी भाषा चुनी है। ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?" # wait, let's keep Hindi confirmation text correct:
-            }
-            # Wait, let's write correct Hindi text: "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकता हूँ?"
             confirmation_texts = {
                 "en": "You selected English. How can I help you today?",
                 "kn": "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
@@ -201,17 +198,15 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
 
         if detected_lang in ["kn", "hi"]:
             try:
-                from deep_translator import GoogleTranslator
-                clean_transcript = GoogleTranslator(source="auto", target=detected_lang).translate(raw_transcript)
+                query_en = translate_to_english(clean_transcript, source_lang=detected_lang)
+                # Translate back to clean native script to display nicely on screen
+                clean_transcript = translate_from_english(query_en, target_lang=detected_lang)
                 logger.info(f"Corrected ASR script: '{raw_transcript}' -> '{clean_transcript}' ({detected_lang})")
             except Exception as e:
-                logger.error(f"ASR script correction failed: {e}")
-                clean_transcript = raw_transcript
-            query_en = translate_to_english(clean_transcript, source_lang="auto")
+                logger.error(f"ASR script correction/translation failed: {e}")
+                query_en = translate_to_english(clean_transcript, source_lang=detected_lang)
         else:
-            query_en = raw_transcript
-            detected_lang = "en"
-            clean_transcript = raw_transcript
+            query_en = clean_transcript
 
         await mgr.send(session_id, {
             "type": "transcript",
@@ -310,13 +305,15 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
                         from app.services.navigation_service import navigation_service
                         nav_id = await navigation_service.create_session(metadata)
 
+                        from app.core.config import get_local_ip
                         answer_en = f"The {metadata.get('destination_name')} is located in {metadata.get('building')}, Floor {metadata.get('floor')}. Please scan the QR code for detailed directions."
                         nav_payload = {
                             "navigation_id": nav_id,
                             "destination_name": metadata.get("destination_name"),
                             "building": metadata.get("building"),
                             "floor": metadata.get("floor"),
-                            "room": metadata.get("room")
+                            "room": metadata.get("room"),
+                            "kiosk_ip": get_local_ip()
                         }
                     else:
                         answer_en = metadata["error"]

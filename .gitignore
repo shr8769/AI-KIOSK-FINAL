@@ -60,8 +60,10 @@ knowledge/embeddings/__pycache__/
 
 # ─── Session Audio Files ───────────────────────────────────────────────────
 backend/static/sessions/
-backend/static/audio/          # Generated TTS mp3/wav files — never commit
-static/                        # Top-level static dump
+# Generated TTS mp3/wav files — never commit
+backend/static/audio/
+# Top-level static dump
+static/
 sessions/
 
 # ─── Firebase Credentials (NEVER commit) ───────────────────────────────────

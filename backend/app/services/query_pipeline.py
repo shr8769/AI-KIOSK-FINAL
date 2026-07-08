@@ -65,22 +65,15 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
             "language": lang_cmd
         }
 
-    # 1. Detect language using character ranges first, then fallback to language_hint or en
-    if any('\u0c80' <= c <= '\u0cff' for c in text):
-        detected_lang = 'kn'
-    elif any('\u0900' <= c <= '\u097f' for c in text):
-        detected_lang = 'hi'
-    else:
-        detected_lang = language_hint or 'en'
-
-    clean_transcript = text
+    # 1. Detect language and preprocess Romanized queries
+    from app.services.speech.translation_service import preprocess_and_detect_language
+    clean_transcript, detected_lang = preprocess_and_detect_language(text, language_hint)
 
     # Translate to English if native language
     if detected_lang in ["kn", "hi"]:
         query_en = translate_to_english(clean_transcript, source_lang=detected_lang)
     else:
         query_en = clean_transcript
-        detected_lang = "en"
 
     # Persist user turn
     await add_user_turn(session_id, clean_transcript)
@@ -176,13 +169,15 @@ async def run_query_pipeline(session_id: str, text: str, language_hint: Optional
                     from app.services.navigation_service import navigation_service
                     nav_id = await navigation_service.create_session(metadata)
 
+                    from app.core.config import get_local_ip
                     answer_en = f"The {metadata.get('destination_name')} is located in {metadata.get('building')}, Floor {metadata.get('floor')}. Please scan the QR code for detailed directions."
                     nav_payload = {
                         "navigation_id": nav_id,
                         "destination_name": metadata.get("destination_name"),
                         "building": metadata.get("building"),
                         "floor": metadata.get("floor"),
-                        "room": metadata.get("room")
+                        "room": metadata.get("room"),
+                        "kiosk_ip": get_local_ip()
                     }
                 else:
                     answer_en = metadata["error"]

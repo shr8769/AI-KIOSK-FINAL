@@ -143,10 +143,12 @@ async def health():
 
 @app.get("/ready", tags=["Health"])
 async def ready():
+    from app.core.config import get_local_ip
     return {
         "ready": startup_state.ready,
         "warming": startup_state.warming,
         "errors": startup_state.errors,
         "messages": startup_state.messages,
         "metrics": startup_state.metrics,
+        "kiosk_ip": get_local_ip(),
     }

@@ -164,9 +164,9 @@ def translate_to_english(text: str, source_lang: str = "auto") -> str:
     if not text or not text.strip() or source_lang == "en":
         return text
     try:
-        from deep_translator import GoogleTranslator  # noqa: lazy
-        translated = GoogleTranslator(source=source_lang, target="en").translate(text)
-        logger.info(f"Translated '{text[:40]}' ({source_lang}) → en")
+        from app.services.speech.translation_service import offline_translation_service
+        translated = offline_translation_service.translate(text, source_lang, "en")
+        logger.info(f"Translated '{text[:40]}' ({source_lang}) -> en")
         return translated
     except Exception as e:
         logger.error(f"Translation to English failed: {e}")
@@ -177,9 +177,9 @@ def translate_from_english(text: str, target_lang: str) -> str:
     if not text or not text.strip() or target_lang == "en":
         return text
     try:
-        from deep_translator import GoogleTranslator  # noqa: lazy
-        translated = GoogleTranslator(source="en", target=target_lang).translate(text)
-        logger.info(f"Translated response (en) → {target_lang}")
+        from app.services.speech.translation_service import offline_translation_service
+        translated = offline_translation_service.translate(text, "en", target_lang)
+        logger.info(f"Translated response (en) -> {target_lang}")
         return translated
     except Exception as e:
         logger.error(f"Translation from English failed: {e}")

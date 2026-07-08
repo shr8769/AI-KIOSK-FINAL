@@ -53,3 +53,20 @@ def get_settings() -> Settings:
 
 settings = get_settings()
 
+
+def get_local_ip() -> str:
+    import socket
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Using a public DNS IP to identify routing interface (doesn't send traffic)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        try:
+            return socket.gethostbyname(socket.gethostname())
+        except Exception:
+            return "localhost"
+
+
