@@ -132,7 +132,7 @@ async def get_all_faqs(lang: Optional[str] = None):
             try:
                 with open(faq_file, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                
+
                 if lang:
                     translated_data = []
                     for item in data:

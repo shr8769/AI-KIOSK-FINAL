@@ -163,8 +163,9 @@ def _marian_translate_chunk(text: str, direction: str) -> Optional[str]:
 
 class OfflineTranslationService:
     def _init_db(self):
-        import sqlite3
         import os
+        import sqlite3
+
         from app.core.config import settings
         os.makedirs(os.path.dirname(settings.SQLITE_DB_PATH) or ".", exist_ok=True)
         conn = sqlite3.connect(settings.SQLITE_DB_PATH)
@@ -186,6 +187,7 @@ class OfflineTranslationService:
 
     def _get_cached_translation(self, text: str, source: str, target: str) -> Optional[str]:
         import sqlite3
+
         from app.core.config import settings
         self._init_db()
         try:
@@ -205,6 +207,7 @@ class OfflineTranslationService:
 
     def _set_cached_translation(self, text: str, source: str, target: str, translated: str):
         import sqlite3
+
         from app.core.config import settings
         self._init_db()
         try:
@@ -420,14 +423,14 @@ def preprocess_and_detect_language(text: str, language_hint: Optional[str] = Non
 
     # 2. Romanized patterns check
     text_lower = text.lower()
-    
+
     # Check if there is any Kannada marker
     is_kn = False
     for pattern in _ROMANIZED_KN_MAP.keys():
         if re.search(pattern, text_lower):
             is_kn = True
             break
-            
+
     if not is_kn:
         for pattern in _ROMANIZED_KN_SUFFIXES:
             if re.search(pattern, text_lower):
