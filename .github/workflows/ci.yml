@@ -52,7 +52,8 @@ jobs:
             ruff==0.5.0 \
             sqlalchemy>=2.0.0 \
             "psycopg[binary]>=3.1.18" \
-            asyncpg>=0.29.0
+            asyncpg>=0.29.0 \
+            pgvector>=0.3.1
 
       - name: Lint with Ruff
         run: ruff check app/ tests/
