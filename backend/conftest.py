@@ -12,6 +12,12 @@ import asyncio
 import pytest
 from typing import Generator
 
+# Add parent directory to sys.path to allow database/ and agents/ imports in CI/CD
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 

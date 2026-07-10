@@ -3,7 +3,7 @@ RAG Route — POST /rag (Retrieval-Augmented Generation)
 Owner: Harsha
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from typing import Optional
 import logging
