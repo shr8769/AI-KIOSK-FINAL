@@ -3,9 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import or_
 from database.models.models import Memory
-
-# We access the cached embedding model from memory_store
-from backend.app.services.memory_store import embedding_model
+from backend.app.services.memory_store import get_embedding_model
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +17,13 @@ class MemoryRetriever:
         Retrieves relevant memories using vector similarity search (cosine distance).
         Falls back to keyword matching if pgvector/embeddings are unavailable.
         """
-        if not embedding_model:
+        model = get_embedding_model()
+        if not model:
             logger.warning("Embedding model unavailable. Performing keyword-fallback retrieval.")
             return await self._fallback_retrieve(user_id, query_text, limit)
             
         try:
-            query_emb = embedding_model.encode(query_text).tolist()
+            query_emb = model.encode(query_text).tolist()
             
             # Use pgvector cosine_distance sorting
             result = await self.db.execute(

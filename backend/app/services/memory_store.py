@@ -1,18 +1,26 @@
 import uuid
 import logging
-from sentence_transformers import SentenceTransformer
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.models.models import Memory
 
 logger = logging.getLogger(__name__)
 
 # Cache SentenceTransformer model in memory globally to prevent reloading on each request
-try:
-    embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-    logger.info("Loaded SentenceTransformer model 'all-MiniLM-L6-v2' successfully.")
-except Exception as e:
-    logger.error(f"Failed to load SentenceTransformer: {e}")
-    embedding_model = None
+_embedding_model = None
+
+
+def get_embedding_model():
+    """Lazy-load the SentenceTransformer model to prevent startup crashes when it is missing."""
+    global _embedding_model
+    if _embedding_model is None:
+        try:
+            from sentence_transformers import SentenceTransformer
+            _embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            logger.info("Loaded SentenceTransformer model 'all-MiniLM-L6-v2' successfully.")
+        except Exception as e:
+            logger.warning(f"Failed to load SentenceTransformer (falling back to keyword search): {e}")
+            _embedding_model = None
+    return _embedding_model
 
 
 class MemoryStore:
@@ -26,9 +34,10 @@ class MemoryStore:
         memory_id = f"mem_{uuid.uuid4().hex[:12]}"
         
         embedding = None
-        if embedding_model:
+        model = get_embedding_model()
+        if model:
             try:
-                emb_list = embedding_model.encode(content).tolist()
+                emb_list = model.encode(content).tolist()
                 embedding = emb_list
             except Exception as e:
                 logger.error(f"Error encoding embedding: {e}")
