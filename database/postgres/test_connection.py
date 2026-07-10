@@ -8,7 +8,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from backend.app.core.config import settings
 
-async def test_connection():
+async def verify_db_connection():
     print("Testing PostgreSQL database connectivity...")
     database_url = settings.DATABASE_URL
     if database_url.startswith("postgresql://"):
@@ -41,4 +41,4 @@ async def test_connection():
         sys.exit(1)
 
 if __name__ == "__main__":
-    asyncio.run(test_connection())
+    asyncio.run(verify_db_connection())

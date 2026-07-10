@@ -7,8 +7,13 @@ Runs BEFORE any test session to set up environment and provide shared fixtures.
 """
 
 import os
+import sys
+import asyncio
 import pytest
 from typing import Generator
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # ── SET ENVIRONMENT VARIABLES BEFORE IMPORTING APP (CRITICAL!)
 # This must happen first, before app initialization
@@ -49,3 +54,22 @@ def client() -> Generator:
     """
     with TestClient(app) as test_client:
         yield test_client
+
+
+@pytest.fixture(autouse=True)
+def dispose_engine():
+    yield
+    import asyncio
+    import threading
+    from database.postgres.connection import engine
+    
+    def run_dispose():
+        loop = asyncio.new_event_loop()
+        try:
+            loop.run_until_complete(engine.dispose())
+        finally:
+            loop.close()
+            
+    t = threading.Thread(target=run_dispose)
+    t.start()
+    t.join()
