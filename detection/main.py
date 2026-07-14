@@ -12,68 +12,72 @@ from detection.presence_monitor import PresenceMonitor
 from detection.event_publisher import EventPublisher
 from backend.app.models.shared_models import DetectionEvent
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def main():
     logger.info("Initializing Edge Sensor Microservice...")
-    
+
     # 1. Initialize Network Layer
     # Use environment variable for backend URL, default to local
     backend_url = os.getenv("BACKEND_URL", "http://localhost:8000")
     publisher = EventPublisher(backend_url=backend_url)
-    
+
     # 2. Initialize Computer Vision Layer
     # The detector is completely decoupled from API logic
     detector = PersonDetector(model_path="yolo11n.pt")
-    
+
     # Wire the detector's callbacks to the event publisher
     def on_detected(event: DetectionEvent) -> Optional[str]:
         logger.info("Detector fired PERSON_DETECTED. Publishing to backend...")
         resp = publisher.publish_person_detected(
             camera_id=event.camera_id,
             confidence=event.confidence,
-            box=event.bounding_box
+            box=event.bounding_box,
         )
         if resp and resp.get("status") == "success":
             return resp.get("session_id")
         return None
-        
+
     def on_left(event: DetectionEvent):
         logger.info("Detector fired PERSON_LEFT. Publishing to backend...")
         publisher.publish_person_left(camera_id=event.camera_id)
 
     def on_face(session_id: str, embedding: list) -> Optional[dict]:
-        logger.info(f"Detector fired FACE_DETECTED. Publishing to backend for session {session_id}...")
+        logger.info(
+            f"Detector fired FACE_DETECTED. Publishing to backend for session {session_id}..."
+        )
         return publisher.publish_face_detected(
-            camera_id=detector.camera_id,
-            session_id=session_id,
-            embedding=embedding
+            camera_id=detector.camera_id, session_id=session_id, embedding=embedding
         )
 
     detector.on_person_detected(on_detected)
     detector.on_person_left(on_left)
     detector.on_face_detected(on_face)
-    
+
     # 3. Initialize Temporal Monitor (Hardware layer)
     monitor = PresenceMonitor(detector)
     # Production is headless by default
     monitor.debug = os.getenv("VISION_DEBUG", "0") == "1"
-    
+
     logger.info("Starting presence monitoring loop...")
     monitor.start()
-    
+
     try:
         # Keep main thread alive and emit periodic heartbeats
         while monitor._running:
             time.sleep(30)
             publisher.publish_heartbeat(camera_id=detector.camera_id)
-            
+
     except KeyboardInterrupt:
         logger.info("Interrupted by system or user. Shutting down...")
     finally:
         monitor.stop()
         logger.info("Edge Sensor Offline.")
+
 
 if __name__ == "__main__":
     main()

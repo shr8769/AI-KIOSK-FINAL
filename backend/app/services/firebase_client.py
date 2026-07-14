@@ -83,6 +83,7 @@ def _get_mock_db_path():
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
     return os.path.join(root, "database", "mock_firestore.json")
 
+
 def _load_mock_db() -> dict:
     path = _get_mock_db_path()
     if not os.path.exists(path):
@@ -104,6 +105,7 @@ def _load_mock_db() -> dict:
     except Exception:
         return {"users": {}, "opportunities": []}
 
+
 def _save_mock_db(data: dict):
     path = _get_mock_db_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -115,6 +117,7 @@ def _save_mock_db(data: dict):
 
 
 # ── FR-8: Face Matching ────────────────────────────────────────────────────
+
 
 def match_face(embedding: list, threshold: Optional[float] = None) -> Optional[dict]:
     """
@@ -131,11 +134,13 @@ def match_face(embedding: list, threshold: Optional[float] = None) -> Optional[d
         or None if no match above threshold / Firebase unavailable.
     """
     if threshold is None:
-        threshold = float(os.getenv("FACE_MATCH_THRESHOLD", "0.85"))
+        threshold = float(os.getenv("FACE_MATCH_THRESHOLD", "0.45"))
 
     db = _get_firestore()
     if db is None:
-        logger.info("[FR-8] Firebase disabled. Falling back to local mock_firestore.json matching...")
+        logger.info(
+            "[FR-8] Firebase disabled. Falling back to local mock_firestore.json matching..."
+        )
         try:
             data = _load_mock_db()
             users = data.get("users", {})
@@ -159,7 +164,9 @@ def match_face(embedding: list, threshold: Optional[float] = None) -> Optional[d
                     f"role='{best_user.get('role')}' sim={best_sim:.3f}"
                 )
                 return best_user
-            logger.info(f"[FR-8] [Mock] No face match above threshold {threshold} (best_sim={best_sim:.3f}).")
+            logger.info(
+                f"[FR-8] [Mock] No face match above threshold {threshold} (best_sim={best_sim:.3f})."
+            )
             return None
         except Exception as e:
             logger.error(f"[FR-8] [Mock] Face matching failed: {e}")
@@ -207,6 +214,7 @@ def match_face(embedding: list, threshold: Optional[float] = None) -> Optional[d
 
 # ── FR-10: Recommendations ────────────────────────────────────────────────
 
+
 def get_recommendations(user_id: str, limit: int = 3) -> list:
     """
     Return the top N campus opportunities matching the user's interests.
@@ -226,7 +234,9 @@ def get_recommendations(user_id: str, limit: int = 3) -> list:
     """
     db = _get_firestore()
     if db is None:
-        logger.info(f"[FR-10] Firebase disabled. Fetching local mock recommendations for '{user_id}'...")
+        logger.info(
+            f"[FR-10] Firebase disabled. Fetching local mock recommendations for '{user_id}'..."
+        )
         try:
             data = _load_mock_db()
             user = data.get("users", {}).get(user_id)
@@ -247,7 +257,9 @@ def get_recommendations(user_id: str, limit: int = 3) -> list:
                     recs.append(opp)
                     if len(recs) >= limit:
                         break
-            logger.info(f"[FR-10] [Mock] Found {len(recs)} recommendation(s) for interests: {interests}")
+            logger.info(
+                f"[FR-10] [Mock] Found {len(recs)} recommendation(s) for interests: {interests}"
+            )
             return recs
         except Exception as e:
             logger.error(f"[FR-10] [Mock] Recommendation failed: {e}")
@@ -291,6 +303,7 @@ def get_recommendations(user_id: str, limit: int = 3) -> list:
 
 # ── FR-8: User Registration (used by seed_faces.py) ──────────────────────
 
+
 def register_user(
     user_id: str,
     name: str,
@@ -318,7 +331,7 @@ def register_user(
                 "preferences": {
                     "interests": interests or [],
                     "language": language,
-                }
+                },
             }
             _save_mock_db(data)
             logger.info(f"[Firebase] [Mock] User '{name}' successfully registered locally.")

@@ -39,7 +39,9 @@ class FaceExtractor:
         self._lock = threading.Lock()
         self._ready = False
         # Load heavyweight ONNX model in background — never blocks startup.
-        threading.Thread(target=self._load_model, daemon=True, name="insightface-loader").start()
+        threading.Thread(
+            target=self._load_model, daemon=True, name="insightface-loader"
+        ).start()
 
     # ── Private ───────────────────────────────────────────────────────────
 
@@ -51,7 +53,9 @@ class FaceExtractor:
             # buffalo_sc = lightweight single-model variant (detection + recognition).
             # ctx_id=-1 forces CPU inference, avoiding GPU/CUDA driver issues on kiosk.
             app = FaceAnalysis(name="buffalo_sc", providers=["CPUExecutionProvider"])
-            app.prepare(ctx_id=-1, det_size=(320, 320))  # 320×320 is fast enough for kiosk
+            app.prepare(
+                ctx_id=-1, det_size=(320, 320)
+            )  # 320×320 is fast enough for kiosk
 
             with self._lock:
                 self._app = app
@@ -65,7 +69,9 @@ class FaceExtractor:
                 "FR-8 (facial recognition) will be disabled."
             )
         except Exception as e:
-            logger.error(f"[FR-8] InsightFace failed to initialise: {e}. FR-8 disabled.")
+            logger.error(
+                f"[FR-8] InsightFace failed to initialise: {e}. FR-8 disabled."
+            )
 
     # ── Public ────────────────────────────────────────────────────────────
 

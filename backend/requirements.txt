@@ -40,9 +40,12 @@ langchain-ollama>=0.1.0
 langchain-google-genai>=1.0.0
 sentence-transformers>=3.0.0
 chromadb>=0.5.0
+rapidfuzz>=3.5.0
 
 # Database
 asyncpg>=0.29.0
 pgvector>=0.3.1
 
-
+# Computer Vision & Firebase
+opencv-python-headless>=4.8.0
+firebase-admin>=6.2.0

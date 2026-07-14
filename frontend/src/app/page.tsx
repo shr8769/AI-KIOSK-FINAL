@@ -1047,6 +1047,7 @@ export default function KioskPage() {
             <div className="w-full max-w-md mt-4">
               <NavigationCard 
                 navigationId={navigationData.navigation_id}
+                navigationUrl={navigationData.url}
                 destinationName={navigationData.destination_name}
                 building={navigationData.building}
                 floor={navigationData.floor}

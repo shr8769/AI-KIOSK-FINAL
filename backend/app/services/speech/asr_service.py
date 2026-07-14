@@ -42,9 +42,9 @@ def _clean_whisper_transcript(text: str) -> str:
         return text
 
     # Step 1: cut at first occurrence of 3+ consecutive identical characters
-    match = re.search(r'(.)\1{2,}', text)
+    match = re.search(r"(.)\1{2,}", text)
     if match:
-        text = text[:match.start()].rstrip()
+        text = text[: match.start()].rstrip()
 
     # Step 2: sliding-window ngram check on the tail
     if len(text) > 30:
@@ -52,7 +52,7 @@ def _clean_whisper_transcript(text: str) -> str:
         tail = text[tail_start:].replace(" ", "")
         if len(tail) > 8:
             for n in (2, 3):
-                ngrams = [tail[i:i+n] for i in range(len(tail) - n + 1)]
+                ngrams = [tail[i : i + n] for i in range(len(tail) - n + 1)]
                 if ngrams:
                     top = Counter(ngrams).most_common(1)[0][1]
                     if top / len(ngrams) > 0.60:
@@ -65,10 +65,10 @@ def _clean_whisper_transcript(text: str) -> str:
     # Step 3: cap length
     if len(text) > 250:
         # Prefer to cut at last sentence break within 250 chars
-        for punct in ['।', '.', '?', '!', ',', ' ']:
+        for punct in ["।", ".", "?", "!", ",", " "]:
             idx = text.rfind(punct, 0, 250)
             if idx > 20:
-                text = text[:idx + 1]
+                text = text[: idx + 1]
                 break
         else:
             text = text[:250]
@@ -86,6 +86,7 @@ class ASRService:
             model_size = settings.WHISPER_MODEL_SIZE
             logger.info(f"Loading faster-whisper model '{model_size}' on CPU...")
             from faster_whisper import WhisperModel
+
             # Using configured model with int8 quantization for speed on CPU
             self.model = WhisperModel(model_size, device="cpu", compute_type="int8")
             logger.info(f"faster-whisper model '{model_size}' loaded.")
@@ -99,18 +100,13 @@ class ASRService:
         """Run a dummy transcription of 1 second silence to compile CUDA kernels and optimize graph."""
         logger.info("Warming up Whisper model with dummy audio...")
         import numpy as np
+
         # 1 second of silence at 16kHz
         dummy_audio = np.zeros(16000, dtype=np.float32)
         model = self._get_model()
         # Discard output, just force inference
         try:
-            model.transcribe(
-                dummy_audio,
-                beam_size=1,
-                best_of=1,
-                temperature=0.0,
-                language="en"
-            )
+            model.transcribe(dummy_audio, beam_size=1, best_of=1, temperature=0.0, language="en")
         except Exception:
             pass
         logger.info("Whisper model warm-up complete.")
@@ -121,6 +117,7 @@ class ASRService:
         Bypasses FFmpeg dependency entirely. Falls back to raw 16-bit PCM.
         """
         import numpy as np
+
         try:
             with wave.open(io.BytesIO(audio_bytes), "rb") as wav_file:
                 n_channels = wav_file.getnchannels()
@@ -196,9 +193,14 @@ class ASRService:
         try:
             # 1. Attempt Bhashini Speech-To-Text if enabled and credentials exist
             from app.services.speech.bhashini_service import bhashini_service
+
             if settings.USE_BHASHINI and bhashini_service.has_credentials():
-                lang_hint = request.language_hint if request.language_hint in ["en", "kn", "hi"] else "hi"
-                transcript = bhashini_service.transcribe_audio(request.audio_base64, language=lang_hint)
+                lang_hint = (
+                    request.language_hint if request.language_hint in ["en", "kn", "hi"] else "hi"
+                )
+                transcript = bhashini_service.transcribe_audio(
+                    request.audio_base64, language=lang_hint
+                )
 
                 if transcript:
                     duration_ms = 3000  # Placeholder duration
@@ -214,16 +216,21 @@ class ASRService:
                         latency_ms=latency_ms,
                     )
                 else:
-                    logger.warning("Bhashini ASR returned empty transcript. Falling back to Google Speech.")
+                    logger.warning(
+                        "Bhashini ASR returned empty transcript. Falling back to Google Speech."
+                    )
 
             # ── Tier 2: Google Speech Recognition (free, no API key needed) ──────
             # Supports kn-IN and hi-IN natively. Falls back to Whisper if offline.
-            lang_hint_raw = request.language_hint if request.language_hint in ["en", "kn", "hi"] else None
+            lang_hint_raw = (
+                request.language_hint if request.language_hint in ["en", "kn", "hi"] else None
+            )
             google_lang_map = {"kn": "kn-IN", "hi": "hi-IN", "en": "en-US"}
             google_lang = google_lang_map.get(lang_hint_raw, "kn-IN")
 
             try:
                 import speech_recognition as sr
+
                 recognizer = sr.Recognizer()
                 audio_bytes_raw = base64.b64decode(request.audio_base64)
 
@@ -232,9 +239,7 @@ class ASRService:
                     audio_data_sr = recognizer.record(source)
 
                 google_transcript = recognizer.recognize_google(
-                    audio_data_sr,
-                    language=google_lang,
-                    show_all=False
+                    audio_data_sr, language=google_lang, show_all=False
                 )
 
                 if google_transcript and google_transcript.strip():
@@ -255,14 +260,18 @@ class ASRService:
                     logger.warning("Google Speech returned empty. Falling back to Whisper.")
 
             except Exception as google_err:
-                logger.warning(f"Google Speech ASR unavailable ({google_err}). Falling back to Whisper.")
+                logger.warning(
+                    f"Google Speech ASR unavailable ({google_err}). Falling back to Whisper."
+                )
 
             # ── Tier 3: faster-whisper (fully offline) ────────────────────────────
             audio_bytes = base64.b64decode(request.audio_base64)
             audio_data = self._load_wav_to_numpy(audio_bytes)
 
             model = self._get_model()
-            lang_hint = request.language_hint if request.language_hint in ["en", "kn", "hi"] else None
+            lang_hint = (
+                request.language_hint if request.language_hint in ["en", "kn", "hi"] else None
+            )
 
             # Define language-specific prompt to guide the script/spelling of Whisper
             initial_prompt = None

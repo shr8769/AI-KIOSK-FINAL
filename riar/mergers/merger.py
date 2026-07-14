@@ -4,6 +4,7 @@ Owner: Haseeb
 
 Merges an ambiguous query and the user's clarification response into a single resolved query.
 """
+
 import logging
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate
@@ -24,6 +25,7 @@ Rewrite this as one complete, standalone question that can be sent to a search e
 Output your merged query using the strict JSON schema.
 """
 
+
 class RIARMerger:
     def __init__(self, llm: BaseChatModel):
         self.llm = llm
@@ -32,19 +34,21 @@ class RIARMerger:
         except Exception as e:
             logger.warning(f"LLM doesn't support structured output: {e}")
             self.structured_llm = None
-            
+
         self.prompt = ChatPromptTemplate.from_messages([("system", MERGER_PROMPT)])
-        
-    def merge(self, original_query: str, clarification_question: str, user_response: str) -> str:
+
+    def merge(
+        self, original_query: str, clarification_question: str, user_response: str
+    ) -> str:
         if not self.structured_llm:
             logger.error("Structured LLM missing in Merger. Using fallback.")
             return f"{original_query} {user_response}"
-            
+
         try:
             formatted = self.prompt.format_messages(
                 original_query=original_query,
                 clarification_question=clarification_question,
-                user_response=user_response
+                user_response=user_response,
             )
             result = self.structured_llm.invoke(formatted)
             if isinstance(result, dict):

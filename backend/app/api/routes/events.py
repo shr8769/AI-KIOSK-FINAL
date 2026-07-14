@@ -41,6 +41,7 @@ async def background_greeting_task(session_id: str, greeting_text: str, mgr: Con
     try:
         from app.models.schemas import TTSRequest
         from app.services.speech.tts_service import tts_service
+
         tts_resp = await tts_service.synthesize(
             TTSRequest(session_id=session_id, text=greeting_text, language="en")
         )
@@ -49,10 +50,10 @@ async def background_greeting_task(session_id: str, greeting_text: str, mgr: Con
         logger.warning(f"Background TTS generic greeting failed: {e}")
 
     try:
-        await mgr.send(session_id, {
-            "type": "greeting",
-            "payload": {"message": greeting_text, "audio_url": audio_url}
-        })
+        await mgr.send(
+            session_id,
+            {"type": "greeting", "payload": {"message": greeting_text, "audio_url": audio_url}},
+        )
     except Exception as e:
         logger.warning(f"Background WS send for greeting failed: {e}")
 
@@ -81,13 +82,14 @@ async def ingest_event(
                 "user_id": None,
                 "role": "guest",
                 "is_returning": False,
-            }
+            },
         )
 
         # Store guest session in PostgreSQL
         try:
             from database.models.models import Session as PGSession
             from database.postgres.connection import AsyncSessionLocal
+
             async with AsyncSessionLocal() as db_session:
                 pg_sess = PGSession(session_id=session_id, user_id="usr_guest")
                 await db_session.merge(pg_sess)
@@ -99,10 +101,12 @@ async def ingest_event(
         greeting_text = "Welcome to PES University. Please tell me which language you would like to interact with: English, Kannada, or Hindi?"
 
         try:
-            await mgr.broadcast({
-                "type": "detection",
-                "payload": {"person_detected": True, "session_id": session_id}
-            })
+            await mgr.broadcast(
+                {
+                    "type": "detection",
+                    "payload": {"person_detected": True, "session_id": session_id},
+                }
+            )
         except Exception as e:
             logger.warning(f"Failed to broadcast detection to WebSocket: {e}")
 
@@ -129,49 +133,14 @@ async def ingest_event(
             logger.warning("FACE_DETECTED received with no session_id — ignored.")
             return EventResponse(status="error", action_taken="missing_session_id")
 
-        # Query PostgreSQL via pgvector cosine distance sorting to find matched face
+        # Query via Firebase to find matched face
         matched_user = None
         try:
-            from database.models.models import User as PGUser
-            from database.postgres.connection import AsyncSessionLocal
-            from sqlalchemy.future import select
+            from app.services.firebase_client import match_face
 
-            async with AsyncSessionLocal() as db_session:
-                result = await db_session.execute(
-                    select(PGUser)
-                    .order_by(PGUser.face_embedding.cosine_distance(embedding))
-                    .limit(1)
-                )
-                user = result.scalars().first()
-                if user and user.face_embedding is not None:
-                    dist_res = await db_session.execute(
-                        select(PGUser.face_embedding.cosine_distance(embedding))
-                        .filter(PGUser.user_id == user.user_id)
-                    )
-                    distance = dist_res.scalar()
-                    # Distance <= 0.4 corresponds to similarity >= 0.6
-                    if distance is not None and distance <= 0.4:
-                        matched_user = {
-                            "user_id": user.user_id,
-                            "name": user.name,
-                            "role": user.role_id,
-                            "preferences": user.preferences
-                        }
+            matched_user = match_face(embedding)
         except Exception as e:
-            logger.error(f"[FR-8] Face matching via PostgreSQL failed: {e}")
-            logger.info("Falling back to firebase_client (local mock_firestore.json)...")
-            try:
-                from app.services.firebase_client import match_face as firebase_match_face
-                fb_user = firebase_match_face(embedding)
-                if fb_user:
-                    matched_user = {
-                        "user_id": fb_user.get("user_id"),
-                        "name": fb_user.get("name"),
-                        "role": fb_user.get("role"),
-                        "preferences": fb_user.get("preferences", {})
-                    }
-            except Exception as fb_e:
-                logger.error(f"Fallback face matching failed: {fb_e}")
+            logger.error(f"[FR-8] Face matching via Firebase failed: {e}")
 
         if matched_user:
             user_id = matched_user["user_id"]
@@ -204,8 +173,11 @@ async def ingest_event(
         try:
             from database.models.models import Session as PGSession
             from database.postgres.connection import AsyncSessionLocal
+
             async with AsyncSessionLocal() as db_session:
-                pg_sess = PGSession(session_id=session_id, user_id=user_id if user_id else "usr_guest")
+                pg_sess = PGSession(
+                    session_id=session_id, user_id=user_id if user_id else "usr_guest"
+                )
                 await db_session.merge(pg_sess)
                 await db_session.commit()
         except Exception as db_e:
@@ -219,6 +191,7 @@ async def ingest_event(
             try:
                 import json
                 import os
+
                 opp_path = "knowledge/sources/opportunities.json"
                 if os.path.exists(opp_path):
                     with open(opp_path, "r", encoding="utf-8") as f:
@@ -248,16 +221,19 @@ async def ingest_event(
 
         # Push identity immediately to the frontend
         try:
-            await mgr.send(session_id, {
-                "type": "user_identified",
-                "payload": {
-                    "user_id": user_id,
-                    "name": user_name,
-                    "role": user_role,
-                    "is_returning": is_returning,
-                    "recommendations": recommendations[:3],
+            await mgr.send(
+                session_id,
+                {
+                    "type": "user_identified",
+                    "payload": {
+                        "user_id": user_id,
+                        "name": user_name,
+                        "role": user_role,
+                        "is_returning": is_returning,
+                        "recommendations": recommendations[:3],
+                    },
                 },
-            })
+            )
         except Exception as e:
             logger.warning(f"WS send for user_identified failed: {e}")
 

@@ -54,40 +54,155 @@ class RIARService:
 
         # English, Kannada, and Hindi stem keywords (including Romanized/transliterated variations)
         admissions_kws = [
-            "admission", "apply", "seat", "pessat", "eligib", "cutoff", "cut-off", "register",
-            "ಪ್ರವೇಶ", "ಅಡ್ಮಿ", "ಅರ್ಜಿ", "ಸೀಟು", "ನೋಂದ", "ಅರ್ಹತೆ",
-            "प्रवेश", "एडमि", "आवेदन", "सीट", "पंजी", "पात्र",
-            "pravesh", "nondan", "arhat"
+            "admission",
+            "apply",
+            "seat",
+            "pessat",
+            "eligib",
+            "cutoff",
+            "cut-off",
+            "register",
+            "ಪ್ರವೇಶ",
+            "ಅಡ್ಮಿ",
+            "ಅರ್ಜಿ",
+            "ಸೀಟು",
+            "ನೋಂದ",
+            "ಅರ್ಹತೆ",
+            "प्रवेश",
+            "एडमि",
+            "आवेदन",
+            "सीट",
+            "पंजी",
+            "पात्र",
+            "pravesh",
+            "nondan",
+            "arhat",
         ]
         academics_kws = [
-            "course", "syllabus", "exam", "marks", "credit", "class", "semester", "academ",
-            "ಕೋರ್ಸ್", "ವಿಷಯ", "ಪಠ್ಯಕ್ರಮ", "ಪರೀಕ್ಷೆ", "ಅಂಕ", "ಸೆಮಿಸ್ಟ",
-            "पाठ्यक्रम", "परीक्षा", "अंक", "सेमेस्टर", "कक्षा", "एकेड",
-            "parikshe", "patya", "sem"
+            "course",
+            "syllabus",
+            "exam",
+            "marks",
+            "credit",
+            "class",
+            "semester",
+            "academ",
+            "ಕೋರ್ಸ್",
+            "ವಿಷಯ",
+            "ಪಠ್ಯಕ್ರಮ",
+            "ಪರೀಕ್ಷೆ",
+            "ಅಂಕ",
+            "ಸೆಮಿಸ್ಟ",
+            "पाठ्यक्रम",
+            "परीक्षा",
+            "अंक",
+            "सेमेस्टर",
+            "कक्षा",
+            "एकेड",
+            "parikshe",
+            "patya",
+            "sem",
         ]
         placements_kws = [
-            "placement", "job", "salary", "package", "recruit", "company", "companies",
-            "ಪ್ಲೇಸ್", "ಕೆಲಸ", "ಉದ್ಯೋಗ", "ಸಂಬಳ", "ಪ್ಯಾಕೇ", "ಕಂಪನಿ",
-            "प्लेस", "नौकरी", "रोजगार", "वेतन", "पैकेज", "कंपनी",
-            "kelasa", "udyog"
+            "placement",
+            "job",
+            "salary",
+            "package",
+            "recruit",
+            "company",
+            "companies",
+            "ಪ್ಲೇಸ್",
+            "ಕೆಲಸ",
+            "ಉದ್ಯೋಗ",
+            "ಸಂಬಳ",
+            "ಪ್ಯಾಕೇ",
+            "ಕಂಪನಿ",
+            "प्लेस",
+            "नौकरी",
+            "रोजगार",
+            "वेतन",
+            "पैकेज",
+            "कंपनी",
+            "kelasa",
+            "udyog",
         ]
         research_kws = [
-            "research", "phd", "ph.d", "project", "paper", "publicat",
-            "ಸಂಶೋಧನೆ", "ಪ್ರಬಂಧ",
-            "अनुसंधान", "शोध",
-            "shodh", "sansodhan"
+            "research",
+            "phd",
+            "ph.d",
+            "project",
+            "paper",
+            "publicat",
+            "ಸಂಶೋಧನೆ",
+            "ಪ್ರಬಂಧ",
+            "अनुसंधान",
+            "शोध",
+            "shodh",
+            "sansodhan",
         ]
         student_services_kws = [
-            "hostel", "scholarship", "library", "sport", "facilit",
-            "ಹಾಸ್ಟೆ", "ಶಿಷ್ಯವೇ", "ಗ್ರಂಥಾ", "ಲೈಬ್ರ", "ಕ್ರೀಡೆ",
-            "छात्रा", "छात्रवृत्ति", "पुस्तकालय", "खेल",
-            "granthalay", "kreede"
+            "hostel",
+            "scholarship",
+            "library",
+            "sport",
+            "facilit",
+            "ಹಾಸ್ಟೆ",
+            "ಶಿಷ್ಯವೇ",
+            "ಗ್ರಂಥಾ",
+            "ಲೈಬ್ರ",
+            "ಕ್ರೀಡೆ",
+            "छात्रा",
+            "छात्रवृत्ति",
+            "पुस्तकालय",
+            "खेल",
+            "granthalay",
+            "kreede",
         ]
         navigation_kws = [
-            "where", "location", "map", "building", "floor", "block", "direction", "room", "office", "toilet", "canteen", "cafeter", "situat", "located", "find", "reach",
-            "ಎಲ್ಲಿದೆ", "ಸ್ಥಳ", "ನಕ್ಷೆ", "ಕಟ್ಟಡ", "ಬ್ಲಾಕ್", "ದಿಕ್ಕು", "ಕೊಠಡಿ", "ಕಚೇರಿ", "ಶೌಚಾಲಯ", "ಕ್ಯಾಂಟೀ", "ಕೆಫೆ",
-            "कहाँ", "स्थान", "नक्शा", "इमारत", "ब्लॉक", "दिशा", "कममा", "कार्यालय", "शौचालय", "कैंटीन", "कैफे",
-            "ellide", "kacheri", "kattida", "sthana", "dikka", "dikku"
+            "where",
+            "location",
+            "map",
+            "building",
+            "floor",
+            "block",
+            "direction",
+            "room",
+            "office",
+            "toilet",
+            "canteen",
+            "cafeter",
+            "situat",
+            "located",
+            "find",
+            "reach",
+            "ಎಲ್ಲಿದೆ",
+            "ಸ್ಥಳ",
+            "ನಕ್ಷೆ",
+            "ಕಟ್ಟಡ",
+            "ಬ್ಲಾಕ್",
+            "ದಿಕ್ಕು",
+            "ಕೊಠಡಿ",
+            "ಕಚೇರಿ",
+            "ಶೌಚಾಲಯ",
+            "ಕ್ಯಾಂಟೀ",
+            "ಕೆಫೆ",
+            "कहाँ",
+            "स्थान",
+            "नक्शा",
+            "इमारत",
+            "ब्लॉक",
+            "दिशा",
+            "कममा",
+            "कार्यालय",
+            "शौचालय",
+            "कैंटीन",
+            "कैफे",
+            "ellide",
+            "kacheri",
+            "kattida",
+            "sthana",
+            "dikka",
+            "dikku",
         ]
 
         if any(kw in query for kw in admissions_kws):
@@ -159,7 +274,7 @@ class RAGService:
                 "research": "PES University is heavily invested in research with multiple research centers and PhD programs across engineering and sciences.",
                 "student_services": "Student facilities include extensive libraries, sports complex, state-of-the-art hostels, and various technical and cultural clubs.",
                 "navigation": "To navigate the campus, please follow the main walkway. The admissions office is located in the main Golden Jubilee Block on the ground floor.",
-                "general": "Thank you for asking. PES University offers world-class education with courses in Engineering, Medicine, Management, and Law."
+                "general": "Thank you for asking. PES University offers world-class education with courses in Engineering, Medicine, Management, and Law.",
             },
             "kn": {
                 "admissions": "ಪ್ರವೇಶಾತಿಗಾಗಿ, ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯವು ಪೆಸ್ಸಾಟ್ (PESSAT) ಪರೀಕ್ಷೆಯನ್ನು ನಡೆಸುತ್ತದೆ. ನೋಂದಣಿ ವಿವರಗಳು, ಅರ್ಹತಾ ಮಾನದಂಡಗಳು ಮತ್ತು ಶುಲ್ಕದ ವಿವರಗಳನ್ನು ನಮ್ಮ ಪ್ರವೇಶಾತಿ ಪೋರ್ಟಲ್‌ನಲ್ಲಿ ಕಾಣಬಹುದು.",
@@ -168,7 +283,7 @@ class RAGService:
                 "research": "ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯವು ಸಂಶೋಧನೆಗೆ ಹೆಚ್ಚಿನ ಪ್ರೋತ್ಸಾಹ ನೀಡುತ್ತದೆ. ನಮ್ಮಲ್ಲಿ ಹಲವು ಸಂಶೋಧನಾ ಕೇಂದ್ರಗಳು ಮತ್ತು ಪಿಎಚ್‌ಡಿ ಕಾರ್ಯಕ್ರಮಗಳಿವೆ.",
                 "student_services": "ವಿದ್ಯಾರ್ಥಿ ಸೌಲಭ್ಯಗಳಲ್ಲಿ ಗ್ರಂಥಾಲಯಗಳು, ಕ್ರೀಡಾ ಸಂಕೀರ್ಣಗಳು, ಸುಸಜ್ಜಿತ ಹಾಸ್ಟೆಲ್‌ಗಳು ಮತ್ತು ವಿವಿಧ ತಾಂತ್ರಿಕ ಹಾಗೂ ಸಾಂಸ್ಕೃತಿಕ ಕ್ಲಬ್‌ಗಳು ಸೇರಿವೆ.",
                 "navigation": "ಕ್ಯಾಂಪಸ್‌ನಲ್ಲಿ ಸಂಚರಿಸಲು ದಯವಿಟ್ಟು ಮುಖ್ಯ ನಡಿಗೆಯ ಹಾದಿಯನ್ನು ಅನುಸರಿಸಿ. ಪ್ರವೇಶಾತಿ ಕಚೇರಿಯು ಮುಖ್ಯ ಗೋಲ್ಡನ್ ಜುಬಿಲಿ ಬ್ಲಾಕ್‌ನ ನೆಲಮಹಡಿಯಲ್ಲಿದೆ.",
-                "general": "ಕೇಳಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು. ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯವು ಎಂಜಿನಿಯರಿಂಗ್, ವೈದ್ಯಕೀಯ, ನಿರ್ವಹಣೆ ಮತ್ತು ಕಾನೂನು ಕೋರ್ಸ್‌ಗಳೊಂದಿಗೆ ವಿಶ್ವದರ್ಜೆಯ ಶಿಕ್ಷಣವನ್ನು ನೀಡುತ್ತದೆ."
+                "general": "ಕೇಳಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು. ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯವು ಎಂಜಿನಿಯರಿಂಗ್, ವೈದ್ಯಕೀಯ, ನಿರ್ವಹಣೆ ಮತ್ತು ಕಾನೂನು ಕೋರ್ಸ್‌ಗಳೊಂದಿಗೆ ವಿಶ್ವದರ್ಜೆಯ ಶಿಕ್ಷಣವನ್ನು ನೀಡುತ್ತದೆ.",
             },
             "hi": {
                 "admissions": "प्रवेश के लिए, पीईएस विश्वविद्यालय पेसैट (PESSAT) परीक्षा आयोजित करता है। पंजीकरण विवरण, पात्रता मानदंड और शुल्क संरचना हमारे प्रवेश पोर्टल पर देखी जा सकती है।",
@@ -177,8 +292,8 @@ class RAGService:
                 "research": "पीईएस विश्वविद्यालय अनुसंधान में काफी निवेश करता है, जिसमें इंजीनियरिंग और विज्ञान में कई अनुसंधान केंद्र और पीएचडी कार्यक्रम हैं।",
                 "student_services": "छात्र सुविधाओं में पुस्तकालय, खेल परिसर, आधुनिक छात्रावास और विभिन्न तकनीकी और सांस्कृतिक क्लब शामिल हैं।",
                 "navigation": "परिसर में नेविगेट करने के लिए मुख्य मार्ग का अनुसरण करें। प्रवेश कार्यालय मुख्य गोल्डन जुबली ब्लॉक के भूतल पर स्थित है।",
-                "general": "पूछने के लिए धन्यवाद। पीईएस विश्वविद्यालय इंजीनियरिंग, चिकित्सा, प्रबंधन और कानून के पाठ्यक्रमों के साथ विश्व स्तरीय शिक्षा प्रदान करता है।"
-            }
+                "general": "पूछने के लिए धन्यवाद। पीईएस विश्वविद्यालय इंजीनियरिंग, चिकित्सा, प्रबंधन और कानून के पाठ्यक्रमों के साथ विश्व स्तरीय शिक्षा प्रदान करता है।",
+            },
         }
 
         # Get language specific dictionary, fallback to English
@@ -187,21 +302,38 @@ class RAGService:
 
         # Custom rule-based queries translation
         query_lower = query.lower()
-        if "where" in query_lower and "office" in query_lower or "ಕಚೇರಿ" in query_lower or "कार्यालय" in query_lower or ("ಅಡ್ಮಿಷನ್" in query_lower and "ಎಲ್ಲಿದೆ" in query_lower) or "praveshathi" in query_lower or "ಪ್ರವೇಶ" in query_lower:
+        if (
+            "where" in query_lower
+            and "office" in query_lower
+            or "ಕಚೇರಿ" in query_lower
+            or "कार्यालय" in query_lower
+            or ("ಅಡ್ಮಿಷನ್" in query_lower and "ಎಲ್ಲಿದೆ" in query_lower)
+            or "praveshathi" in query_lower
+            or "ಪ್ರವೇಶ" in query_lower
+        ):
             if lang == "kn":
                 answer = "ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯದಲ್ಲಿ ಪ್ರವೇಶಾತಿಗಾಗಿ ಪೆಸ್ಸಾಟ್ (PESSAT) ಪ್ರವೇಶ ಪರೀಕ್ಷೆ ಬರೆಯಬೇಕು. ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ಗೋಲ್ಡನ್ ಜುಬಿಲಿ ಬ್ಲಾಕ್‌ನ ನೆಲಮಹಡಿಯಲ್ಲಿರುವ ಪ್ರವೇಶಾತಿ ಕಚೇರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ."
             elif lang == "hi":
                 answer = "पीईएस विश्वविद्यालय में प्रवेश के लिए आपको पेसैट (PESSAT) परीक्षा देनी होगी। अधिक जानकारी के लिए भूतल पर स्थित प्रवेश कार्यालय से संपर्क करें।"
             else:
                 answer = "For admissions at PES University, you need to take the PESSAT exam. For details, contact the admissions office on the ground floor of the Golden Jubilee Block."
-        elif any(kw in query_lower for kw in ["canteen", "cafeteria", "cafetaria", "ಊಟ", "ಕ್ಯಾಂಟೀನ್", "कैंटीन", "कैफेटेरिया"]):
+        elif any(
+            kw in query_lower
+            for kw in ["canteen", "cafeteria", "cafetaria", "ಊಟ", "ಕ್ಯಾಂಟೀನ್", "कैंटीन", "कैफेटेरिया"]
+        ):
             if lang == "kn":
                 answer = "ಮುಖ್ಯ ಕ್ಯಾಂಪಸ್ ಕೆಫೆಟೇರಿಯಾ ಕೇಂದ್ರ ಗ್ರಂಥಾಲಯದ ಪಕ್ಕದಲ್ಲಿದೆ, ಫುಟ್‌ಬಾಲ್ ಮೈದಾನದ ಹತ್ತಿರ. ಇದು ಬೆಳಿಗ್ಗೆ 8:00 ರಿಂದ ರಾತ್ರಿ 8:00 ರವರೆಗೆ ತೆರೆದಿರುತ್ತದೆ."
             elif lang == "hi":
                 answer = "मुख्य परिसर कैंटीन केंद्रीय पुस्तकालय परिसर के बगल में, फुटबॉल मैदान के पास स्थित है। यह सुबह 8:00 बजे से रात 8:00 बजे तक खुली रहती है।"
             else:
                 answer = "The main campus cafeteria is situated next to the central library complex, near the football ground. It serves snacks, meals, and beverages from 8:00 AM to 8:00 PM."
-        elif "placement" in query_lower or "placements" in query_lower or "ಕೆಲಸ" in query_lower or "ಪ್ಲೇಸ್‌ಮೆಂಟ್" in query_lower or "प्लेसमेंट" in query_lower:
+        elif (
+            "placement" in query_lower
+            or "placements" in query_lower
+            or "ಕೆಲಸ" in query_lower
+            or "ಪ್ಲೇಸ್‌ಮೆಂಟ್" in query_lower
+            or "प्लेसमेंट" in query_lower
+        ):
             if lang == "kn":
                 answer = "ಪಿಇಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯವು ಅತ್ಯುತ್ತಮ ಪ್ಲೇಸ್‌ಮೆಂಟ್ ಹೊಂದಿದ್ದು, ಮೈಕ್ರೋಸಾಫ್ಟ್, ಅಮೆಜಾನ್ ಮತ್ತು ಸಿಸ್ಕೋ ಕಂಪನಿಗಳು ಭೇಟಿ ನೀಡುತ್ತವೆ. ಸರಾಸರಿ ಪ್ಯಾಕೇಜ್ 8 ರಿಂದ 12 LPA ಆಗಿದೆ."
             elif lang == "hi":

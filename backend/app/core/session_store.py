@@ -46,7 +46,13 @@ _redis: Optional[aioredis.Redis] = None
 async def get_redis() -> aioredis.Redis:
     global _redis
     if _redis is None:
-        _redis = aioredis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
+        _redis = aioredis.from_url(
+            settings.REDIS_URL,
+            encoding="utf-8",
+            decode_responses=True,
+            socket_connect_timeout=0.5,
+            socket_timeout=0.5
+        )
     return _redis
 
 
@@ -147,6 +153,7 @@ async def close_session(session_id: str) -> bool:
     logger.info(f"Session closed: {session_id}")
     return True
 
+
 async def add_user_turn(session_id: str, content: str) -> bool:
     session = await get_session(session_id)
     if not session:
@@ -154,15 +161,21 @@ async def add_user_turn(session_id: str, content: str) -> bool:
     session.metadata["history"].append({"role": "user", "content": content})
     # Update SQLite
     async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
-        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.execute(
+            "UPDATE sessions SET metadata=? WHERE session_id=?",
+            (json.dumps(session.metadata), session_id),
+        )
         await db.commit()
     # Update Redis
     try:
         redis = await get_redis()
-        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+        await redis.set(
+            f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS
+        )
     except Exception:
         pass
     return True
+
 
 async def add_agent_turn(session_id: str, content: str) -> bool:
     session = await get_session(session_id)
@@ -171,15 +184,21 @@ async def add_agent_turn(session_id: str, content: str) -> bool:
     session.metadata["history"].append({"role": "agent", "content": content})
     # Update SQLite
     async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
-        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.execute(
+            "UPDATE sessions SET metadata=? WHERE session_id=?",
+            (json.dumps(session.metadata), session_id),
+        )
         await db.commit()
     # Update Redis
     try:
         redis = await get_redis()
-        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+        await redis.set(
+            f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS
+        )
     except Exception:
         pass
     return True
+
 
 async def mark_turn_interrupted(session_id: str) -> bool:
     session = await get_session(session_id)
@@ -194,15 +213,21 @@ async def mark_turn_interrupted(session_id: str) -> bool:
 
     # Update SQLite
     async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
-        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.execute(
+            "UPDATE sessions SET metadata=? WHERE session_id=?",
+            (json.dumps(session.metadata), session_id),
+        )
         await db.commit()
     # Update Redis
     try:
         redis = await get_redis()
-        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+        await redis.set(
+            f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS
+        )
     except Exception:
         pass
     return True
+
 
 async def log_barge_in(session_id: str, reason: str, position_ms: float) -> bool:
     session = await get_session(session_id)
@@ -224,12 +249,17 @@ async def log_barge_in(session_id: str, reason: str, position_ms: float) -> bool
 
     # Update SQLite
     async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
-        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.execute(
+            "UPDATE sessions SET metadata=? WHERE session_id=?",
+            (json.dumps(session.metadata), session_id),
+        )
         await db.commit()
     # Update Redis
     try:
         redis = await get_redis()
-        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+        await redis.set(
+            f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS
+        )
     except Exception:
         pass
     return True
@@ -242,13 +272,17 @@ async def update_session_metadata(session_id: str, updates: dict) -> bool:
     session.metadata.update(updates)
     # Update SQLite
     async with aiosqlite.connect(settings.SQLITE_DB_PATH) as db:
-        await db.execute("UPDATE sessions SET metadata=? WHERE session_id=?", (json.dumps(session.metadata), session_id))
+        await db.execute(
+            "UPDATE sessions SET metadata=? WHERE session_id=?",
+            (json.dumps(session.metadata), session_id),
+        )
         await db.commit()
     # Update Redis
     try:
         redis = await get_redis()
-        await redis.set(f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS)
+        await redis.set(
+            f"session:{session_id}", json.dumps(session.to_dict()), ex=settings.SESSION_TTL_SECONDS
+        )
     except Exception:
         pass
     return True
-

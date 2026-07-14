@@ -3,6 +3,7 @@ import QRCode from 'react-qr-code';
 
 interface NavigationCardProps {
   navigationId: string;
+  navigationUrl: string;
   destinationName: string;
   building: string;
   floor: string;
@@ -11,18 +12,20 @@ interface NavigationCardProps {
   onClose: () => void;
 }
 
-export function NavigationCard({ navigationId, destinationName, building, floor, room, kioskIp, onClose }: NavigationCardProps) {
-  // Construct the absolute URL for the mobile handoff
-  let host = typeof window !== 'undefined' ? window.location.host : 'localhost:3000';
+export function NavigationCard({ navigationId, navigationUrl, destinationName, building, floor, room, kioskIp, onClose }: NavigationCardProps) {
+  // Use public navigation app URL if provided, otherwise fallback to local IP handoff URL
+  let navUrl = navigationUrl;
   
-  if (kioskIp && kioskIp !== 'localhost' && kioskIp !== '127.0.0.1') {
-    if (host.startsWith('localhost') || host.startsWith('127.0.0.1')) {
-      host = host.replace(/^(localhost|127\.0\.0\.1)/, kioskIp);
+  if (!navUrl) {
+    let host = typeof window !== 'undefined' ? window.location.host : 'localhost:3000';
+    if (kioskIp && kioskIp !== 'localhost' && kioskIp !== '127.0.0.1') {
+      if (host.startsWith('localhost') || host.startsWith('127.0.0.1')) {
+        host = host.replace(/^(localhost|127\.0\.0\.1)/, kioskIp);
+      }
     }
+    const protocol = typeof window !== 'undefined' ? window.location.protocol : 'http:';
+    navUrl = `${protocol}//${host}/navigation/${navigationId}`;
   }
-
-  const protocol = typeof window !== 'undefined' ? window.location.protocol : 'http:';
-  const navUrl = `${protocol}//${host}/navigation/${navigationId}`;
 
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-in fade-in zoom-in duration-300">

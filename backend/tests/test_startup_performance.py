@@ -32,7 +32,11 @@ def test_backend_starts_under_3_seconds():
     backend_dir = os.path.join(os.path.dirname(__file__), "..")
     start = time.monotonic()
     result = subprocess.run(
-        [sys.executable, "-c", "import sys; sys.path.insert(0,'backend'); from app.main import app; print('OK')"],
+        [
+            sys.executable,
+            "-c",
+            "import sys; sys.path.insert(0,'backend'); from app.main import app; print('OK')",
+        ],
         capture_output=True,
         text=True,
         timeout=30,
@@ -44,9 +48,7 @@ def test_backend_starts_under_3_seconds():
     print(f"\nStartup time: {elapsed:.2f}s")
     print(f"Output: {output[:500]}")
 
-    assert "OK" in result.stdout, (
-        f"Backend failed to import:\n{result.stderr[:1000]}"
-    )
+    assert "OK" in result.stdout, f"Backend failed to import:\n{result.stderr[:1000]}"
     assert elapsed < STARTUP_BUDGET_SECONDS, (
         f"Backend import took {elapsed:.1f}s — exceeds {STARTUP_BUDGET_SECONDS}s budget.\n"
         f"Check for module-level heavy imports (sentence_transformers, tensorflow, chromadb) "

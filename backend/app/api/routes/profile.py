@@ -1,37 +1,30 @@
-from __future__ import annotations
+"""
+Profile & Registration Route — POST /api/v1/register
+Owner: Harsha
+"""
 
 import base64
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import Optional
 
-if TYPE_CHECKING:
-    import cv2
-    import numpy as np
-    from database.models.models import Role, User
-    from sqlalchemy.ext.asyncio import AsyncSession
-    from sqlalchemy.future import select
-
-from fastapi import APIRouter, Depends, HTTPException
+import cv2
+import numpy as np
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+
+from app.services.firebase_client import register_user
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-async def _db_dep():
-    """Async dependency that lazy-imports postgres connection to avoid ImportError in CI."""
-    from database.postgres.connection import get_db  # noqa: PLC0415
-    async for session in get_db():
-        yield session
-
-
 class RegisterRequest(BaseModel):
-    user_id: str  # SRN or Employee ID
+    user_id: str
     name: str
-    role: str  # student or professor / faculty
+    role: str
     department: str
     interests: Optional[str] = ""
-    image_base64: str  # Base64 encoded JPEG/PNG image data
+    image_base64: str
 
 
 class RegisterResponse(BaseModel):
@@ -42,35 +35,23 @@ class RegisterResponse(BaseModel):
     role: str
 
 
-class ProfileResponse(BaseModel):
-    user_id: str
-    name: str
-    role: str
-    preferences: Dict[str, Any]
-
-
 @router.post("/register", response_model=RegisterResponse)
-async def register(request: RegisterRequest, db: AsyncSession = Depends(_db_dep)):
-    logger.info(f"Registration request for user_id={request.user_id}, name={request.name}, role={request.role}")
+async def register(request: RegisterRequest):
+    logger.info(
+        f"Registration request for user_id={request.user_id}, name={request.name}, role={request.role}"
+    )
 
-    # 1. Validate inputs
     user_id = request.user_id.strip()
     name = request.name.strip()
     role = request.role.strip().lower()
     department = request.department.strip()
 
     if not user_id or not name or not role or not department:
-        raise HTTPException(status_code=400, detail="SRN/ID, Name, Role, and Department are all required.")
+        raise HTTPException(
+            status_code=400, detail="SRN/ID, Name, Role, and Department are all required."
+        )
 
-    # Map roles to DB role_id
-    if role in ["student", "user"]:
-        db_role = "student"
-    elif role in ["faculty", "professor", "admin"]:
-        db_role = "professor"
-    else:
-        db_role = "student"  # Fallback
-
-    # 2. Decode base64 image
+    # 1. Decode base64 image
     try:
         header = "base64,"
         data = request.image_base64
@@ -81,7 +62,7 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(_db_dep)
         logger.error(f"Failed to decode base64 image: {e}")
         raise HTTPException(status_code=400, detail="Invalid image encoding (must be base64).")
 
-    # 3. Convert to OpenCV BGR image
+    # 2. Convert to OpenCV BGR image
     try:
         nparr = np.frombuffer(decoded_bytes, np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -89,16 +70,24 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(_db_dep)
             raise ValueError("cv2.imdecode returned None")
     except Exception as e:
         logger.error(f"Failed to parse image bytes: {e}")
-        raise HTTPException(status_code=400, detail="Could not read image. Ensure it is a valid JPEG/PNG.")
+        raise HTTPException(
+            status_code=400, detail="Could not read image. Ensure it is a valid JPEG/PNG."
+        )
 
-    # 4. Extract face embedding using FaceExtractor
+    # 3. Extract face embedding using FaceExtractor
     try:
+        # Import dynamically so it doesn't block startup
+        import os
+        import sys
+
+        # Ensure detection path is in sys.path
+        sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
         from detection.face_extractor import face_extractor
 
-        # Check if model is loaded yet
         if not face_extractor.is_ready:
             logger.info("InsightFace is loading in background. Waking up model...")
             import time
+
             for _ in range(50):
                 if face_extractor.is_ready:
                     break
@@ -107,14 +96,14 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(_db_dep)
         if not face_extractor.is_ready:
             raise HTTPException(
                 status_code=503,
-                detail="Facial recognition engine is still warming up. Please try again in a few seconds."
+                detail="Facial recognition engine is still warming up. Please try again in a few seconds.",
             )
 
         embedding = face_extractor.extract(img)
         if embedding is None:
             raise HTTPException(
                 status_code=400,
-                detail="No face detected in the captured image. Please look directly at the camera and try again."
+                detail="No face detected in the captured image. Please look directly at the camera and try again.",
             )
     except HTTPException:
         raise
@@ -122,59 +111,27 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(_db_dep)
         logger.exception(f"Face extraction failed: {e}")
         raise HTTPException(status_code=500, detail=f"Face extraction failed: {str(e)}")
 
-    # 5. Save to PostgreSQL database
-    try:
-        # Check if role exists
-        role_res = await db.execute(select(Role).filter(Role.role_id == db_role))
-        if not role_res.scalars().first():
-            # If role doesn't exist, create it dynamically
-            new_role = Role(role_id=db_role, permissions=["read", "ask"])
-            db.add(new_role)
-            await db.commit()
+    # 4. Save to Firebase
+    interests_list = [i.strip() for i in request.interests.split(",") if i.strip()]
+    if department:
+        interests_list.append(department)  # Add department as an interest tag
 
-        # Create or update user
-        interests_list = [i.strip() for i in request.interests.split(",") if i.strip()]
-        user_obj = User(
-            user_id=user_id,
-            name=name,
-            role_id=db_role,
-            face_embedding=embedding.tolist() if isinstance(embedding, np.ndarray) else embedding,
-            preferences={
-                "department": department,
-                "interests": interests_list
-            }
-        )
-        await db.merge(user_obj)
-        await db.commit()
-        logger.info(f"User {user_id} registered successfully in PostgreSQL database.")
-    except Exception as db_e:
-        logger.error(f"PostgreSQL user registration failed: {db_e}")
-        raise HTTPException(status_code=500, detail=f"Database write failed: {str(db_e)}")
+    success = register_user(
+        user_id=user_id,
+        name=name,
+        role=role,
+        face_embedding=embedding.tolist() if isinstance(embedding, np.ndarray) else embedding,
+        interests=interests_list,
+        language="en",
+    )
+
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to save user profile to database.")
 
     return RegisterResponse(
         status="success",
-        message="Profile and face successfully registered in database.",
+        message="Profile and face successfully registered.",
         user_id=user_id,
         name=name,
-        role=db_role
-    )
-
-
-@router.get("/profile/{user_id}", response_model=ProfileResponse)
-async def get_profile(user_id: str, db: AsyncSession = Depends(_db_dep)):
-    """
-    Retrieve user profile information by user_id.
-    """
-    result = await db.execute(
-        select(User).filter(User.user_id == user_id)
-    )
-    user = result.scalars().first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return ProfileResponse(
-        user_id=user.user_id,
-        name=user.name,
-        role=user.role_id,
-        preferences=user.preferences
+        role=role,
     )

@@ -41,7 +41,7 @@ class TestASRService:
                 session_id="test_sess_01",
                 audio_base64="AAAA",  # invalid but fine for mock
                 language_hint="en",
-                turn_id=1
+                turn_id=1,
             )
             response = await asr_service.transcribe(req)
             assert response.session_id == "test_sess_01"
@@ -72,11 +72,7 @@ class TestTTSService:
         settings.USE_MOCK_SERVICES = True
 
         try:
-            req = TTSRequest(
-                session_id="test_sess_01",
-                text="Hello PES University",
-                language="en"
-            )
+            req = TTSRequest(session_id="test_sess_01", text="Hello PES University", language="en")
             response = await tts_service.synthesize(req)
             assert response.session_id == "test_sess_01"
             assert response.audio_url == "/static/audio/response.mp3"
@@ -88,6 +84,7 @@ class TestTTSService:
     async def test_tts_real_synthesis(self):
         """Test local offline TTS SAPI5 file creation."""
         import sys
+
         if sys.platform != "win32":
             pytest.skip("pyttsx3 real synthesis is only supported on Windows hosts.")
         old_val = settings.USE_MOCK_SERVICES
@@ -95,10 +92,7 @@ class TestTTSService:
 
         try:
             req = TTSRequest(
-                session_id="test_sess_real",
-                text="Welcome to the kiosk.",
-                language="en",
-                speed=1.0
+                session_id="test_sess_real", text="Welcome to the kiosk.", language="en", speed=1.0
             )
             response = await tts_service.synthesize(req)
             assert response.session_id == "test_sess_real"

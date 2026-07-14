@@ -21,7 +21,9 @@ class BhashiniService:
         self._cached_config = None
         self._last_fetched = 0
         self._cache_ttl = 3600  # 1 hour cache TTL for pipeline configs
-        self.pipeline_url = "https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline"
+        self.pipeline_url = (
+            "https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline"
+        )
         self.inference_url = "https://dhruva-api.bhashini.gov.in/services/inference/pipeline"
 
     def has_credentials(self) -> bool:
@@ -31,9 +33,12 @@ class BhashiniService:
         inf_key = settings.BHASHINI_INFERENCE_KEY
 
         return bool(
-            user_id and user_id != "your_user_id" and
-            api_key and api_key != "your_api_key" and
-            inf_key and inf_key != "your_inference_key"
+            user_id
+            and user_id != "your_user_id"
+            and api_key
+            and api_key != "your_api_key"
+            and inf_key
+            and inf_key != "your_inference_key"
         )
 
     def _fetch_pipeline_config(self) -> Optional[Dict[str, Any]]:
@@ -53,17 +58,15 @@ class BhashiniService:
         headers = {
             "userID": settings.BHASHINI_USER_ID,
             "ulcaApiKey": settings.BHASHINI_API_KEY,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
         payload = {
             "pipelineTasks": [
                 {"taskType": "asr"},
                 {"taskType": "translation"},
-                {"taskType": "tts"}
+                {"taskType": "tts"},
             ],
-            "pipelineRequestConfig": {
-                "pipelineId": settings.BHASHINI_PIPELINE_ID
-            }
+            "pipelineRequestConfig": {"pipelineId": settings.BHASHINI_PIPELINE_ID},
         }
 
         try:
@@ -83,7 +86,9 @@ class BhashiniService:
 
                 return data
             else:
-                logger.error(f"Bhashini pipeline configuration fetch failed: Status {resp.status_code} - {resp.text}")
+                logger.error(
+                    f"Bhashini pipeline configuration fetch failed: Status {resp.status_code} - {resp.text}"
+                )
         except Exception as e:
             logger.error(f"Bhashini pipeline configuration query failed: {e}")
 
@@ -99,16 +104,18 @@ class BhashiniService:
                 "asr": {
                     "hi": "ai4bharat/conformer-hi-gpu--t4",
                     "kn": "ai4bharat/conformer-multilingual-dravidian-gpu--t4",
-                    "en": "ai4bharat/whisper-medium-en-gpu--t4"
+                    "en": "ai4bharat/whisper-medium-en-gpu--t4",
                 },
                 "tts": {
                     "hi": "ai4bharat/indic-tts-coqui-indo_aryan-gpu--t4",
                     "kn": "ai4bharat/indic-tts-coqui-dravidian-gpu--t4",
-                    "en": "ai4bharat/indic-tts-coqui-misc-gpu--t4"
-                }
+                    "en": "ai4bharat/indic-tts-coqui-misc-gpu--t4",
+                },
             }
             sid = fallbacks.get(task_type, {}).get(language)
-            logger.info(f"Using hardcoded static fallback service ID for {task_type} ({language}): {sid}")
+            logger.info(
+                f"Using hardcoded static fallback service ID for {task_type} ({language}): {sid}"
+            )
             return sid
 
         try:
@@ -144,7 +151,7 @@ class BhashiniService:
 
         headers = {
             "Authorization": settings.BHASHINI_INFERENCE_KEY,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         payload = {
@@ -155,13 +162,11 @@ class BhashiniService:
                         "language": {"sourceLanguage": language},
                         "serviceId": service_id,
                         "audioFormat": "wav",
-                        "samplingRate": 16000
-                    }
+                        "samplingRate": 16000,
+                    },
                 }
             ],
-            "inputData": {
-                "audio": [{"audioContent": audio_base64}]
-            }
+            "inputData": {"audio": [{"audioContent": audio_base64}]},
         }
 
         try:
@@ -173,7 +178,9 @@ class BhashiniService:
                 logger.info(f"Bhashini ASR success: '{transcript}'")
                 return transcript.strip()
             else:
-                logger.error(f"Bhashini ASR inference failed: Status {resp.status_code} - {resp.text}")
+                logger.error(
+                    f"Bhashini ASR inference failed: Status {resp.status_code} - {resp.text}"
+                )
         except Exception as e:
             logger.error(f"Bhashini ASR call exception: {e}")
 
@@ -197,7 +204,7 @@ class BhashiniService:
 
         headers = {
             "Authorization": settings.BHASHINI_INFERENCE_KEY,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         payload = {
@@ -207,13 +214,11 @@ class BhashiniService:
                     "config": {
                         "language": {"sourceLanguage": language},
                         "serviceId": service_id,
-                        "gender": "female"
-                    }
+                        "gender": "female",
+                    },
                 }
             ],
-            "inputData": {
-                "input": [{"source": text}]
-            }
+            "inputData": {"input": [{"source": text}]},
         }
 
         try:
@@ -236,7 +241,9 @@ class BhashiniService:
                 else:
                     logger.error("Bhashini TTS response did not contain audioContent.")
             else:
-                logger.error(f"Bhashini TTS inference failed: Status {resp.status_code} - {resp.text}")
+                logger.error(
+                    f"Bhashini TTS inference failed: Status {resp.status_code} - {resp.text}"
+                )
         except Exception as e:
             logger.error(f"Bhashini TTS call exception: {e}")
 

@@ -61,9 +61,7 @@ def test_gemini_synthesizer_synthesize_and_sufficiency_fallback(mock_chat_ollama
         # 1. Test synthesize
         context_docs = [{"id": "doc1", "document": "Test content about Pes University admissions."}]
         answer = synthesizer.synthesize(
-            query="How to apply?",
-            context_docs=context_docs,
-            domain="admissions"
+            query="How to apply?", context_docs=context_docs, domain="admissions"
         )
 
         assert answer == "This is a synthesized test answer using local Qwen."
@@ -75,9 +73,7 @@ def test_gemini_synthesizer_synthesize_and_sufficiency_fallback(mock_chat_ollama
         # 2. Test check_sufficiency
         mock_response.content = "SUFFICIENT"
         decision = synthesizer.check_sufficiency(
-            query="How to apply?",
-            context_docs=context_docs,
-            domain="admissions"
+            query="How to apply?", context_docs=context_docs, domain="admissions"
         )
 
         assert decision == "SUFFICIENT"

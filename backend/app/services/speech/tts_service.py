@@ -62,7 +62,6 @@ def _get_edge_voice(lang: str, voice_id: str) -> str:
     return _EDGE_VOICE_MAP.get(lang, "en-IN-NeerjaNeural")
 
 
-
 def _get_mms_model(lang: str):
     """Load and cache an MMS-TTS model for the given language code."""
     if lang in _mms_models:
@@ -114,7 +113,9 @@ def _synthesize_mms(text: str, lang: str, filepath: str) -> float:
     return round(duration, 2)
 
 
-def _run_pyttsx3_synthesis(text: str, filepath: str, voice_id: str, speed_multiplier: float) -> float:
+def _run_pyttsx3_synthesis(
+    text: str, filepath: str, voice_id: str, speed_multiplier: float
+) -> float:
     """Synchronous pyttsx3 helper to run in a background thread."""
     with _tts_lock:
         import pyttsx3
@@ -186,7 +187,9 @@ class TTSService:
             filepath = os.path.join(static_dir, filename)
 
             logger.info(f"Synthesizing speech via Edge-TTS (voice={voice}, rate={rate_str})...")
-            communicate = edge_tts.Communicate(request.text, voice, rate=rate_str, boundary="WordBoundary")
+            communicate = edge_tts.Communicate(
+                request.text, voice, rate=rate_str, boundary="WordBoundary"
+            )
 
             total_duration = 0.0
             with open(filepath, "wb") as f:
@@ -213,7 +216,9 @@ class TTSService:
                 latency_ms=latency_ms,
             )
         except Exception as e:
-            logger.warning(f"Edge-TTS synthesis failed: {e}. Falling back to offline fallback (MMS-TTS).")
+            logger.warning(
+                f"Edge-TTS synthesis failed: {e}. Falling back to offline fallback (MMS-TTS)."
+            )
 
         # ── 2. MMS-TTS (fully offline fallback, Hindi & Kannada) ──────────────
         if req_lang in _MMS_MODEL_MAP:
@@ -235,7 +240,9 @@ class TTSService:
                     latency_ms=latency_ms,
                 )
             except Exception as e:
-                logger.warning(f"MMS-TTS synthesis failed for lang={req_lang}: {e}. Falling back to gTTS.")
+                logger.warning(
+                    f"MMS-TTS synthesis failed for lang={req_lang}: {e}. Falling back to gTTS."
+                )
 
         # ── 3. gTTS (online fallback, good quality multilingual) ───────────────
         try:

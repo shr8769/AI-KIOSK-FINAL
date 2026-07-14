@@ -4,6 +4,7 @@ from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
+
 class StartupState:
     ready: bool = False
     warming: bool = True
@@ -11,7 +12,9 @@ class StartupState:
     messages: list[str] = ["Initializing AI..."]
     metrics: Dict[str, Any] = {}
 
+
 startup_state = StartupState()
+
 
 def warmup_services():
     """Centralized warmup orchestration to avoid cold-starts on first user query."""
@@ -23,6 +26,7 @@ def warmup_services():
     try:
         t0 = time.time()
         from app.services.speech.asr_service import asr_service
+
         asr_service.preload()
         asr_service.warmup_inference()
         startup_state.metrics["whisper_load_ms"] = int((time.time() - t0) * 1000)
@@ -36,6 +40,7 @@ def warmup_services():
     try:
         t0 = time.time()
         from app.core.dependencies import get_riar_pipeline
+
         get_riar_pipeline()
 
         # We can simulate a dummy query to warm up the LLM, the embedding model, and the agent
@@ -55,6 +60,7 @@ def warmup_services():
     try:
         t0 = time.time()
         from app.core.dependencies import get_coordinator_agent
+
         get_coordinator_agent()
         # Warmup the coordinator by checking its initialization or running a simple dummy query
         # (Skipped dummy query in local startup to avoid slow CPU inference loop)
@@ -64,7 +70,9 @@ def warmup_services():
         #     logger.warning(f"Coordinator dummy query completed with expected exception: {e}")
 
         startup_state.metrics["coordinator_warmup_ms"] = int((time.time() - t0) * 1000)
-        logger.info(f"Coordinator warmup complete in {startup_state.metrics['coordinator_warmup_ms']}ms")
+        logger.info(
+            f"Coordinator warmup complete in {startup_state.metrics['coordinator_warmup_ms']}ms"
+        )
     except Exception as e:
         logger.error(f"Coordinator warmup failed: {e}")
         startup_state.errors.append(f"Coordinator: {e}")

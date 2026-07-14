@@ -188,6 +188,10 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       const ctx = new AudioContext();
+      // Ensure context is running (fixes silent audio bug in some browsers)
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(e => console.warn("AudioContext resume failed:", e));
+      }
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 256;
       const source = ctx.createMediaElementSource(activeAudioElement);

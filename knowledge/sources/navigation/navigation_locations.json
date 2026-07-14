@@ -10,6 +10,7 @@
             "central library",
             "lib"
         ],
+        "graph_node": "Library",
         "map_coords": {
             "x": 672,
             "y": 411
@@ -31,6 +32,7 @@
             "physics laboratory",
             "phy lab"
         ],
+        "graph_node": "PhysicsLab",
         "map_coords": {
             "x": 450,
             "y": 300
@@ -52,6 +54,7 @@
             "placement office",
             "placements"
         ],
+        "graph_node": "PlacementCell",
         "map_coords": {
             "x": 328,
             "y": 381
@@ -73,6 +76,7 @@
             "prf",
             "pes research foundation"
         ],
+        "graph_node": "Research",
         "map_coords": {
             "x": 512,
             "y": 210
@@ -94,6 +98,7 @@
             "office",
             "administration"
         ],
+        "graph_node": "Admin",
         "map_coords": {
             "x": 320,
             "y": 380
@@ -114,6 +119,7 @@
             "canteen",
             "food court"
         ],
+        "graph_node": "Cafeteria",
         "map_coords": {
             "x": 800,
             "y": 600
@@ -135,6 +141,7 @@
             "seminar hall",
             "main hall"
         ],
+        "graph_node": "Auditorium",
         "map_coords": {
             "x": 600,
             "y": 500
@@ -155,6 +162,7 @@
             "atm",
             "cash machine"
         ],
+        "graph_node": "ATM",
         "map_coords": {
             "x": 810,
             "y": 610

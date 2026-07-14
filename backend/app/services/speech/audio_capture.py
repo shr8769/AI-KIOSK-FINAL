@@ -120,7 +120,9 @@ class AudioCaptureService:
                     wf.setframerate(self.sample_rate)
                     wf.writeframes(recording_data.tobytes())
 
-                logger.info(f"Recorded audio saved to: {output_path} ({len(recording_data)/self.sample_rate:.2f}s)")
+                logger.info(
+                    f"Recorded audio saved to: {output_path} ({len(recording_data)/self.sample_rate:.2f}s)"
+                )
                 return True
 
             return False
