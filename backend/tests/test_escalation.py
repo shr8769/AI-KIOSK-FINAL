@@ -22,6 +22,15 @@ def _make_test_engine():
 @pytest.mark.anyio
 async def test_escalation_triggers_correctly():
     engine = _make_test_engine()
+
+    # Check if database is reachable, otherwise skip the test
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(select(1))
+    except Exception as e:
+        await engine.dispose()
+        pytest.skip(f"Database connection failed, skipping escalation test: {e}")
+
     TestSession = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
     session_id = "test_escalation_session_123"
@@ -61,7 +70,15 @@ async def test_escalation_triggers_correctly():
 
     await update_session_metadata(
         session_id=session_id,
-        updates={"user_id": user_id, "user_name": "Escalation Test Student"}
+        updates={
+            "user_id": user_id,
+            "user_name": "Escalation Test Student",
+            "outstanding_clarification": {
+                "original_query": "Where is the secret time machine?",
+                "clarification_question": "Can you clarify?",
+                "ambiguity_type": "CONTEXTUAL"
+            }
+        }
     )
 
     # 3. Run the pipeline with an unresolvable query to trigger fallback/escalation
