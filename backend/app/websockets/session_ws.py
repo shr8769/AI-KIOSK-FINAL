@@ -5,22 +5,11 @@ Thin WebSocket handler. Zero heavy imports.
 
 ALL singletons (ConnectionManager, CoordinatorAgent, RIARPipeline)
 come from app.core.dependencies — never instantiated here.
-
-Pipeline:
-  1. ASR  (faster-whisper)
-  2. Translate → EN  (deep_translator — lazy in dependencies.py)
-  3. RIAR ambiguity gate  (only when GOOGLE_API_KEY set)
-  4. FAQ retrieval  (CoordinatorAgent, lazy-loaded on first call)
-  5. Translate → native language
-  6. TTS  (gTTS)
-
-Message protocol:
-  Client → Server: { "type": "ping"|"audio_chunk"|"frame", "payload": <any> }
-  Server → Client: { "type": "pong"|"transcript"|"answer"|"clarifying"|"error", ... }
 """
 
 import asyncio
 import json
+import uuid
 from typing import Optional
 
 from fastapi import Depends, WebSocket, WebSocketDisconnect
@@ -35,14 +24,15 @@ from app.core.session_store import (
     log_barge_in,
     mark_turn_interrupted,
 )
-from app.models.schemas import ASRRequest, TTSRequest
 from app.services.speech.asr_service import asr_service
+from app.models.schemas import ASRRequest, TTSRequest
 from app.services.speech.tts_service import tts_service
 
-# Re-export manager for events.py (backwards-compat shim — will be removed once
-# events.py is fully migrated to Depends(get_connection_manager))
+# Re-export manager for events.py
 manager = get_connection_manager()
 
+# Store active turn tokens to prevent stale turn execution
+active_turn_tokens = {}
 
 def _is_language_command(text: str):
     if not text:
@@ -68,10 +58,6 @@ def _is_language_command(text: str):
         return "hi"
     return None
 
-
-# ── WebSocket endpoint ────────────────────────────────────────────────
-
-
 async def websocket_session_handler(
     websocket: WebSocket,
     session_id: str,
@@ -80,17 +66,11 @@ async def websocket_session_handler(
     session = await get_session(session_id)
     if not session:
         await websocket.accept()
-        await websocket.send_json(
-            {
-                "type": "error",
-                "payload": {"message": "Session not found", "code": "session_not_found"},
-            }
-        )
+        await websocket.send_json({"type": "error", "payload": {"message": "Session not found", "code": "session_not_found"}})
         await websocket.close(code=4004)
         return
 
     await mgr.connect(session_id, websocket)
-    # Deliver any detection/greeting events that arrived before frontend connected
     await mgr.send_pending_broadcast(session_id, websocket)
 
     active_task: Optional[asyncio.Task] = None
@@ -101,20 +81,13 @@ async def websocket_session_handler(
             try:
                 msg = json.loads(raw)
             except json.JSONDecodeError:
-                await mgr.send(
-                    session_id,
-                    {
-                        "type": "error",
-                        "payload": {"message": "Invalid JSON", "code": "invalid_json"},
-                    },
-                )
+                await mgr.send(session_id, {"type": "error", "payload": {"message": "Invalid JSON", "code": "invalid_json"}})
                 continue
 
             msg_type = msg.get("type", "unknown")
             payload = msg.get("payload", {})
             logger.debug(f"WS [{session_id}] type={msg_type}")
 
-            # ── Ping ──────────────────────────────────────────────────
             if msg_type == "ping":
                 await mgr.send(session_id, {"type": "pong", "payload": {}})
 
@@ -122,8 +95,12 @@ async def websocket_session_handler(
                 if active_task and not active_task.done():
                     active_task.cancel()
                     logger.info(f"WS [{session_id}] Cancelled active task due to new audio_chunk")
+                
+                turn_token = str(uuid.uuid4())
+                active_turn_tokens[session_id] = turn_token
+                
                 active_task = asyncio.create_task(
-                    _handle_audio_chunk(mgr, session_id, payload)
+                    _handle_audio_chunk(mgr, session_id, payload, turn_token)
                 )
 
             elif msg_type == "interrupt":
@@ -134,45 +111,34 @@ async def websocket_session_handler(
                 turn_id = payload.get("turn_id", "unknown")
                 reason = payload.get("reason", "unknown")
                 position_ms = payload.get("position_ms", 0)
-                logger.info(
-                    f"WS [{session_id}] Barge-in interrupt received for turn {turn_id} (Reason: {reason}, Pos: {position_ms}ms)."
-                )
+                logger.info(f"WS [{session_id}] Barge-in interrupt received for turn {turn_id} (Reason: {reason}, Pos: {position_ms}ms).")
+                
+                active_turn_tokens[session_id] = str(uuid.uuid4()) # Invalidate previous token
 
-                # Mark current turn as interrupted
                 await mark_turn_interrupted(session_id)
-
-                # Log the metric to the database
                 await log_barge_in(session_id, reason, position_ms)
-
                 await mgr.send(
                     session_id,
                     {"type": "info", "payload": {"message": "Interrupt acknowledged and logged"}},
                 )
 
-            # ── Camera frame (stub) ───────────────────────────────────
             elif msg_type == "frame":
-                await mgr.send(
-                    session_id,
-                    {"type": "detection", "payload": {"person_detected": True, "confidence": 0.91}},
-                )
+                await mgr.send(session_id, {"type": "detection", "payload": {"person_detected": True, "confidence": 0.91}})
 
-            # ── Text query ────────────────────────────────────────────
             elif msg_type == "text_query":
                 if active_task and not active_task.done():
                     active_task.cancel()
                     logger.info(f"WS [{session_id}] Cancelled active task due to new text_query")
+                
+                turn_token = str(uuid.uuid4())
+                active_turn_tokens[session_id] = turn_token
+                
                 active_task = asyncio.create_task(
-                    _handle_text_query(mgr, session_id, payload)
+                    _handle_text_query(mgr, session_id, payload, turn_token)
                 )
 
             else:
-                await mgr.send(
-                    session_id,
-                    {
-                        "type": "error",
-                        "payload": {"message": f"Unknown type: {msg_type}", "code": "unknown_type"},
-                    },
-                )
+                await mgr.send(session_id, {"type": "error", "payload": {"message": f"Unknown type: {msg_type}", "code": "unknown_type"}})
 
     except WebSocketDisconnect:
         mgr.disconnect(session_id)
@@ -185,10 +151,7 @@ async def websocket_session_handler(
             logger.info(f"WS [{session_id}] Cleaned up active task on disconnect.")
 
 
-# ── Pipeline handler (extracted for readability) ──────────────────────
-
-
-async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: dict) -> None:
+async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: dict, turn_token: str) -> None:
     audio_base64 = payload.get("audio_base64")
     if not audio_base64:
         await mgr.send(
@@ -206,7 +169,6 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
     await mgr.send(session_id, {"type": "thinking", "payload": {}})
 
     try:
-        # ── 1. ASR ────────────────────────────────────────────────────
         asr_resp = await asr_service.transcribe(
             ASRRequest(
                 session_id=session_id,
@@ -217,7 +179,10 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
         )
         logger.info(f"ASR: '{asr_resp.transcript}' lang={asr_resp.detected_language}")
 
-        # Send transcript back to client immediately so user sees what was caught
+        if active_turn_tokens.get(session_id) != turn_token:
+            logger.info(f"Stale turn detected in _handle_audio_chunk for session {session_id}")
+            return
+
         await mgr.send(
             session_id,
             {
@@ -230,13 +195,16 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             },
         )
 
-        # Prioritize explicitly selected session language (language_hint) over ASR auto-detection
         raw_transcript = asr_resp.transcript
         detected_lang = language_hint or (asr_resp.detected_language or "en").lower().split("-")[0]
 
         from app.services.query_pipeline import run_query_pipeline
 
         result = await run_query_pipeline(session_id, raw_transcript, detected_lang)
+
+        if active_turn_tokens.get(session_id) != turn_token:
+            logger.info(f"Stale turn detected after pipeline for session {session_id}")
+            return
 
         if result["type"] == "clarifying":
             await mgr.send(
@@ -289,48 +257,42 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
             logger.error(f"Failed to synthesize error fallback: {tts_e}")
 
 
-async def _handle_text_query(mgr: ConnectionManager, session_id: str, payload: dict) -> None:
+async def _handle_text_query(mgr: ConnectionManager, session_id: str, payload: dict, turn_token: str) -> None:
     text = payload.get("text")
     if not text:
-        await mgr.send(
-            session_id,
-            {"type": "error", "payload": {"message": "Missing text query", "code": "missing_text"}},
-        )
+        await mgr.send(session_id, {"type": "error", "payload": {"message": "Missing text query", "code": "missing_text"}})
         return
 
     language_hint = payload.get("language_hint") or None
 
     await mgr.send(session_id, {"type": "thinking", "payload": {}})
-    await mgr.send(
-        session_id,
-        {
-            "type": "transcript",
-            "payload": {"text": text, "confidence": 1.0, "final": True},
-        },
-    )
+    await mgr.send(session_id, {
+        "type": "transcript",
+        "payload": {"text": text, "confidence": 1.0, "final": True},
+    })
 
     try:
         from app.services.query_pipeline import run_query_pipeline
-
         result = await run_query_pipeline(session_id, text, language_hint)
 
+        if active_turn_tokens.get(session_id) != turn_token:
+            logger.info(f"Stale turn detected after pipeline for session {session_id}")
+            return
+
         if result["type"] == "clarifying":
-            await mgr.send(
-                session_id,
-                {
-                    "type": "clarifying",
-                    "payload": {
-                        "text": result["text"],
-                        "audio_url": result["audio_url"],
-                        "ambiguity_type": result["ambiguity_type"],
-                    },
-                },
-            )
+            await mgr.send(session_id, {
+                "type": "clarifying",
+                "payload": {
+                    "text": result["text"],
+                    "audio_url": result["audio_url"],
+                    "ambiguity_type": result["ambiguity_type"]
+                }
+            })
         else:
             ans_payload = {
                 "text": result["text"],
                 "audio_url": result["audio_url"],
-                "sources": result["sources"],
+                "sources": result["sources"]
             }
             if result.get("navigation"):
                 ans_payload["navigation"] = result["navigation"]
@@ -342,7 +304,4 @@ async def _handle_text_query(mgr: ConnectionManager, session_id: str, payload: d
     except Exception as e:
         logger.exception(f"Pipeline error for text query [{session_id}]: {e}")
         fallback_msg = "I'm sorry, I encountered a temporary issue while processing your request. Please try again."
-        await mgr.send(
-            session_id,
-            {"type": "error", "payload": {"message": fallback_msg, "code": "pipeline_error"}},
-        )
+        await mgr.send(session_id, {"type": "error", "payload": {"message": fallback_msg, "code": "pipeline_error"}})

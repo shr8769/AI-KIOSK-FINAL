@@ -52,6 +52,7 @@ class CoordinatorAgent:
             str: The final answer or fallback response.
         """
         try:
+            # pyrefly: ignore [missing-import]
             from app.services.speech.translation_service import preprocess_and_detect_language, offline_translation_service
             preprocessed_query, detected_lang = preprocess_and_detect_language(query)
             english_query = offline_translation_service.translate(preprocessed_query, detected_lang, "en")
@@ -189,8 +190,14 @@ if __name__ == "__main__":
     coordinator = CoordinatorAgent()
     
     # We load the full RIAR pipeline for CLI testing
+    import sys, os
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "backend")))
     from app.core.dependencies import get_riar_pipeline
     pipeline = get_riar_pipeline()
+    
+    from backend.app.models.shared_models import Turn
+    session_history = []
+    turn_counter = 1
     
     while True:
         try:
@@ -202,7 +209,11 @@ if __name__ == "__main__":
                 continue
                 
             # 1. Run pipeline
-            riar_result = pipeline.run(query=query, session_history=[], language="en")
+            riar_result = pipeline.run(query=query, session_history=session_history, language="en")
+            
+            # Record user turn
+            session_history.append(Turn(turn_id=turn_counter, role="user", text=query))
+            turn_counter += 1
             
             # 2. Check ambiguity
             if riar_result.ambiguity_detected:
@@ -210,6 +221,8 @@ if __name__ == "__main__":
                 print(f"Type: {riar_result.ambiguity_type}")
                 print(f"Clarification Needed: {riar_result.clarification_question}")
                 print("=" * 52)
+                session_history.append(Turn(turn_id=turn_counter, role="agent", text=riar_result.clarification_question))
+                turn_counter += 1
                 continue
                 
             # 3. Route if CLEAR
@@ -217,7 +230,7 @@ if __name__ == "__main__":
             print(f"\nPipeline selected domain: {target_domain}")
             
             # Get response
-            raw_ans = coordinator.answer(query, target_domain=target_domain)
+            raw_ans = coordinator.answer(riar_result.refined_query, target_domain=target_domain)
             
             # Extract clean answer text
             if "\n\n[Source: " in raw_ans:
@@ -228,6 +241,10 @@ if __name__ == "__main__":
             print("\nAnswer:")
             print(ans_text)
             print("=" * 52)
+            
+            # Record agent turn
+            session_history.append(Turn(turn_id=turn_counter, role="agent", text=ans_text))
+            turn_counter += 1
             
         except (KeyboardInterrupt, EOFError):
             print("\nGoodbye!")

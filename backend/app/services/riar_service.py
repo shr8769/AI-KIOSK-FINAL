@@ -13,6 +13,8 @@ from app.models.schemas import RIARRequest
 logger = logging.getLogger(__name__)
 
 
+import asyncio
+
 class RIARService:
     async def classify(self, request: RIARRequest):
         # Delegates to the lazily-initialized pipeline from dependencies.py
@@ -21,7 +23,8 @@ class RIARService:
         )
 
         pipeline = get_riar_pipeline()
-        return pipeline.run(
+        return await asyncio.to_thread(
+            pipeline.run,
             query=request.query,
             session_history=request.session_history,
             language=request.language,

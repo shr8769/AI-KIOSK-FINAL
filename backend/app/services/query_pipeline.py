@@ -16,8 +16,8 @@ from app.core.session_store import (
     get_session,
 )
 from app.models.schemas import RIARRequest, TTSRequest, TurnModel
-from app.services.riar_service import riar_service
 from app.services.speech.tts_service import tts_service
+from app.services.fast_router import get_strict_fast_path_domain
 
 
 def local_spelling_corrector(query: str) -> str:
@@ -251,126 +251,138 @@ async def run_query_pipeline(
         for i, t in enumerate(raw_history)
     ]
 
+    # 2. Fast-Path Router (Bypass LLM for common demo intents)
+    fast_domain = get_strict_fast_path_domain(query_en)
+    
     # 1.5 Quick Entity Resolution for Navigation
-    import sys
-
-    sys.path.append(r"c:\AI-KIOSK")
-    try:
-        from riar.retrievers.entity_resolver import EntityResolver
-
-        if not hasattr(run_query_pipeline, "_entity_resolver"):
-            run_query_pipeline._entity_resolver = EntityResolver()
-
-        policy, top_loc = run_query_pipeline._entity_resolver.resolve(query_en)
-
-        if policy == "ENTITY_DISAMBIGUATION" and top_loc:
-            question_en = f"Did you mean {top_loc['name']}?"
-            import asyncio
-            question_native = (
-                await asyncio.to_thread(translate_from_english, question_en, target_lang=detected_lang)
-                if detected_lang in ["kn", "hi"]
-                else question_en
-            )
-            if detected_lang in ("kn", "hi"):
-                question_native = await make_conversational(question_native, detected_lang)
-            await add_agent_turn(session_id, question_native)
-
-            try:
-                tts_resp = await tts_service.synthesize(
-                    TTSRequest(session_id=session_id, text=question_native, language=detected_lang)
-                )
-                audio_url = tts_resp.audio_url
-            except Exception:
-                audio_url = None
-
-            from app.core.session_store import update_session_metadata
-            await update_session_metadata(
-                session_id,
-                {
-                    "outstanding_clarification": {
-                        "original_query": query_en,
-                        "clarification_question": question_en,
-                        "ambiguity_type": "ENTITY_DISAMBIGUATION",
-                    }
-                }
-            )
-
-            return {
-                "type": "clarifying",
-                "text": question_native,
-                "audio_url": audio_url,
-                "ambiguity_type": "ENTITY_DISAMBIGUATION",
-                "sources": [],
-                "navigation": None,
-                "language": detected_lang,
-            }
-
-        elif policy == "DIRECT" and top_loc:
-            try:
-                from app.services.navigation_service import navigation_service
-
-                nav_id = await navigation_service.create_session(top_loc)
-                nav_url = navigation_service.build_url(nav_id)
-
-                answer_en = f"The {top_loc.get('name')} is located in {top_loc.get('building')}, Floor {top_loc.get('floor')}. Please scan the QR code for detailed directions."
+    if not fast_domain:
+        import sys
+        sys.path.append(r"c:\AI-KIOSK")
+        try:
+            from riar.retrievers.entity_resolver import EntityResolver
+    
+            if not hasattr(run_query_pipeline, "_entity_resolver"):
+                run_query_pipeline._entity_resolver = EntityResolver()
+    
+            policy, top_loc = run_query_pipeline._entity_resolver.resolve(query_en)
+    
+            if policy == "ENTITY_DISAMBIGUATION" and top_loc:
+                question_en = f"Did you mean {top_loc['name']}?"
                 import asyncio
-                answer_native = (
-                    await asyncio.to_thread(translate_from_english, answer_en, target_lang=detected_lang)
+                question_native = (
+                    await asyncio.to_thread(translate_from_english, question_en, target_lang=detected_lang)
                     if detected_lang in ["kn", "hi"]
-                    else answer_en
+                    else question_en
                 )
                 if detected_lang in ("kn", "hi"):
-                    answer_native = await make_conversational(answer_native, detected_lang)
-                await add_agent_turn(session_id, answer_native)
-
+                    question_native = await make_conversational(question_native, detected_lang)
+                await add_agent_turn(session_id, question_native)
+    
                 try:
-                    tts_text = re.sub(r"[*_#]", "", answer_native)
                     tts_resp = await tts_service.synthesize(
-                        TTSRequest(session_id=session_id, text=tts_text, language=detected_lang)
+                        TTSRequest(session_id=session_id, text=question_native, language=detected_lang)
                     )
                     audio_url = tts_resp.audio_url
                 except Exception:
                     audio_url = None
-
+    
+                from app.core.session_store import update_session_metadata
+                await update_session_metadata(
+                    session_id,
+                    {
+                        "outstanding_clarification": {
+                            "original_query": query_en,
+                            "clarification_question": question_en,
+                            "ambiguity_type": "ENTITY_DISAMBIGUATION",
+                        }
+                    }
+                )
+    
                 return {
-                    "type": "answer",
-                    "text": answer_native,
+                    "type": "clarifying",
+                    "text": question_native,
                     "audio_url": audio_url,
+                    "ambiguity_type": "ENTITY_DISAMBIGUATION",
                     "sources": [],
-                    "navigation": {
-                        "navigation_id": nav_id,
-                        "url": nav_url,
-                        "destination_name": top_loc.get("name"),
-                        "building": top_loc.get("building"),
-                        "floor": top_loc.get("floor"),
-                        "room": top_loc.get("room"),
-                    },
+                    "navigation": None,
                     "language": detected_lang,
                 }
-            except Exception as e:
-                logger.error(f"Fast-path navigation failed: {e}")
-    except Exception as e:
-        logger.error(f"EntityResolver initialization or execution failed: {e}")
-
-    # 2. RIAR classification
+    
+            elif policy == "DIRECT" and top_loc:
+                try:
+                    from app.services.navigation_service import navigation_service
+    
+                    nav_id = await navigation_service.create_session(top_loc)
+                    nav_url = navigation_service.build_url(nav_id)
+    
+                    answer_en = f"The {top_loc.get('name')} is located in {top_loc.get('building')}, Floor {top_loc.get('floor')}. Please scan the QR code for detailed directions."
+                    import asyncio
+                    answer_native = (
+                        await asyncio.to_thread(translate_from_english, answer_en, target_lang=detected_lang)
+                        if detected_lang in ["kn", "hi"]
+                        else answer_en
+                    )
+                    if detected_lang in ("kn", "hi"):
+                        answer_native = await make_conversational(answer_native, detected_lang)
+                    await add_agent_turn(session_id, answer_native)
+    
+                    try:
+                        tts_text = re.sub(r"[*_#]", "", answer_native)
+                        tts_resp = await tts_service.synthesize(
+                            TTSRequest(session_id=session_id, text=tts_text, language=detected_lang)
+                        )
+                        audio_url = tts_resp.audio_url
+                    except Exception:
+                        audio_url = None
+    
+                    return {
+                        "type": "answer",
+                        "text": answer_native,
+                        "audio_url": audio_url,
+                        "sources": [],
+                        "navigation": {
+                            "navigation_id": nav_id,
+                            "url": nav_url,
+                            "destination_name": top_loc.get("name"),
+                            "building": top_loc.get("building"),
+                            "floor": top_loc.get("floor"),
+                            "room": top_loc.get("room"),
+                        },
+                        "language": detected_lang,
+                    }
+                except Exception as e:
+                    logger.error(f"Fast-path navigation failed: {e}")
+        except Exception as e:
+            logger.error(f"EntityResolver initialization or execution failed: {e}")
     ambiguous = False
     riar_resp = None
-    if RIAR_ENABLED:
-        try:
-            riar_resp = await riar_service.classify(
-                RIARRequest(
-                    session_id=session_id,
-                    turn_id=len(history_turns) + 1,
-                    query=query_en,
-                    language="en",
-                    session_history=history_turns,
+    
+    if fast_domain:
+        logger.info(f"Fast-path matched for text query '{query_en}' -> {fast_domain}")
+        target_domain = fast_domain
+        refined_query = query_en
+    else:
+        # 2a. RIAR classification
+        if RIAR_ENABLED:
+            try:
+                riar_resp = await riar_service.classify(
+                    RIARRequest(
+                        session_id=session_id,
+                        turn_id=len(history_turns) + 1,
+                        query=query_en,
+                        language="en",
+                        session_history=history_turns,
+                    )
                 )
-            )
-            ambiguous = getattr(
-                riar_resp, "requires_clarification", getattr(riar_resp, "ambiguity_detected", False)
-            )
-        except Exception as e:
-            logger.error(f"RIAR classification failed, falling back to clear search: {e}")
+                ambiguous = getattr(riar_resp, "requires_clarification", getattr(riar_resp, "ambiguity_detected", False))
+            except Exception as e:
+                import httpx
+                if isinstance(e, httpx.ReadTimeout):
+                    logger.error("RIAR classification timed out")
+                else:
+                    logger.error(f"RIAR classification failed, falling back to clear search: {e}")
+                ambiguous = False
+                riar_resp = None
 
     if ambiguous:
         question_en = riar_resp.clarification_question or "Could you clarify your question?"
@@ -415,51 +427,28 @@ async def run_query_pipeline(
             "language": detected_lang,
         }
     else:
-        refined_query = (
-            getattr(riar_resp, "refined_query", None) or query_en if riar_resp else query_en
-        )
-
-        target_domain = getattr(riar_resp, "selected_domain", None) if riar_resp else None
-        if not target_domain or target_domain == "general":
-            query_lower = refined_query.lower()
-            if "admission" in query_lower:
-                target_domain = "admissions"
-            elif "academic" in query_lower or "course" in query_lower or "grade" in query_lower:
-                target_domain = "academics"
-            elif (
-                "placement" in query_lower
-                or "salary" in query_lower
-                or "job" in query_lower
-                or "company" in query_lower
-                or "recruit" in query_lower
-            ):
-                target_domain = "placements"
-            elif (
-                "research" in query_lower
-                or "paper" in query_lower
-                or "publication" in query_lower
-                or "project" in query_lower
-            ):
-                target_domain = "research"
-            elif (
-                "student" in query_lower
-                or "hostel" in query_lower
-                or "fee" in query_lower
-                or "scholarship" in query_lower
-            ):
-                target_domain = "student_services"
-            elif (
-                "where" in query_lower
-                or "locate" in query_lower
-                or "direction" in query_lower
-                or "floor" in query_lower
-                or "room" in query_lower
-                or "building" in query_lower
-                or "map" in query_lower
-            ):
-                target_domain = "navigation"
-            else:
-                target_domain = "general"
+        # 3. FAQ Retrieval
+        if not fast_domain:
+            refined_query = getattr(riar_resp, "refined_query", None) or query_en if riar_resp else query_en
+            target_domain = getattr(riar_resp, "selected_domain", None) if riar_resp else None
+            
+            # Fallback heuristics for RIAR mapping
+            if not target_domain or target_domain == "general":
+                query_lower = refined_query.lower()
+                if "admission" in query_lower:
+                    target_domain = "admissions"
+                elif "academic" in query_lower or "course" in query_lower or "grade" in query_lower:
+                    target_domain = "academics"
+                elif "placement" in query_lower or "salary" in query_lower or "job" in query_lower or "company" in query_lower or "recruit" in query_lower:
+                    target_domain = "placements"
+                elif "research" in query_lower or "paper" in query_lower or "publication" in query_lower or "project" in query_lower:
+                    target_domain = "research"
+                elif "student" in query_lower or "hostel" in query_lower or "fee" in query_lower or "scholarship" in query_lower:
+                    target_domain = "student_services"
+                elif "where" in query_lower or "locate" in query_lower or "direction" in query_lower or "floor" in query_lower or "room" in query_lower or "building" in query_lower or "map" in query_lower:
+                    target_domain = "navigation"
+                else:
+                    target_domain = "general"
 
         coordinator = get_coordinator_agent()
         import asyncio
