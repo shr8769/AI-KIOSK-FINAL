@@ -19,6 +19,7 @@ Message protocol:
   Server → Client: { "type": "pong"|"transcript"|"answer"|"clarifying"|"error", ... }
 """
 
+import asyncio
 import json
 
 from fastapi import Depends, WebSocket, WebSocketDisconnect
@@ -46,16 +47,20 @@ def _is_language_command(text: str):
     if not text:
         return None
     text_lower = text.strip().lower().rstrip(".").rstrip("?")
-    if text_lower in ["english", "eng"] or "select english" in text_lower:
+    if (
+        text_lower in ["english", "eng", "ಇಂಗ್ಲಿಷ್", "ಇಂಗ್ಲೀಷ್", "इंग्लिश", "अंग्रेजी"]
+        or "select english" in text_lower
+        or "ಇಂಗ್ಲಿಷ್ ಆಯ್ಕೆ" in text_lower
+    ):
         return "en"
     if (
-        text_lower in ["kannada", "kn", "ಕನ್ನಡ"]
+        text_lower in ["kannada", "kn", "ಕನ್ನಡ", "ಕನ್ನಡ್", "कन्नड़"]
         or "ಕನ್ನಡ ಭಾಷೆ" in text_lower
         or "select kannada" in text_lower
     ):
         return "kn"
     if (
-        text_lower in ["hindi", "hi", "हिंदी", "hind"]
+        text_lower in ["hindi", "hi", "हिंदी", "hind", "हिन्दी"]
         or "हिंदी भाषा" in text_lower
         or "select hindi" in text_lower
     ):
@@ -87,6 +92,8 @@ async def websocket_session_handler(
     # Deliver any detection/greeting events that arrived before frontend connected
     await mgr.send_pending_broadcast(session_id, websocket)
 
+    active_task: Optional[asyncio.Task] = None
+
     try:
         while True:
             raw = await websocket.receive_text()
@@ -111,9 +118,18 @@ async def websocket_session_handler(
                 await mgr.send(session_id, {"type": "pong", "payload": {}})
 
             elif msg_type == "audio_chunk":
-                await _handle_audio_chunk(mgr, session_id, payload)
+                if active_task and not active_task.done():
+                    active_task.cancel()
+                    logger.info(f"WS [{session_id}] Cancelled active task due to new audio_chunk")
+                active_task = asyncio.create_task(
+                    _handle_audio_chunk(mgr, session_id, payload)
+                )
 
             elif msg_type == "interrupt":
+                if active_task and not active_task.done():
+                    active_task.cancel()
+                    logger.info(f"WS [{session_id}] Cancelled active task due to interrupt")
+
                 turn_id = payload.get("turn_id", "unknown")
                 reason = payload.get("reason", "unknown")
                 position_ms = payload.get("position_ms", 0)
@@ -127,12 +143,12 @@ async def websocket_session_handler(
                 # Log the metric to the database
                 await log_barge_in(session_id, reason, position_ms)
 
-                # In Phase 2 (streaming), we would cancel the active generation task here.
-                # For Phase 1, the frontend has already halted playback and reset to listening.
                 await mgr.send(
                     session_id,
                     {"type": "info", "payload": {"message": "Interrupt acknowledged and logged"}},
-                )  # ── Camera frame (stub) ───────────────────────────────────
+                )
+
+            # ── Camera frame (stub) ───────────────────────────────────
             elif msg_type == "frame":
                 await mgr.send(
                     session_id,
@@ -141,7 +157,12 @@ async def websocket_session_handler(
 
             # ── Text query ────────────────────────────────────────────
             elif msg_type == "text_query":
-                await _handle_text_query(mgr, session_id, payload)
+                if active_task and not active_task.done():
+                    active_task.cancel()
+                    logger.info(f"WS [{session_id}] Cancelled active task due to new text_query")
+                active_task = asyncio.create_task(
+                    _handle_text_query(mgr, session_id, payload)
+                )
 
             else:
                 await mgr.send(
@@ -157,6 +178,10 @@ async def websocket_session_handler(
     except Exception as e:
         logger.exception(f"WS error [{session_id}]: {e}")
         mgr.disconnect(session_id)
+    finally:
+        if active_task and not active_task.done():
+            active_task.cancel()
+            logger.info(f"WS [{session_id}] Cleaned up active task on disconnect.")
 
 
 # ── Pipeline handler (extracted for readability) ──────────────────────
@@ -191,6 +216,19 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
         )
         logger.info(f"ASR: '{asr_resp.transcript}' lang={asr_resp.detected_language}")
 
+        # Send transcript back to client immediately so user sees what was caught
+        await mgr.send(
+            session_id,
+            {
+                "type": "transcript",
+                "payload": {
+                    "text": asr_resp.transcript,
+                    "confidence": getattr(asr_resp, "confidence", 1.0),
+                    "final": True,
+                },
+            },
+        )
+
         # Prioritize explicitly selected session language (language_hint) over ASR auto-detection
         raw_transcript = asr_resp.transcript
         detected_lang = language_hint or (asr_resp.detected_language or "en").lower().split("-")[0]
@@ -221,6 +259,9 @@ async def _handle_audio_chunk(mgr: ConnectionManager, session_id: str, payload: 
                 ans_payload["navigation"] = result["navigation"]
 
             await mgr.send(session_id, {"type": "answer", "payload": ans_payload})
+    except asyncio.CancelledError:
+        logger.info(f"WS [{session_id}] Audio chunk processing task cancelled.")
+        raise
     except Exception as e:
         logger.exception(f"Pipeline error [{session_id}]: {e}")
         fallback_msg = "I'm sorry, I encountered a temporary issue while processing your request. Please try again."
@@ -294,6 +335,9 @@ async def _handle_text_query(mgr: ConnectionManager, session_id: str, payload: d
                 ans_payload["navigation"] = result["navigation"]
 
             await mgr.send(session_id, {"type": "answer", "payload": ans_payload})
+    except asyncio.CancelledError:
+        logger.info(f"WS [{session_id}] Text query processing task cancelled.")
+        raise
     except Exception as e:
         logger.exception(f"Pipeline error for text query [{session_id}]: {e}")
         fallback_msg = "I'm sorry, I encountered a temporary issue while processing your request. Please try again."

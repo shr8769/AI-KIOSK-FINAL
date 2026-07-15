@@ -14,8 +14,12 @@ from pydantic import BaseModel
 from app.core.dependencies import ConnectionManager, get_connection_manager
 from app.core.session_store import create_session, update_session_metadata
 
+import asyncio
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+# Global registry to coordinate delayed greetings with face identification
+greeting_events: Dict[str, asyncio.Event] = {}
 
 
 class EventRequest(BaseModel):
@@ -36,7 +40,46 @@ class EventResponse(BaseModel):
     is_returning_user: bool = False
 
 
-async def background_greeting_task(session_id: str, greeting_text: str, mgr: ConnectionManager):
+async def background_greeting_task(
+    session_id: str, mgr: ConnectionManager
+):
+    event = greeting_events.get(session_id)
+    if event:
+        try:
+            # Wait for face matching to complete (max 3.0s timeout)
+            await asyncio.wait_for(event.wait(), timeout=3.0)
+            logger.info(f"Face matching completed/notified for session {session_id}.")
+        except asyncio.TimeoutError:
+            logger.info(f"Face matching timed out (3s) for session {session_id}. Falling back to generic greeting.")
+    
+    # Cleanup event registry
+    greeting_events.pop(session_id, None)
+
+    # Check if user has been identified in the meantime
+    from app.core.session_store import get_session
+    session = await get_session(session_id)
+    if not session:
+        logger.warning(f"Session {session_id} not found in store for background greeting.")
+        return
+
+    user_id = session.metadata.get("user_id")
+    user_name = session.metadata.get("user_name")
+    
+    if user_id:
+        first_name = user_name.split()[0] if user_name.strip() else "there"
+        recommendations = session.metadata.get("recommendations", [])
+        if recommendations:
+            rec = recommendations[0]
+            greeting_text = (
+                f"Welcome back, {first_name}! Based on your interest in {rec.get('tags', ['your field'])[0]}, "
+                f"you might want to check out: {rec.get('title', 'a new opportunity')}. "
+                f"Please choose the language and the Mode of communication."
+            )
+        else:
+            greeting_text = f"Welcome back, {first_name}! Great to see you again. Please choose the language and the Mode of communication."
+    else:
+        greeting_text = "Welcome to PES University. Please choose the language and the Mode of communication."
+
     audio_url = None
     try:
         from app.models.schemas import TTSRequest
@@ -47,7 +90,7 @@ async def background_greeting_task(session_id: str, greeting_text: str, mgr: Con
         )
         audio_url = tts_resp.audio_url
     except Exception as e:
-        logger.warning(f"Background TTS generic greeting failed: {e}")
+        logger.warning(f"Background TTS greeting failed: {e}")
 
     try:
         await mgr.send(
@@ -74,6 +117,9 @@ async def ingest_event(
         session_id = f"ses_{uuid.uuid4().hex[:12]}"
         logger.info(f"Creating new session {session_id} for camera {request.camera_id}")
 
+        # Initialize greeting event coordination
+        greeting_events[session_id] = asyncio.Event()
+
         # SQLite/Redis session store fallback
         await create_session(
             session_id=session_id,
@@ -98,7 +144,7 @@ async def ingest_event(
             logger.warning(f"Failed to save guest session to PostgreSQL: {db_e}")
 
         # Personalised greeting instructions
-        greeting_text = "Welcome to PES University. Please tell me which language you would like to interact with: English, Kannada, or Hindi?"
+        greeting_text = "Welcome to PES University. Please choose the language and the Mode of communication."
 
         try:
             await mgr.broadcast(
@@ -111,7 +157,9 @@ async def ingest_event(
             logger.warning(f"Failed to broadcast detection to WebSocket: {e}")
 
         # Defer TTS and greeting to background task to prevent edge API gateway timeout
-        background_tasks.add_task(background_greeting_task, session_id, greeting_text, mgr)
+        background_tasks.add_task(
+            background_greeting_task, session_id, mgr
+        )
 
         return EventResponse(
             status="success",
@@ -138,7 +186,7 @@ async def ingest_event(
         try:
             from app.services.firebase_client import match_face
 
-            matched_user = match_face(embedding)
+            matched_user = await asyncio.to_thread(match_face, embedding)
         except Exception as e:
             logger.error(f"[FR-8] Face matching via Firebase failed: {e}")
 
@@ -148,40 +196,17 @@ async def ingest_event(
             user_role = matched_user.get("role", "guest")
             is_returning = True
             first_name = user_name.split()[0] if user_name.strip() else "there"
-            greeting_text = f"Welcome back, {first_name}! Great to see you again. Which language would you prefer to continue in — English, Kannada, or Hindi?"
+            greeting_text = f"Welcome back, {first_name}! Great to see you again. Please choose the language and the Mode of communication."
             logger.info(f"[FR-8] Identified: {user_name} | role={user_role} | session={session_id}")
         else:
             user_id = None
             user_name = None
             user_role = "guest"
             is_returning = False
-            greeting_text = "Welcome to PES University! Please tell me which language you would like to interact with: English, Kannada, or Hindi?"
+            greeting_text = "Welcome to PES University. Please choose the language and the Mode of communication."
             logger.info(f"[FR-8] Unknown face — treating as guest (session={session_id})")
 
-        # Persist identity into SQLite/Redis session store
-        await update_session_metadata(
-            session_id=session_id,
-            updates={
-                "user_id": user_id,
-                "user_name": user_name,
-                "role": user_role,
-                "is_returning": is_returning,
-            },
-        )
-
-        # Update user mapping in PostgreSQL sessions table
-        try:
-            from database.models.models import Session as PGSession
-            from database.postgres.connection import AsyncSessionLocal
-
-            async with AsyncSessionLocal() as db_session:
-                pg_sess = PGSession(
-                    session_id=session_id, user_id=user_id if user_id else "usr_guest"
-                )
-                await db_session.merge(pg_sess)
-                await db_session.commit()
-        except Exception as db_e:
-            logger.error(f"Failed to update session user_id in PostgreSQL: {db_e}")
+        # Persist identity and recommendations after calculating recommendations block below
 
         # Personalised Recommendations (best-effort)
         recommendations = []
@@ -214,10 +239,41 @@ async def ingest_event(
                     greeting_text = (
                         f"Welcome back, {first_name}! Based on your interest in {rec.get('tags', ['your field'])[0]}, "
                         f"you might want to check out: {rec.get('title', 'a new opportunity')}. "
-                        f"Which language would you prefer to continue in — English, Kannada, or Hindi?"
+                        f"Please choose the language and the Mode of communication."
                     )
             except Exception as e:
                 logger.warning(f"[FR-10] Recommendations fetch failed: {e}")
+
+        # Persist identity and recommendations into SQLite/Redis session store
+        await update_session_metadata(
+            session_id=session_id,
+            updates={
+                "user_id": user_id,
+                "user_name": user_name,
+                "role": user_role,
+                "is_returning": is_returning,
+                "recommendations": recommendations,
+            },
+        )
+
+        # Update user mapping in PostgreSQL sessions table
+        try:
+            from database.models.models import Session as PGSession
+            from database.postgres.connection import AsyncSessionLocal
+
+            async with AsyncSessionLocal() as db_session:
+                pg_sess = PGSession(
+                    session_id=session_id, user_id=user_id if user_id else "usr_guest"
+                )
+                await db_session.merge(pg_sess)
+                await db_session.commit()
+        except Exception as db_e:
+            logger.error(f"Failed to update session user_id in PostgreSQL: {db_e}")
+
+        # Notify the waiting greeting task that face matching has completed
+        event = greeting_events.get(session_id)
+        if event:
+            event.set()
 
         # Push identity immediately to the frontend
         try:
@@ -237,8 +293,7 @@ async def ingest_event(
         except Exception as e:
             logger.warning(f"WS send for user_identified failed: {e}")
 
-        # Defer personalized greeting TTS
-        background_tasks.add_task(background_greeting_task, session_id, greeting_text, mgr)
+        # Personalized greeting scheduled via single background task in PERSON_DETECTED flow
 
         return EventResponse(
             status="success",

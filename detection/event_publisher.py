@@ -26,7 +26,7 @@ class EventPublisher:
                 if "timestamp" not in payload:
                     payload["timestamp"] = datetime.utcnow().isoformat()
 
-                response = requests.post(self.events_url, json=payload, timeout=5.0)
+                response = requests.post(self.events_url, json=payload, timeout=10.0)
                 response.raise_for_status()
                 data = response.json()
                 logger.debug(

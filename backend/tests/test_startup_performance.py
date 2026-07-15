@@ -1,7 +1,7 @@
 """
 backend/tests/test_startup_performance.py
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Regression guard: backend import must complete in under 3 seconds.
+Regression guard: backend import must complete in under 10 seconds.
 
 Run before every demo and every commit touching backend/app/.
   pytest backend/tests/test_startup_performance.py -v
@@ -22,6 +22,7 @@ import sys
 import time
 
 STARTUP_BUDGET_SECONDS = 10.0
+SUBPROCESS_TIMEOUT_SECONDS = 90
 
 
 def test_backend_starts_under_3_seconds():
@@ -29,18 +30,18 @@ def test_backend_starts_under_3_seconds():
     Measures wall-clock time for `from app.main import app` to complete.
     This catches any module-level heavy imports that slip past code review.
     """
-    backend_dir = os.path.join(os.path.dirname(__file__), "..")
+    backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     start = time.monotonic()
     result = subprocess.run(
         [
             sys.executable,
             "-c",
-            "import sys; sys.path.insert(0,'backend'); from app.main import app; print('OK')",
+            "from app.main import app; print('OK')",
         ],
         capture_output=True,
         text=True,
-        timeout=30,
-        cwd=os.path.join(backend_dir, ".."),  # project root
+        timeout=SUBPROCESS_TIMEOUT_SECONDS,
+        cwd=backend_dir,  # run from backend/ so imports resolve correctly
     )
     elapsed = time.monotonic() - start
 

@@ -461,25 +461,23 @@ class BaseAgent(ABC):
         
         # Determine relevance decision
         relevance_decision = "SUFFICIENT"
-        
-        # First filter: check similarity score against threshold (0.58)
         best_sim_score = 1.0 / (1.0 + best_doc["distance"])
-        if best_sim_score < getattr(self, "similarity_threshold", 0.58):
-            print(f"[Warning] Similarity score {best_sim_score:.4f} is below threshold {self.similarity_threshold:.2f}.")
-            relevance_decision = "INSUFFICIENT"
-            
-        # Second filter: if RAG is enabled and similarity is sufficient, run the Gemini relevance check
-        if relevance_decision == "SUFFICIENT" and getattr(self, "rag_enabled", False):
-            if self.synthesizer.client is not None or self.synthesizer.ollama_client is not None:
-                try:
-                    check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
-                    if check_result is not None:
-                        relevance_decision = check_result
-                        print(f"Gemini relevance check decision: {relevance_decision}")
-                except Exception as e:
-                    print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
-            else:
-                print("[Warning] No active LLM client (Gemini or Ollama). Skipping relevance check.")
+
+        # Prioritize LLM relevance checking over strict similarity thresholds
+        if getattr(self, "rag_enabled", False) and (self.synthesizer.client is not None or self.synthesizer.ollama_client is not None):
+            try:
+                check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
+                if check_result is not None:
+                    relevance_decision = check_result
+                    print(f"Gemini relevance check decision: {relevance_decision}")
+            except Exception as e:
+                print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
+                if best_sim_score < getattr(self, "similarity_threshold", 0.58):
+                    relevance_decision = "INSUFFICIENT"
+        else:
+            if best_sim_score < getattr(self, "similarity_threshold", 0.58):
+                print(f"[Warning] Similarity score {best_sim_score:.4f} is below threshold {self.similarity_threshold:.2f}.")
+                relevance_decision = "INSUFFICIENT"
                 
         # If either check decides INSUFFICIENT, bypass LLM answer synthesis and return fallback
         if relevance_decision == "INSUFFICIENT":

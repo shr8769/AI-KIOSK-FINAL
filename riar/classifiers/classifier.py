@@ -75,6 +75,35 @@ class RIARClassifier:
         Returns:
             A strictly validated RIARClassification Pydantic object.
         """
+        # 1. Force single-word queries to be marked as ambiguous
+        import re
+        clean_query = re.sub(r"[^\w\s]", "", query).strip()
+        if len(clean_query.split()) <= 1:
+            logger.info(f"RIAR Classifier forced ambiguity for single-word query: '{query}'")
+            return RIARClassification(
+                ambiguity_score=0.98,
+                ambiguity_type="SEMANTIC",
+                confidence=1.0,
+                requires_clarification=True,
+                reasoning="Single-word query is inherently ambiguous and requires clarification."
+            )
+
+        # 2. Check heuristics
+        try:
+            from riar.heuristics import get_heuristic_match
+            heuristic = get_heuristic_match(query)
+            if heuristic:
+                logger.info(f"RIAR Heuristic matched ambiguous query: '{query}' -> type=CROSS_DOMAIN")
+                return RIARClassification(
+                    ambiguity_score=0.95,
+                    ambiguity_type="CROSS_DOMAIN",
+                    confidence=1.0,
+                    requires_clarification=True,
+                    reasoning=f"Heuristic match: {heuristic['key']}"
+                )
+        except Exception as e:
+            logger.error(f"Heuristics checking failed: {e}")
+
         if not self.structured_llm:
             logger.error("Structured LLM is not initialized. Using fallback.")
             return self._fallback_classification(query)

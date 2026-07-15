@@ -123,6 +123,11 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       silenceThresholdRef.current = 0.018;
     }
 
+    // Set a cooldown when transitioning to active states to prevent false barge-in
+    if (['thinking', 'speaking', 'retrieving', 'clarifying'].includes(id)) {
+      bargeInCooldownRef.current = performance.now() + 1500;
+    }
+
     onStateChange?.(id);
   }, [onStateChange]);
 
@@ -331,20 +336,25 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
         }
       }
 
-      /* Client-side VAD Barge-in (Sustained Energy Check) */
-      if (activeIdRef.current === 'speaking' && micOnRef.current) {
+      /* Client-side VAD Barge-in (Sustained Energy Check during Speaking or Thinking) */
+      if ((activeIdRef.current === 'speaking' || activeIdRef.current === 'thinking' || activeIdRef.current === 'retrieving' || activeIdRef.current === 'clarifying') && micOnRef.current) {
         if (performance.now() < bargeInCooldownRef.current) {
           // Skip VAD during cooldown window to prevent TTS tail-end echo triggering
           bargeInStartRef.current = null;
         } else {
-          const bargeInThreshold = Math.max(0.05, silenceThresholdRef.current + 0.02); // Dynamically scale above noise floor
-          const bargeInDurationMs = 400; // Require sustained energy for 400ms to avoid random noise cutoffs
+          // For states where the machine is silent (thinking, retrieving, clarifying), use lower threshold and snappier duration
+          const isSilentState = activeIdRef.current !== 'speaking';
+          const dynamicThreshold = isSilentState
+            ? Math.max(0.03, silenceThresholdRef.current + 0.01)
+            : Math.max(0.05, silenceThresholdRef.current + 0.02);
+            
+          const dynamicDurationMs = isSilentState ? 300 : 400;
 
-          if (smoothedUserAmpRef.current > bargeInThreshold) {
+          if (smoothedUserAmpRef.current > dynamicThreshold) {
             if (bargeInStartRef.current === null) {
               bargeInStartRef.current = performance.now();
-            } else if (performance.now() - bargeInStartRef.current > bargeInDurationMs) {
-              console.log('[VAD] Sustained barge-in detected! User interrupted the avatar.');
+            } else if (performance.now() - bargeInStartRef.current > dynamicDurationMs) {
+              console.log(`[VAD] Sustained barge-in detected during ${activeIdRef.current}! User interrupted.`);
               bargeInStartRef.current = null; // Reset
               bargeInCooldownRef.current = performance.now() + 500; // 500ms cooldown
               if (onBargeIn) {
@@ -386,7 +396,9 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       applyState(controlledState);
 
       // Handle physical mic activation/deactivation based on controlled state
-      if (controlledState === 'listening') {
+      // Keep mic open in any active interactive states (listening, thinking, speaking, etc.)
+      const isInteractionActive = ['listening', 'thinking', 'speaking', 'retrieving', 'clarifying'].includes(controlledState);
+      if (isInteractionActive) {
         if (!micOnRef.current) {
           (async () => {
             const handle = await startMicAnalysis();

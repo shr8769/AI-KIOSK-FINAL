@@ -165,7 +165,7 @@ class RIARPipeline:
         return result
 
     def refine(
-        self, original_query: str, clarification_response: str, ambiguity_type: str
+        self, original_query: str, clarification_response: str, ambiguity_type: str, clarification_question: str = "Can you clarify your intent?"
     ) -> RefinedQuery:
         """
         Refine the original query using the user's clarification response.
@@ -174,11 +174,9 @@ class RIARPipeline:
             f"Refining query | original='{original_query}' | response='{clarification_response}'"
         )
 
-        # In a real session, we'd pass the actual clarification question we asked.
-        # Since we don't pass it into `refine()` explicitly, we provide a placeholder context.
         resolved_query = self.merger.merge(
             original_query=original_query,
-            clarification_question="Can you clarify your intent?",
+            clarification_question=clarification_question,
             user_response=clarification_response,
         )
 

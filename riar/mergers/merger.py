@@ -40,6 +40,18 @@ class RIARMerger:
     def merge(
         self, original_query: str, clarification_question: str, user_response: str
     ) -> str:
+        try:
+            from riar.heuristics import get_heuristic_match
+            heuristic = get_heuristic_match(original_query)
+            if heuristic:
+                resp_lower = user_response.lower()
+                for merge_key, merged_query in heuristic["merge"].items():
+                    if merge_key in resp_lower:
+                        return merged_query
+                return heuristic["default_merge"]
+        except Exception as e:
+            logger.error(f"Heuristics checking in merger failed: {e}")
+
         if not self.structured_llm:
             logger.error("Structured LLM missing in Merger. Using fallback.")
             return f"{original_query} {user_response}"

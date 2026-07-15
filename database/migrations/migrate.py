@@ -17,7 +17,7 @@ async def run_migrations():
     print(f"Connecting to database: {database_url}")
     engine = create_async_engine(database_url, echo=True)
     
-    migrations = ["001_init.sql", "002_memory.sql", "003_queries.sql"]
+    migrations = ["001_init.sql", "002_memory.sql", "003_queries.sql", "004_escalations.sql"]
     async with engine.begin() as conn:
         for migration in migrations:
             print(f"Executing: {migration}")

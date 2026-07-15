@@ -20,6 +20,132 @@ from app.services.riar_service import riar_service
 from app.services.speech.tts_service import tts_service
 
 
+def local_spelling_corrector(query: str) -> str:
+    import difflib
+    STANDARD_TERMS = [
+        "microsoft", "admissions", "placement", "placements", "scholarship", "scholarships", 
+        "internship", "internships", "academic", "academics", "hostel", "hostels", 
+        "canteen", "library", "office", "entrance", "fees", "admission"
+    ]
+    words = query.split()
+    corrected_words = []
+    for w in words:
+        clean_w = re.sub(r"[^\w]", "", w.lower())
+        if not clean_w:
+            corrected_words.append(w)
+            continue
+        if len(clean_w) >= 4:
+            matches = difflib.get_close_matches(clean_w, STANDARD_TERMS, n=1, cutoff=0.75)
+            if matches:
+                punc = re.search(r"[^\w]+$", w)
+                suffix = punc.group(0) if punc else ""
+                corrected_words.append(matches[0] + suffix)
+                continue
+        corrected_words.append(w)
+    return " ".join(corrected_words)
+
+
+async def correct_and_normalize_query(query: str) -> str:
+    """
+    Spelling correction and semantic query normalization.
+    Fixes spelling errors and rephrases input into clear English matching target vocabulary.
+    """
+    # 1. Run local spelling correction fast-path
+    try:
+        query = local_spelling_corrector(query)
+    except Exception as e:
+        logger.error(f"Local spelling correction failed: {e}")
+
+    # Bypass LLM query normalization/expansion for single-word queries
+    # to prevent expanding them into clear/complete sentences before RIAR classification.
+    clean_query = re.sub(r"[^\w\s]", "", query).strip()
+    if len(clean_query.split()) <= 1:
+        logger.info(f"Query '{query}' has 1 or fewer words. Skipping LLM query normalization/expansion.")
+        return query
+
+    try:
+        from app.core.dependencies import get_riar_pipeline
+        pipeline = get_riar_pipeline()
+        llm = pipeline.llm_client
+    except Exception as e:
+        logger.error(f"Failed to get LLM client for query correction: {e}")
+        return query
+
+    prompt = f"""You are a spelling corrector and query normalization engine for the PES University AI Kiosk.
+Your job is to fix any spelling mistakes (e.g. "micosoft" -> "microsoft", "admisions" -> "admissions", "pacement" -> "placement") and normalize queries asked in different ways to make them clear and standard (e.g. "how do I get a job here" -> "What are the placement statistics and job opportunities?").
+
+Strictly return ONLY the corrected/normalized query string. Do not include any explanation, quotes, introductory text, or Markdown formatting.
+
+Original query: "{query}"
+Corrected query:"""
+
+    try:
+        import asyncio
+        response = await asyncio.to_thread(llm.invoke, prompt)
+        corrected = response.content.strip().strip('"').strip("'").strip()
+        if corrected:
+            logger.info(f"Query normalization: '{query}' -> '{corrected}'")
+            return corrected
+        return query
+    except Exception as e:
+        logger.error(f"Query normalization failed: {e}")
+        return query
+
+
+async def make_conversational(text: str, lang: str) -> str:
+    """
+    Post-process a formally-translated Kannada or Hindi response into a
+    natural, code-mixed (Kanglish / Hinglish) conversational style.
+
+    The key insight: pure machine-translated Kannada/Hindi sounds robotic.
+    We ask the LLM to rephrase it so it flows like how educated urban Indians
+    actually speak — mixing English nouns/brands/numbers with Kannada or Hindi
+    grammar, contractions, and friendly tone.
+    """
+    if lang not in ("kn", "hi"):
+        return text
+
+    lang_name = {"kn": "Kannada", "hi": "Hindi"}[lang]
+    mix_example = {
+        "kn": (
+            "Example:\n"
+            "  Formal: 'ವಿದ್ಯಾರ್ಥಿಗಳ ನೇಮಕಾತಿ ಮಾಹಿತಿಗಾಗಿ placement cell ಗೆ ಸಂಪರ್ಕಿಸಿ.'\n"
+            "  Conversational: 'Placement ಬಗ್ಗೆ ತಿಳಿಯಬೇಕಾದ್ರೆ, placement cell ಅನ್ನ directly contact ಮಾಡ್ಬಹುದು!'\n"
+        ),
+        "hi": (
+            "Example:\n"
+            "  Formal: 'छात्रों के लिए placement सेल से संपर्क करें.'\n"
+            "  Conversational: 'Placement के बारे में जानना है, toh placement cell ko directly contact kar sakte ho!'\n"
+        ),
+    }[lang]
+
+    prompt = (
+        f"You are a friendly university AI kiosk assistant. "
+        f"Rewrite the following {lang_name} text to sound natural and conversational, "
+        f"like how educated urban Indians actually speak — mixing {lang_name} grammar with "
+        f"common English words (technical terms, brand names, numbers, and short phrases can stay in English). "
+        f"Keep all factual information exactly the same. Do NOT translate everything to English. "
+        f"Keep it warm, friendly, and short. Return ONLY the rewritten text, no explanation.\n"
+        f"{mix_example}\n"
+        f"Text to rewrite:\n{text}\n"
+        f"Conversational {lang_name} version:"
+    )
+
+    try:
+        from app.core.dependencies import get_riar_pipeline
+        import asyncio
+        pipeline = get_riar_pipeline()
+        llm = pipeline.llm_client
+        response = await asyncio.to_thread(llm.invoke, prompt)
+        result = response.content.strip().strip('"').strip("'")
+        if result and len(result) >= 5:
+            logger.info(f"make_conversational ({lang}): '{text[:50]}' -> '{result[:50]}'")
+            return result
+    except Exception as e:
+        logger.warning(f"make_conversational failed ({lang}): {e}")
+    return text
+
+
 async def run_query_pipeline(
     session_id: str, text: str, language_hint: Optional[str] = None
 ) -> Dict[str, Any]:
@@ -74,14 +200,50 @@ async def run_query_pipeline(
 
     # Translate to English if native language
     if detected_lang in ["kn", "hi"]:
-        query_en = translate_to_english(clean_transcript, source_lang=detected_lang)
+        import asyncio
+        query_en = await asyncio.to_thread(translate_to_english, clean_transcript, source_lang=detected_lang)
     else:
         query_en = clean_transcript
+
+    # Check for outstanding clarification response
+    updated_session = await get_session(session_id)
+    outstanding = None
+    if updated_session and updated_session.metadata:
+        outstanding = updated_session.metadata.get("outstanding_clarification")
+
+    was_refined = False
+    if outstanding:
+        was_refined = True
+        from app.core.dependencies import get_riar_pipeline
+        pipeline = get_riar_pipeline()
+        
+        orig_q = outstanding.get("original_query")
+        clar_q = outstanding.get("clarification_question")
+        amb_t = outstanding.get("ambiguity_type", "CLEAR")
+        
+        import asyncio
+        refined_res = await asyncio.to_thread(
+            pipeline.refine,
+            original_query=orig_q,
+            clarification_response=query_en,
+            ambiguity_type=amb_t,
+            clarification_question=clar_q
+        )
+        logger.info(f"RIAR Merged query: '{orig_q}' + response '{query_en}' -> '{refined_res.refined_query}'")
+        query_en = refined_res.refined_query
+        
+        from app.core.session_store import update_session_metadata
+        await update_session_metadata(session_id, {"outstanding_clarification": None})
+        
+        # Reload the updated session to get the latest DB metadata
+        updated_session = await get_session(session_id)
+
+    # Correct and normalize spelling/phrasing variations
+    query_en = await correct_and_normalize_query(query_en)
 
     # Persist user turn
     await add_user_turn(session_id, clean_transcript)
 
-    updated_session = await get_session(session_id)
     raw_history = updated_session.metadata.get("history", []) if updated_session else []
     history_turns = [
         TurnModel(turn_id=i + 1, role=t["role"], text=t["content"])
@@ -102,11 +264,14 @@ async def run_query_pipeline(
 
         if policy == "ENTITY_DISAMBIGUATION" and top_loc:
             question_en = f"Did you mean {top_loc['name']}?"
+            import asyncio
             question_native = (
-                translate_from_english(question_en, target_lang=detected_lang)
+                await asyncio.to_thread(translate_from_english, question_en, target_lang=detected_lang)
                 if detected_lang in ["kn", "hi"]
                 else question_en
             )
+            if detected_lang in ("kn", "hi"):
+                question_native = await make_conversational(question_native, detected_lang)
             await add_agent_turn(session_id, question_native)
 
             try:
@@ -116,6 +281,18 @@ async def run_query_pipeline(
                 audio_url = tts_resp.audio_url
             except Exception:
                 audio_url = None
+
+            from app.core.session_store import update_session_metadata
+            await update_session_metadata(
+                session_id,
+                {
+                    "outstanding_clarification": {
+                        "original_query": query_en,
+                        "clarification_question": question_en,
+                        "ambiguity_type": "ENTITY_DISAMBIGUATION",
+                    }
+                }
+            )
 
             return {
                 "type": "clarifying",
@@ -135,11 +312,14 @@ async def run_query_pipeline(
                 nav_url = navigation_service.build_url(nav_id)
 
                 answer_en = f"The {top_loc.get('name')} is located in {top_loc.get('building')}, Floor {top_loc.get('floor')}. Please scan the QR code for detailed directions."
+                import asyncio
                 answer_native = (
-                    translate_from_english(answer_en, target_lang=detected_lang)
+                    await asyncio.to_thread(translate_from_english, answer_en, target_lang=detected_lang)
                     if detected_lang in ["kn", "hi"]
                     else answer_en
                 )
+                if detected_lang in ("kn", "hi"):
+                    answer_native = await make_conversational(answer_native, detected_lang)
                 await add_agent_turn(session_id, answer_native)
 
                 try:
@@ -193,12 +373,27 @@ async def run_query_pipeline(
 
     if ambiguous:
         question_en = riar_resp.clarification_question or "Could you clarify your question?"
-        question_native = translate_from_english(question_en, target_lang=detected_lang)
+        import asyncio
+        question_native = await asyncio.to_thread(translate_from_english, question_en, target_lang=detected_lang)
+        if detected_lang in ("kn", "hi"):
+            question_native = await make_conversational(question_native, detected_lang)
         await add_agent_turn(session_id, question_native)
 
         response_text = question_native
         ambiguity_type = riar_resp.ambiguity_type if riar_resp else "CLEAR"
         domain = None
+
+        from app.core.session_store import update_session_metadata
+        await update_session_metadata(
+            session_id,
+            {
+                "outstanding_clarification": {
+                    "original_query": query_en,
+                    "clarification_question": question_en,
+                    "ambiguity_type": ambiguity_type,
+                }
+            }
+        )
 
         try:
             tts_resp = await tts_service.synthesize(
@@ -274,6 +469,7 @@ async def run_query_pipeline(
 
         nav_payload = None
         citations = []
+        is_fallback = False
 
         if target_domain == "navigation":
             try:
@@ -297,9 +493,11 @@ async def run_query_pipeline(
                     }
                 else:
                     answer_en = metadata["error"]
+                    is_fallback = True
             except Exception as e:
                 logger.error(f"Failed to parse navigation JSON: {e}")
                 answer_en = "I'm sorry, I couldn't retrieve the location details."
+                is_fallback = True
         else:
             if "\n\n[Source: " in full_answer:
                 parts = full_answer.split("\n\n[Source: ", 1)
@@ -308,11 +506,146 @@ async def run_query_pipeline(
             else:
                 answer_en = full_answer
 
+            is_fallback = "[Source: None]" in full_answer or "I encountered an error retrieving that information." in full_answer or "could not find information regarding this" in full_answer.lower() or "location not found" in full_answer.lower()
+
+        if is_fallback:
+            if not was_refined:
+                # Evidence is not clear/sufficient, question back the user for clarification first
+                try:
+                    from app.core.dependencies import get_riar_pipeline
+                    pipeline = get_riar_pipeline()
+                    llm = pipeline.llm_client
+                except Exception as e:
+                    llm = None
+
+                question_prompt = f"""You are the Clarification Engine for VidyaSahayak, the PES University Kiosk.
+The user asked a query that couldn't be answered clearly with the current knowledge base: "{query_en}"
+Since the retrieved evidence is not clear or sufficient, generate a polite clarification question asking the user to provide more specific details, rephrase, or specify their requirements so we can search the knowledge base again.
+Strictly return ONLY the clarification question. Do not include any explanations, markdown, or quotes.
+Clarification Question:"""
+
+                question_en = "I'm sorry, I couldn't find clear information on that. Could you please provide more details or specify what you are looking for?"
+                if llm:
+                    try:
+                        import asyncio
+                        response = await asyncio.to_thread(llm.invoke, question_prompt)
+                        question_en = response.content.strip().strip('"').strip("'").strip()
+                    except Exception as e:
+                        logger.error(f"Failed to generate clarification question using LLM: {e}")
+
+                import asyncio
+                question_native = await asyncio.to_thread(translate_from_english, question_en, target_lang=detected_lang)
+                if detected_lang in ("kn", "hi"):
+                    question_native = await make_conversational(question_native, detected_lang)
+                await add_agent_turn(session_id, question_native)
+
+                from app.core.session_store import update_session_metadata
+                await update_session_metadata(
+                    session_id,
+                    {
+                        "outstanding_clarification": {
+                            "original_query": query_en,
+                            "clarification_question": question_en,
+                            "ambiguity_type": "CONTEXTUAL",
+                        }
+                    }
+                )
+
+                try:
+                    tts_resp = await tts_service.synthesize(
+                        TTSRequest(session_id=session_id, text=question_native, language=detected_lang)
+                    )
+                    audio_url = tts_resp.audio_url
+                except Exception as e:
+                    logger.error(f"TTS Synthesis failed for clarification: {e}")
+                    audio_url = None
+
+                return {
+                    "type": "clarifying",
+                    "text": question_native,
+                    "audio_url": audio_url,
+                    "ambiguity_type": "CONTEXTUAL",
+                    "sources": [],
+                    "navigation": None,
+                    "language": detected_lang,
+                }
+
+            # Escalation flow!
+            # 1. Fetch user details from database using updated_session.user_id
+            user_name = "Guest User"
+            contact_number = "Not Provided"
+
+            if updated_session and updated_session.metadata:
+                u_id = updated_session.metadata.get("user_id")
+                u_name = updated_session.metadata.get("user_name")
+                if u_id:
+                    contact_number = u_id
+                if u_name:
+                    user_name = u_name
+
+                # Query Postgres User to get more accurate name or contact info if they registered
+                if u_id and u_id != "usr_guest":
+                    from database.postgres.connection import AsyncSessionLocal
+                    from database.models.models import User as PGUser
+                    from sqlalchemy.future import select
+
+                    try:
+                        async with AsyncSessionLocal() as db_session:
+                            q = select(PGUser).where(PGUser.user_id == u_id)
+                            res = await db_session.execute(q)
+                            pg_user = res.scalar_one_or_none()
+                            if pg_user:
+                                user_name = pg_user.name
+                                contact_number = pg_user.preferences.get("phone_number") or pg_user.user_id
+                    except Exception as e:
+                        logger.error(f"Failed to fetch user for escalation: {e}")
+
+            # Map domain to corresponding office details
+            OFFICE_DETAILS = {
+                "admissions": "Admissions Office: Main Building, Ground Floor. Contact: +91 80 2672 1983, Email: admissions@pes.edu",
+                "academics": "Academic Block Office: B-Block, 1st Floor. Contact: +91 80 2672 2011, Email: academics@pes.edu",
+                "placements": "Placement & Career Guidance Cell: C-Block, 3rd Floor. Contact: +91 80 2672 2022, Email: placements@pes.edu",
+                "research": "Research Center: R-Block, 2nd Floor. Contact: research@pes.edu",
+                "student_services": "Student Affairs Office: Main Building, 1st Floor. Contact: student_services@pes.edu",
+                "navigation": "Campus Information Desk: Entrance Gate. Contact: info@pes.edu",
+                "general": "Main Administrative Office: Main Building, Ground Floor. Contact: admin@pes.edu"
+            }
+
+            office_info = OFFICE_DETAILS.get(target_domain or "general", OFFICE_DETAILS["general"])
+            answer_en = (
+                f"I could not find information regarding this in the university knowledge base. "
+                f"Please contact the relevant office:\n{office_info}.\n"
+                f"We have registered this query with your contact details and escalated it to them."
+            )
+            citations = []
+
+            # Save the escalation ticket to postgres
+            try:
+                from database.postgres.connection import AsyncSessionLocal
+                from database.models.models import OfficeEscalation
+
+                async with AsyncSessionLocal() as db_session:
+                    escalation = OfficeEscalation(
+                        customer_name=user_name,
+                        contact_number=contact_number,
+                        domain=target_domain or "general",
+                        office_details=office_info,
+                        issue_encountering=refined_query or query_en
+                    )
+                    db_session.add(escalation)
+                    await db_session.commit()
+                    logger.info(f"Successfully recorded office escalation ticket to database for '{user_name}' / '{contact_number}'.")
+            except Exception as e:
+                logger.error(f"Failed to record office escalation ticket: {e}")
+
+        import asyncio
         answer_native = (
-            translate_from_english(answer_en, target_lang=detected_lang)
+            await asyncio.to_thread(translate_from_english, answer_en, target_lang=detected_lang)
             if detected_lang in ("kn", "hi")
             else answer_en
         )
+        if detected_lang in ("kn", "hi"):
+            answer_native = await make_conversational(answer_native, detected_lang)
         await add_agent_turn(session_id, answer_native)
 
         response_text = answer_native

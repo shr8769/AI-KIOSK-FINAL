@@ -37,6 +37,13 @@ def _get_firestore():
     """Lazy-initialise the Firestore client (thread-safe for read)."""
     global _db, _firebase_available
 
+    from app.core.config import get_settings
+    settings = get_settings()
+    if settings.USE_MOCK_SERVICES:
+        logger.info("[Firebase] USE_MOCK_SERVICES is True. Forcing mock database fallback.")
+        _firebase_available = False
+        return None
+
     if _db is not None:
         return _db
     if not _firebase_available:

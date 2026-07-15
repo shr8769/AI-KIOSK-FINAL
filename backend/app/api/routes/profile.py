@@ -128,6 +128,48 @@ async def register(request: RegisterRequest):
     if not success:
         raise HTTPException(status_code=500, detail="Failed to save user profile to database.")
 
+    # 5. Save to PostgreSQL as well
+    try:
+        from database.postgres.connection import AsyncSessionLocal
+        from database.models.models import User as PGUser
+        from sqlalchemy.future import select
+
+        async with AsyncSessionLocal() as db_session:
+            # Check if user already exists
+            q = select(PGUser).where(PGUser.user_id == user_id)
+            res = await db_session.execute(q)
+            existing_user = res.scalar_one_or_none()
+
+            role_id = "guest" if role == "visitor" else (role if role in ("student", "professor", "guest", "admin") else "student")
+            phone_num = user_id if role == "visitor" else ""
+
+            if existing_user:
+                existing_user.name = name
+                existing_user.role_id = role_id
+                existing_user.face_embedding = embedding.tolist() if isinstance(embedding, np.ndarray) else embedding
+                existing_user.preferences = {
+                    "interests": interests_list,
+                    "language": "en",
+                    "phone_number": phone_num
+                }
+            else:
+                new_pg_user = PGUser(
+                    user_id=user_id,
+                    name=name,
+                    role_id=role_id,
+                    face_embedding=embedding.tolist() if isinstance(embedding, np.ndarray) else embedding,
+                    preferences={
+                        "interests": interests_list,
+                        "language": "en",
+                        "phone_number": phone_num
+                    }
+                )
+                db_session.add(new_pg_user)
+            await db_session.commit()
+            logger.info(f"User '{name}' successfully registered/synchronized in PostgreSQL.")
+    except Exception as db_e:
+        logger.error(f"Failed to synchronize user profile to PostgreSQL: {db_e}")
+
     return RegisterResponse(
         status="success",
         message="Profile and face successfully registered.",

@@ -5,8 +5,9 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from database.models.models import Query
+
 if TYPE_CHECKING:
-    from database.models.models import Query
     from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)

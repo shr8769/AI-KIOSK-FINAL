@@ -198,8 +198,11 @@ class ASRService:
                 lang_hint = (
                     request.language_hint if request.language_hint in ["en", "kn", "hi"] else "hi"
                 )
-                transcript = bhashini_service.transcribe_audio(
-                    request.audio_base64, language=lang_hint
+                import asyncio
+                transcript = await asyncio.to_thread(
+                    bhashini_service.transcribe_audio,
+                    request.audio_base64,
+                    language=lang_hint
                 )
 
                 if transcript:
@@ -226,7 +229,7 @@ class ASRService:
                 request.language_hint if request.language_hint in ["en", "kn", "hi"] else None
             )
             google_lang_map = {"kn": "kn-IN", "hi": "hi-IN", "en": "en-US"}
-            google_lang = google_lang_map.get(lang_hint_raw, "kn-IN")
+            google_lang = google_lang_map.get(lang_hint_raw, "en-US")
 
             try:
                 import speech_recognition as sr
@@ -238,8 +241,12 @@ class ASRService:
                 with sr.AudioFile(io.BytesIO(audio_bytes_raw)) as source:
                     audio_data_sr = recognizer.record(source)
 
-                google_transcript = recognizer.recognize_google(
-                    audio_data_sr, language=google_lang, show_all=False
+                import asyncio
+                google_transcript = await asyncio.to_thread(
+                    recognizer.recognize_google,
+                    audio_data_sr,
+                    language=google_lang,
+                    show_all=False
                 )
 
                 if google_transcript and google_transcript.strip():
@@ -251,7 +258,7 @@ class ASRService:
                         turn_id=request.turn_id,
                         transcript=google_transcript,
                         transcript_en=google_transcript,
-                        detected_language=lang_hint_raw or "kn",
+                        detected_language=lang_hint_raw or "en",
                         confidence=0.95,
                         duration_ms=3000,
                         latency_ms=latency_ms,
@@ -284,7 +291,9 @@ class ASRService:
 
             # Transcribe audio array with VAD filtering and script prompt guidance
             # no_repeat_ngram_size and log_prob_threshold reduce hallucination loops
-            segments, info = model.transcribe(
+            import asyncio
+            segments, info = await asyncio.to_thread(
+                model.transcribe,
                 audio_data,
                 beam_size=5,
                 best_of=5,

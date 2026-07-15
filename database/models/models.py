@@ -63,3 +63,14 @@ class Query(Base):
     
     session = relationship("Session", back_populates="queries")
     user = relationship("User", back_populates="queries")
+
+
+class OfficeEscalation(Base):
+    __tablename__ = 'office_escalations'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    customer_name = Column(String(255), nullable=False)
+    contact_number = Column(String(100), nullable=False)
+    domain = Column(String(100))
+    office_details = Column(String)
+    issue_encountering = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)

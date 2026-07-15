@@ -11,7 +11,7 @@ const getWsBaseUrl = () => {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${protocol}//${window.location.hostname}:8000/ws/session`;
   }
-  return process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws/session';
+  return process.env.NEXT_PUBLIC_WS_URL || 'ws://127.0.0.1:8000/ws/session';
 };
 
 const WS_BASE_URL = getWsBaseUrl();
@@ -82,15 +82,36 @@ export default function KioskPage() {
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
   const [activeAudioElement, setActiveAudioElement] = useState<HTMLAudioElement | null>(null);
   
+  const [isPaused, setIsPaused] = useState(false);
+  const isPausedRef = useRef(false);
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+  
+  const [chosenMode, setChosenMode] = useState<'voice' | 'text' | null>(null);
   const isLanguageSelectedRef = useRef(false);
+  const isCommModeSelectedRef = useRef(false);
   const isSelectingLangRef = useRef(false);
+
+  useEffect(() => {
+    isLanguageSelectedRef.current = isLanguageSelected;
+  }, [isLanguageSelected]);
+
+  useEffect(() => {
+    isCommModeSelectedRef.current = isCommModeSelected;
+  }, [isCommModeSelected]);
   
   // Dynamic session ID mapped to backend-assigned sessions
   const [sessionId, setSessionId] = useState('demo_session_id');
 
+  const [newUserType, setNewUserType] = useState<'student' | 'visitor' | null>(null);
+  const [isRegisteredSuccessfully, setIsRegisteredSuccessfully] = useState(false);
+
+  const showRegistration = !!(identifiedUser && !identifiedUser.isReturning && !isRegisteredSuccessfully);
+
   // Webcam stream lifecycle
   useEffect(() => {
-    if (isRegisterOpen) {
+    if (showRegistration && newUserType !== null) {
       const startCamera = async () => {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
@@ -118,7 +139,7 @@ export default function KioskPage() {
       setRegImageSrc(null);
       setRegStatus(null);
     }
-  }, [isRegisterOpen]);
+  }, [showRegistration, newUserType]);
 
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
@@ -142,7 +163,10 @@ export default function KioskPage() {
 
   const submitRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regUserId || !regName || !regDepartment || !regImageSrc) {
+    const finalRole = newUserType || 'student';
+    const finalDept = newUserType === 'student' ? 'Student' : 'Visitor';
+    
+    if (!regUserId || !regName || !regImageSrc) {
       setRegStatus({ type: 'error', message: 'Please fill in all fields and capture your face.' });
       return;
     }
@@ -160,9 +184,9 @@ export default function KioskPage() {
         body: JSON.stringify({
           user_id: regUserId,
           name: regName,
-          role: regRole,
-          department: regDepartment,
-          interests: regInterests,
+          role: finalRole,
+          department: finalDept,
+          interests: "",
           image_base64: regImageSrc,
         }),
       });
@@ -170,17 +194,24 @@ export default function KioskPage() {
       const data = await response.json();
       if (response.ok) {
         setRegStatus({ type: 'success', message: 'Registration successful! Face enrolled.' });
-        // Clear fields on success
-        setRegUserId('');
-        setRegName('');
-        setRegDepartment('');
-        setRegInterests('');
-        setRegImageSrc(null);
         
-        // Auto-close modal after 2 seconds
+        // Auto-advance after 1.5 seconds
         setTimeout(() => {
-          setIsRegisterOpen(false);
-        }, 2000);
+          setIdentifiedUser({
+            userId: regUserId,
+            name: regName,
+            role: finalRole,
+            isReturning: true,
+            recommendations: []
+          });
+          setIsRegisteredSuccessfully(true);
+          
+          // Clear fields on success
+          setRegUserId('');
+          setRegName('');
+          setRegImageSrc(null);
+          setRegStatus(null);
+        }, 1500);
       } else {
         setRegStatus({ type: 'error', message: data.detail || 'Registration failed.' });
       }
@@ -229,6 +260,10 @@ export default function KioskPage() {
       console.log('[Audio] Finished response playback, transitioning to listening');
       isSelectingLangRef.current = false;
       setOrbState((prev) => {
+        if (isPausedRef.current) return 'idle';
+        if (!isLanguageSelectedRef.current || !isCommModeSelectedRef.current) {
+          return 'idle';
+        }
         if (prev !== 'idle' && prev !== 'error') {
           return 'listening';
         }
@@ -306,6 +341,70 @@ export default function KioskPage() {
     }
   }, [sessionId, playResponseAudio]);
 
+  const handleProceedSelection = useCallback(async () => {
+    if (!selectedLanguage || !chosenMode) return;
+
+    setCommunicationMode(chosenMode);
+    setIsLanguageSelected(true);
+    isLanguageSelectedRef.current = true;
+    setIsCommModeSelected(true);
+    isCommModeSelectedRef.current = true;
+
+    if (chosenMode === 'voice') {
+      // Play confirmation audio in target language
+      let confirmationText = '';
+      if (selectedLanguage === 'en') {
+        confirmationText = "You selected English. How can I help you today?";
+      } else if (selectedLanguage === 'kn') {
+        confirmationText = "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?";
+      } else if (selectedLanguage === 'hi') {
+        confirmationText = "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकता हूँ?";
+      }
+
+      setOrbState('thinking');
+      setCustomLabel('VidyaSahayak');
+      setCustomDesc(confirmationText);
+
+      try {
+        const httpBase = WS_BASE_URL.replace(/^ws/, 'http').replace(/\/ws\/session.*$/, '');
+        const ttsUrl = `${httpBase}/api/v1/tts`;
+        console.log('[Audio] Requesting language confirmation TTS:', ttsUrl);
+        
+        const response = await fetch(ttsUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            text: confirmationText,
+            language: selectedLanguage,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.audio_url) {
+            playResponseAudio(data.audio_url);
+            setCustomLabel('VidyaSahayak');
+            setCustomDesc(confirmationText);
+          } else {
+            setOrbState('listening');
+          }
+        } else {
+          console.error('Failed to fetch TTS confirmation');
+          setOrbState('listening');
+        }
+      } catch (e) {
+        console.error('Error fetching TTS confirmation:', e);
+        setOrbState('listening');
+      }
+    } else {
+      // Text mode
+      setOrbState('idle');
+      setCustomLabel(undefined);
+      setCustomDesc(undefined);
+    }
+  }, [selectedLanguage, chosenMode, sessionId, playResponseAudio]);
+
   const unlockAudio = () => {
     try {
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -342,6 +441,10 @@ export default function KioskPage() {
     };
 
     ws.onmessage = (event) => {
+      if (isPausedRef.current) {
+        console.log('[WS] Conversation is paused. Ignoring message:', event.data);
+        return;
+      }
       try {
         const msg = JSON.parse(event.data);
         console.log('[WS] Message received:', msg);
@@ -377,13 +480,30 @@ export default function KioskPage() {
             // Intercept transcript to detect language voice command
             if (!isLanguageSelectedRef.current) {
               const lowerText = transcriptText.toLowerCase();
-              if (lowerText.includes('kannada') || lowerText.includes('ಕನ್ನಡ')) {
+              if (
+                lowerText.includes('kannada') ||
+                lowerText.includes('ಕನ್ನಡ') ||
+                lowerText.includes('ಕನ್ನಡ್') ||
+                lowerText.includes('कन्नड़')
+              ) {
                 selectLanguage('kn');
                 return;
-              } else if (lowerText.includes('hindi') || lowerText.includes('हिंदी') || lowerText.includes('hind')) {
+              } else if (
+                lowerText.includes('hindi') ||
+                lowerText.includes('हिंदी') ||
+                lowerText.includes('hind') ||
+                lowerText.includes('हिन्दी')
+              ) {
                 selectLanguage('hi');
                 return;
-              } else if (lowerText.includes('english') || lowerText.includes('eng')) {
+              } else if (
+                lowerText.includes('english') ||
+                lowerText.includes('eng') ||
+                lowerText.includes('ಇಂಗ್ಲಿಷ್') ||
+                lowerText.includes('ಇಂಗ್ಲೀಷ್') ||
+                lowerText.includes('इंग्लिश') ||
+                lowerText.includes('अंग्रेजी')
+              ) {
                 selectLanguage('en');
                 return;
               }
@@ -463,6 +583,8 @@ export default function KioskPage() {
               setCustomLabel(undefined);
               setCustomDesc(undefined);
               setIdentifiedUser(null);
+              setIsRegisteredSuccessfully(false);
+              setNewUserType(null);
               if (activeAudioRef.current) {
                 activeAudioRef.current.pause();
                 activeAudioRef.current = null;
@@ -525,6 +647,10 @@ export default function KioskPage() {
   }, [sessionId, playResponseAudio]);
 
   const handleAudioReady = useCallback((base64: string) => {
+    if (isPausedRef.current) {
+      console.log('[Audio] Ignoring audio chunk since conversation is paused');
+      return;
+    }
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       console.log('[WS] Sending recorded audio chunk to backend');
       
@@ -537,8 +663,8 @@ export default function KioskPage() {
       }
 
       setOrbState('thinking');
-      setCustomLabel('Transcribing');
-      setCustomDesc('Transcribing your query...');
+      setCustomLabel('Thinking');
+      setCustomDesc('Thinking...');
 
       wsRef.current.send(JSON.stringify({
         type: 'audio_chunk',
@@ -640,12 +766,13 @@ export default function KioskPage() {
     };
   }, [connectWebSocket, hasInteracted]);
 
-  // Load FAQs from backend on mount and language selection
+  // Load FAQs from backend on language selection
   useEffect(() => {
+    if (!selectedLanguage) return;
     const fetchFaqs = async () => {
       try {
         const httpBase = WS_BASE_URL.replace(/^ws/, 'http').replace(/\/ws\/session.*$/, '');
-        const langParam = selectedLanguage ? `?lang=${selectedLanguage}` : '';
+        const langParam = `?lang=${selectedLanguage}`;
         const res = await fetch(`${httpBase}/api/v1/faqs${langParam}`);
         if (res.ok) {
           const data = await res.json();
@@ -769,231 +896,9 @@ export default function KioskPage() {
               >
                 Start Interaction
               </button>
-              
-              <button
-                onClick={() => {
-                  setIsRegisterOpen(true);
-                }}
-                className="w-full py-4 px-6 rounded-2xl border border-zinc-800 bg-zinc-950/40 text-zinc-300 hover:text-white font-semibold hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus:outline-none"
-              >
-                Register Face & Profile
-              </button>
             </div>
           )}
         </div>
-
-        {/* Registration Modal Overlay */}
-        {isRegisterOpen && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
-            <style>{`
-              @keyframes scanline {
-                0% { top: 0%; }
-                50% { top: 100%; }
-                100% { top: 0%; }
-              }
-              .scanner-line {
-                position: absolute;
-                left: 0;
-                right: 0;
-                height: 2px;
-                background: linear-gradient(to right, transparent, #6366f1, transparent);
-                box-shadow: 0 0 15px rgba(99, 102, 241, 0.8);
-                animation: scanline 3s linear infinite;
-              }
-            `}</style>
-            
-            <div className="bg-zinc-950 border border-zinc-800 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 md:p-8 flex flex-col md:flex-row gap-8 relative text-left">
-              <button 
-                onClick={() => setIsRegisterOpen(false)}
-                className="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-full hover:bg-zinc-900 transition-colors animate-pulse"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-
-              {/* Form Side */}
-              <div className="flex-1 space-y-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400">Register Profile</h2>
-                  <p className="text-xs text-zinc-400 mt-1">Enroll your face and academic info for automatic personalized greeting and recommendations.</p>
-                </div>
-                
-                <form onSubmit={submitRegistration} className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Role</label>
-                    <div className="flex gap-4">
-                      <label className="flex items-center space-x-2 text-sm text-zinc-200 cursor-pointer">
-                        <input 
-                          type="radio" 
-                          name="role" 
-                          value="student" 
-                          checked={regRole === 'student'} 
-                          onChange={() => setRegRole('student')}
-                          className="accent-indigo-500 w-4 h-4"
-                        />
-                        <span>Student</span>
-                      </label>
-                      <label className="flex items-center space-x-2 text-sm text-zinc-200 cursor-pointer">
-                        <input 
-                          type="radio" 
-                          name="role" 
-                          value="professor" 
-                          checked={regRole === 'professor'} 
-                          onChange={() => setRegRole('professor')}
-                          className="accent-indigo-500 w-4 h-4"
-                        />
-                        <span>Faculty</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                      {regRole === 'student' ? 'SRN (Student Register Number)' : 'Employee ID'}
-                    </label>
-                    <input 
-                      type="text" 
-                      required
-                      value={regUserId}
-                      onChange={(e) => setRegUserId(e.target.value)}
-                      placeholder={regRole === 'student' ? "e.g., PES1202300001" : "e.g., EMP1001"}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Full Name</label>
-                    <input 
-                      type="text" 
-                      required
-                      value={regName}
-                      onChange={(e) => setRegName(e.target.value)}
-                      placeholder="e.g., Harsha S"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Department</label>
-                    <input 
-                      type="text" 
-                      required
-                      value={regDepartment}
-                      onChange={(e) => setRegDepartment(e.target.value)}
-                      placeholder="e.g., CSE, ECE, Mechanical, Physics"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Interests / Focus Areas</label>
-                    <input 
-                      type="text" 
-                      value={regInterests}
-                      onChange={(e) => setRegInterests(e.target.value)}
-                      placeholder="e.g., AI, Robotics, Placements (comma separated)"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
-                    />
-                  </div>
-
-                  {regStatus && (
-                    <div className={`p-4 rounded-xl border text-xs font-medium ${
-                      regStatus.type === 'success' 
-                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-                        : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-                    }`}>
-                      {regStatus.message}
-                    </div>
-                  )}
-
-                  <div className="flex gap-4 pt-2">
-                    <button 
-                      type="button"
-                      onClick={() => setIsRegisterOpen(false)}
-                      className="flex-1 py-3 px-4 rounded-xl border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all duration-200 font-semibold"
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      type="submit"
-                      disabled={regLoading || !regImageSrc}
-                      className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-40 disabled:pointer-events-none"
-                    >
-                      {regLoading ? 'Registering...' : 'Enroll & Register'}
-                    </button>
-                  </div>
-                </form>
-              </div>
-
-              {/* Camera Side */}
-              <div className="flex-1 flex flex-col items-center justify-between border-t md:border-t-0 md:border-l border-zinc-800 pt-6 md:pt-0 md:pl-8">
-                <div className="w-full flex flex-col items-center">
-                  <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-3 text-center self-start">Face Capture</label>
-                  
-                  <div className="relative w-full aspect-video rounded-2xl border border-zinc-800 bg-zinc-950 overflow-hidden shadow-inner group">
-                    {cameraError ? (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                        <svg className="w-12 h-12 text-rose-500 mb-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        <p className="text-xs font-semibold text-rose-400">{cameraError}</p>
-                      </div>
-                    ) : regImageSrc ? (
-                      <img 
-                        src={regImageSrc} 
-                        alt="Face Scan Preview" 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <>
-                        <video 
-                          ref={videoRef} 
-                          autoPlay 
-                          playsInline 
-                          muted
-                          className="w-full h-full object-cover scale-x-[-1]" 
-                        />
-                        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_50%,rgba(99,102,241,0.05)_50%)] bg-[length:100%_4px] pointer-events-none" />
-                        <div className="scanner-line" />
-                      </>
-                    )}
-                  </div>
-                  
-                  <canvas ref={canvasRef} className="hidden" />
-                </div>
-
-                <div className="w-full mt-6 flex gap-4">
-                  {regImageSrc ? (
-                    <button
-                      type="button"
-                      onClick={retakePhoto}
-                      className="w-full py-3 px-4 rounded-xl border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-900 transition-all duration-200 font-semibold flex items-center justify-center space-x-2"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" />
-                      </svg>
-                      <span>Retake Photo</span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled={!!cameraError}
-                      onClick={capturePhoto}
-                      className="w-full py-3 px-4 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-500 hover:shadow-lg transition-all duration-200 disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center space-x-2"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span>Capture Photo</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
     );
   }
@@ -1034,7 +939,7 @@ export default function KioskPage() {
             autoDemo={false}
             showLabels={true}
             showControls={true}
-            showMic={communicationMode === 'voice'}
+            showMic={isLanguageSelected && isCommModeSelected && communicationMode === 'voice'}
             size={420} // Scaled down for split screen
             customLabel={customLabel}
             customDesc={customDesc}
@@ -1103,129 +1008,293 @@ export default function KioskPage() {
         {/* Right Side: Queries & FAQs Panel */}
         <div className="w-full lg:w-[55%] flex flex-col justify-start p-6 bg-zinc-950/40 border border-zinc-800/80 rounded-3xl backdrop-blur-xl shadow-xl space-y-6">
           
-          {/* Language Selection (visible if language is NOT selected) */}
-          {!isLanguageSelected && (
-            <div className="flex flex-col items-center justify-center space-y-4 py-8">
-              <div className="flex items-center space-x-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
-                </span>
-                <p className="text-[10px] text-zinc-300 uppercase tracking-[0.25em] font-semibold font-sans">
-                  Choose Language / ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ / भाषा चुनें
+          {/* Registration Panel */}
+          {showRegistration && (
+            <div className="flex flex-col space-y-6 w-full max-w-md mx-auto animate-fade-in text-left">
+              <div>
+                <h2 className="text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400">
+                  New Visitor detected
+                </h2>
+                <p className="text-xs text-zinc-400 mt-1">
+                  Please enroll your profile to proceed with personalized support.
                 </p>
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
-                </span>
               </div>
-              <div className="flex flex-col gap-3 w-full max-w-md">
-                <button
-                  id="lang-btn-english"
-                  onClick={() => selectLanguage('en')}
-                  className="group px-6 py-3 rounded-xl border border-zinc-700 bg-zinc-950/60 text-zinc-200 hover:text-white font-medium hover:border-indigo-400 hover:bg-indigo-500/15 transition-all duration-300 shadow-md hover:shadow-indigo-500/20 active:scale-95 text-sm uppercase tracking-wider font-sans backdrop-blur-sm"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="text-base">🇬🇧</span> English
-                  </span>
-                </button>
-                <button
-                  id="lang-btn-kannada"
-                  onClick={() => selectLanguage('kn')}
-                  className="group px-6 py-3 rounded-xl border border-zinc-700 bg-zinc-950/60 text-zinc-200 hover:text-white font-medium hover:border-emerald-400 hover:bg-emerald-500/15 transition-all duration-300 shadow-md hover:shadow-emerald-500/20 active:scale-95 text-sm uppercase tracking-wider font-sans backdrop-blur-sm"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="text-base">🇮🇳</span> ಕನ್ನಡ
-                  </span>
-                </button>
-                <button
-                  id="lang-btn-hindi"
-                  onClick={() => selectLanguage('hi')}
-                  className="group px-6 py-3 rounded-xl border border-zinc-700 bg-zinc-950/60 text-zinc-200 hover:text-white font-medium hover:border-amber-400 hover:bg-amber-500/15 transition-all duration-300 shadow-md hover:shadow-amber-500/20 active:scale-95 text-sm uppercase tracking-wider font-sans backdrop-blur-sm"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="text-base">🇮🇳</span> हिंदी
-                  </span>
-                </button>
-              </div>
-              <p className="text-[9px] text-zinc-500 font-sans tracking-wide">
-                Or say the language name aloud
-              </p>
+
+              {newUserType === null ? (
+                <div className="space-y-4 pt-4">
+                  <p className="text-xs text-zinc-300 font-medium">Are you a student or a visitor?</p>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => setNewUserType('student')}
+                      className="flex-1 py-6 rounded-2xl border border-zinc-800 bg-zinc-950/60 text-center hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                    >
+                      <span className="text-2xl block mb-2">🎓</span>
+                      <span className="text-sm font-semibold text-white">Student</span>
+                    </button>
+                    <button
+                      onClick={() => setNewUserType('visitor')}
+                      className="flex-1 py-6 rounded-2xl border border-zinc-800 bg-zinc-950/60 text-center hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                    >
+                      <span className="text-2xl block mb-2">💼</span>
+                      <span className="text-sm font-semibold text-white">Visitor</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={submitRegistration} className="space-y-4">
+                  <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
+                    <span className="text-xs font-bold text-indigo-400 capitalize">
+                      Registering as {newUserType}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewUserType(null);
+                        setRegUserId('');
+                        setRegName('');
+                        setRegImageSrc(null);
+                        setRegStatus(null);
+                      }}
+                      className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors"
+                    >
+                      ← Back
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Full Name</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={regName}
+                      onChange={(e) => setRegName(e.target.value)}
+                      placeholder="Enter full name"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                      {newUserType === 'student' ? 'SRN (Student Register Number)' : 'Phone Number'}
+                    </label>
+                    <input 
+                      type="text" 
+                      required
+                      value={regUserId}
+                      onChange={(e) => setRegUserId(e.target.value)}
+                      placeholder={newUserType === 'student' ? "e.g., PES1202300001" : "e.g., +91 9876543210"}
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
+                    />
+                  </div>
+
+                  {/* Face Capture Section */}
+                  <div className="flex flex-col items-center">
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-2 self-start">Face Capture</label>
+                    
+                    <div className="relative w-full aspect-video rounded-xl border border-zinc-800 bg-zinc-950 overflow-hidden shadow-inner group">
+                      {cameraError ? (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                          <svg className="w-10 h-10 text-rose-500 mb-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <p className="text-xs font-semibold text-rose-400">{cameraError}</p>
+                        </div>
+                      ) : regImageSrc ? (
+                        <img 
+                          src={regImageSrc} 
+                          alt="Face Scan Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <>
+                          <video 
+                            ref={videoRef} 
+                            autoPlay 
+                            playsInline 
+                            muted
+                            className="w-full h-full object-cover scale-x-[-1]" 
+                          />
+                          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_50%,rgba(99,102,241,0.05)_50%)] bg-[length:100%_4px] pointer-events-none" />
+                        </>
+                      )}
+                    </div>
+                    
+                    <canvas ref={canvasRef} className="hidden" />
+
+                    <div className="w-full mt-3 flex gap-2">
+                      {regImageSrc ? (
+                        <button
+                          type="button"
+                          onClick={retakePhoto}
+                          className="w-full py-2.5 px-4 rounded-xl border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-900 transition-all duration-200 text-xs font-semibold flex items-center justify-center space-x-2"
+                        >
+                          Retake Photo
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={!!cameraError}
+                          onClick={capturePhoto}
+                          className="w-full py-2.5 px-4 rounded-xl bg-indigo-600/80 text-white hover:bg-indigo-600 transition-all duration-200 text-xs font-semibold flex items-center justify-center space-x-2"
+                        >
+                          Capture Photo
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {regStatus && (
+                    <div className={`p-3 rounded-xl border text-[11px] font-medium ${
+                      regStatus.type === 'success' 
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+                        : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                    }`}>
+                      {regStatus.message}
+                    </div>
+                  )}
+
+                  <div className="pt-2">
+                    <button 
+                      type="submit"
+                      disabled={regLoading || !regImageSrc}
+                      className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-40 disabled:pointer-events-none text-xs"
+                    >
+                      {regLoading ? 'Registering...' : 'Enroll & Continue'}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           )}
 
-          {/* Active Query Space (visible if language IS selected) */}
-          {isLanguageSelected && !isCommModeSelected && (
-            <div className="flex flex-col items-center justify-center space-y-6 py-8 animate-fade-in w-full max-w-md mx-auto">
-              <div className="flex items-center space-x-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
-                </span>
-                <p className="text-[10px] text-zinc-300 uppercase tracking-[0.25em] font-semibold font-sans">
-                  Select Interaction Mode
-                </p>
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
-                </span>
+          {/* Combined Selection Panel */}
+          {!showRegistration && !(isLanguageSelected && isCommModeSelected) && (
+            <div className="flex flex-col items-center justify-center space-y-6 py-4 animate-fade-in w-full max-w-md mx-auto">
+              {/* Language Selection */}
+              <div className="w-full flex flex-col space-y-3">
+                <div className="flex items-center space-x-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                  </span>
+                  <p className="text-[10px] text-zinc-300 uppercase tracking-[0.25em] font-semibold font-sans">
+                    1. Choose Language / ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ / भाषा चुनें
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 w-full">
+                  <button
+                    id="lang-btn-english"
+                    onClick={() => setSelectedLanguage('en')}
+                    className={`group px-6 py-2.5 rounded-xl border text-sm font-medium transition-all duration-300 active:scale-95 uppercase tracking-wider font-sans backdrop-blur-sm ${
+                      selectedLanguage === 'en'
+                        ? 'bg-indigo-500/20 border-indigo-500 text-white shadow shadow-indigo-500/20'
+                        : 'border-zinc-700 bg-zinc-950/60 text-zinc-300 hover:text-white hover:border-indigo-500/50'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="text-base">🇬🇧</span> English
+                    </span>
+                  </button>
+                  <button
+                    id="lang-btn-kannada"
+                    onClick={() => setSelectedLanguage('kn')}
+                    className={`group px-6 py-2.5 rounded-xl border text-sm font-medium transition-all duration-300 active:scale-95 uppercase tracking-wider font-sans backdrop-blur-sm ${
+                      selectedLanguage === 'kn'
+                        ? 'bg-emerald-500/20 border-emerald-500 text-white shadow shadow-emerald-500/20'
+                        : 'border-zinc-700 bg-zinc-950/60 text-zinc-300 hover:text-white hover:border-emerald-500/50'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="text-base">🇮🇳</span> ಕನ್ನಡ
+                    </span>
+                  </button>
+                  <button
+                    id="lang-btn-hindi"
+                    onClick={() => setSelectedLanguage('hi')}
+                    className={`group px-6 py-2.5 rounded-xl border text-sm font-medium transition-all duration-300 active:scale-95 uppercase tracking-wider font-sans backdrop-blur-sm ${
+                      selectedLanguage === 'hi'
+                        ? 'bg-amber-500/20 border-amber-500 text-white shadow shadow-amber-500/20'
+                        : 'border-zinc-700 bg-zinc-950/60 text-zinc-300 hover:text-white hover:border-amber-500/50'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="text-base">🇮🇳</span> हिंदी
+                    </span>
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-col gap-4 w-full">
-                <button
-                  onClick={() => {
-                    setCommunicationMode('voice');
-                    setIsCommModeSelected(true);
-                  }}
-                  className="group p-6 rounded-2xl border border-zinc-800 bg-zinc-950/60 text-left hover:border-indigo-500 hover:bg-indigo-500/10 transition-all duration-300 shadow-md active:scale-[0.98]"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 group-hover:bg-indigo-500/20">
-                      <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                      </svg>
+
+              {/* Mode Selection */}
+              <div className="w-full flex flex-col space-y-3 pt-2">
+                <div className="flex items-center space-x-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                  </span>
+                  <p className="text-[10px] text-zinc-300 uppercase tracking-[0.25em] font-semibold font-sans">
+                    2. Select Communication Mode
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2.5 w-full">
+                  <button
+                    onClick={() => setChosenMode('voice')}
+                    className={`group p-4 rounded-xl border text-left transition-all duration-300 active:scale-[0.98] ${
+                      chosenMode === 'voice'
+                        ? 'bg-indigo-500/10 border-indigo-500 shadow shadow-indigo-500/10'
+                        : 'border-zinc-800 bg-zinc-950/60 hover:border-indigo-500/40 hover:bg-indigo-500/5'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center border ${
+                        chosenMode === 'voice'
+                          ? 'bg-indigo-500/20 border-indigo-400 text-white'
+                          : 'bg-indigo-500/5 border-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/15'
+                      }`}>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-xs font-semibold text-white">Voice Mode</h3>
+                        <p className="text-[10px] text-zinc-400 mt-0.5 font-normal">Talk to VidyaSahayak naturally using your voice.</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-white">Voice Mode</h3>
-                      <p className="text-xs text-zinc-400 mt-1">Talk to VidyaSahayak naturally using your voice.</p>
+                  </button>
+                  
+                  <button
+                    onClick={() => setChosenMode('text')}
+                    className={`group p-4 rounded-xl border text-left transition-all duration-300 active:scale-[0.98] ${
+                      chosenMode === 'text'
+                        ? 'bg-emerald-500/10 border-emerald-500 shadow shadow-emerald-500/10'
+                        : 'border-zinc-800 bg-zinc-950/60 hover:border-emerald-500/40 hover:bg-emerald-500/5'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center border ${
+                        chosenMode === 'text'
+                          ? 'bg-emerald-500/20 border-emerald-400 text-white'
+                          : 'bg-emerald-500/5 border-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/15'
+                      }`}>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-xs font-semibold text-white">Text Mode</h3>
+                        <p className="text-[10px] text-zinc-400 mt-0.5 font-normal">Type questions and read answers. Ideal for noisy environments.</p>
+                      </div>
                     </div>
-                  </div>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    setCommunicationMode('text');
-                    setIsCommModeSelected(true);
-                    isSelectingLangRef.current = false;
-                    if (activeAudioRef.current) {
-                      activeAudioRef.current.pause();
-                      activeAudioRef.current = null;
-                      setActiveAudioElement(null);
-                    }
-                    setOrbState('idle');
-                  }}
-                  className="group p-6 rounded-2xl border border-zinc-800 bg-zinc-950/60 text-left hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 shadow-md active:scale-[0.98]"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-500/20">
-                      <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-white">Text Mode</h3>
-                      <p className="text-xs text-zinc-400 mt-1">Type questions and read answers. Ideal for noisy environments.</p>
-                    </div>
-                  </div>
-                </button>
+                  </button>
+                </div>
               </div>
+
+              {/* Action Button */}
               <button
-                onClick={() => {
-                  setIsLanguageSelected(false);
-                  setSelectedLanguage(null);
-                }}
-                className="text-[9px] text-zinc-500 hover:text-white uppercase tracking-wider font-bold border border-zinc-850 hover:border-zinc-800 px-3 py-1.5 rounded-xl transition-colors mt-4"
+                disabled={!selectedLanguage || !chosenMode}
+                onClick={handleProceedSelection}
+                className="w-full mt-4 py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-30 disabled:pointer-events-none disabled:scale-100 text-sm bg-gradient-to-r from-indigo-600 to-emerald-600 text-white"
               >
-                Back to Languages
+                Proceed to Conversation
               </button>
             </div>
           )}
@@ -1255,6 +1324,10 @@ export default function KioskPage() {
                   <button
                     onClick={() => {
                       setCommunicationMode('voice');
+                      setIsPaused(false);
+                      setOrbState('listening');
+                      setCustomLabel(undefined);
+                      setCustomDesc(undefined);
                     }}
                     className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${
                       communicationMode === 'voice'
@@ -1267,6 +1340,7 @@ export default function KioskPage() {
                   <button
                     onClick={() => {
                       setCommunicationMode('text');
+                      setIsPaused(false);
                       isSelectingLangRef.current = false;
                       if (activeAudioRef.current) {
                         try {
@@ -1276,6 +1350,8 @@ export default function KioskPage() {
                         setActiveAudioElement(null);
                       }
                       setOrbState('idle');
+                      setCustomLabel(undefined);
+                      setCustomDesc(undefined);
                     }}
                     className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${
                       communicationMode === 'text'
@@ -1287,6 +1363,61 @@ export default function KioskPage() {
                   </button>
                 </div>
               </div>
+
+              {/* Pause / Continue banner */}
+              {communicationMode === 'voice' && (
+                <div className="flex items-center justify-between p-4 rounded-2xl border border-zinc-800 bg-zinc-950/40 backdrop-blur-md animate-fade-in">
+                  <div className="flex items-center space-x-3">
+                    <span className="relative flex h-3 w-3">
+                      {isPaused ? (
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                      ) : (
+                        <>
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                        </>
+                      )}
+                    </span>
+                    <div className="text-left">
+                      <p className="text-xs font-semibold text-white">
+                        {isPaused ? "Conversation Paused" : "Assistant is Listening"}
+                      </p>
+                      <p className="text-[10px] text-zinc-400 mt-0.5">
+                        {isPaused ? "Prior audio discarded. Click continue to resume." : "Talk normally, or click Pause to freeze capture."}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (isPaused) {
+                        setIsPaused(false);
+                        setOrbState('listening');
+                        setCustomLabel(undefined);
+                        setCustomDesc(undefined);
+                      } else {
+                        setIsPaused(true);
+                        if (activeAudioRef.current) {
+                          try {
+                            activeAudioRef.current.pause();
+                          } catch (e) {}
+                          activeAudioRef.current = null;
+                          setActiveAudioElement(null);
+                        }
+                        setOrbState('idle');
+                        setCustomLabel('PAUSED');
+                        setCustomDesc('Conversation is paused. Click continue to resume.');
+                      }
+                    }}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                      isPaused
+                        ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98]'
+                        : 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98]'
+                    }`}
+                  >
+                    {isPaused ? 'Continue' : 'Pause'}
+                  </button>
+                </div>
+              )}
 
               {/* Sleek Text Input Bar */}
               <form onSubmit={handleTextSubmit} className="w-full relative group">

@@ -14,6 +14,7 @@ import logging
 import os
 import threading
 import time
+import uuid
 from typing import Any, Dict
 
 from app.core.config import settings
@@ -183,7 +184,7 @@ class TTSService:
             rate_pct = int((speed - 1.0) * 100)
             rate_str = f"{'+' if rate_pct >= 0 else ''}{rate_pct}%"
 
-            filename = f"response_{request.session_id}_{int(time.time())}.mp3"
+            filename = f"response_{request.session_id}_{uuid.uuid4().hex[:8]}.mp3"
             filepath = os.path.join(static_dir, filename)
 
             logger.info(f"Synthesizing speech via Edge-TTS (voice={voice}, rate={rate_str})...")
@@ -223,7 +224,7 @@ class TTSService:
         # ── 2. MMS-TTS (fully offline fallback, Hindi & Kannada) ──────────────
         if req_lang in _MMS_MODEL_MAP:
             try:
-                filename = f"response_{request.session_id}_{int(time.time())}.wav"
+                filename = f"response_{request.session_id}_{uuid.uuid4().hex[:8]}.wav"
                 filepath = os.path.join(static_dir, filename)
 
                 logger.info(f"Synthesizing speech via MMS-TTS (lang={req_lang})...")
@@ -254,7 +255,7 @@ class TTSService:
             elif req_lang in ("hi", "hindi"):
                 lang = "hi"
 
-            filename = f"response_{request.session_id}_{int(time.time())}.mp3"
+            filename = f"response_{request.session_id}_{uuid.uuid4().hex[:8]}.mp3"
             filepath = os.path.join(static_dir, filename)
 
             logger.info(f"Synthesizing speech via gTTS (lang={lang})...")
@@ -277,7 +278,7 @@ class TTSService:
 
         # ── 4. pyttsx3 SAPI5 (offline fallback, English only, last resort) ────
         try:
-            filename = f"response_{request.session_id}_{int(time.time())}.wav"
+            filename = f"response_{request.session_id}_{uuid.uuid4().hex[:8]}.wav"
             filepath = os.path.join(static_dir, filename)
 
             duration = await asyncio.to_thread(

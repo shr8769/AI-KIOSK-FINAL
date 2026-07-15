@@ -108,6 +108,17 @@ class RIARClarifier:
         """
         ambiguity_type = classification.ambiguity_type
 
+        if ambiguity_type == "CLEAR":
+            raise ValueError("No clarification needed for CLEAR queries.")
+
+        try:
+            from riar.heuristics import get_heuristic_match
+            heuristic = get_heuristic_match(query)
+            if heuristic:
+                return heuristic["question"]
+        except Exception as e:
+            logger.error(f"Heuristics checking in clarifier failed: {e}")
+
         history_str = "No prior context."
         if session_history:
             history_str = "\n".join(

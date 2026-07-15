@@ -137,7 +137,7 @@ def test_cross_domain_names_both_domains(mock_llm_cross_domain):
         reasoning="Spans admissions and academics",
     )
 
-    result = clarifier.generate_question("What are the fees?", classification, [])
+    result = clarifier.generate_question("Can you tell me about courses and placements?", classification, [])
     assert (
         result
         == "Are you asking about the admission fee structure or the academic course fees?"
@@ -161,4 +161,4 @@ def test_clear_raises_error(mock_llm_semantic):
     )
 
     with pytest.raises(ValueError, match="No clarification needed for CLEAR queries"):
-        clarifier.generate_question("What is the fee for BTech?", classification, [])
+        clarifier.generate_question("What is the course syllabus for BTech?", classification, [])
