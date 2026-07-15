@@ -1,11 +1,14 @@
 import pytest
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.pool import NullPool
+from backend.app.core.config import settings
+from database.models.models import OfficeEscalation
+from database.models.models import Role as PGRole
+from database.models.models import Session as PGSession
+from database.models.models import User as PGUser
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.future import select
+from sqlalchemy.pool import NullPool
 
 from app.services.query_pipeline import run_query_pipeline
-from database.models.models import User as PGUser, Role as PGRole, Session as PGSession, OfficeEscalation
-from backend.app.core.config import settings
 
 
 def _make_test_engine():

@@ -132,7 +132,6 @@ def get_riar_pipeline():
     """
     logger.info("Lazy-loading RIAR Pipeline...")
     import sys
-    from unittest.mock import MagicMock
 
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
     if root not in sys.path:
@@ -228,7 +227,7 @@ Conversational {lang_name} translation:"""
 def translate_to_english(text: str, source_lang: str = "auto") -> str:
     if not text or not text.strip() or source_lang == "en":
         return text
-    
+
     # Try LLM-based translation first
     if source_lang in ("kn", "hi"):
         translated_llm = translate_to_english_llm(text, source_lang)

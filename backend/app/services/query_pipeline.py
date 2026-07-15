@@ -23,8 +23,8 @@ from app.services.speech.tts_service import tts_service
 def local_spelling_corrector(query: str) -> str:
     import difflib
     STANDARD_TERMS = [
-        "microsoft", "admissions", "placement", "placements", "scholarship", "scholarships", 
-        "internship", "internships", "academic", "academics", "hostel", "hostels", 
+        "microsoft", "admissions", "placement", "placements", "scholarship", "scholarships",
+        "internship", "internships", "academic", "academics", "hostel", "hostels",
         "canteen", "library", "office", "entrance", "fees", "admission"
     ]
     words = query.split()
@@ -132,8 +132,9 @@ async def make_conversational(text: str, lang: str) -> str:
     )
 
     try:
-        from app.core.dependencies import get_riar_pipeline
         import asyncio
+
+        from app.core.dependencies import get_riar_pipeline
         pipeline = get_riar_pipeline()
         llm = pipeline.llm_client
         response = await asyncio.to_thread(llm.invoke, prompt)
@@ -216,11 +217,11 @@ async def run_query_pipeline(
         was_refined = True
         from app.core.dependencies import get_riar_pipeline
         pipeline = get_riar_pipeline()
-        
+
         orig_q = outstanding.get("original_query")
         clar_q = outstanding.get("clarification_question")
         amb_t = outstanding.get("ambiguity_type", "CLEAR")
-        
+
         import asyncio
         refined_res = await asyncio.to_thread(
             pipeline.refine,
@@ -231,10 +232,10 @@ async def run_query_pipeline(
         )
         logger.info(f"RIAR Merged query: '{orig_q}' + response '{query_en}' -> '{refined_res.refined_query}'")
         query_en = refined_res.refined_query
-        
+
         from app.core.session_store import update_session_metadata
         await update_session_metadata(session_id, {"outstanding_clarification": None})
-        
+
         # Reload the updated session to get the latest DB metadata
         updated_session = await get_session(session_id)
 
@@ -515,7 +516,7 @@ async def run_query_pipeline(
                     from app.core.dependencies import get_riar_pipeline
                     pipeline = get_riar_pipeline()
                     llm = pipeline.llm_client
-                except Exception as e:
+                except Exception:
                     llm = None
 
                 question_prompt = f"""You are the Clarification Engine for VidyaSahayak, the PES University Kiosk.
@@ -585,8 +586,8 @@ Clarification Question:"""
 
                 # Query Postgres User to get more accurate name or contact info if they registered
                 if u_id and u_id != "usr_guest":
-                    from database.postgres.connection import AsyncSessionLocal
                     from database.models.models import User as PGUser
+                    from database.postgres.connection import AsyncSessionLocal
                     from sqlalchemy.future import select
 
                     try:
@@ -621,8 +622,8 @@ Clarification Question:"""
 
             # Save the escalation ticket to postgres
             try:
-                from database.postgres.connection import AsyncSessionLocal
                 from database.models.models import OfficeEscalation
+                from database.postgres.connection import AsyncSessionLocal
 
                 async with AsyncSessionLocal() as db_session:
                     escalation = OfficeEscalation(

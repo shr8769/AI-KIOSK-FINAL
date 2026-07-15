@@ -1,10 +1,13 @@
-import pytest
-from riar.heuristics import get_heuristic_match
-from riar.classifiers.classifier import RIARClassifier
-from riar.clarifiers.clarifier import RIARClarifier
-from riar.mergers.merger import RIARMerger
 from unittest.mock import MagicMock
+
+import pytest
+from riar.clarifiers.clarifier import RIARClarifier
+from riar.classifiers.classifier import RIARClassifier
+from riar.heuristics import get_heuristic_match
+from riar.mergers.merger import RIARMerger
+
 from app.services.query_pipeline import local_spelling_corrector
+
 
 def test_heuristic_matching():
     # 1. Test microsoft pattern
@@ -37,7 +40,7 @@ def test_classifier_heuristics():
     # Even with a dummy LLM, classification should resolve matched heuristics fast-path
     mock_llm = MagicMock()
     classifier = RIARClassifier(llm=mock_llm)
-    
+
     result = classifier.classify("what is microsoft?", {})
     assert result.requires_clarification is True
     assert result.ambiguity_type == "CROSS_DOMAIN"
@@ -47,10 +50,10 @@ def test_classifier_heuristics():
 def test_clarifier_heuristics():
     mock_llm = MagicMock()
     clarifier = RIARClarifier(llm=mock_llm)
-    
+
     classification = MagicMock()
     classification.ambiguity_type = "CROSS_DOMAIN"
-    
+
     question = clarifier.generate_question("what is microsoft?", classification)
     assert "Microsoft campus placements" in question
 
@@ -58,7 +61,7 @@ def test_clarifier_heuristics():
 def test_merger_heuristics():
     mock_llm = MagicMock()
     merger = RIARMerger(llm=mock_llm)
-    
+
     # Placements response
     merged = merger.merge("what is microsoft?", "Are you interested in Microsoft...", "placements")
     assert "recruitment process for Microsoft" in merged

@@ -21,6 +21,7 @@ Message protocol:
 
 import asyncio
 import json
+from typing import Optional
 
 from fastapi import Depends, WebSocket, WebSocketDisconnect
 

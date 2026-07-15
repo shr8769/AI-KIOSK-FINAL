@@ -3,6 +3,7 @@ Event Ingestion Route — POST /api/v1/events
 Owner: Harsha (Engineering Lead)
 """
 
+import asyncio
 import logging
 import uuid
 from datetime import datetime
@@ -14,7 +15,6 @@ from pydantic import BaseModel
 from app.core.dependencies import ConnectionManager, get_connection_manager
 from app.core.session_store import create_session, update_session_metadata
 
-import asyncio
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
@@ -51,7 +51,7 @@ async def background_greeting_task(
             logger.info(f"Face matching completed/notified for session {session_id}.")
         except asyncio.TimeoutError:
             logger.info(f"Face matching timed out (3s) for session {session_id}. Falling back to generic greeting.")
-    
+
     # Cleanup event registry
     greeting_events.pop(session_id, None)
 
@@ -64,7 +64,7 @@ async def background_greeting_task(
 
     user_id = session.metadata.get("user_id")
     user_name = session.metadata.get("user_name")
-    
+
     if user_id:
         first_name = user_name.split()[0] if user_name.strip() else "there"
         recommendations = session.metadata.get("recommendations", [])

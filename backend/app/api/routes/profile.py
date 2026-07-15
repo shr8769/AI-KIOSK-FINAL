@@ -130,8 +130,8 @@ async def register(request: RegisterRequest):
 
     # 5. Save to PostgreSQL as well
     try:
-        from database.postgres.connection import AsyncSessionLocal
         from database.models.models import User as PGUser
+        from database.postgres.connection import AsyncSessionLocal
         from sqlalchemy.future import select
 
         async with AsyncSessionLocal() as db_session:
