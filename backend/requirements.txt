@@ -45,6 +45,7 @@ rapidfuzz>=3.5.0
 # Database
 asyncpg>=0.29.0
 pgvector>=0.3.1
+SQLAlchemy>=2.0.0
 
 # Computer Vision & Firebase
 opencv-python-headless>=4.8.0
