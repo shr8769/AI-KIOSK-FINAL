@@ -47,7 +47,7 @@ class NavigationEngine:
             # Check if this is the start of a vertical floor transition (Lift / Stairs)
             if curr_floor != next_floor:
                 transit_type = "Lift" if "lift" in next_node.name.lower() or "lift" in curr_node.name.lower() else "Stairs"
-                
+
                 # Consume all consecutive nodes that are part of this lift/stairs vertical movement
                 final_floor = next_floor
                 while i < len(path) - 1:
@@ -58,7 +58,7 @@ class NavigationEngine:
                         i += 1
                     else:
                         break
-                
+
                 dest_floor_name = floor_names.get(final_floor, f"Floor {final_floor}")
                 instructions.append(f"Take the {transit_type} to the {dest_floor_name}")
             else:
@@ -68,7 +68,7 @@ class NavigationEngine:
                     else:
                         if not instructions or "Continue down the corridor" not in instructions[-1]:
                             instructions.append("Continue down the corridor")
-            
+
             i += 1
 
         instructions.append(f"Proceed towards {path[-1].name}")
