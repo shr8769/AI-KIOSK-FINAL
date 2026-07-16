@@ -11,8 +11,10 @@ class AStar:
         self.loader = loader
 
     def heuristic(self, node_a: Node, node_b: Node) -> float:
-        """Euclidean distance between two nodes."""
-        return math.sqrt((node_a.x - node_b.x) ** 2 + (node_a.y - node_b.y) ** 2)
+        """3D-aware distance heuristic between two nodes."""
+        xy_dist = math.sqrt((node_a.x - node_b.x) ** 2 + (node_a.y - node_b.y) ** 2)
+        floor_penalty = abs(getattr(node_a, 'floor', 0) - getattr(node_b, 'floor', 0)) * 250
+        return xy_dist + floor_penalty
 
     def find_path(self, start_id: str, goal_id: str) -> Tuple[List[Node], float]:
         """

@@ -1,175 +1,263 @@
 [
     {
+        "id": "office",
+        "name": "Administrative Office",
+        "building": "Main Block",
+        "floor": 0,
+        "room": "001",
+        "aliases": ["office", "admin office", "administrative office"],
+        "graph_node": "OFFICE"
+    },
+    {
+        "id": "principal_room",
+        "name": "Principal Room",
+        "building": "Main Block",
+        "floor": 0,
+        "room": "002",
+        "aliases": ["principal office", "principal room", "principal"],
+        "graph_node": "PRINCIPAL"
+    },
+    {
+        "id": "seminar_hall_001",
+        "name": "Seminar Hall 001",
+        "building": "Main Block",
+        "floor": 0,
+        "room": "SH-001",
+        "aliases": ["seminar hall 001", "sh 001"],
+        "graph_node": "SEM_001"
+    },
+    {
+        "id": "seminar_hall_002",
+        "name": "Seminar Hall 002",
+        "building": "Main Block",
+        "floor": 0,
+        "room": "SH-002",
+        "aliases": ["seminar hall 002", "sh 002"],
+        "graph_node": "SEM_002"
+    },
+    {
         "id": "library",
         "name": "Central Library",
-        "building": "Knowledge Resource Center",
-        "floor": 0,
-        "room": "RM-10",
-        "aliases": [
-            "library",
-            "central library",
-            "lib"
-        ],
-        "graph_node": "Library",
-        "map_coords": {
-            "x": 672,
-            "y": 411
-        },
-        "directions": [
-            "Enter through the main campus gate",
-            "Walk straight past the central fountain",
-            "The library is the large glass building on your left."
-        ]
+        "building": "Main Block",
+        "floor": 1,
+        "room": "LIB-101",
+        "aliases": ["library", "central library", "lib"],
+        "graph_node": "LIBRARY"
     },
     {
         "id": "physics_lab",
         "name": "Physics Laboratory",
-        "building": "Block 5",
-        "floor": 2,
-        "room": "PL-201",
-        "aliases": [
-            "physics lab",
-            "physics laboratory",
-            "phy lab"
-        ],
-        "graph_node": "PhysicsLab",
-        "map_coords": {
-            "x": 450,
-            "y": 300
-        },
-        "directions": [
-            "Go to Block 5",
-            "Take the elevator to the 2nd floor",
-            "Turn right, the Physics Lab is Room PL-201."
-        ]
-    },
-    {
-        "id": "placement_cell",
-        "name": "Placement Cell",
-        "building": "Administrative Block",
+        "building": "Main Block",
         "floor": 1,
-        "room": "RM-20",
-        "aliases": [
-            "placement cell",
-            "placement office",
-            "placements"
-        ],
-        "graph_node": "PlacementCell",
-        "map_coords": {
-            "x": 328,
-            "y": 381
-        },
-        "directions": [
-            "Enter the Administrative Block",
-            "Take the stairs on your left to the 1st floor",
-            "Walk down the corridor to Room 104."
-        ]
+        "room": "PL-101",
+        "aliases": ["physics lab", "physics laboratory", "phy lab"],
+        "graph_node": "PHYSICS_LAB"
     },
     {
-        "id": "research_foundation",
-        "name": "Research Foundation",
-        "building": "Engineering Block C",
-        "floor": 3,
-        "room": "RM-30",
-        "aliases": [
-            "research foundation",
-            "prf",
-            "pes research foundation"
-        ],
-        "graph_node": "Research",
-        "map_coords": {
-            "x": 512,
-            "y": 210
-        },
-        "directions": [
-            "Head to Engineering Block C",
-            "Take the elevator to the 3rd floor",
-            "Follow the signs to the Research Wing."
-        ]
+        "id": "digital_library",
+        "name": "Digital Library",
+        "building": "Main Block",
+        "floor": 2,
+        "room": "DL-201",
+        "aliases": ["digital library", "digilib"],
+        "graph_node": "DIGITAL_LIBRARY"
     },
     {
-        "id": "admin_office",
-        "name": "Admin Office",
-        "building": "Administrative Block",
-        "floor": 0,
-        "room": "RM-01",
-        "aliases": [
-            "admin office",
-            "office",
-            "administration"
-        ],
-        "graph_node": "Admin",
-        "map_coords": {
-            "x": 320,
-            "y": 380
-        },
-        "directions": [
-            "Enter the Administrative Block",
-            "The Admin Office is immediately on your right."
-        ]
+        "id": "computer_lab_2",
+        "name": "Computer Laboratory",
+        "building": "Main Block",
+        "floor": 2,
+        "room": "CL-201",
+        "aliases": ["computer lab", "comp lab", "computer laboratory"],
+        "graph_node": "COMPUTER_LAB_2"
     },
     {
         "id": "cafeteria",
         "name": "Cafeteria",
-        "building": "Student Center",
-        "floor": 0,
-        "room": "RM-00",
-        "aliases": [
-            "cafeteria",
-            "canteen",
-            "food court"
-        ],
-        "graph_node": "Cafeteria",
-        "map_coords": {
-            "x": 800,
-            "y": 600
-        },
-        "directions": [
-            "Walk past the main academic blocks",
-            "Head towards the open sports field",
-            "The Cafeteria is the large building next to the pavilion."
-        ]
+        "building": "Main Block",
+        "floor": 4,
+        "room": "CAF-401",
+        "aliases": ["cafeteria", "canteen", "food court"],
+        "graph_node": "CAFETERIA"
     },
     {
-        "id": "auditorium",
-        "name": "Main Auditorium",
-        "building": "Cultural Center",
+        "id": "cr_001",
+        "name": "Class Room 001",
+        "building": "Main Block",
+        "floor": 0,
+        "room": "001",
+        "aliases": ["classroom 001", "cr 001", "class room 001"],
+        "graph_node": "CR_001"
+    },
+    {
+        "id": "cr_002",
+        "name": "Class Room 002",
+        "building": "Main Block",
+        "floor": 0,
+        "room": "002",
+        "aliases": ["classroom 002", "cr 002", "class room 002"],
+        "graph_node": "CR_002"
+    },
+    {
+        "id": "cr_003",
+        "name": "Class Room 003",
+        "building": "Main Block",
+        "floor": 0,
+        "room": "003",
+        "aliases": ["classroom 003", "cr 003", "class room 003"],
+        "graph_node": "CR_003"
+    },
+    {
+        "id": "cr_004",
+        "name": "Class Room 004",
+        "building": "Main Block",
+        "floor": 0,
+        "room": "004",
+        "aliases": ["classroom 004", "cr 004", "class room 004"],
+        "graph_node": "CR_004"
+    },
+    {
+        "id": "cr_101",
+        "name": "Class Room 101",
+        "building": "Main Block",
         "floor": 1,
-        "room": "AUD-1",
-        "aliases": [
-            "auditorium",
-            "seminar hall",
-            "main hall"
-        ],
-        "graph_node": "Auditorium",
-        "map_coords": {
-            "x": 600,
-            "y": 500
-        },
-        "directions": [
-            "Go to the Cultural Center",
-            "Take the main staircase to the 1st floor",
-            "The Auditorium doors are straight ahead."
-        ]
+        "room": "101",
+        "aliases": ["classroom 101", "cr 101", "class room 101"],
+        "graph_node": "CR_101"
     },
     {
-        "id": "atm",
-        "name": "Campus ATM",
-        "building": "Student Center",
-        "floor": 0,
-        "room": "ATM-1",
-        "aliases": [
-            "atm",
-            "cash machine"
-        ],
-        "graph_node": "ATM",
-        "map_coords": {
-            "x": 810,
-            "y": 610
-        },
-        "directions": [
-            "Go to the Student Center",
-            "The ATM is located outside, near the main entrance."
-        ]
+        "id": "cr_102",
+        "name": "Class Room 102",
+        "building": "Main Block",
+        "floor": 1,
+        "room": "102",
+        "aliases": ["classroom 102", "cr 102", "class room 102"],
+        "graph_node": "CR_102"
+    },
+    {
+        "id": "cr_103",
+        "name": "Class Room 103",
+        "building": "Main Block",
+        "floor": 1,
+        "room": "103",
+        "aliases": ["classroom 103", "cr 103", "class room 103"],
+        "graph_node": "CR_103"
+    },
+    {
+        "id": "cr_104",
+        "name": "Class Room 104",
+        "building": "Main Block",
+        "floor": 1,
+        "room": "104",
+        "aliases": ["classroom 104", "cr 104", "class room 104"],
+        "graph_node": "CR_104"
+    },
+    {
+        "id": "cr_201",
+        "name": "Class Room 201",
+        "building": "Main Block",
+        "floor": 2,
+        "room": "201",
+        "aliases": ["classroom 201", "cr 201", "class room 201"],
+        "graph_node": "CR_201"
+    },
+    {
+        "id": "cr_202",
+        "name": "Class Room 202",
+        "building": "Main Block",
+        "floor": 2,
+        "room": "202",
+        "aliases": ["classroom 202", "cr 202", "class room 202"],
+        "graph_node": "CR_202"
+    },
+    {
+        "id": "cr_203",
+        "name": "Class Room 203",
+        "building": "Main Block",
+        "floor": 2,
+        "room": "203",
+        "aliases": ["classroom 203", "cr 203", "class room 203"],
+        "graph_node": "CR_203"
+    },
+    {
+        "id": "cr_204",
+        "name": "Class Room 204",
+        "building": "Main Block",
+        "floor": 2,
+        "room": "204",
+        "aliases": ["classroom 204", "cr 204", "class room 204"],
+        "graph_node": "CR_204"
+    },
+    {
+        "id": "cr_301",
+        "name": "Class Room 301",
+        "building": "Main Block",
+        "floor": 3,
+        "room": "301",
+        "aliases": ["classroom 301", "cr 301", "class room 301"],
+        "graph_node": "CR_301"
+    },
+    {
+        "id": "cr_302",
+        "name": "Class Room 302",
+        "building": "Main Block",
+        "floor": 3,
+        "room": "302",
+        "aliases": ["classroom 302", "cr 302", "class room 302"],
+        "graph_node": "CR_302"
+    },
+    {
+        "id": "cr_303",
+        "name": "Class Room 303",
+        "building": "Main Block",
+        "floor": 3,
+        "room": "303",
+        "aliases": ["classroom 303", "cr 303", "class room 303"],
+        "graph_node": "CR_303"
+    },
+    {
+        "id": "cr_304",
+        "name": "Class Room 304",
+        "building": "Main Block",
+        "floor": 3,
+        "room": "304",
+        "aliases": ["classroom 304", "cr 304", "class room 304"],
+        "graph_node": "CR_304"
+    },
+    {
+        "id": "cr_401",
+        "name": "Class Room 401",
+        "building": "Main Block",
+        "floor": 4,
+        "room": "401",
+        "aliases": ["classroom 401", "cr 401", "class room 401"],
+        "graph_node": "CR_401"
+    },
+    {
+        "id": "cr_402",
+        "name": "Class Room 402",
+        "building": "Main Block",
+        "floor": 4,
+        "room": "402",
+        "aliases": ["classroom 402", "cr 402", "class room 402"],
+        "graph_node": "CR_402"
+    },
+    {
+        "id": "cr_403",
+        "name": "Class Room 403",
+        "building": "Main Block",
+        "floor": 4,
+        "room": "403",
+        "aliases": ["classroom 403", "cr 403", "class room 403"],
+        "graph_node": "CR_403"
+    },
+    {
+        "id": "cr_404",
+        "name": "Class Room 404",
+        "building": "Main Block",
+        "floor": 4,
+        "room": "404",
+        "aliases": ["classroom 404", "cr 404", "class room 404"],
+        "graph_node": "CR_404"
     }
 ]
