@@ -15,7 +15,7 @@ def get_strict_fast_path_domain(query_en: str) -> Optional[str]:
     # Must explicitly ask for location, direction, or "where is"
     nav_patterns = [
         r"^where is (the|an? )?.+$",
-        r"^(how do i get to|directions to|route to|navigate to) .+$",
+        r"^(how do i get to|directions to|route to|navigate to|way to|tell me the way to|show me the way to) .+$",
         r"^where can i find (the|an? )?.+$",
         r"^locate .+$"
     ]

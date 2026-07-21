@@ -302,6 +302,9 @@ async def _handle_text_query(mgr: ConnectionManager, session_id: str, payload: d
         logger.info(f"WS [{session_id}] Text query processing task cancelled.")
         raise
     except Exception as e:
+        import traceback
+        with open("crash.txt", "w") as f:
+            f.write(traceback.format_exc())
         logger.exception(f"Pipeline error for text query [{session_id}]: {e}")
         fallback_msg = "I'm sorry, I encountered a temporary issue while processing your request. Please try again."
         await mgr.send(session_id, {"type": "error", "payload": {"message": fallback_msg, "code": "pipeline_error"}})

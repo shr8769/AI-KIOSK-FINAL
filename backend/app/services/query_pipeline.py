@@ -56,40 +56,8 @@ async def correct_and_normalize_query(query: str) -> str:
     except Exception as e:
         logger.error(f"Local spelling correction failed: {e}")
 
-    # Bypass LLM query normalization/expansion for single-word queries
-    # to prevent expanding them into clear/complete sentences before RIAR classification.
-    clean_query = re.sub(r"[^\w\s]", "", query).strip()
-    if len(clean_query.split()) <= 1:
-        logger.info(f"Query '{query}' has 1 or fewer words. Skipping LLM query normalization/expansion.")
-        return query
-
-    try:
-        from app.core.dependencies import get_riar_pipeline
-        pipeline = get_riar_pipeline()
-        llm = pipeline.llm_client
-    except Exception as e:
-        logger.error(f"Failed to get LLM client for query correction: {e}")
-        return query
-
-    prompt = f"""You are a spelling corrector and query normalization engine for the PES University AI Kiosk.
-Your job is to fix any spelling mistakes (e.g. "micosoft" -> "microsoft", "admisions" -> "admissions", "pacement" -> "placement") and normalize queries asked in different ways to make them clear and standard (e.g. "how do I get a job here" -> "What are the placement statistics and job opportunities?").
-
-Strictly return ONLY the corrected/normalized query string. Do not include any explanation, quotes, introductory text, or Markdown formatting.
-
-Original query: "{query}"
-Corrected query:"""
-
-    try:
-        import asyncio
-        response = await asyncio.to_thread(llm.invoke, prompt)
-        corrected = response.content.strip().strip('"').strip("'").strip()
-        if corrected:
-            logger.info(f"Query normalization: '{query}' -> '{corrected}'")
-            return corrected
-        return query
-    except Exception as e:
-        logger.error(f"Query normalization failed: {e}")
-        return query
+    # Bypass LLM query normalization entirely to save latency (saves ~500ms-1s per turn)
+    return query
 
 
 async def make_conversational(text: str, lang: str) -> str:
@@ -124,11 +92,12 @@ async def make_conversational(text: str, lang: str) -> str:
         f"Rewrite the following {lang_name} text to sound natural and conversational, "
         f"like how educated urban Indians actually speak — mixing {lang_name} grammar with "
         f"common English words (technical terms, brand names, numbers, and short phrases can stay in English). "
+        f"CRITICAL: You MUST write the final output entirely in the Roman alphabet (English/Latin letters/Hinglish). Do NOT use Devanagari or Kannada scripts. "
         f"Keep all factual information exactly the same. Do NOT translate everything to English. "
-        f"Keep it warm, friendly, and short. Return ONLY the rewritten text, no explanation.\n"
+        f"Keep it warm, friendly, and short. Return ONLY the rewritten Romanized text, no explanation.\n"
         f"{mix_example}\n"
         f"Text to rewrite:\n{text}\n"
-        f"Conversational {lang_name} version:"
+        f"Conversational Romanized {lang_name} version:"
     )
 
     try:
@@ -211,6 +180,34 @@ async def run_query_pipeline(
     outstanding = None
     if updated_session and updated_session.metadata:
         outstanding = updated_session.metadata.get("outstanding_clarification")
+
+    if not outstanding:
+        # Check for contextual pronouns and implicitly resolve them using history
+        query_en_lower = query_en.lower()
+        if re.search(r'\b(it|its|they|them|their|he|his|she|her|there)\b', query_en_lower):
+            if updated_session:
+                history = updated_session.metadata.get("history", [])
+                if len(history) >= 2:
+                    # Find the last answer given by the agent
+                    last_agent_turn = None
+                    for turn in reversed(history):
+                        if turn.get("role") == "agent":
+                            last_agent_turn = turn
+                            break
+                    
+                    if last_agent_turn:
+                        try:
+                            from app.core.dependencies import get_riar_pipeline
+                            import asyncio
+                            pipeline = get_riar_pipeline()
+                            prompt = f"Given the previous answer: '{last_agent_turn.get('content')}', rewrite this query to be clear and self-contained by replacing pronouns with the subject: '{query_en}'\nOutput ONLY the rewritten query. If it cannot be resolved, output the original query."
+                            response = await asyncio.to_thread(pipeline.llm_client.invoke, prompt)
+                            rewritten = response.content.strip().strip('"').strip("'")
+                            if rewritten and rewritten.lower() != query_en_lower:
+                                logger.info(f"Implicit Context Resolution: '{query_en}' -> '{rewritten}'")
+                                query_en = rewritten
+                        except Exception as e:
+                            logger.error(f"Contextual rewrite failed: {e}")
 
     was_refined = False
     if outstanding:
@@ -679,20 +676,29 @@ Clarification Question:"""
                 user_id = db_sess.user_id
 
         latency_ms = int((time.perf_counter() - start_time) * 1000)
-        async with AsyncSessionLocal() as db_session:
-            store = QueryStore(db_session)
-            await store.store_query(
-                session_id=session_id,
-                user_id=user_id,
-                query_text=clean_transcript,
-                refined_query=refined_query,
-                response_text=response_text,
-                domain=domain,
-                language=detected_lang,
-                ambiguity_type=ambiguity_type,
-                latency_ms=latency_ms,
-            )
+        
+        async def log_to_db():
+            try:
+                async with AsyncSessionLocal() as db_session:
+                    store = QueryStore(db_session)
+                    await store.store_query(
+                        session_id=session_id,
+                        user_id=user_id,
+                        query_text=clean_transcript,
+                        refined_query=refined_query,
+                        response_text=response_text,
+                        domain=domain,
+                        language=detected_lang,
+                        ambiguity_type=ambiguity_type,
+                        latency_ms=latency_ms,
+                    )
+            except Exception as e:
+                logger.error(f"Background DB logging failed: {e}")
+                
+        import asyncio
+        asyncio.create_task(log_to_db())
+
     except Exception as db_e:
-        logger.error(f"Failed to log user query to PostgreSQL: {db_e}")
+        logger.error(f"Failed to setup background DB logging: {db_e}")
 
     return result

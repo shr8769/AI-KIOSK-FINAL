@@ -6,32 +6,15 @@ import { initWebGL, updateUniforms, WebGLContext } from './orbWebGL';
 import { drawGlassShell, drawAura } from './orbCanvas2D';
 import { startMicAnalysis, stopMicAnalysis, getWavBase64, MicHandle } from './orbAudio';
 import { Typewriter } from '@/components/ui/typewriter-text';
+import { OrbController } from './OrbController';
 
 interface VidyaSahayakOrbProps {
-  /** Controlled state from parent (optional) */
-  state?: OrbState;
-  /** Called when orb wants to change state internally */
-  onStateChange?: (state: OrbState) => void;
-  /** Show demo auto-sequence on mount */
+  controller: OrbController;
   autoDemo?: boolean;
-  /** Show state label + description below orb */
   showLabels?: boolean;
-  /** Show state control buttons */
   showControls?: boolean;
-  /** Show microphone button */
   showMic?: boolean;
-  /** Orb diameter in px */
   size?: number;
-  /** Custom label to show instead of standard state label */
-  customLabel?: string;
-  /** Custom description to show in Typewriter */
-  customDesc?: string;
-  /** Callback fired when user stops mic recording and WAV is generated */
-  onAudioReady?: (audioBase64: string) => void;
-  /** Active TTS audio element for lip sync */
-  activeAudioElement?: HTMLAudioElement | null;
-  /** Callback fired when user interrupts the avatar */
-  onBargeIn?: () => void;
 }
 
 /** Linearly interpolate between a and b by k */
@@ -51,19 +34,13 @@ const LERP_FIELDS: (keyof OrbStateConfig)[] = [
 
 const TRANS_DUR = 1600; // ms
 
-export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
-  state: controlledState,
-  onStateChange,
+const VidyaSahayakOrbBase: React.FC<VidyaSahayakOrbProps> = ({
+  controller,
   autoDemo = true,
   showLabels = true,
   showControls = true,
   showMic = true,
   size = 300,
-  customLabel,
-  customDesc,
-  onAudioReady,
-  onBargeIn,
-  activeAudioElement,
 }) => {
   const glCanvasRef  = useRef<HTMLCanvasElement>(null);
   const glassCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -83,14 +60,27 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   const voiceAmpRef   = useRef<number>(0);
   const demoTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [activeId, setActiveId]   = useState<OrbState>('idle');
-  const [label, setLabel]         = useState('Idle');
-  const [desc, setDesc]           = useState('Waiting for you');
+  // Subscribe to controller for UI rendering (labels/mic toggle)
+  const [activeId, setActiveId]   = useState<OrbState>(controller.currentState);
+  const [customLabel, setCustomLabel] = useState<string | undefined>(controller.customLabel);
+  const [customDesc, setCustomDesc]   = useState<string | undefined>(controller.customDesc);
   const [micOn, setMicOn]         = useState(false);
   const [micAvail, setMicAvail]   = useState(true);
 
+  useEffect(() => {
+    return controller.subscribe(() => {
+      setActiveId(controller.currentState);
+      setCustomLabel(controller.customLabel);
+      setCustomDesc(controller.customDesc);
+    });
+  }, [controller]);
+
+  const defaultCfg = ORB_STATES.find(s => s.id === activeId) ?? ORB_STATES[0];
+  const label = customLabel || defaultCfg.label;
+  const desc = customDesc || defaultCfg.desc;
+
   // References to keep state values fresh inside render loops
-  const activeIdRef   = useRef<OrbState>('idle');
+  const activeIdRef   = useRef<OrbState>(controller.currentState);
   const micOnRef      = useRef<boolean>(false);
   const hasSpokenRef  = useRef<boolean>(false);
   const silenceStartRef = useRef<number | null>(null);
@@ -103,16 +93,13 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   const noiseSamplesRef = useRef<number[]>([]);
   const silenceThresholdRef = useRef<number>(0.018);
 
-  /* ─── set state ─── */
+  /* ─── set state (internal use mostly) ─── */
   const applyState = useCallback((id: OrbState) => {
     const cfg = ORB_STATES.find(s => s.id === id) ?? ORB_STATES[0];
     prevStateRef.current = { ...curRef.current };
     targetRef.current    = cfg;
     transStartRef.current = performance.now();
-    setActiveId(id);
     activeIdRef.current = id;
-    setLabel(cfg.label);
-    setDesc(cfg.desc);
 
     // Reset VAD state when starting to listen
     if (id === 'listening') {
@@ -127,9 +114,7 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
     if (['thinking', 'speaking', 'retrieving', 'clarifying'].includes(id)) {
       bargeInCooldownRef.current = performance.now() + 1500;
     }
-
-    onStateChange?.(id);
-  }, [onStateChange]);
+  }, []);
 
   /* ─── demo sequence ─── */
   const runDemo = useCallback(() => {
@@ -137,11 +122,11 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
     function next() {
       if (si >= STATE_SEQUENCE.length) { si = 0; return; }
       const { id, duration } = STATE_SEQUENCE[si++];
-      applyState(id);
+      controller.setState(id as OrbState);
       if (duration > 0) demoTimerRef.current = setTimeout(next, duration);
     }
     demoTimerRef.current = setTimeout(next, 500);
-  }, [applyState]);
+  }, [controller]);
 
   const stopDemo = useCallback(() => {
     if (demoTimerRef.current) clearTimeout(demoTimerRef.current);
@@ -151,19 +136,16 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   const toggleMic = useCallback(async () => {
     stopDemo();
     if (micOnRef.current) {
-      // 1. Generate base64 encoded audio of what was recorded
+      // Generate base64 encoded audio of what was recorded
       const audioBase64 = getWavBase64(micHandleRef.current);
-      
-      // 2. Tear down the stream/context
       stopMicAnalysis(micHandleRef.current);
       micHandleRef.current = null;
       setMicOn(false);
       micOnRef.current = false;
-      applyState('thinking');
+      controller.setState('thinking');
       
-      // 3. Fire callback if successful
       if (audioBase64) {
-        onAudioReady?.(audioBase64);
+        controller.onAudioReady?.(audioBase64);
       }
     } else {
       const handle = await startMicAnalysis();
@@ -171,50 +153,53 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       micHandleRef.current = handle;
       setMicOn(true);
       micOnRef.current = true;
-      applyState('listening');
+      controller.setState('listening');
     }
-  }, [applyState, stopDemo, onAudioReady]);
+  }, [controller, stopDemo]);
 
-  // Keep a mutable reference to toggleMic so the render frame loop can call it without stale closures
   const toggleMicRef = useRef<() => Promise<void>>();
   useEffect(() => {
     toggleMicRef.current = toggleMic;
   }, [toggleMic]);
 
-  /* ─── TTS Analyser ─── */
+  /* ─── TTS Analyser sync loop ─── */
   useEffect(() => {
-    if (!activeAudioElement) {
-      if (ttsAnalyserRef.current) {
-        if (ttsAnalyserRef.current.ctx.state !== 'closed') ttsAnalyserRef.current.ctx.close();
-        ttsAnalyserRef.current = null;
+    const syncAudioElement = () => {
+      const audioEl = controller.activeAudioElement;
+      if (!audioEl) {
+        if (ttsAnalyserRef.current) {
+          if (ttsAnalyserRef.current.ctx.state !== 'closed') ttsAnalyserRef.current.ctx.close();
+          ttsAnalyserRef.current = null;
+        }
+        return;
       }
-      return;
-    }
-    try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioContext();
-      // Ensure context is running (fixes silent audio bug in some browsers)
-      if (ctx.state === 'suspended') {
-        ctx.resume().catch(e => console.warn("AudioContext resume failed:", e));
-      }
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize = 256;
-      const source = ctx.createMediaElementSource(activeAudioElement);
-      source.connect(analyser);
-      analyser.connect(ctx.destination);
-      const freqData = new Uint8Array(analyser.frequencyBinCount);
-      ttsAnalyserRef.current = { analyser, freqData, ctx };
+      // If we already attached to this audio element, do nothing
+      if (ttsAnalyserRef.current && (ttsAnalyserRef.current as any)._el === audioEl) return;
       
-      return () => {
-        source.disconnect();
-        analyser.disconnect();
-        if (ctx.state !== 'closed') ctx.close();
-        ttsAnalyserRef.current = null;
-      };
-    } catch (e) {
-      console.warn("Failed to create TTS analyser", e);
-    }
-  }, [activeAudioElement]);
+      try {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioContext();
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(e => console.warn("AudioContext resume failed:", e));
+        }
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        const source = ctx.createMediaElementSource(audioEl);
+        source.connect(analyser);
+        analyser.connect(ctx.destination);
+        const freqData = new Uint8Array(analyser.frequencyBinCount);
+        const ttsInfo = { analyser, freqData, ctx, _el: audioEl };
+        ttsAnalyserRef.current = ttsInfo;
+        
+      } catch (e) {
+        console.warn("Failed to create TTS analyser", e);
+      }
+    };
+    
+    // Poll for audio element changes to avoid React prop drilling
+    const interval = setInterval(syncAudioElement, 500);
+    return () => clearInterval(interval);
+  }, [controller]);
 
   /* ─── render loop ─── */
   useEffect(() => {
@@ -230,6 +215,11 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       const dt = Math.min(ts - lastTSRef.current, 50);
       lastTSRef.current = ts;
       timeRef.current += dt * 0.001;
+
+      // Sync state from controller
+      if (controller.currentState !== activeIdRef.current) {
+        applyState(controller.currentState);
+      }
 
       /* transition */
       const tk = eio(Math.min(1, (performance.now() - transStartRef.current) / TRANS_DUR));
@@ -294,33 +284,20 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       /* Update smoothed user amplitude */
       smoothedUserAmpRef.current = lerp(smoothedUserAmpRef.current, userAmp, 0.2);
 
-      /* Client-side VAD (Voice Activity Detection) with Noise Calibration */
+      /* Client-side VAD (Voice Activity Detection) */
       if (activeIdRef.current === 'listening' && micOnRef.current) {
-        const silenceDurationMs = 800;  // 800ms of silence (very snappy VAD)
+        const silenceDurationMs = 400;
         const timeSinceStart = performance.now() - listeningTimeStartRef.current;
 
         if (timeSinceStart < 400) {
-          // Calibration phase: gather ambient noise samples
-          if (noiseSamplesRef.current.length === 0) {
-            console.log('[VAD] Calibrating noise floor...');
-          }
+          if (noiseSamplesRef.current.length === 0) console.log('[VAD] Calibrating noise floor...');
           noiseSamplesRef.current.push(userAmp);
           const avgNoise = noiseSamplesRef.current.reduce((a, b) => a + b, 0) / noiseSamplesRef.current.length;
-          // Set threshold slightly above noise floor (at least 0.008, up to 0.12 max for safety)
           silenceThresholdRef.current = Math.min(0.12, Math.max(0.008, avgNoise + 0.005));
-          
-          // Print calibration summary towards the end of calibration
-          if (noiseSamplesRef.current.length > 5 && timeSinceStart > 370 && timeSinceStart < 390) {
-            console.log(`[VAD] Calibration complete. Noise Floor: ${avgNoise.toFixed(3)} | Threshold: ${silenceThresholdRef.current.toFixed(3)}`);
-          }
         } else {
-          // VAD Detection phase
           const threshold = silenceThresholdRef.current;
           if (smoothedUserAmpRef.current > threshold) {
-            if (!hasSpokenRef.current) {
-              console.log(`[VAD] Speech detected (amplitude: ${smoothedUserAmpRef.current.toFixed(3)} > threshold: ${threshold.toFixed(3)})`);
-              hasSpokenRef.current = true;
-            }
+            if (!hasSpokenRef.current) hasSpokenRef.current = true;
             silenceStartRef.current = null;
           } else if (hasSpokenRef.current) {
             if (silenceStartRef.current === null) {
@@ -336,13 +313,11 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
         }
       }
 
-      /* Client-side VAD Barge-in (Sustained Energy Check during Speaking or Thinking) */
-      if ((activeIdRef.current === 'speaking' || activeIdRef.current === 'thinking' || activeIdRef.current === 'retrieving' || activeIdRef.current === 'clarifying') && micOnRef.current) {
+      /* Client-side VAD Barge-in */
+      if (['speaking', 'thinking', 'retrieving', 'clarifying'].includes(activeIdRef.current) && micOnRef.current) {
         if (performance.now() < bargeInCooldownRef.current) {
-          // Skip VAD during cooldown window to prevent TTS tail-end echo triggering
           bargeInStartRef.current = null;
         } else {
-          // For states where the machine is silent (thinking, retrieving, clarifying), use lower threshold and snappier duration
           const isSilentState = activeIdRef.current !== 'speaking';
           const dynamicThreshold = isSilentState
             ? Math.max(0.03, silenceThresholdRef.current + 0.01)
@@ -354,15 +329,14 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
             if (bargeInStartRef.current === null) {
               bargeInStartRef.current = performance.now();
             } else if (performance.now() - bargeInStartRef.current > dynamicDurationMs) {
-              console.log(`[VAD] Sustained barge-in detected during ${activeIdRef.current}! User interrupted.`);
-              bargeInStartRef.current = null; // Reset
-              bargeInCooldownRef.current = performance.now() + 500; // 500ms cooldown
-              if (onBargeIn) {
-                setTimeout(() => onBargeIn(), 0);
+              console.log(`[VAD] Sustained barge-in detected! User interrupted.`);
+              bargeInStartRef.current = null; 
+              bargeInCooldownRef.current = performance.now() + 500;
+              if (controller.onBargeIn) {
+                setTimeout(() => controller.onBargeIn!(), 0);
               }
             }
           } else {
-            // Reset duration counter if amplitude drops
             bargeInStartRef.current = null;
           }
         }
@@ -387,37 +361,30 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       stopDemo();
       stopMicAnalysis(micHandleRef.current);
     };
-  }, []);
+  }, [controller, applyState, autoDemo, runDemo]);
 
-  /* sync controlled state */
+  /* Manage mic toggle syncing with controller state */
   useEffect(() => {
-    if (controlledState) {
-      stopDemo();
-      applyState(controlledState);
-
-      // Handle physical mic activation/deactivation based on controlled state
-      // Keep mic open in any active interactive states (listening, thinking, speaking, etc.)
-      const isInteractionActive = ['listening', 'thinking', 'speaking', 'retrieving', 'clarifying'].includes(controlledState);
-      if (isInteractionActive) {
-        if (!micOnRef.current) {
-          (async () => {
-            const handle = await startMicAnalysis();
-            if (!handle) { setMicAvail(false); return; }
-            micHandleRef.current = handle;
-            setMicOn(true);
-            micOnRef.current = true;
-          })();
-        }
-      } else {
-        if (micOnRef.current) {
-          stopMicAnalysis(micHandleRef.current);
-          micHandleRef.current = null;
-          setMicOn(false);
-          micOnRef.current = false;
-        }
+    const isInteractionActive = ['listening', 'thinking', 'speaking', 'retrieving', 'clarifying'].includes(activeId);
+    if (isInteractionActive) {
+      if (!micOnRef.current) {
+        (async () => {
+          const handle = await startMicAnalysis();
+          if (!handle) { setMicAvail(false); return; }
+          micHandleRef.current = handle;
+          setMicOn(true);
+          micOnRef.current = true;
+        })();
+      }
+    } else {
+      if (micOnRef.current) {
+        stopMicAnalysis(micHandleRef.current);
+        micHandleRef.current = null;
+        setMicOn(false);
+        micOnRef.current = false;
       }
     }
-  }, [controlledState, applyState, stopDemo]);
+  }, [activeId]);
 
   const canvasSize = size * 2; // HiDPI
   const auraSize   = Math.round(size * 1.34);
@@ -461,10 +428,10 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
       {showLabels && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 32, minHeight: 90 }}>
           <p style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 11, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', fontWeight: 600, transition: 'all 0.6s ease' }}>
-            {customLabel || label}
+            {label}
           </p>
           <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 22, color: 'rgba(255,255,255,0.95)', marginTop: 16, textAlign: 'center', fontWeight: 500, letterSpacing: '0.01em', transition: 'all 0.6s ease', maxWidth: '80%' }}>
-            <Typewriter key={customDesc || desc} text={customDesc || desc} speed={30} delay={showMic ? 3000 : 0} cursor="|" className="inline-block" />
+            <Typewriter key={desc} text={desc} speed={30} delay={showMic ? 3000 : 0} cursor="|" className="inline-block" />
           </div>
         </div>
       )}
@@ -499,7 +466,7 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
           {ORB_STATES.map(s => (
             <button
               key={s.id}
-              onClick={() => { stopDemo(); if (micOn) { stopMicAnalysis(micHandleRef.current); micHandleRef.current = null; setMicOn(false); } applyState(s.id as OrbState); }}
+              onClick={() => { stopDemo(); if (micOn) { stopMicAnalysis(micHandleRef.current); micHandleRef.current = null; setMicOn(false); } controller.setState(s.id as OrbState); }}
               style={{
                 fontFamily: 'system-ui, -apple-system, sans-serif',
                 fontSize: 9, fontWeight: 500, letterSpacing: '0.05em',
@@ -519,4 +486,5 @@ export const VidyaSahayakOrb: React.FC<VidyaSahayakOrbProps> = ({
   );
 };
 
+export const VidyaSahayakOrb = React.memo(VidyaSahayakOrbBase, () => true);
 export default VidyaSahayakOrb;

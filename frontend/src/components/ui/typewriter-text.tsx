@@ -2,6 +2,8 @@
 import * as React from "react"
 import { useEffect, useState } from "react";
  
+import ReactMarkdown from 'react-markdown';
+
 export interface TypewriterProps {
   text: string | string[];
   speed?: number;
@@ -10,6 +12,7 @@ export interface TypewriterProps {
   deleteSpeed?: number;
   delay?: number;
   className?: string;
+  useMarkdown?: boolean;
 }
  
 export function Typewriter({
@@ -20,6 +23,7 @@ export function Typewriter({
   deleteSpeed = 50,
   delay = 1500,
   className,
+  useMarkdown = true,
 }: TypewriterProps) {
   const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -70,8 +74,26 @@ export function Typewriter({
  
   return (
     <span className={className}>
-      {displayText}
-      <span className="animate-pulse">{cursor}</span>
+      {useMarkdown ? (
+        <ReactMarkdown
+          components={{
+            p: ({node, ...props}) => <span {...props} />,
+            a: ({node, ...props}) => <a className="text-blue-400 underline" {...props} />,
+            strong: ({node, ...props}) => <strong className="font-bold text-white" {...props} />,
+            em: ({node, ...props}) => <em className="italic text-zinc-300" {...props} />,
+            ul: ({node, ...props}) => <ul className="list-disc list-inside text-left my-2" {...props} />,
+            ol: ({node, ...props}) => <ol className="list-decimal list-inside text-left my-2" {...props} />,
+            li: ({node, ...props}) => <li className="my-1" {...props} />
+          }}
+        >
+          {displayText + (currentIndex < currentText.length ? cursor : "")}
+        </ReactMarkdown>
+      ) : (
+        <>
+          {displayText}
+          <span className="animate-pulse">{cursor}</span>
+        </>
+      )}
     </span>
   );
 }

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VidyaSahayakOrb } from '@/components/orb';
+import { OrbController } from '@/components/orb/OrbController';
 import type { OrbState } from '@/components/orb/orbStates';
 import { NavigationCard } from '@/components/ui/NavigationCard';
 
@@ -29,9 +30,12 @@ const getAudioAbsoluteUrl = (audioUrl: string) => {
 };
 
 export default function KioskPage() {
-  const [orbState, setOrbState] = useState<OrbState>('idle');
-  const [customLabel, setCustomLabel] = useState<string | undefined>(undefined);
-  const [customDesc, setCustomDesc] = useState<string | undefined>(undefined);
+  const orbControllerRef = useRef(new OrbController());
+  const orbController = orbControllerRef.current;
+
+
+  
+  
   const [hasInteracted, setHasInteracted] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'kn' | 'hi' | null>(null);
   const [isLanguageSelected, setIsLanguageSelected] = useState(false);
@@ -238,11 +242,11 @@ export default function KioskPage() {
     if (communicationMode === 'text') {
       console.log('[Audio] Text mode active. Skipping audio playback.');
       isSelectingLangRef.current = false;
-      setOrbState('speaking');
+      orbController.setState('speaking');
       const textLen = textResponse ? textResponse.length : 100;
       const duration = Math.min(Math.max(textLen * 35, 1500), 8000);
       setTimeout(() => {
-        setOrbState('idle');
+        orbController.setState('idle');
       }, duration);
       return;
     }
@@ -250,7 +254,7 @@ export default function KioskPage() {
     const fullAudioUrl = getAudioAbsoluteUrl(audioUrl);
     console.log('[Audio] Loading response audio:', fullAudioUrl);
     
-    setOrbState('speaking');
+    orbController.setState('speaking');
     const audio = new Audio(fullAudioUrl);
     audio.crossOrigin = "anonymous";
     activeAudioRef.current = audio;
@@ -259,7 +263,7 @@ export default function KioskPage() {
     audio.onended = () => {
       console.log('[Audio] Finished response playback, transitioning to listening');
       isSelectingLangRef.current = false;
-      setOrbState((prev) => {
+      orbController.setState((prev: any) => {
         if (isPausedRef.current) return 'idle';
         if (!isLanguageSelectedRef.current || !isCommModeSelectedRef.current) {
           return 'idle';
@@ -275,9 +279,9 @@ export default function KioskPage() {
 
     audio.onerror = (err) => {
       console.error('[Audio] Response playback failed:', err);
-      setOrbState('error');
-      setCustomLabel('Playback Error');
-      setCustomDesc('Could not play synthesized audio response.');
+      orbController.setState('error');
+      orbController.setLabels('Playback Error');
+      orbController.setLabels(orbController.customLabel, 'Could not play synthesized audio response.');
       activeAudioRef.current = null;
       setActiveAudioElement(null);
     };
@@ -286,7 +290,7 @@ export default function KioskPage() {
       console.warn('[Audio] Playback was blocked by browser or failed to start:', err);
       // Fallback: stay in speaking state briefly for the typewriter to progress, then go back to idle
       setTimeout(() => {
-        setOrbState('idle');
+        orbController.setState('idle');
       }, 5000);
     });
   }, [communicationMode]);
@@ -326,17 +330,17 @@ export default function KioskPage() {
         const data = await response.json();
         if (data.audio_url) {
           playResponseAudio(data.audio_url);
-          setCustomLabel('VidyaSahayak');
-          setCustomDesc(confirmationText);
+          orbController.setLabels('VidyaSahayak');
+          orbController.setLabels(orbController.customLabel, confirmationText);
         }
       } else {
         console.error('Failed to fetch TTS confirmation');
-        setOrbState('listening');
+        orbController.setState('listening');
         isSelectingLangRef.current = false;
       }
     } catch (e) {
       console.error('Error fetching TTS confirmation:', e);
-      setOrbState('listening');
+      orbController.setState('listening');
       isSelectingLangRef.current = false;
     }
   }, [sessionId, playResponseAudio]);
@@ -361,9 +365,9 @@ export default function KioskPage() {
         confirmationText = "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकता हूँ?";
       }
 
-      setOrbState('thinking');
-      setCustomLabel('VidyaSahayak');
-      setCustomDesc(confirmationText);
+      orbController.setState('thinking');
+      orbController.setLabels('VidyaSahayak');
+      orbController.setLabels(orbController.customLabel, confirmationText);
 
       try {
         const httpBase = WS_BASE_URL.replace(/^ws/, 'http').replace(/\/ws\/session.*$/, '');
@@ -384,24 +388,24 @@ export default function KioskPage() {
           const data = await response.json();
           if (data.audio_url) {
             playResponseAudio(data.audio_url);
-            setCustomLabel('VidyaSahayak');
-            setCustomDesc(confirmationText);
+            orbController.setLabels('VidyaSahayak');
+            orbController.setLabels(orbController.customLabel, confirmationText);
           } else {
-            setOrbState('listening');
+            orbController.setState('listening');
           }
         } else {
           console.error('Failed to fetch TTS confirmation');
-          setOrbState('listening');
+          orbController.setState('listening');
         }
       } catch (e) {
         console.error('Error fetching TTS confirmation:', e);
-        setOrbState('listening');
+        orbController.setState('listening');
       }
     } else {
       // Text mode
-      setOrbState('idle');
-      setCustomLabel(undefined);
-      setCustomDesc(undefined);
+      orbController.setState('idle');
+      orbController.setLabels(undefined);
+      orbController.setLabels(orbController.customLabel, undefined);
     }
   }, [selectedLanguage, chosenMode, sessionId, playResponseAudio]);
 
@@ -435,9 +439,9 @@ export default function KioskPage() {
     ws.onopen = () => {
       console.log(`[WS] Connected successfully to ${wsUrl}`);
       reconnectAttempts.current = 0;
-      setOrbState('idle'); // Recovered connection
-      setCustomLabel(undefined);
-      setCustomDesc(undefined);
+      orbController.setState('idle'); // Recovered connection
+      orbController.setLabels(undefined);
+      orbController.setLabels(orbController.customLabel, undefined);
     };
 
     ws.onmessage = (event) => {
@@ -453,9 +457,9 @@ export default function KioskPage() {
         switch (msg.type) {
           case 'session_start':
           case 'greeting':
-            setOrbState('greeting');
-            setCustomLabel('VidyaSahayak');
-            setCustomDesc(msg.payload?.message || msg.payload?.text || 'Welcome!');
+            orbController.setState('greeting');
+            orbController.setLabels('VidyaSahayak');
+            orbController.setLabels(orbController.customLabel, msg.payload?.message || msg.payload?.text || 'Welcome!');
             setNavigationData(null);
             if (msg.payload?.audio_url) {
               playResponseAudio(msg.payload.audio_url, msg.payload?.message || msg.payload?.text);
@@ -463,19 +467,19 @@ export default function KioskPage() {
             break;
           case 'audio_chunk':
           case 'listening':
-            setOrbState('listening');
-            setCustomLabel(undefined);
-            setCustomDesc(undefined);
+            orbController.setState('listening');
+            orbController.setLabels(undefined);
+            orbController.setLabels(orbController.customLabel, undefined);
             if (activeAudioRef.current) {
               activeAudioRef.current.pause();
               activeAudioRef.current = null;
             }
             break;
           case 'transcript':
-            setOrbState('thinking');
-            setCustomLabel('You Asked');
+            orbController.setState('thinking');
+            orbController.setLabels('You Asked');
             const transcriptText = msg.payload?.text || '';
-            setCustomDesc(transcriptText);
+            orbController.setLabels(orbController.customLabel, transcriptText);
 
             // Intercept transcript to detect language voice command
             if (!isLanguageSelectedRef.current) {
@@ -510,20 +514,20 @@ export default function KioskPage() {
             }
             break;
           case 'thinking':
-            setOrbState('thinking');
+            orbController.setState('thinking');
             break;
           case 'retrieving':
-            setOrbState('retrieving');
-            setCustomLabel('Searching');
-            setCustomDesc('Searching knowledge base...');
+            orbController.setState('retrieving');
+            orbController.setLabels('Searching');
+            orbController.setLabels(orbController.customLabel, 'Searching knowledge base...');
             break;
           case 'clarifying':
             if (isSelectingLangRef.current) {
               break;
             }
-            setOrbState('clarifying');
-            setCustomLabel('Clarification Required');
-            setCustomDesc(msg.payload?.text || 'Could you clarify that?');
+            orbController.setState('clarifying');
+            orbController.setLabels('Clarification Required');
+            orbController.setLabels(orbController.customLabel, msg.payload?.text || 'Could you clarify that?');
             if (msg.payload?.audio_url) {
               playResponseAudio(msg.payload.audio_url, msg.payload?.text);
             }
@@ -532,9 +536,9 @@ export default function KioskPage() {
             if (isSelectingLangRef.current) {
               break;
             }
-            setOrbState('speaking');
-            setCustomLabel('VidyaSahayak');
-            setCustomDesc(msg.payload?.text || '');
+            orbController.setState('speaking');
+            orbController.setLabels('VidyaSahayak');
+            orbController.setLabels(orbController.customLabel, msg.payload?.text || '');
             
             if (msg.payload?.navigation) {
               setNavigationData(msg.payload.navigation);
@@ -548,7 +552,7 @@ export default function KioskPage() {
             break;
           case 'tts_chunk':
           case 'speaking':
-            setOrbState('speaking');
+            orbController.setState('speaking');
             break;
           case 'user_identified':
             if (msg.payload) {
@@ -563,7 +567,7 @@ export default function KioskPage() {
             break;
           case 'detection':
             if (msg.payload?.person_detected) {
-              setOrbState('detected');
+              orbController.setState('detected');
               // Reset language selection for each new visitor session
               setSelectedLanguage(null);
               setIsLanguageSelected(false);
@@ -578,10 +582,10 @@ export default function KioskPage() {
                 setSessionId(msg.payload.session_id);
               }
             } else {
-              setOrbState('idle');
+              orbController.setState('idle');
               // Clear custom text on idle
-              setCustomLabel(undefined);
-              setCustomDesc(undefined);
+              orbController.setLabels(undefined);
+              orbController.setLabels(orbController.customLabel, undefined);
               setIdentifiedUser(null);
               setIsRegisteredSuccessfully(false);
               setNewUserType(null);
@@ -602,10 +606,10 @@ export default function KioskPage() {
             break;
           case 'error':
             console.error('[WS] Backend Error:', msg.payload);
-            setOrbState('error');
-            setCustomLabel('Processing Error');
+            orbController.setState('error');
+            orbController.setLabels('Processing Error');
             const errCode = msg.payload?.code ? ` (${msg.payload.code})` : '';
-            setCustomDesc((msg.payload?.message || 'Something went wrong. Please try again.') + errCode);
+            orbController.setLabels(orbController.customLabel, (msg.payload?.message || 'Something went wrong. Please try again.') + errCode);
             break;
           default:
             console.warn('[WS] Unknown message type:', msg.type);
@@ -618,9 +622,9 @@ export default function KioskPage() {
 
     ws.onclose = (event) => {
       console.warn(`[WS] Disconnected (code: ${event.code}). Attempting reconnect...`);
-      setOrbState('error'); // Fallback state when connection drops
-      setCustomLabel('Disconnected');
-      setCustomDesc('Reconnecting to server...');
+      orbController.setState('error'); // Fallback state when connection drops
+      orbController.setLabels('Disconnected');
+      orbController.setLabels(orbController.customLabel, 'Reconnecting to server...');
       
       if (activeAudioRef.current) {
         try {
@@ -662,9 +666,9 @@ export default function KioskPage() {
         activeAudioRef.current = null;
       }
 
-      setOrbState('thinking');
-      setCustomLabel('Thinking');
-      setCustomDesc('Thinking...');
+      orbController.setState('thinking');
+      orbController.setLabels('Thinking');
+      orbController.setLabels(orbController.customLabel, 'Thinking...');
 
       wsRef.current.send(JSON.stringify({
         type: 'audio_chunk',
@@ -676,9 +680,9 @@ export default function KioskPage() {
       }));
     } else {
       console.warn('[WS] Cannot send audio. WebSocket is not open.');
-      setOrbState('error');
-      setCustomLabel('Offline');
-      setCustomDesc('Failed to send audio. WebSocket is not connected.');
+      orbController.setState('error');
+      orbController.setLabels('Offline');
+      orbController.setLabels(orbController.customLabel, 'Failed to send audio. WebSocket is not connected.');
     }
   }, [selectedLanguage]);
 
@@ -699,8 +703,8 @@ export default function KioskPage() {
       setActiveAudioElement(null);
     }
     
-    setOrbState('listening');
-    setCustomLabel('🎤 Listening...');
+    orbController.setState('listening');
+    orbController.setLabels('🎤 Listening...');
     setNavigationData(null);
     // Intentionally leaving customDesc intact so the previous answer stays visible
 
@@ -803,9 +807,9 @@ export default function KioskPage() {
         setActiveAudioElement(null);
       }
 
-      setOrbState('thinking');
-      setCustomLabel('You Asked');
-      setCustomDesc(textQuery);
+      orbController.setState('thinking');
+      orbController.setLabels('You Asked');
+      orbController.setLabels(orbController.customLabel, textQuery);
 
       wsRef.current.send(JSON.stringify({
         type: 'text_query',
@@ -832,9 +836,9 @@ export default function KioskPage() {
         setActiveAudioElement(null);
       }
 
-      setOrbState('thinking');
-      setCustomLabel('You Asked');
-      setCustomDesc(question);
+      orbController.setState('thinking');
+      orbController.setLabels('You Asked');
+      orbController.setLabels(orbController.customLabel, question);
 
       wsRef.current.send(JSON.stringify({
         type: 'text_query',
@@ -846,6 +850,26 @@ export default function KioskPage() {
       }));
     }
   };
+
+  useEffect(() => {
+    orbController.onAudioReady = handleAudioReady;
+    orbController.onBargeIn = handleBargeIn;
+    orbController.activeAudioElement = activeAudioElement;
+    
+    // Subscribe to state changes to handle side effects (like pausing audio on listen)
+    const unsubscribe = orbController.subscribe(() => {
+      if (orbController.currentState === 'listening') {
+        if (activeAudioRef.current) {
+          try {
+            activeAudioRef.current.pause();
+          } catch (e) {}
+          activeAudioRef.current = null;
+          setActiveAudioElement(null);
+        }
+      }
+    });
+    return unsubscribe;
+  }, [handleAudioReady, handleBargeIn, activeAudioElement, orbController]);
 
   if (!hasInteracted) {
     return (
@@ -903,6 +927,7 @@ export default function KioskPage() {
     );
   }
 
+
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black flex flex-col items-center justify-between py-10 px-4 relative overflow-hidden">
       
@@ -921,31 +946,13 @@ export default function KioskPage() {
         
         {/* Left Side: Orb & Identified User Info */}
         <div className="w-full lg:w-[45%] flex flex-col items-center justify-center p-4">
-          <VidyaSahayakOrb
-            state={orbState}
-            onStateChange={(state) => {
-              setOrbState(state);
-              if (state === 'listening') {
-                setCustomLabel(undefined);
-                setCustomDesc(undefined);
-                if (activeAudioRef.current) {
-                  try {
-                    activeAudioRef.current.pause();
-                  } catch (e) {}
-                  activeAudioRef.current = null;
-                }
-              }
-            }}
+          <VidyaSahayakOrb 
+            controller={orbController}
             autoDemo={false}
             showLabels={true}
             showControls={true}
             showMic={isLanguageSelected && isCommModeSelected && communicationMode === 'voice'}
-            size={420} // Scaled down for split screen
-            customLabel={customLabel}
-            customDesc={customDesc}
-            onAudioReady={handleAudioReady}
-            onBargeIn={handleBargeIn}
-            activeAudioElement={activeAudioElement}
+            size={420} 
           />
 
           {navigationData && (
@@ -1325,9 +1332,9 @@ export default function KioskPage() {
                     onClick={() => {
                       setCommunicationMode('voice');
                       setIsPaused(false);
-                      setOrbState('listening');
-                      setCustomLabel(undefined);
-                      setCustomDesc(undefined);
+                      orbController.setState('listening');
+                      orbController.setLabels(undefined);
+                      orbController.setLabels(orbController.customLabel, undefined);
                     }}
                     className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${
                       communicationMode === 'voice'
@@ -1349,9 +1356,9 @@ export default function KioskPage() {
                         activeAudioRef.current = null;
                         setActiveAudioElement(null);
                       }
-                      setOrbState('idle');
-                      setCustomLabel(undefined);
-                      setCustomDesc(undefined);
+                      orbController.setState('idle');
+                      orbController.setLabels(undefined);
+                      orbController.setLabels(orbController.customLabel, undefined);
                     }}
                     className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${
                       communicationMode === 'text'
@@ -1391,9 +1398,9 @@ export default function KioskPage() {
                     onClick={() => {
                       if (isPaused) {
                         setIsPaused(false);
-                        setOrbState('listening');
-                        setCustomLabel(undefined);
-                        setCustomDesc(undefined);
+                        orbController.setState('listening');
+                        orbController.setLabels(undefined);
+                        orbController.setLabels(orbController.customLabel, undefined);
                       } else {
                         setIsPaused(true);
                         if (activeAudioRef.current) {
@@ -1403,9 +1410,9 @@ export default function KioskPage() {
                           activeAudioRef.current = null;
                           setActiveAudioElement(null);
                         }
-                        setOrbState('idle');
-                        setCustomLabel('PAUSED');
-                        setCustomDesc('Conversation is paused. Click continue to resume.');
+                        orbController.setState('idle');
+                        orbController.setLabels('PAUSED');
+                        orbController.setLabels(orbController.customLabel, 'Conversation is paused. Click continue to resume.');
                       }
                     }}
                     className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${

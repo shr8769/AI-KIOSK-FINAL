@@ -87,7 +87,7 @@ Answer:"""
                 else:
                     logger.warning("Gemini model returned empty response text.")
             except Exception as e:
-                logger.error(f"Gemini generation failed: {e}. Falling back to Ollama.")
+                logger.warning(f"Gemini call failed, falling back to Qwen: {type(e).__name__}: {e}")
 
         # Fallback to Ollama if client missing or Gemini failed
         if self.ollama_client:
@@ -145,7 +145,7 @@ INSUFFICIENT"""
                 else:
                     logger.warning("Gemini relevance check returned empty response.")
             except Exception as e:
-                logger.error(f"Gemini relevance check failed: {e}. Falling back to Ollama.")
+                logger.warning(f"Gemini call failed, falling back to Qwen: {type(e).__name__}: {e}")
 
         # Fallback to Ollama
         if self.ollama_client:

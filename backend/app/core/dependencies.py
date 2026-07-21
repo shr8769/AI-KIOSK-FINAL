@@ -144,7 +144,7 @@ def get_riar_pipeline():
         logger.info("Initializing RIAR LLM with Gemini (ChatGoogleGenerativeAI)")
         from langchain_google_genai import ChatGoogleGenerativeAI  # noqa
 
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
     else:
         logger.info(
             "GOOGLE_API_KEY missing. Initializing RIAR LLM with local Ollama (qwen3:latest)"
@@ -176,7 +176,7 @@ def _get_translation_llm():
     google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
     if google_key:
         from langchain_google_genai import ChatGoogleGenerativeAI
-        return ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+        return ChatGoogleGenerativeAI(model="gemini-2.5-flash")
     else:
         from langchain_ollama import ChatOllama
         return ChatOllama(model="qwen3:latest")

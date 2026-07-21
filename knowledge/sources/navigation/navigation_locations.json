@@ -96,7 +96,11 @@
         "aliases": [
             "admin office",
             "office",
-            "administration"
+            "administration",
+            "admission block",
+            "admissions block",
+            "admission",
+            "admissions"
         ],
         "graph_node": "Admin",
         "map_coords": {

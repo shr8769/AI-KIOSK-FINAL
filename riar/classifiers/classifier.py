@@ -37,6 +37,8 @@ AMBIGUITY TYPES:
 - CONTEXTUAL: The query lacks time, location, or subject context (e.g., "when does it start?").
 - CROSS_DOMAIN: The query spans multiple distinct domains (e.g., "how do placements affect research?").
 
+IMPORTANT UX RULE: Do not be overly aggressive with ambiguity! If a user asks a broad question (e.g., "what are the scholarships" or "tell me about hostels") where the university only has a few options, mark it as CLEAR! It is much better UX to let the Domain Agent directly summarize the 3 scholarships rather than annoying the user with a long clarification question.
+
 Output your strict JSON classification according to the schema. 
 """
 

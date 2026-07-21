@@ -66,6 +66,9 @@ class EntityResolver:
             r"\bi want to go to\b",
             r"\bdirection to\b",
             r"\bdirections to\b",
+            r"\bthe way to\b",
+            r"\btell me the way to\b",
+            r"\bway to\b",
             r"\bthe\b",
         ]
         for filler in fillers:
