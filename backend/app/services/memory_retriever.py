@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import or_
 from database.models.models import Memory
-from backend.app.services.memory_store import get_embedding_model
+from app.services.memory_store import get_embedding_model
 
 logger = logging.getLogger(__name__)
 

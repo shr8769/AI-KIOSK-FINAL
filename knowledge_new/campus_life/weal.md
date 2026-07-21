@@ -1,0 +1,16 @@
+---
+title: "WEAL | PES University Clubs"
+url: https://clubs.pes.edu/weal
+category: campus_life
+breadcrumb: ""
+last_crawled: "2026-07-16T12:32:36.003633+05:30"
+---
+
+﻿WEAL | PES University ClubsBack to PESHomeBrowse by CampusBrowse by DepartmentBrowse by TagsSign InHomeBrowse by CampusAll CampusesPESU EC CampusPESU HN CampusPESU RR CampusBrowse by DepartmentAll DepartmentsCommerce12Computer Science8Computer Science (AIML)3Electronics & Communications4Management Studies2Mechanical1Pharmacy6Science & Humanities5All TagsCreativeCulturalDanceDesignEntrepreneurshipHospitalityMusicOthersPhotographyResearchSocial AwarenessSocietySportsTechnicalSign InPES University ClubsESCQuick FiltersCreativeCulturalDanceDesignEntrepreneurshipHospitalityMusicOthersPhotographyResearchSocial AwarenessSocietySportsTechnicalBrowse by CampusPESU EC CampusPESU HN CampusPESU RR CampusPressEnterto search  ·ESCto closeBrowse by CampusSelect a campus to explore its clubsChoose a CampusAll CampusesView everythingPESU EC CampusPES UniversityPESU HN CampusPES UniversityPESU RR CampusPES UniversityBrowse by DepartmentFilter clubs by academic departmentChoose a DepartmentAll DepartmentsView Clubs →Commerce12 ClubsComputer Science8 ClubsComputer Science (AIML)3 ClubsElectronics & Communications4 ClubsManagement Studies2 ClubsMechanical1 ClubPharmacy6 ClubsScience & Humanities5 ClubsBrowse by TagsFilter clubs by interest tagsChoose a TagAll TagsCreativeCulturalDanceDesignEntrepreneurshipHospitalityMusicOthersPhotographyResearchSocial AwarenessSocietySportsTechnicalClub MenuHomeAboutPeopleContactBrowse by CampusSelect a campus to explore its clubsChoose a CampusAll CampusesView everythingPESU EC CampusPES UniversityPESU HN CampusPES UniversityPESU RR CampusPES UniversityBrowse by DepartmentExplore clubs across academic disciplinesChoose a DepartmentAll DepartmentsShow all clubsCommerce12 ClubsComputer Science8 ClubsComputer Science (AIML)3 ClubsElectronics & Communications4 ClubsManagement Studies2 ClubsMechanical1 ClubPharmacy6 ClubsScience & Humanities5 ClubsBrowse by TagsFilter clubs by interest tagsChoose a TagAll TagsCreativeCulturalDanceDesignEntrepreneurshipHospitalityMusicOthersPhotographyResearchSocial AwarenessSocietySportsTechnicalWEALWEAL, the health-tech club that empowers students to take control of their health, become Agents of Change, and spread healthy habits throughout their communities.Founded:
+                        November 19, 20214959433AboutEvents conducted by the club so far:
+
+1. Mental Health Week:
+For the occasion of World Mental Health Day, October 10, 2022, Club Weal celebrated Mental Health Week from 5th to 11th October 2022. The celebration consisted of various events and activities to spread awareness about mental health and inculcate healthy practices for the mind.
+
+2. Health Hack:
+On the 16th and 17th of September 2022, Club Weal of PESU RR in association with Devfolio conducted a 24-hour Health Hackathon. …Learn MorePeopleRachit SinglaRachit SinglaMemberMohammed AssadiMohammed AssadiMemberSparsh AgarwalSparsh AgarwalMemberPriyanshu AgarwalPriyanshu AgarwalMemberView All People

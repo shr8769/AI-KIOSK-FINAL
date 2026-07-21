@@ -23,9 +23,11 @@ class QwenClient:
         self.model_name = llm_config.OLLAMA_MODEL
         self.fallback_synthesizer = GeminiSynthesizer(model_name=llm_config.GEMINI_MODEL)
         self.is_degraded = False
+        self.last_check_time = 0.0
+        self.check_cooldown = 30.0  # Max health check frequency: once every 30 seconds
         
-        # Perform warmup request to load model into memory
-        if self.is_ollama_available():
+        # Perform check status at startup
+        if self.check_health():
             logger.info(f"Ollama is available. Performing warmup request for model {self.model_name}...")
             try:
                 # Prompt to warmup/load the model into memory
@@ -44,14 +46,30 @@ class QwenClient:
                     headers={"Content-Type": "application/json"},
                     method="POST"
                 )
-                # Keep timeout short for warmup, 30s is more than enough to load a model
-                with urllib.request.urlopen(req, timeout=30.0) as response:
+                # Keep timeout short for warmup check
+                with urllib.request.urlopen(req, timeout=5.0) as response:
                     if response.status == 200:
                         logger.info("Warmup request completed successfully.")
             except Exception as e:
-                logger.warning(f"Warmup request failed: {e}. Exception trace:\n{traceback.format_exc()}")
+                logger.warning(f"Warmup request failed: {e}. Marking degraded.")
+                self.is_degraded = True
         else:
             logger.warning(f"Ollama or model {self.model_name} is not available at startup. Warmup bypassed.")
+            self.is_degraded = True
+
+    def check_health(self) -> bool:
+        """
+        Runs a quick check of Ollama health, caching the result with a cooldown
+        to avoid repeated network hits.
+        """
+        current_time = time.time()
+        if self.is_degraded and (current_time - self.last_check_time < self.check_cooldown):
+            return False
+            
+        self.last_check_time = current_time
+        available = self.is_ollama_available()
+        self.is_degraded = not available
+        return available
         
     def is_ollama_available(self) -> bool:
         """
@@ -60,19 +78,18 @@ class QwenClient:
         url = f"{self.ollama_url}/api/tags"
         try:
             req = urllib.request.Request(url, method="GET")
+            # Timeout within 5 seconds (we use 3.0 seconds as standard quick ping)
             with urllib.request.urlopen(req, timeout=3.0) as response:
                 if response.status == 200:
                     data = json.loads(response.read().decode("utf-8"))
                     models = [m.get("name") for m in data.get("models", [])]
-                    # Check if model name matches (e.g., qwen3:8b)
-                    # We also accept substring matches to handle tag variants
                     for m in models:
                         if self.model_name in m or m in self.model_name:
                             return True
                     logger.warning(f"Ollama is running, but model '{self.model_name}' was not found in tags: {models}")
                     return False
         except Exception as e:
-            logger.warning(f"Ollama service check failed: {e}. Exception stack trace:\n{traceback.format_exc()}")
+            logger.warning(f"Ollama service check failed: {e}.")
             return False
         return False
 
@@ -95,14 +112,9 @@ class QwenClient:
                 return ans
             return "This is a speedup fallback answer."
 
-        # First check if degraded or unavailable
-        if self.is_degraded:
+        # Check health: caches degraded state and skips Qwen if degraded within cooldown
+        if not self.check_health():
             logger.info("Qwen client is marked degraded. Using Gemini fallback.")
-            return self._fallback_generate(prompt)
-
-        if not self.is_ollama_available():
-            logger.warning("Ollama or Qwen3-8B is unavailable. Falling back to Gemini synthesizer.")
-            # Automatically use Gemini fallback
             return self._fallback_generate(prompt)
 
         url = f"{self.ollama_url}/api/generate"
@@ -121,8 +133,8 @@ class QwenClient:
                 headers={"Content-Type": "application/json"},
                 method="POST"
             )
-            # Increased timeout to 120.0 seconds
-            with urllib.request.urlopen(req, timeout=120.0) as response:
+            # Timeout within 5 seconds
+            with urllib.request.urlopen(req, timeout=5.0) as response:
                 latency = time.perf_counter() - start_time
                 if response.status == 200:
                     res_data = json.loads(response.read().decode("utf-8"))
@@ -147,13 +159,11 @@ class QwenClient:
                     raise urllib.error.HTTPError(url, response.status, "HTTP error", response.headers, None)
         except Exception as e:
             latency = time.perf_counter() - start_time
-            stack_trace = traceback.format_exc()
             logger.error(
                 f"Error during Ollama Qwen generation: {e} | "
                 f"Model: {self.model_name} | "
                 f"Latency so far: {latency:.4f}s. "
-                f"Marking Qwen client degraded and falling back to Gemini.\n"
-                f"Stack Trace:\n{stack_trace}"
+                f"Marking Qwen client degraded and falling back to Gemini."
             )
             self.is_degraded = True
             return self._fallback_generate(prompt)

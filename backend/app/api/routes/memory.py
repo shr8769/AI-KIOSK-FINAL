@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.postgres.connection import get_db
-from backend.app.services.memory_manager import MemoryManager
+from app.services.memory_manager import MemoryManager
 
 router = APIRouter()
 

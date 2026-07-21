@@ -1,8 +1,8 @@
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.services.memory_summary import MemorySummary
-from backend.app.services.memory_store import MemoryStore
-from backend.app.services.memory_retriever import MemoryRetriever
+from app.services.memory_summary import MemorySummary
+from app.services.memory_store import MemoryStore
+from app.services.memory_retriever import MemoryRetriever
 
 logger = logging.getLogger(__name__)
 

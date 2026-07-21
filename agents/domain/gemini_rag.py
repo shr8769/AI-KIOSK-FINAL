@@ -51,10 +51,6 @@ class GeminiSynthesizer:
         If Gemini is unavailable or errors out, falls back to local Ollama (Qwen) synthesis.
         If both are unavailable, returns None.
         """
-        if not context_docs:
-            logger.warning("No context documents supplied to synthesizer.")
-            return None
-
         # Dynamically import templates to prevent circular dependencies
         try:
             from agents.concierge.prompt_templates import TEMPLATES
@@ -71,12 +67,14 @@ Query: {query}
 
 Answer:"""
 
-        # Format context
-        formatted_context = ""
-        for i, doc in enumerate(context_docs, 1):
-            formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
-
-        prompt = template.format(context=formatted_context, query=query)
+        if not context_docs:
+            prompt = query
+        else:
+            # Format context
+            formatted_context = ""
+            for i, doc in enumerate(context_docs, 1):
+                formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
+            prompt = template.format(context=formatted_context, query=query)
 
         if self.is_degraded:
             import time
@@ -165,7 +163,7 @@ Answer:"""
 Context:
 {formatted_context.strip()}
 
-Determine whether the context contains information relevant to answering ANY PART of the question.
+Determine whether the context contains any relevant information that can help address or partially answer the query. If there is any useful or partially matching information in the context, reply with SUFFICIENT. Only reply with INSUFFICIENT if the context is completely unrelated or contains absolutely no helpful facts.
 
 Reply only:
 

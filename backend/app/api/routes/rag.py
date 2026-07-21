@@ -12,12 +12,22 @@ from sqlalchemy.future import select
 
 from database.postgres.connection import get_db
 from database.models.models import Session
-from backend.app.services.session_history_manager import SessionHistoryManager
-from backend.app.services.memory_manager import MemoryManager
+from app.services.session_history_manager import SessionHistoryManager
+from app.services.memory_manager import MemoryManager
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+# Instantiate the Coordinator Agent if real agents are enabled
+coordinator = None
+if settings.USE_REAL_AGENTS:
+    try:
+        from agents.coordinator.coordinator_agent import CoordinatorAgent
+        coordinator = CoordinatorAgent()
+        logger.info("Real Coordinator Agent loaded successfully in RAG route.")
+    except Exception as e:
+        logger.error(f"Failed to load real Coordinator Agent: {e}")
 
 class RAGRequest(BaseModel):
     session_id: str
@@ -40,7 +50,34 @@ async def retrieve_and_generate(request: RAGRequest, db: AsyncSession = Depends(
     Retrieve relevant documents and generate answer.
     Maintains session history and automatically summarizes and archives conversation turns into long-term memory.
     """
-    answer = f"[MOCK] Info matching '{request.query}' in domain '{request.domain}'."
+    sources = []
+    confidence = 0.85
+    
+    if settings.USE_REAL_AGENTS and coordinator:
+        try:
+            logger.info(f"Querying real Coordinator Agent: '{request.query}' (session: {request.session_id})")
+            raw_ans = coordinator.answer(request.query, session_id=request.session_id)
+            
+            # Parse returned answer to separate answer and source
+            if "\n\nSources:\n    " in raw_ans:
+                answer, source_part = raw_ans.split("\n\nSources:\n    ", 1)
+                if answer.startswith("Answer:\n"):
+                    answer = answer[len("Answer:\n"):]
+                sources = [source_part.strip()]
+            else:
+                answer = raw_ans
+                sources = []
+                
+            # Retrieve routing details to estimate confidence
+            _, conf, _, _ = coordinator.route(request.query)
+            confidence = conf if conf > 0 else 0.85
+        except Exception as e:
+            logger.error(f"Error querying real Coordinator Agent: {e}")
+            answer = f"I encountered an issue retrieving that information. Please contact the Admissions office."
+            sources = []
+    else:
+        answer = f"[MOCK] Info matching '{request.query}' in domain '{request.domain}'."
+        sources = []
     
     # Track the turn
     SessionHistoryManager.append_turn(request.session_id, request.query, answer)
@@ -68,6 +105,6 @@ async def retrieve_and_generate(request: RAGRequest, db: AsyncSession = Depends(
     return RAGResponse(
         session_id=request.session_id,
         answer=answer,
-        source_documents=[],
-        confidence=0.85
+        source_documents=sources,
+        confidence=confidence
     )

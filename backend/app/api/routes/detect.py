@@ -15,7 +15,7 @@ from sqlalchemy.future import select
 
 from database.postgres.connection import get_db
 from database.models.models import User, Session
-from backend.app.services.memory_manager import MemoryManager
+from app.services.memory_manager import MemoryManager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vidyasahayak"
+version = "0.1.0"
+description = "VidyaSahayak — AI Avatar Kiosk for PES University"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "backend*",
+    "database*",
+    "agents*",
+    "config*",
+]

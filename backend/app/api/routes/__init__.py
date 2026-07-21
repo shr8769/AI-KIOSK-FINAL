@@ -1,7 +1,7 @@
 """
 API Route Handlers
 """
-from . import detect, asr, riar, route, rag, tts, session
+from . import detect, asr, riar, route, rag, tts, session, profile, memory
 
 __all__ = [
     "detect",
@@ -11,4 +11,7 @@ __all__ = [
     "rag",
     "tts",
     "session",
+    "profile",
+    "memory",
 ]
+
