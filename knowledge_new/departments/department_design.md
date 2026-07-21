@@ -1,0 +1,12 @@
+---
+title: "Design"
+url: https://news.pes.edu/department/design
+category: departments
+breadcrumb: ""
+last_crawled: "2026-07-16T10:56:23.619197+05:30"
+---
+
+Back to PES.eduPES.eduEventsClubsContactAdmissionsBrowse by CampusSelect a campus to explore its newsChoose a CampusPESU RR CampusPESU RR CampusPESU EC CampusPESU EC CampusPESU HN CampusPESU HN CampusPESIMSRPESIMSRAmaatra AcademyThe Amaatra AcademyPES Public SchoolPES Public SchoolPESUIMSRPESUIMSRBrowse by DepartmentExplore news from every academic departmentChoose a DepartmentScience & HumanitiesBrowse news →Computer ScienceBrowse news →BiotechnologyBrowse news →MechanicalBrowse news →CivilBrowse news →Electronics & CommunicationBrowse news →Electrical & ElectronicsBrowse news →Computer ApplicationBrowse news →Management StudiesBrowse news →ArchitectureBrowse news →DesignBrowse news →LawBrowse news →NursingBrowse news →PhysiotherapyBrowse news →Allied Health SciencesBrowse news →PsychologyBrowse news →Computer Science (AI & ML)Browse news →Physical EducationBrowse news →BiochemistryBrowse news →Browse by TagsFind stories by topic and interestChoose a TagAlumniClubs & ActivitiesEventIn The MediaQuotesResearchSportsWorkshopStaff AchievementsStudent AchievementsDanceMotivationInnovativeWebinarTechnicalAdmissionMusicCompetitionHackathonFoodConferenceIndustry VisitStartupTalksCodeingBooksReadingCulturalSocialActivitiesPES University NewsESCQuick FiltersHot NewsFeaturedPress NotePESU RR CampusPESU EC CampusPESU HN CampusPESIMSRAmaatra AcademyPES Public SchoolPESUIMSRPopular Tags#Alumni#Clubs & Activities#Event#In The Media#Quotes#Research#Sports#Workshop#Staff Achievements#Student AchievementsPressEnterto search  ·↑↓navigate  ·ESCcloseBrowsing CategoryDesign6 articles·PES University NewsDesign6 articles · PES University NewsAll NewsLatestPESU RR CampusApril 25, 2026DISRUPT 2026: Conversations That Shaped Design ThinkingWhat happens when industry leaders and young designers come together under one roof?
+Ideas collide, curiosity sparks, and meaningful conversations take shape.
+
+As part of the World Design Day celebrations, the Institute of Design, PES University hosted DIS…54691Read ArticleMore Articles5 morePESU RR CampusTradition Meets Innovation: Toy Design Students Visit ChannapatnaMay 12, 202553294Designing with the ElementsApr 16, 20254898Type as Expression. Culture as Canvas.Apr 08, 20254471Press NoteInauguration of graduate programs in technology, architecture and designAug 11, 20198712NewTransforming footpathsJun 10, 201962551Read full story

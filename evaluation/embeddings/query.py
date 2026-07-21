@@ -15,7 +15,6 @@ import os
 import argparse
 import logging
 import sys
-from typing import Any, List, Dict
 
 try:
     import chromadb

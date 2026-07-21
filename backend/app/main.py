@@ -14,7 +14,7 @@ from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routes import asr, events, memory, navigation, profile, rag, riar, route, session, tts
+from app.api.routes import asr, events, memory, navigation, profile, rag, riar, route, session, tts, detect
 from app.core.config import settings
 from app.core.dependencies import ConnectionManager, get_connection_manager
 from app.core.warmup import startup_state, warmup_services
@@ -130,7 +130,6 @@ app.include_router(navigation.router, prefix="/api/v1", tags=["Navigation"])
 app.include_router(profile.router, prefix="/api/v1", tags=["Profile"])
 app.include_router(memory.router, prefix="/api/v1", tags=["Memory"])
 
-
 # WebSocket Route
 @app.websocket("/ws/session/{session_id}")
 async def websocket_endpoint(
@@ -140,6 +139,7 @@ async def websocket_endpoint(
 
 
 @app.get("/health", tags=["Health"])
+@app.get("/api/v1/health", tags=["Health"])
 async def health():
     return {"status": "ok", "version": "0.1.0", "project": "VidyaSahayak"}
 

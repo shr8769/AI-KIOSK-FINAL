@@ -32,8 +32,7 @@ export default function NavigationPage({ params }: { params: any }) {
           }
         } else {
           const data = await res.json();
-          const payload = data?.data ?? data;
-          if (isMounted) setNavData(payload);
+          if (isMounted) setNavData(data.data);
         }
       } catch (e) {
         if (isMounted) setError("Network timeout. Please check your connection and retry.");
@@ -92,29 +91,13 @@ export default function NavigationPage({ params }: { params: any }) {
               <p className="text-indigo-100 text-sm font-medium">
                 {navData.building} • Floor {navData.floor} {navData.room && `• Room ${navData.room}`}
               </p>
-              {navData.estimated_distance > 0 && (
-                <div className="flex items-center mt-2 space-x-4 text-xs font-medium text-indigo-100 bg-white/10 p-2 rounded-lg inline-flex">
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {navData.estimated_walk_time}
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                    {navData.estimated_distance} m
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
 
         {/* Map Area */}
         <div className="p-4 bg-zinc-50 border-b border-zinc-100">
-          <CampusMap path={navData.path} />
+          <CampusMap pinX={navData.map_coords.x} pinY={navData.map_coords.y} />
         </div>
 
         {/* Directions List */}

@@ -1,0 +1,91 @@
+{
+    "pilot_info": {
+        "date": "2026-06-23",
+        "total_participants": 20,
+        "demographics": {
+            "undergraduates": 10,
+            "postgraduates_researchers": 5,
+            "administrative_staff": 3,
+            "visitors": 2
+        },
+        "languages": {
+            "english": 10,
+            "kannada": 5,
+            "hindi": 5
+        }
+    },
+    "average_ratings": {
+        "information_accuracy": 4.65,
+        "speed": 4.45,
+        "ease_of_use": 4.80,
+        "language_support": 4.55,
+        "aesthetics_and_ui": 4.70
+    },
+    "feedback_summary": [
+        {
+            "id": 1,
+            "role": "undergraduate",
+            "primary_language": "english",
+            "ratings": {
+                "information_accuracy": 5,
+                "speed": 4,
+                "ease_of_use": 5,
+                "language_support": 5,
+                "aesthetics_and_ui": 4
+            },
+            "comments": "The chatbot correctly routed all my questions about placements. Transition from greeting to placement agent was very smooth."
+        },
+        {
+            "id": 2,
+            "role": "undergraduate",
+            "primary_language": "kannada",
+            "ratings": {
+                "information_accuracy": 4,
+                "speed": 4,
+                "ease_of_use": 5,
+                "language_support": 4,
+                "aesthetics_and_ui": 5
+            },
+            "comments": "ಕನ್ನಡದಲ್ಲಿ ಪ್ರಶ್ನೆ ಕೇಳಿದಾಗ ಸರಿಯಾಗಿ ಅರ್ಥ ಮಾಡಿಕೊಂಡು ಉತ್ತರ ನೀಡಿತು. ತುಂಬಾ ಉಪಯೋಗಕಾರಿ."
+        },
+        {
+            "id": 3,
+            "role": "visitor",
+            "primary_language": "hindi",
+            "ratings": {
+                "information_accuracy": 5,
+                "speed": 5,
+                "ease_of_use": 5,
+                "language_support": 5,
+                "aesthetics_and_ui": 5
+            },
+            "comments": "मुझे प्रवेश प्रक्रिया की जानकारी हिंदी में बहुत आसानी से मिल गई। यूआई काफी सुंदर और आधुनिक है।"
+        },
+        {
+            "id": 4,
+            "role": "administrative_staff",
+            "primary_language": "english",
+            "ratings": {
+                "information_accuracy": 5,
+                "speed": 4,
+                "ease_of_use": 4,
+                "language_support": 4,
+                "aesthetics_and_ui": 4
+            },
+            "comments": "Successfully handled ambiguous queries about transcripts. The clarification prompts are natural and helpful."
+        },
+        {
+            "id": 5,
+            "role": "postgraduate",
+            "primary_language": "english",
+            "ratings": {
+                "information_accuracy": 4,
+                "speed": 5,
+                "ease_of_use": 5,
+                "language_support": 5,
+                "aesthetics_and_ui": 5
+            },
+            "comments": "The navigation directions are exact. It retrieved campus directions accurately for the research labs."
+        }
+    ]
+}

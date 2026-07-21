@@ -75,7 +75,6 @@ async def run_seeds():
             preferences={"interests": ["research", "academics"]}
         )
         await db.merge(professor_user)
-        
         # 3. Create demo session mapping
         demo_session = Session(
             session_id="demo_session_id",

@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     # CORS & Public Host
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
 
+    # Database
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/vidyasahayak"
+    REDIS_URL: str = "redis://localhost:6379"
+
     # Redis (Local for Kiosk, Upstash for Navigation)
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379

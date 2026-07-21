@@ -2,8 +2,46 @@ import os
 import re
 import json
 import datetime
+import logging
+import time
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Tuple
+
+logger = logging.getLogger(__name__)
+
+SYNONYMS = {
+    "documents": {"documents", "document", "certificate", "certificates", "marks", "card", "cards", "receipt", "receipts", "records", "pan", "aadhar", "order", "original", "reporting"},
+    "pessat": {"pessat", "entrance", "test", "process", "merit"},
+    "kcet": {"kcet", "cet", "kea"},
+    "fees": {"fees", "fee", "cost", "payment", "tuition"},
+    "scholarship": {"scholarship", "scholarships", "aid", "loyalty", "mrd"},
+    "eligibility": {"eligibility", "eligible", "criteria", "requirements", "requirement"},
+    "hostel": {"hostel", "hostels", "mess", "boarding", "accommodation"},
+    "required": {"required", "require", "mandatory", "necessary"}
+}
+
+STOP_WORDS = {
+    "what", "is", "are", "the", "for", "in", "to", "do", "how", "a", "of", "on", 
+    "and", "or", "about", "with", "where", "you", "i", "can", "my", "your",
+    "does", "did", "at", "by", "an", "this", "that", "through", "under", "from", 
+    "within", "via", "during", "after", "before", "out", "all", "any", "both", 
+    "each", "few", "more", "most", "other", "some", "such", "than", "too", "very", 
+    "can", "will", "should", "would", "could", "may", "might", "must", "get", 
+    "got", "make", "made", "take", "took", "use", "used", "using", "about", "please",
+    "regarding", "which", "who", "whom", "whose", "why"
+}
+
+def normalize_word(w: str) -> str:
+    w = w.lower().strip()
+    # Normalize common program acronyms to allow consistent matching
+    w = w.replace("b.tech", "btech").replace("m.tech", "mtech")
+    w = w.replace("b.sc", "bsc").replace("m.sc", "msc")
+    w = w.replace("ph.d", "phd").replace("ll.m", "llm")
+    if w.endswith('s') and len(w) > 3:
+        w = w[:-1]
+    return w
+
+
 
 try:
     import chromadb
@@ -12,6 +50,9 @@ except ImportError:
     pass
 
 from agents.domain.gemini_rag import GeminiSynthesizer
+from config import llm_config
+from agents.llm.qwen_client import QwenClient
+from config.contact_config import get_specific_contact, format_fallback_message
 
 def log_evaluation_trace(
     query: str,
@@ -21,7 +62,9 @@ def log_evaluation_trace(
     selected_doc_id: str,
     retrieved_docs: List[Dict[str, Any]],
     answer: str,
-    relevance_decision: str = "SUFFICIENT"
+    relevance_decision: str = "SUFFICIENT",
+    confidence_score: float = 0.0,
+    fallback_used: bool = False
 ):
     """
     Utility function to log query, routing, and retrieval details to a JSONL file
@@ -37,6 +80,8 @@ def log_evaluation_trace(
         "selected_agent": selected_agent,
         "selected_domain": selected_domain,
         "routing_confidence": routing_confidence,
+        "confidence_score": confidence_score,
+        "fallback_used": fallback_used,
         "selected_doc_id": selected_doc_id,
         "retrieved_documents": [
             {
@@ -45,8 +90,7 @@ def log_evaluation_trace(
                 "distance": doc["distance"],
                 "similarity_score": 1.0 / (1.0 + doc["distance"]),
                 "keyword_score": doc["keyword_score"],
-                "combined_score": doc["combined_score"],
-                "retrieval_source": doc.get("retrieval_source", "unknown")
+                "combined_score": doc["combined_score"]
             } for doc in retrieved_docs
         ],
         "relevance_decision": relevance_decision,
@@ -57,129 +101,52 @@ def log_evaluation_trace(
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
     except Exception as e:
-        print(f"[Warning] Failed to write evaluation trace: {e}")
+        logger.warning(f"Failed to write evaluation trace: {e}")
 
-def consolidate_faqs(knowledge_dir: str):
+
+def get_natural_source_attribution(metadata: Dict[str, Any]) -> str:
     """
-    Consolidates the separate domain FAQ and locations files into a single faq.json
-    located in the knowledge folder, matching the user's specification.
+    Returns a user-friendly natural name for the source based on metadata.
     """
-    sources_dir = os.path.join(knowledge_dir, "sources")
-    faq_file = os.path.join(knowledge_dir, "faq.json")
+    category = str(metadata.get("category", "")).lower().strip()
+    doc_name = str(metadata.get("document_name", "")).lower().strip()
     
-    file_map = {
-        "admissions": os.path.join("admissions", "faq.json"),
-        "academics": os.path.join("academics", "faq.json"),
-        "placements": os.path.join("placements", "faq.json"),
-        "research": os.path.join("research", "faq.json"),
-        "student_services": os.path.join("student_services", "faq.json"),
-        "navigation": os.path.join("navigation", "locations.json"),
+    mapping = {
+        "admissions": "the official PES University Admissions page",
+        "scholarships": "the PES University Scholarships details",
+        "orientation": "the PES Orientation guidelines",
+        "important_dates": "the official PES Academic Admissions calendar",
+        "government_sources": "the official admissions board guidelines (COMEDK/KCET)",
+        "programs": "the PES University Academic Programs catalog",
+        "departments": "the PES University Academic Departments directory",
+        "academic_calendar": "the official PES Academic Calendar",
+        "placements": "the PES Placements Office statistics",
+        "research": "the PES Research Office publications",
+        "hostels": "the PES Hostel Administration records",
+        "hostel": "the PES Hostel Administration records",
+        "transportation": "the PES Transportation Department schedule",
+        "student_services": "the PES Student Services handbook",
+        "library": "the PES Central Library records",
+        "events": "the PES Campus Events directory",
+        "campus_life": "the PES Campus Life portal",
+        "student_support": "the PES Student Support Services",
+        "clubs": "the PES Student Clubs directory",
+        "campus_facilities": "the PES Campus Facilities guidelines",
+        "campus_maps": "the official PES Campus Map",
+        "navigation": "the PES Campus Navigation directory",
+        "general": "the official PES University info portal"
     }
     
-    consolidated = []
-    
-    for domain, rel_path in file_map.items():
-        src_path = os.path.join(sources_dir, rel_path)
-        if not os.path.exists(src_path):
-            continue
-            
-        try:
-            with open(src_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                
-            if domain == "navigation":
-                for idx, item in enumerate(data):
-                    facility = item.get("facility", "")
-                    building = item.get("building", "")
-                    floor = item.get("floor", "")
-                    landmark = item.get("landmark", "")
-                    directions = item.get("directions", "")
-                    
-                    question = f"Where is the {facility}?"
-                    answer = f"The {facility} is located in {building} on the {floor} (landmark: {landmark}). Directions: {directions}"
-                    
-                    consolidated.append({
-                        "id": f"navigation_{idx}",
-                        "source": "navigation",
-                        "topic": facility,
-                        "question": question,
-                        "answer": answer
-                    })
-            else:
-                for idx, item in enumerate(data):
-                    consolidated.append({
-                        "id": item.get("id") or f"{domain}_{idx}",
-                        "source": domain,
-                        "topic": item.get("topic", ""),
-                        "question": item.get("question", ""),
-                        "answer": item.get("answer", "")
-                    })
-        except Exception as e:
-            print(f"[Warning] Failed to read {src_path} during consolidation: {e}")
-            
-    try:
-        with open(faq_file, "w", encoding="utf-8") as f:
-            json.dump(consolidated, f, indent=4, ensure_ascii=False)
-        print(f"[Info] Successfully created consolidated faq.json with {len(consolidated)} items.")
-    except Exception as e:
-        print(f"[Error] Failed to write consolidated faq.json: {e}")
-
-
-def stem_token(word: str) -> str:
-    """
-    Simple suffix stripping to handle basic plurals and inflections in English.
-    """
-    if word.endswith("sses"):
-        return word[:-2]
-    elif word.endswith("ies"):
-        return word[:-3] + "y"
-    elif word.endswith("es") and len(word) > 4:
-        return word[:-2]
-    elif word.endswith("s") and not word.endswith("ss") and len(word) > 2:
-        return word[:-1]
-    elif word.endswith("ing") and len(word) > 5:
-        return word[:-3]
-    elif word.endswith("ed") and len(word) > 4:
-        return word[:-2]
-    return word
-
-
-def tokenize_text(text: str) -> set:
-    """
-    Tokenizes, lowercases, filters stop words, and stems input text.
-    """
-    if not text:
-        return set()
-    stop_words = {
-        "what", "is", "are", "the", "for", "in", "to", "do", "how", "a", "of", "on", 
-        "and", "or", "about", "with", "where", "you", "i", "can", "my", "your",
-        "does", "did", "at", "by", "an", "this", "that"
-    }
-    words = re.findall(r'\b\w+\b', text.lower())
-    return {stem_token(w) for w in words if w not in stop_words}
-
-_shared_emb_fn = None
-_shared_synthesizer = None
-
-def get_shared_embedding_function():
-    global _shared_emb_fn
-    if _shared_emb_fn is None:
-        try:
-            from chromadb.utils import embedding_functions
-            _shared_emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-                model_name="all-MiniLM-L6-v2"
-            )
-        except Exception as e:
-            import logging
-            logging.getLogger(__name__).exception("SentenceTransformer initialization failed")
-            raise
-    return _shared_emb_fn
-
-def get_shared_synthesizer():
-    global _shared_synthesizer
-    if _shared_synthesizer is None:
-        _shared_synthesizer = GeminiSynthesizer()
-    return _shared_synthesizer
+    attribution = mapping.get(category)
+    if not attribution:
+        for key, val in mapping.items():
+            if key in doc_name:
+                attribution = val
+                break
+    if not attribution:
+        attribution = "the official PES University information portal"
+        
+    return attribution
 
 
 class BaseAgent(ABC):
@@ -188,130 +155,128 @@ class BaseAgent(ABC):
     Implements a unified retrieval and re-ranking pipeline using semantic similarity
     and keyword overlap scoring.
     """
+    _shared_emb_fn = None
     def __init__(
         self, 
         collection_name: str, 
         client: Any = None, 
         db_path: str = None,
-        similarity_weight: float = 1.0,
+        similarity_weight: float = 5.0,
         keyword_weight: float = 1.5,
         rag_enabled: bool = True
     ):
         """
         Initializes the BaseAgent with a ChromaDB collection.
-        
-        Args:
-            collection_name (str): Name of the ChromaDB collection.
-            client (chromadb.PersistentClient, optional): Shared client instance.
-            db_path (str, optional): Path to persistent ChromaDB storage.
-            similarity_weight (float): Weight for semantic similarity score.
-            keyword_weight (float): Weight for token overlap score.
-            rag_enabled (bool): Whether to enable Gemini RAG response generation.
         """
         self.collection_name = collection_name
         self.similarity_weight = similarity_weight
         self.keyword_weight = keyword_weight
         self.rag_enabled = rag_enabled
-        self.similarity_threshold = 0.58
+        self.similarity_threshold = 0.58  # Updated baseline low confidence threshold
         
         if self.rag_enabled:
-            self.synthesizer = get_shared_synthesizer()
+            self.qwen_client = QwenClient()
+            self.synthesizer = GeminiSynthesizer()
         
         if client is not None:
             self.client = client
         else:
             if db_path is None:
-                # Resolve default path relative to this file
                 db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge", "vectorstore"))
-            self.client = chromadb.PersistentClient(path=db_path)
-            
-        import logging
-        logger = logging.getLogger(__name__)
-
-        try:
-            self.emb_fn = get_shared_embedding_function()
-        except Exception as e:
-            logger.exception("SentenceTransformer initialization failed")
-            raise
-            
-        try:
-            self.collection = self.client.get_collection(
-                name=self.collection_name,
-                embedding_function=self.emb_fn
-            )
-        except Exception as e:
-            logger.exception("Chroma initialization failed")
-            raise
-
-        # Resolve path to the consolidated faq.json in the knowledge directory
-        knowledge_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge"))
-        faq_file = os.path.join(knowledge_dir, "faq.json")
-        
-        # Ensure the consolidated faq.json exists, otherwise generate it
-        if not os.path.exists(faq_file):
-            consolidate_faqs(knowledge_dir)
-            
-        self.source_file = faq_file
-        self.data = []
-        if os.path.exists(faq_file):
             try:
-                with open(faq_file, "r", encoding="utf-8") as f:
-                    all_data = json.load(f)
-                # Filter by source domain
-                self.data = [item for item in all_data if item.get("source") == collection_name]
+                self.client = chromadb.PersistentClient(path=db_path)
             except Exception as e:
-                print(f"[Warning] Failed to load consolidated faq.json {faq_file}: {e}")
+                logger.warning(f"Failed to initialize ChromaDB client at path {db_path}: {e}")
+                self.client = None
+            
+        if BaseAgent._shared_emb_fn is None:
+            try:
+                BaseAgent._shared_emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
+                    model_name="all-MiniLM-L6-v2"
+                )
+            except Exception:
+                BaseAgent._shared_emb_fn = None
+        self.emb_fn = BaseAgent._shared_emb_fn
+            
+        self.collection = None
+        if self.client:
+            try:
+                self.collection = self.client.get_collection(
+                    name=self.collection_name, 
+                    embedding_function=self.emb_fn
+                )
+            except Exception as e:
+                logger.warning(f"Failed to get collection '{self.collection_name}': {e}. Running in degraded offline mode.")
+                self.collection = None
 
-    def calculate_overlap_score(self, query: str, question: str) -> float:
+    def calculate_overlap_score(self, query: str, text_content: str) -> float:
         """
         Calculates the keyword overlap score (ratio of matching tokens) between the
-        query and the retrieved document's question.
-        
-        Args:
-            query (str): The user search query.
-            question (str): The question retrieved from the document.
-            
-        Returns:
-            float: Overlap score between 0.0 and 1.0.
+        query and the text content with simple stemming/plural handling and concept synonyms.
         """
-        stop_words = {
-            "what", "is", "are", "the", "for", "in", "to", "do", "how", "a", "of", "on", 
-            "and", "or", "about", "with", "where", "you", "i", "can", "my", "your",
-            "does", "did", "at", "by", "an", "this", "that"
-        }
-        
         def tokenize(text: str) -> set:
             words = re.findall(r'\b\w+\b', text.lower())
-            return {w for w in words if w not in stop_words}
+            tokens = set()
+            for w in words:
+                if w not in STOP_WORDS:
+                    norm = normalize_word(w)
+                    if norm:
+                        tokens.add(norm)
+            return tokens
             
         query_tokens = tokenize(query)
-        question_tokens = tokenize(question)
+        content_tokens = tokenize(text_content)
         
         if not query_tokens:
             return 0.0
             
-        intersection = query_tokens.intersection(question_tokens)
-        return len(intersection) / len(query_tokens)
+        match_count = 0
+        for q_tok in query_tokens:
+            matched = False
+            # Check literal match
+            if q_tok in content_tokens:
+                matched = True
+            else:
+                # Check synonym match
+                for group_words in SYNONYMS.values():
+                    group_normalized = {normalize_word(w) for w in group_words}
+                    if q_tok in group_normalized:
+                        if any(w in content_tokens for w in group_normalized):
+                            matched = True
+                            break
+            if matched:
+                match_count += 1
+                
+        return match_count / len(query_tokens)
+
 
     def parse_document(self, doc_text: str) -> Tuple[str, str]:
         """
         Parses a document string formatted as "Question: ... \nAnswer: ..." 
-        into its individual question and answer components.
-        
-        Args:
-            doc_text (str): Raw document text.
-            
-        Returns:
-            Tuple[str, str]: (question, answer)
+        into its individual question and answer components, supporting multiline structures.
         """
         lines = doc_text.split("\n")
-        question = ""
-        answer = ""
+        question_lines = []
+        answer_lines = []
+        in_question = False
+        in_answer = False
+        
         for line in lines:
             if line.startswith("Question:"):
-                question = line[len("Question:"):].strip()
+                in_question = True
+                in_answer = False
+                question_lines.append(line[len("Question:"):].strip())
             elif line.startswith("Answer:"):
-                answer = line[len("Answer:"):].strip()
+                in_question = False
+                in_answer = True
+                answer_lines.append(line[len("Answer:"):].strip())
+            elif in_question:
+                question_lines.append(line)
+            elif in_answer:
+                answer_lines.append(line)
+                
+        question = "\n".join(question_lines).strip()
+        answer = "\n".join(answer_lines).strip()
         
         if not question:
             question = doc_text
@@ -322,112 +287,136 @@ class BaseAgent(ABC):
 
     def retrieve(self, query: str) -> List[Dict[str, Any]]:
         """
-        Retrieves the top 5 documents from the collection by matching the user query 
-        keywords against 'topic' and 'question' fields in the source JSON files.
-        Falls back to ChromaDB semantic similarity search if keyword matching returns no results.
-        
-        Args:
-            query (str): The search query.
-            
-        Returns:
-            List[Dict[str, Any]]: Re-ranked list of documents with scores.
+        Retrieves the top 15 documents from the collection, calculates keyword
+        overlap scores with metadata boosts, re-ranks them based on a combined
+        score, and removes duplicate logical sections.
         """
-        query_tokens = tokenize_text(query)
+        if not self.collection:
+            logger.warning(f"Collection '{self.collection_name}' is not initialized. Returning empty candidate list.")
+            return []
+            
+        try:
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=30
+            )
+        except Exception as e:
+            logger.warning(f"Querying collection '{self.collection_name}' failed: {e}. Returning empty candidate list.")
+            return []
+            
         retrieved_docs = []
-        
-        if query_tokens and self.data:
-            for idx, item in enumerate(self.data):
-                topic_text = item.get("topic", "")
-                question_text = item.get("question", "")
-                answer_text = item.get("answer", "")
-                item_id = item.get("id") or f"{self.collection_name}_{idx}"
-                    
-                # Tokenize topic and question using new stemming tokenizer
-                topic_tokens = tokenize_text(topic_text)
-                question_tokens = tokenize_text(question_text)
-                
-                # Calculate match overlaps
-                topic_match = len(query_tokens.intersection(topic_tokens))
-                question_match = len(query_tokens.intersection(question_tokens))
-                
-                # Calculate score: weight topic match higher (2.0) and question match (1.0)
-                combined_score = (topic_match * 2.0) + (question_match * 1.0)
-
-                
-                # Keep only items that have at least some match
-                if combined_score > 0:
-                    retrieved_docs.append({
-                        "id": item_id,
-                        "document": f"Topic: {topic_text}\nQuestion: {question_text}\nAnswer: {answer_text}",
-                        "question": question_text,
-                        "answer": answer_text,
-                        "metadata": {"category": self.collection_name, "topic": topic_text},
-                        "distance": 0.0,
-                        "keyword_score": combined_score,
-                        "combined_score": combined_score,
-                        "retrieval_source": "faq_fallback"
-                    })
-                    
-            # Re-rank based on combined_score descending
-            retrieved_docs.sort(key=lambda x: x["combined_score"], reverse=True)
-        
-        # If nothing matched via keyword overlap, fall back to ChromaDB query
-        if not retrieved_docs and self.collection is not None:
-
-            try:
-                results = self.collection.query(
-                    query_texts=[query],
-                    n_results=5
-                )
-                if results and results['documents'] and results['documents'][0]:
-                    docs = results['documents'][0]
-                    ids = results['ids'][0] if 'ids' in results and results['ids'] else [None] * len(docs)
-                    metadatas = results['metadatas'][0] if 'metadatas' in results and results['metadatas'] else [{}] * len(docs)
-                    distances = results['distances'][0] if 'distances' in results and results['distances'] else [None] * len(docs)
-                    
-                    for doc, doc_id, meta, dist in zip(docs, ids, metadatas, distances):
-                        q_text, a_text = self.parse_document(doc)
-                        kw_score = self.calculate_overlap_score(query, q_text)
-                        similarity_score = 1.0 / (1.0 + (dist if dist is not None else 0.0))
-                        comb_score = similarity_score + kw_score
-                        
-                        retrieved_docs.append({
-                            "id": doc_id,
-                            "document": doc,
-                            "question": q_text,
-                            "answer": a_text,
-                            "metadata": meta,
-                            "distance": dist if dist is not None else 0.0,
-                            "keyword_score": kw_score,
-                            "combined_score": comb_score,
-                            "retrieval_source": "chromadb"
-                        })
-                    retrieved_docs.sort(key=lambda x: x["combined_score"], reverse=True)
-            except Exception:
-                pass
-                
-        return retrieved_docs[:5]
-
-    def answer(self, query: str, routing_confidence: float = None) -> str:
-        """
-        Performs retrieval, prints debugging information about all candidates,
-        selects the best matching document, logs the trace, and returns the answer.
-        
-        Args:
-            query (str): The user query.
-            routing_confidence (float, optional): The confidence score from the coordinator.
+        if results and results.get('documents') and results['documents'][0]:
+            docs = results['documents'][0]
+            ids = results['ids'][0] if 'ids' in results and results['ids'] else [None] * len(docs)
+            metadatas = results['metadatas'][0] if 'metadatas' in results and results['metadatas'] else [{}] * len(docs)
+            distances = results['distances'][0] if 'distances' in results and results['distances'] else [None] * len(docs)
             
-        Returns:
-            str: The final formatted answer.
+            # Normalize query words
+            query_raw_words = re.findall(r'\b\w+\b', query.lower())
+            query_words = [normalize_word(w) for w in query_raw_words if w not in STOP_WORDS]
+            
+            # Identify active target concepts in the query
+            active_concepts = []
+            for concept, synonyms in SYNONYMS.items():
+                is_active = False
+                for syn in synonyms:
+                    pattern = r'\b' + re.escape(syn) + r'\b'
+                    if re.search(pattern, query.lower()):
+                        is_active = True
+                        break
+                if is_active:
+                    active_concepts.append((concept, synonyms))
+            
+            for doc, doc_id, meta, dist in zip(docs, ids, metadatas, distances):
+                meta = meta if isinstance(meta, dict) else {}
+                
+                # Parse the document into question and answer
+                q_text, a_text = self.parse_document(doc)
+                
+                # Calculate keyword overlap score incorporating title, heading and full document body text
+                heading_raw = meta.get("heading", "")
+                title_raw = meta.get("title", "")
+                full_text_for_keywords = f"{title_raw} {heading_raw} {doc}"
+                kw_score = self.calculate_overlap_score(query, full_text_for_keywords)
+                
+                # Calculate metadata-aware boosts with normalization
+                heading_words = [normalize_word(w) for w in re.findall(r'\b\w+\b', heading_raw)]
+                title_words = [normalize_word(w) for w in re.findall(r'\b\w+\b', title_raw)]
+                category_words = [normalize_word(w) for w in re.findall(r'\b\w+\b', meta.get("category", ""))]
+                
+                # Extract actual headings from body text
+                body_headings = []
+                for line in doc.split('\n'):
+                    if line.strip().startswith('#'):
+                        body_headings.extend(re.findall(r'\b\w+\b', line.lstrip('#').strip().lower()))
+                body_heading_words = [normalize_word(w) for w in body_headings]
+                
+                all_heading_words = set(heading_words + body_heading_words)
+                
+                heading_boost = sum(0.3 for w in query_words if w in all_heading_words)
+                title_boost = sum(0.1 for w in query_words if w in title_words)
+                category_boost = sum(0.1 for w in query_words if w in category_words)
+                
+                heading_boost = min(heading_boost, 0.9)
+                title_boost = min(title_boost, 0.3)
+                category_boost = min(category_boost, 0.2)
+                
+                metadata_boost = heading_boost + title_boost + category_boost
+                
+                # Concept-level synonym boosting
+                boost_amount = 0.0
+                doc_text_lower = doc.lower()
+                for concept, synonyms in active_concepts:
+                    matched = False
+                    for syn in synonyms:
+                        if syn in doc_text_lower or syn in heading_raw.lower() or syn in title_raw.lower():
+                            matched = True
+                            break
+                    if matched:
+                        boost_amount += 1.5  # Concept boost
+                
+                # Map distance to similarity metric
+                similarity_score = 1.0 / (1.0 + (dist if dist is not None else 0.0))
+                combined_score = self.similarity_weight * similarity_score + self.keyword_weight * kw_score + metadata_boost + boost_amount
+                
+                retrieved_docs.append({
+                    "id": doc_id,
+                    "document": doc,
+                    "question": q_text,
+                    "answer": a_text,
+                    "metadata": meta,
+                    "distance": dist if dist is not None else 0.0,
+                    "keyword_score": kw_score,
+                    "combined_score": combined_score
+                })
+                
+            # Re-rank results based on combined score in descending order
+            retrieved_docs.sort(key=lambda x: x["combined_score"], reverse=True)
+            
+        return retrieved_docs
+
+
+    def answer(self, query: str, routing_confidence: float = None, debug: bool = False) -> str:
         """
-        fallback_msg = (
-            "Sorry, I could not find information regarding this in the university knowledge base. "
-            "Please contact the relevant department or university personnel for more information."
-        )
+        Performs retrieval, prints debugging information about all candidates if debug is True,
+        selects the best matching document based on re-ranked scores, applies
+        confidence-level thresholds, and formats the final response.
+        Never performs a secondary LLM relevance sufficiency check.
+        """
+        start_time = time.time()
         
+        fallback_msg = format_fallback_message(query, self.get_domain())
+        
+        # 1. Retrieve documents
         docs = self.retrieve(query)
+        
+        # 2. If no documents exist: Return contact fallback
         if not docs:
-            # Log failure
+            if debug:
+                print(f"\n[{self.__class__.__name__}] Selected Collection: {self.collection_name}")
+                print(f"[{self.__class__.__name__}] Retrieved Chunk IDs: []")
+                print(f"Fallback triggered for query: '{query}'")
+                print(f"Reason: No documents retrieved from ChromaDB collection '{self.collection_name}'")
             log_evaluation_trace(
                 query=query,
                 selected_agent=self.__class__.__name__,
@@ -436,51 +425,34 @@ class BaseAgent(ABC):
                 selected_doc_id="None",
                 retrieved_docs=[],
                 answer=fallback_msg,
-                relevance_decision="INSUFFICIENT"
+                relevance_decision="INSUFFICIENT",
+                confidence_score=0.0,
+                fallback_used=True
             )
-            return f"{fallback_msg}\n\n[Source: None]"
-        
-        # Select best document (first in the re-ranked list)
+            return f"Answer:\n{fallback_msg}\n\nSources:\n    None"
+            
         best_doc = docs[0]
         
-        # Print debugging details as required by PART 3
-        print("\nRetrieved Documents:\n")
-        for i, doc in enumerate(docs, 1):
-            sim_score = 1.0 / (1.0 + doc['distance'])
-            print(f"Document {i}:")
-            print(f"* ID: {doc['id']}")
-            print(f"* Distance: {doc['distance']:.4f}")
-            print(f"* Similarity Score: {sim_score:.4f}")
-            print(f"* Keyword Score: {doc['keyword_score']:.4f}")
-            print(f"* Final Score: {doc['combined_score']:.4f}")
-            print(f"* Source: {doc.get('retrieval_source', 'unknown')}")
-            print() # empty line
-            
-        print("Selected Document:")
-        print(f"* ID: {best_doc['id']}")
-        
-        # Determine relevance decision
-        relevance_decision = "SUFFICIENT"
+        # 3. Compute similarity score
         best_sim_score = 1.0 / (1.0 + best_doc["distance"])
-
-        # Prioritize LLM relevance checking over strict similarity thresholds
-        if getattr(self, "rag_enabled", False) and (self.synthesizer.client is not None or self.synthesizer.ollama_client is not None):
-            try:
-                check_result = self.synthesizer.check_sufficiency(query, docs, domain=self.get_domain())
-                if check_result is not None:
-                    relevance_decision = check_result
-                    print(f"Gemini relevance check decision: {relevance_decision}")
-            except Exception as e:
-                print(f"[Warning] Gemini relevance check failed: {e}. Falling back to similarity filter.")
-                if best_sim_score < getattr(self, "similarity_threshold", 0.58):
-                    relevance_decision = "INSUFFICIENT"
+        
+        # 4. If similarity/keyword match is below threshold: Return contact fallback
+        threshold = 0.48
+        is_sufficient = (best_sim_score >= threshold) or (best_doc.get("keyword_score", 0.0) >= 0.3) or (best_doc.get("combined_score", 0.0) >= 1.2)
+        
+        if best_sim_score >= 0.65:
+            confidence_level = "HIGH"
+        elif is_sufficient:
+            confidence_level = "MEDIUM"
         else:
-            if best_sim_score < getattr(self, "similarity_threshold", 0.58):
-                print(f"[Warning] Similarity score {best_sim_score:.4f} is below threshold {self.similarity_threshold:.2f}.")
-                relevance_decision = "INSUFFICIENT"
-                
-        # If either check decides INSUFFICIENT, bypass LLM answer synthesis and return fallback
-        if relevance_decision == "INSUFFICIENT":
+            confidence_level = "LOW"
+            
+        if not is_sufficient:
+            if debug:
+                print(f"\n[{self.__class__.__name__}] Selected Collection: {self.collection_name}")
+                print(f"[{self.__class__.__name__}] Retrieved Chunk IDs: {[d['id'] for d in docs]}")
+                print(f"[Warning] Similarity score {best_sim_score:.4f} and keyword score {best_doc.get('keyword_score', 0.0):.4f} are below threshold. Forcing fallback.")
+                print(f"Fallback triggered. Reason: Insufficient similarity and keyword score (combined={best_doc.get('combined_score', 0.0):.4f})")
             log_evaluation_trace(
                 query=query,
                 selected_agent=self.__class__.__name__,
@@ -489,36 +461,116 @@ class BaseAgent(ABC):
                 selected_doc_id="None",
                 retrieved_docs=docs,
                 answer=fallback_msg,
-                relevance_decision=relevance_decision
+                relevance_decision="INSUFFICIENT",
+                confidence_score=best_sim_score,
+                fallback_used=True
             )
-            return f"{fallback_msg}\n\n[Source: None]"
+            return f"Answer:\n{fallback_msg}\n\nSources:\n    None"
+            
+        # 5. Otherwise: Generate the answer directly using Gemini or Qwen
+        source_attribution = get_natural_source_attribution(best_doc["metadata"])
         
-        # Log evaluation trace as required by PART 4
-        if getattr(self, "rag_enabled", False) and (self.synthesizer.client is not None or self.synthesizer.ollama_client is not None):
+        # Prepare medium confidence disclaimer
+        disclaimer = ""
+        if confidence_level == "MEDIUM":
+            contact = get_specific_contact(query, self.get_domain())
+            disclaimer = f"\n\n*(Note: While this response is based on official documents, we recommend verifying critical details directly with {contact['office_name']} at {contact['email']} or {contact['phone']}.)*"
+            
+        # Synthesis RAG mode
+        formatted_context = ""
+        context_docs = docs[:12]
+        for i, doc in enumerate(context_docs, 1):
+            formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
+            
+        # Enhance prompt to enforce natural source attribution
+        prompt = (
+            f"You are the official PES University AI Campus Assistant. "
+            f"Answer the user query based ONLY on the provided context. "
+            f"Begin your answer with a natural attribution to the source: '{source_attribution}'. "
+            f"For example, 'According to {source_attribution}...' or 'Based on {source_attribution}...'. "
+            f"Do not expose internal document IDs or file metadata.\n\n"
+            f"Context:\n{formatted_context}\n"
+            f"Query: {query}\n"
+            f"Answer:"
+        )
+        
+        rag_answer = None
+        llm_used = getattr(llm_config, "PRIMARY_LLM", "qwen")
+        
+        llm_start = time.time()
+        if llm_used == "qwen":
             try:
-                # Synthesize answer using Gemini/fallback RAG
-                rag_answer = self.synthesizer.synthesize(query, docs, domain=self.get_domain())
-                if rag_answer is None:
-                    raise ValueError("Gemini RAG synthesis returned None.")
-                
-                log_evaluation_trace(
-                    query=query,
-                    selected_agent=self.__class__.__name__,
-                    selected_domain=self.get_domain(),
-                    routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
-                    selected_doc_id=best_doc["id"],
-                    retrieved_docs=docs,
-                    answer=rag_answer,
-                    relevance_decision="SUFFICIENT"
-                )
-                # Combine the source references for context docs
-                refs = ", ".join(d["id"] for d in docs[:3])
-                response = f"{rag_answer}\n\n[Source: {self.get_domain().title().replace('_', ' ')} (RAG Synth) | Refs: {refs}]"
-                return response
+                rag_answer = self.qwen_client.generate(prompt)
             except Exception as e:
-                print(f"[Warning] Gemini RAG synthesis failed: {e}. Falling back to retrieval-only mode.")
+                if debug:
+                    print(f"[Warning] Qwen generation failed: {e}. Falling back to Gemini.")
                 
-        # Retrieval-only mode (fallback or disabled)
+        if not rag_answer:
+            try:
+                rag_answer = self.synthesizer.synthesize(query, context_docs, domain=self.get_domain())
+                llm_used = "gemini"
+            except Exception as e:
+                if debug:
+                    print(f"[Warning] Gemini RAG synthesis failed: {e}. Falling back to raw markdown chunk.")
+                llm_used = "retrieval-only"
+        
+        # If both LLMs failed/timed out/degraded, retrieve raw text from first chunk directly
+        if not rag_answer or not rag_answer.strip():
+            llm_used = "offline-markdown-fallback"
+            if debug:
+                print("[Warning] Both Qwen and Gemini are offline/degraded. Falling back to raw retrieved markdown chunk.")
+            q_parsed, a_parsed = self.parse_document(best_doc['document'])
+            rag_answer = a_parsed if a_parsed else best_doc['document']
+            
+        llm_latency = time.time() - llm_start
+        total_latency = time.time() - start_time
+        
+        if rag_answer.startswith("Answer:"):
+            rag_answer = rag_answer[len("Answer:"):].strip()
+            
+        # Clean up prompt formatting if raw document question was returned
+        if rag_answer.strip().startswith("Question:"):
+            _, parsed_ans = self.parse_document(rag_answer)
+            rag_answer = parsed_ans
+            
+        # Ensure it begins with attribution; prepend if missing
+        if not any(attr in rag_answer for attr in ["According to", "Based on", "From the", "official", "PES"]):
+            rag_answer = f"According to {source_attribution}, {rag_answer[0].lower() + rag_answer[1:] if rag_answer else ''}"
+            
+        # Append verification disclaimer for medium confidence
+        if disclaimer:
+            rag_answer += disclaimer
+            
+        source_file = f"{self.get_domain()}.json"
+        if self.get_domain() == "navigation":
+            source_file = "locations.json"
+            
+        if "Sorry, I could not find information" in rag_answer or fallback_msg in rag_answer:
+            rag_answer = fallback_msg
+            source_file = "None"
+            
+        if debug:
+            print(f"\n[{self.__class__.__name__}] Selected Collection: {self.collection_name}")
+            print(f"[{self.__class__.__name__}] Retrieved Chunk IDs: {[doc['id'] for doc in docs]}")
+            print(f"[{self.__class__.__name__}] Retrieved Chunk Text:")
+            print("=" * 80)
+            for i, doc in enumerate(docs, 1):
+                print(f"--- Chunk {i} (ID: {doc['id']}) ---")
+                print(doc['document'])
+                print("-" * 80)
+            print("=" * 80)
+            print(f"[{self.__class__.__name__}] Final Prompt:")
+            print("=" * 80)
+            print(prompt)
+            print("=" * 80)
+            print(f"[{self.__class__.__name__}] LLM Model: {llm_used}")
+            print(f"[{self.__class__.__name__}] Response Latency: {total_latency:.2f}s (LLM: {llm_latency:.2f}s)")
+            print(f"[{self.__class__.__name__}] Prompt Length: {len(prompt)} characters")
+            print(f"[{self.__class__.__name__}] Token Counts (Estimated): Prompt: {len(prompt)//4} tokens, Answer: {len(rag_answer)//4} tokens")
+            print(f"[{self.__class__.__name__}] Final Answer: {rag_answer}")
+            print()
+
+            
         log_evaluation_trace(
             query=query,
             selected_agent=self.__class__.__name__,
@@ -526,18 +578,46 @@ class BaseAgent(ABC):
             routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
             selected_doc_id=best_doc["id"],
             retrieved_docs=docs,
-            answer=best_doc["answer"],
-            relevance_decision="SUFFICIENT"
+            answer=rag_answer,
+            relevance_decision="SUFFICIENT",
+            confidence_score=best_sim_score,
+            fallback_used=(rag_answer == fallback_msg)
         )
-        response = f"{best_doc['answer']}\n\n[Source: {self.get_domain().title().replace('_', ' ')} | Ref: {best_doc['id']}]"
-        return response
+        return f"Answer:\n{rag_answer}\n\nSources:\n    {source_file}"
+                
+        # Retrieval-only mode fallback or disabled RAG
+        ans_text = best_doc['answer']
+        if ans_text.startswith("Answer:"):
+            ans_text = ans_text[len("Answer:"):].strip()
+            
+        # Programmatically prepend attribution
+        ans_text = f"According to {source_attribution}:\n\n{ans_text}"
+        
+        # Append disclaimer if medium confidence
+        if disclaimer:
+            ans_text += disclaimer
+            
+        source_file = f"{self.get_domain()}.json"
+        if self.get_domain() == "navigation":
+            source_file = "locations.json"
+            
+        log_evaluation_trace(
+            query=query,
+            selected_agent=self.__class__.__name__,
+            selected_domain=self.get_domain(),
+            routing_confidence=routing_confidence if routing_confidence is not None else 1.0,
+            selected_doc_id=best_doc["id"],
+            retrieved_docs=docs,
+            answer=ans_text,
+            relevance_decision="SUFFICIENT",
+            confidence_score=best_sim_score,
+            fallback_used=False
+        )
+        return f"Answer:\n{ans_text}\n\nSources:\n    {source_file}"
 
     @abstractmethod
     def get_domain(self) -> str:
         """
         Returns the domain/collection name associated with this agent.
-        
-        Returns:
-            str: The name of the domain/collection (e.g., 'admissions').
         """
         pass

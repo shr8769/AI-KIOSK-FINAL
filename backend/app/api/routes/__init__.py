@@ -1,16 +1,17 @@
 """
 API Route Handlers
 """
-
-from . import asr, events, navigation, rag, riar, route, session, tts
+from . import detect, asr, riar, route, rag, tts, session, profile, memory
 
 __all__ = [
-    "events",
+    "detect",
     "asr",
     "riar",
     "route",
     "rag",
     "tts",
     "session",
-    "navigation",
+    "profile",
+    "memory",
 ]
+

@@ -71,7 +71,7 @@ async def verify_postgres():
     t_start = time.perf_counter()
     try:
         migrations_dir = os.path.join(os.path.dirname(__file__), "database", "migrations")
-        migration_files = ["001_init.sql", "002_memory.sql", "003_queries.sql"]
+        migration_files = ["001_init.sql", "002_memory.sql"]
         
         async with engine.begin() as conn:
             for m_file in migration_files:
@@ -97,7 +97,7 @@ async def verify_postgres():
 
     # 5. Verify that tables exist
     t_start = time.perf_counter()
-    tables_to_verify = ["roles", "users", "sessions", "memories", "queries"]
+    tables_to_verify = ["roles", "users", "sessions", "memories"]
     all_tables_exist = True
     try:
         async with engine.connect() as conn:

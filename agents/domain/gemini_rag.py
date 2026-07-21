@@ -17,6 +17,8 @@ class GeminiSynthesizer:
         self.model_name = model_name
         self.client = None
         self.ollama_client = None
+        self.is_degraded = False
+        self.degraded_at = 0.0
         
         if self.api_key:
             try:
@@ -49,10 +51,6 @@ class GeminiSynthesizer:
         If Gemini is unavailable or errors out, falls back to local Ollama (Qwen) synthesis.
         If both are unavailable, returns None.
         """
-        if not context_docs:
-            logger.warning("No context documents supplied to synthesizer.")
-            return None
-
         # Dynamically import templates to prevent circular dependencies
         try:
             from agents.concierge.prompt_templates import TEMPLATES
@@ -69,25 +67,69 @@ Query: {query}
 
 Answer:"""
 
-        # Format context
-        formatted_context = ""
-        for i, doc in enumerate(context_docs, 1):
-            formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
+        if not context_docs:
+            prompt = query
+        else:
+            # Format context
+            formatted_context = ""
+            for i, doc in enumerate(context_docs, 1):
+                formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
+            prompt = template.format(context=formatted_context, query=query)
 
-        prompt = template.format(context=formatted_context, query=query)
+        if self.is_degraded:
+            import time
+            current_time = time.time()
+            degraded_time = getattr(self, "degraded_at", 0)
+            if current_time - degraded_time > 60.0:  # 60s cooldown
+                self.is_degraded = False
+                logger.info("GeminiSynthesizer synthesis cooldown expired. Attempting to restore service.")
+            else:
+                # Fallback to Ollama if Gemini is degraded
+                if self.ollama_client:
+                    try:
+                        logger.info("Synthesizing response using local Ollama (qwen3:latest) (Gemini degraded)...")
+                        response = self.ollama_client.invoke(prompt)
+                        if response and response.content:
+                            return response.content.strip()
+                        else:
+                            logger.warning("Ollama returned empty response.")
+                    except Exception as e:
+                        logger.error(f"Ollama generation failed: {e}")
+                return None
 
         if self.client:
-            try:
-                response = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=prompt,
-                )
-                if response.text:
-                    return response.text.strip()
-                else:
-                    logger.warning("Gemini model returned empty response text.")
-            except Exception as e:
-                logger.warning(f"Gemini call failed, falling back to Qwen: {type(e).__name__}: {e}")
+            import time
+            max_retries = 3
+            backoff = 2.0
+
+            for attempt in range(max_retries):
+                try:
+                    response = self.client.models.generate_content(
+                        model=self.model_name,
+                        contents=prompt,
+                    )
+                    if response.text:
+                        self.is_degraded = False
+                        return response.text.strip()
+                    else:
+                        logger.warning("Gemini model returned empty response text.")
+                        break
+                except Exception as e:
+                    if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
+                        if "limit: 20" in str(e) or "day" in str(e).lower() or "daily" in str(e).lower():
+                            self.is_degraded = True
+                            self.degraded_at = time.time()
+                            break
+                        if attempt < max_retries - 1:
+                            sleep_time = backoff ** (attempt + 1)
+                            logger.warning(f"Gemini generation hit rate limit. Retrying in {sleep_time}s...")
+                            time.sleep(sleep_time)
+                            continue
+                        else:
+                            self.is_degraded = True
+                            self.degraded_at = time.time()
+                    logger.error(f"Gemini generation failed: {e}. Falling back to Ollama.")
+                    break
 
         # Fallback to Ollama if client missing or Gemini failed
         if self.ollama_client:
@@ -121,7 +163,7 @@ Answer:"""
 Context:
 {formatted_context.strip()}
 
-Determine whether the context contains information relevant to answering ANY PART of the question.
+Determine whether the context contains any relevant information that can help address or partially answer the query. If there is any useful or partially matching information in the context, reply with SUFFICIENT. Only reply with INSUFFICIENT if the context is completely unrelated or contains absolutely no helpful facts.
 
 Reply only:
 
@@ -131,21 +173,66 @@ or
 
 INSUFFICIENT"""
 
+        if self.is_degraded:
+            import time
+            current_time = time.time()
+            degraded_time = getattr(self, "degraded_at", 0)
+            if current_time - degraded_time > 60.0:  # 60s cooldown
+                self.is_degraded = False
+                logger.info("GeminiSynthesizer sufficiency check cooldown expired. Attempting to restore service.")
+            else:
+                # Fallback to Ollama if Gemini is degraded
+                if self.ollama_client:
+                    try:
+                        logger.info("Checking sufficiency using local Ollama (qwen3:latest) (Gemini degraded)...")
+                        response = self.ollama_client.invoke(prompt)
+                        if response and response.content:
+                            result = response.content.strip().upper()
+                            if "SUFFICIENT" in result and "INSUFFICIENT" not in result:
+                                return "SUFFICIENT"
+                            return "INSUFFICIENT"
+                        else:
+                            logger.warning("Ollama relevance check returned empty response.")
+                    except Exception as e:
+                        logger.error(f"Ollama relevance check failed: {e}")
+                return None
+
         if self.client:
-            try:
-                response = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=prompt,
-                )
-                if response.text:
-                    result = response.text.strip().upper()
-                    if "SUFFICIENT" in result and "INSUFFICIENT" not in result:
-                        return "SUFFICIENT"
-                    return "INSUFFICIENT"
-                else:
-                    logger.warning("Gemini relevance check returned empty response.")
-            except Exception as e:
-                logger.warning(f"Gemini call failed, falling back to Qwen: {type(e).__name__}: {e}")
+            import time
+            max_retries = 3
+            backoff = 2.0
+
+            for attempt in range(max_retries):
+                try:
+                    response = self.client.models.generate_content(
+                        model=self.model_name,
+                        contents=prompt,
+                    )
+                    if response.text:
+                        self.is_degraded = False
+                        result = response.text.strip().upper()
+                        if "SUFFICIENT" in result and "INSUFFICIENT" not in result:
+                            return "SUFFICIENT"
+                        return "INSUFFICIENT"
+                    else:
+                        logger.warning("Gemini relevance check returned empty response.")
+                        break
+                except Exception as e:
+                    if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
+                        if "limit: 20" in str(e) or "day" in str(e).lower() or "daily" in str(e).lower():
+                            self.is_degraded = True
+                            self.degraded_at = time.time()
+                            break
+                        if attempt < max_retries - 1:
+                            sleep_time = backoff ** (attempt + 1)
+                            logger.warning(f"Gemini relevance check hit rate limit. Retrying in {sleep_time}s...")
+                            time.sleep(sleep_time)
+                            continue
+                        else:
+                            self.is_degraded = True
+                            self.degraded_at = time.time()
+                    logger.error(f"Gemini relevance check failed: {e}. Falling back to Ollama.")
+                    break
 
         # Fallback to Ollama
         if self.ollama_client:

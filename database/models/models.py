@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy import Column, String, ForeignKey, DateTime, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.sql import func
 from pgvector.sqlalchemy import Vector
 
 Base = declarative_base()
@@ -18,9 +19,9 @@ class User(Base):
     user_id = Column(String(100), primary_key=True)
     name = Column(String(255), nullable=False)
     role_id = Column(String(50), ForeignKey('roles.role_id'), nullable=False)
-    face_embedding = Column(Vector(512))
+    face_embedding = Column(Vector(512), nullable=True)
     preferences = Column(JSONB, nullable=False, server_default='{}')
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     role = relationship("Role", back_populates="users")
     sessions = relationship("Session", back_populates="user")
@@ -31,7 +32,7 @@ class Session(Base):
     __tablename__ = 'sessions'
     session_id = Column(String(100), primary_key=True)
     user_id = Column(String(100), ForeignKey('users.user_id'), nullable=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     user = relationship("User", back_populates="sessions")
     queries = relationship("Query", back_populates="session")
@@ -43,7 +44,7 @@ class Memory(Base):
     content = Column(String, nullable=False)
     topic = Column(String(255))
     embedding = Column(Vector(384))
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     user = relationship("User", back_populates="memories")
 
@@ -59,11 +60,10 @@ class Query(Base):
     language = Column(String(10))
     ambiguity_type = Column(String(50))
     latency_ms = Column(Integer)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     session = relationship("Session", back_populates="queries")
     user = relationship("User", back_populates="queries")
-
 
 class OfficeEscalation(Base):
     __tablename__ = 'office_escalations'
@@ -73,4 +73,4 @@ class OfficeEscalation(Base):
     domain = Column(String(100))
     office_details = Column(String)
     issue_encountering = Column(String, nullable=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
