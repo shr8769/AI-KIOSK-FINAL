@@ -73,7 +73,7 @@ async def retrieve_and_generate(request: RAGRequest, db: AsyncSession = Depends(
             confidence = conf if conf > 0 else 0.85
         except Exception as e:
             logger.error(f"Error querying real Coordinator Agent: {e}")
-            answer = f"I encountered an issue retrieving that information. Please contact the Admissions office."
+            answer = "I encountered an issue retrieving that information. Please contact the Admissions office."
             sources = []
     else:
         answer = f"[MOCK] Info matching '{request.query}' in domain '{request.domain}'."
