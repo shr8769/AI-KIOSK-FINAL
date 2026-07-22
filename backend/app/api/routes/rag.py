@@ -59,7 +59,24 @@ async def retrieve_and_generate(request: RAGRequest, db: AsyncSession = Depends(
             from app.core.dependencies import get_coordinator_agent
             coordinator = get_coordinator_agent()
             logger.info(f"Querying real Coordinator Agent: '{request.query}' (session: {request.session_id})")
-            raw_ans = coordinator.answer(request.query)
+            if request.domain == "navigation":
+                try:
+                    from app.services.navigation_service import location_resolver
+                    top_loc = location_resolver.resolve(request.query)
+                    if top_loc:
+                        room_text = f" (room {top_loc.get('room')})" if top_loc.get('room') else ""
+                        answer = f"The {top_loc.get('name')} is located in {top_loc.get('building')} on Floor {top_loc.get('floor')}{room_text}. Please scan the QR code on the screen for step-by-step directions."
+                        sources = []
+                        raw_ans = answer
+                    else:
+                        answer = "I'm sorry, I could not find that location on the campus map."
+                        sources = []
+                        raw_ans = answer
+                except Exception as e:
+                    logger.error(f"Navigation resolution failed: {e}")
+                    raw_ans = coordinator.answer(request.query, target_domain=request.domain)
+            else:
+                raw_ans = coordinator.answer(request.query, target_domain=request.domain)
 
             # Parse returned answer to separate answer and source
             if "\n\nSources:\n    " in raw_ans:

@@ -319,35 +319,35 @@ async def run_query_pipeline(
     is_fallback = False
 
     if target_domain == "navigation":
-        coordinator = get_coordinator_agent()
-        import asyncio
-        full_answer = await asyncio.to_thread(
-            coordinator.answer, refined_query, target_domain=target_domain
-        )
-        answer_en = _clean_agent_answer(full_answer)
-        is_fallback = _is_fallback_answer(answer_en)
+        # Extract the location for the QR Code using LocationResolver directly, bypassing slow LLM
+        try:
+            from app.services.navigation_service import location_resolver, navigation_service
+            top_loc = location_resolver.resolve(refined_query)
 
-        # Extract the location for the QR Code using LocationResolver
-        if not is_fallback:
-            try:
-                from app.services.navigation_service import location_resolver, navigation_service
-                top_loc = location_resolver.resolve(refined_query)
-
-                if top_loc:
-                    from app.core.config import get_local_ip
-                    nav_id = await navigation_service.create_session(top_loc)
-                    nav_url = navigation_service.build_url(nav_id)
-                    nav_payload = {
-                        "navigation_id": nav_id,
-                        "url": nav_url,
-                        "destination_name": top_loc.get("name"),
-                        "building": top_loc.get("building"),
-                        "floor": top_loc.get("floor"),
-                        "room": top_loc.get("room"),
-                        "kiosk_ip": get_local_ip()
-                    }
-            except Exception as e:
-                logger.error(f"Navigation QR code generation failed: {e}")
+            if top_loc:
+                from app.core.config import get_local_ip
+                nav_id = await navigation_service.create_session(top_loc)
+                nav_url = navigation_service.build_url(nav_id)
+                nav_payload = {
+                    "navigation_id": nav_id,
+                    "url": nav_url,
+                    "destination_name": top_loc.get("name"),
+                    "building": top_loc.get("building"),
+                    "floor": top_loc.get("floor"),
+                    "room": top_loc.get("room"),
+                    "kiosk_ip": get_local_ip()
+                }
+                
+                # Construct real-time response programmatically
+                room_text = f" (room {top_loc.get('room')})" if top_loc.get('room') else ""
+                answer_en = f"The {top_loc.get('name')} is located in {top_loc.get('building')} on Floor {top_loc.get('floor')}{room_text}. Please scan the QR code on the screen for step-by-step directions."
+            else:
+                answer_en = "I'm sorry, I could not find that location on the campus map. Please check the department directory."
+                is_fallback = True
+        except Exception as e:
+            logger.error(f"Navigation QR code generation failed: {e}")
+            answer_en = "I encountered an issue retrieving the navigation route."
+            is_fallback = True
     else:
         coordinator = get_coordinator_agent()
         import asyncio

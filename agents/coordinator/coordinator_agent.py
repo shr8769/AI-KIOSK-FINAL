@@ -116,7 +116,7 @@ class CoordinatorAgent:
                 "which floor", "which building", "way to", "walk to", "route", "how to walk", "near", 
                 "sports complex", "guest house", "cafeteria", "library", "placement cell", "admissions office", 
                 "accounts counter", "fee counter", "health center", "moot court", "court hall", 
-                "counseling center", "vc office", "gym", "common room", "dining hall"
+                "counseling center", "vc office", "gym", "common room", "dining hall", "guide", "guide me"
             ]
         }
 
@@ -141,7 +141,7 @@ class CoordinatorAgent:
         nav_override_keywords = [
             "where", "located", "directions", "reach", "get to", "location", 
             "which floor", "which building", "way to", "walk to", "route", 
-            "how to walk", "near", "where is"
+            "how to walk", "near", "where is", "guide", "guide me"
         ]
         
         # Check if the query contains any process/transactional verbs that indicate
