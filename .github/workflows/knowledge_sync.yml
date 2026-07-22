@@ -1,0 +1,104 @@
+name: Knowledge Base Sync
+
+on:
+  # Daily at 2:00 AM IST (8:30 PM UTC previous day)
+  schedule:
+    - cron: '30 20 * * *'
+
+  # Manual trigger with options
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Sync mode'
+        required: true
+        default: 'incremental'
+        type: choice
+        options:
+          - incremental
+          - full
+          - dry-run
+          - validate-only
+      max_pages:
+        description: 'Max pages to crawl (0 = use config default)'
+        required: false
+        default: '0'
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium
+          playwright install-deps
+
+      - name: Run Knowledge Sync
+        env:
+          SYNC_MODE: ${{ github.event.inputs.mode || 'incremental' }}
+          MAX_PAGES: ${{ github.event.inputs.max_pages || '0' }}
+        run: |
+          ARGS=""
+
+          if [ "$SYNC_MODE" = "full" ]; then
+            ARGS="--full"
+          elif [ "$SYNC_MODE" = "dry-run" ]; then
+            ARGS="--dry-run"
+          elif [ "$SYNC_MODE" = "validate-only" ]; then
+            ARGS="--validate-only"
+          fi
+
+          if [ "$MAX_PAGES" != "0" ] && [ -n "$MAX_PAGES" ]; then
+            ARGS="$ARGS --max-pages $MAX_PAGES"
+          fi
+
+          echo "Running: python sync_knowledge.py $ARGS"
+          python sync_knowledge.py $ARGS
+
+      - name: Commit updated files
+        if: success() && github.event.inputs.mode != 'dry-run' && github.event.inputs.mode != 'validate-only'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Add manifest, markdown files, and reports
+          git add sync_manifest.json || true
+          git add knowledge_new/ || true
+          git add reports/sync/ || true
+
+          # Commit only if there are changes
+          git diff --cached --quiet || git commit -m "chore: automated knowledge sync [$(date -u +%Y-%m-%dT%H:%M:%SZ)]"
+          git push || echo "Nothing to push"
+
+      - name: Upload sync report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-report
+          path: reports/sync/
+          retention-days: 30
+
+      - name: Upload sync logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-logs
+          path: logs/sync/
+          retention-days: 7

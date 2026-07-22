@@ -1,0 +1,79 @@
+# ══════════════════════════════════════════════════════════════
+# Knowledge Synchronization Configuration
+# ══════════════════════════════════════════════════════════════
+# Central config file for the automated knowledge sync pipeline.
+# Used by: sync_knowledge.py and all scripts/data_ingestion/sync/* modules.
+
+crawler:
+  seed_urls:
+    - "https://pes.edu/"
+  allowed_domains:
+    - "pes.edu"
+  allow_subdomains: true
+  max_depth: 10
+  max_pages: 2000
+  politeness_delay: 2.0        # seconds between requests
+  request_timeout: 30000       # Playwright page timeout (ms)
+  max_retries: 3               # retries per page on transient failure
+  concurrency: 1               # number of parallel browser tabs (keep 1 for politeness)
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 PESUKioskBot/2.0"
+
+sync:
+  manifest_path: "sync_manifest.json"
+  archive_deleted: true         # true = move to archive dir; false = hard-delete
+  archive_dir: "knowledge_new/_archived"
+  content_hash_algorithm: "sha256"
+  stale_threshold_hours: 168    # 7 days — URLs not seen in this window are candidates for deletion check
+  max_consecutive_errors: 3     # after this many consecutive errors on a URL, mark it as permanent error
+  resume_on_interrupt: true     # resume from last successful step if sync was interrupted
+
+ingestion:
+  db_path: "knowledge/vectorstore"
+  knowledge_dir: "knowledge_new"
+  embedding_model: "all-MiniLM-L6-v2"
+  chunk_target_words: 250
+  chunk_max_words: 290
+  chunk_overlap_words: 40
+  batch_size: 100
+  collections:
+    - admissions
+    - academics
+    - placements
+    - research
+    - student_services
+    - navigation
+
+schedule:
+  cron: "0 2 * * *"            # daily at 2:00 AM IST
+  timezone: "Asia/Kolkata"
+
+logging:
+  log_dir: "logs/sync"
+  report_dir: "reports/sync"
+  max_log_files: 30             # rotate after this many log files
+  log_level: "INFO"             # DEBUG | INFO | WARNING | ERROR
+
+# URL include/exclude patterns (regex)
+# Pages matching exclude patterns will be skipped even if discovered.
+url_filters:
+  exclude_patterns:
+    - "/wp-admin"
+    - "/wp-login"
+    - "/wp-json"
+    - "/xmlrpc"
+    - "/feed/"
+    - "/comments/feed/"
+    - "/wp-content/uploads"
+    - "/wp-includes"
+    - "/wp-cron"
+    - "/trackback"
+    - "/embed/"
+    - "\\?replytocom="
+    - "\\?share="
+    - "/tag/"
+    - "/author/"
+  include_patterns: []          # empty = include all (after exclude filtering)
+
+versioning:
+  scraper_version: "2.0.0"
+  ingestion_version: "2.0.0"

@@ -66,6 +66,11 @@ CLEAN_DIR = os.path.join(BASE_DIR, "output", "clean")
 KNOWLEDGE_NEW_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), "knowledge_new")
 LOG_FILE = os.path.join(BASE_DIR, "scraper.log")
 
+# Autonomous scheduler settings
+SYNC_INTERVAL_HOURS = 24
+TRACKER_FILE_PATH = os.path.join(KNOWLEDGE_NEW_DIR, "crawler_tracker.json")
+AUTONOMOUS_LOG_FILE = os.path.join(BASE_DIR, "autonomous_sync.log")
+
 # Content selectors to target the page's main content wrapper in order of priority
 CONTENT_SELECTORS = [
     ".gdlr-core-page-builder-body",

@@ -87,3 +87,13 @@ tmp/
 temp/
 scratch/
 *.tmp
+
+# ─── Scraper & Sync Output ─────────────────────────────────────────────
+reports/
+logs/
+new_backend/scraper/output/
+new_backend/scraper/external_data/
+crawl_checkpoint.json
+crawl_report.md
+crawler_tracker.json
+sync_manifest.json
