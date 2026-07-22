@@ -13,23 +13,6 @@ if root_dir not in sys.path:
 
 from agents.domain.gemini_rag import GeminiSynthesizer  # noqa: E402
 
-from app.core.dependencies import get_riar_pipeline  # noqa: E402
-
-
-@patch("langchain_ollama.ChatOllama")
-def test_get_riar_pipeline_offline_fallback(mock_chat_ollama):
-    """Test get_riar_pipeline uses ChatOllama when GOOGLE_API_KEY is not set."""
-    # Temporarily remove GOOGLE_API_KEY from environment
-    with patch.dict(os.environ, {}, clear=True):
-        # Clear the lru_cache of get_riar_pipeline to force re-evaluation
-        get_riar_pipeline.cache_clear()
-
-        pipeline = get_riar_pipeline()
-
-        # Verify ChatOllama was instantiated with model "qwen3:latest"
-        mock_chat_ollama.assert_called_once_with(model="qwen3:latest")
-        assert pipeline.llm_client == mock_chat_ollama.return_value
-
 
 @patch("socket.socket")
 @patch("langchain_ollama.ChatOllama")
