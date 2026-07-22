@@ -31,10 +31,45 @@ class NavigationEngine:
         if len(path) == 1:
             return [f"You are already at {path[0].name}."]
 
-        instructions = [f"Start from {path[0].name}"]
+        instructions = []
+        start_floor = getattr(path[0], 'floor', 0)
+        floor_names = {0: "Ground Floor", 1: "1st Floor", 2: "2nd Floor", 3: "3rd Floor", 4: "4th Floor"}
+        start_floor_name = floor_names.get(start_floor, f"Floor {start_floor}")
+        instructions.append(f"Start from {path[0].name} on the {start_floor_name}")
 
-        for i in range(1, len(path) - 1):
-            instructions.append(f"Walk to {path[i].name}")
+        i = 1
+        while i < len(path):
+            curr_node = path[i-1]
+            next_node = path[i]
+            curr_floor = getattr(curr_node, 'floor', 0)
+            next_floor = getattr(next_node, 'floor', 0)
+
+            # Check if this is the start of a vertical floor transition (Lift / Stairs)
+            if curr_floor != next_floor:
+                transit_type = "Lift" if "lift" in next_node.name.lower() or "lift" in curr_node.name.lower() else "Stairs"
+
+                # Consume all consecutive nodes that are part of this lift/stairs vertical movement
+                final_floor = next_floor
+                while i < len(path) - 1:
+                    lookahead_curr = path[i]
+                    lookahead_next = path[i+1]
+                    if (transit_type.lower() in lookahead_next.name.lower() or transit_type.lower() in lookahead_curr.name.lower()) and getattr(lookahead_curr, 'floor', 0) != getattr(lookahead_next, 'floor', 0):
+                        final_floor = getattr(lookahead_next, 'floor', 0)
+                        i += 1
+                    else:
+                        break
+
+                dest_floor_name = floor_names.get(final_floor, f"Floor {final_floor}")
+                instructions.append(f"Take the {transit_type} to the {dest_floor_name}")
+            else:
+                if i < len(path) - 1:
+                    if "junction" not in next_node.name.lower() and "corner" not in next_node.name.lower():
+                        instructions.append(f"Walk to {next_node.name}")
+                    else:
+                        if not instructions or "Continue down the corridor" not in instructions[-1]:
+                            instructions.append("Continue down the corridor")
+
+            i += 1
 
         instructions.append(f"Proceed towards {path[-1].name}")
         instructions.append("Destination reached")
@@ -72,7 +107,7 @@ class NavigationEngine:
 
         # Format the path array for the frontend payload
         path_payload = [
-            {"id": node.id, "name": node.name, "x": node.x, "y": node.y}
+            {"id": node.id, "name": node.name, "x": node.x, "y": node.y, "floor": getattr(node, 'floor', 0)}
             for node in path_nodes
         ]
 

@@ -8,6 +8,7 @@ class Node(BaseModel):
     name: str
     x: int
     y: int
+    floor: int = 0
 
 
 class Edge(BaseModel):
