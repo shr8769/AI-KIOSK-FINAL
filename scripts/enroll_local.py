@@ -32,7 +32,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, ROOT)
 
 MOCK_DB_PATH = os.path.join(ROOT, "database", "mock_firestore.json")
-OPPS_PATH    = os.path.join(ROOT, "knowledge", "sources", "opportunities.json")
+OPPS_PATH    = os.path.join(ROOT, "knowledge_new", "sources", "opportunities.json")
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────

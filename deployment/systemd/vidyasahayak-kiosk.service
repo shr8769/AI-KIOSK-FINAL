@@ -1,0 +1,17 @@
+[Unit]
+Description=VidyaSahayak Chromium Kiosk Mode
+After=network.target vidyasahayak-frontend.service
+Wants=vidyasahayak-frontend.service
+
+[Service]
+User=kiosk
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY=/home/kiosk/.Xauthority"
+# Wait a few seconds for Next.js to boot up
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/chromium-browser --noerrdialogs --disable-infobars --kiosk http://localhost:3000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=graphical.target

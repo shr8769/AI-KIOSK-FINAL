@@ -5,12 +5,8 @@ from app.core.session_store import get_session
 from app.models.schemas import (
     ASRRequest,
     ASRResponse,
-    ClarifyRequest,
-    ClarifyResponse,
     RAGRequest,
     RAGResponse,
-    RIARRequest,
-    RIARResponse,
     RouteRequest,
     RouteResponse,
     SessionHistoryResponse,
@@ -20,7 +16,6 @@ from app.models.schemas import (
 from app.services.mock_services import (
     asr_service,
     rag_service,
-    riar_service,
     route_service,
     tts_service,
 )
@@ -48,25 +43,7 @@ async def asr(body: ASRRequest, request: Request):
     return result
 
 
-# ── /riar ────────────────────────────────────
 
-
-@router.post("/riar", response_model=RIARResponse, tags=["pipeline"])
-async def riar(body: RIARRequest, request: Request):
-    session = await get_session(body.session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
-    result = await riar_service.classify(body)
-    return result
-
-
-@router.post("/riar/clarify", response_model=ClarifyResponse, tags=["pipeline"])
-async def riar_clarify(body: ClarifyRequest, request: Request):
-    session = await get_session(body.session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
-    result = await riar_service.clarify(body)
-    return result
 
 
 # ── /route ───────────────────────────────────

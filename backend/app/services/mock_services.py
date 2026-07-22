@@ -5,15 +5,11 @@ Mock implementations of every service mapping to our API contracts.
 from app.models.schemas import (
     ASRRequest,
     ASRResponse,
-    ClarifyRequest,
-    ClarifyResponse,
     DetectRequest,
     DetectResponse,
     RAGRequest,
     RAGResponse,
     RetrievedChunkModel,
-    RIARRequest,
-    RIARResponse,
     RouteRequest,
     RouteResponse,
     TTSRequest,
@@ -42,200 +38,6 @@ class ASRService:
             confidence=0.95,
             duration_ms=3000,
             latency_ms=480,
-        )
-
-
-class RIARService:
-    async def classify(self, request: RIARRequest) -> RIARResponse:
-        query = request.query.lower()
-
-        # Keyword-based domain classification
-        domain = "general"
-
-        # English, Kannada, and Hindi stem keywords (including Romanized/transliterated variations)
-        admissions_kws = [
-            "admission",
-            "apply",
-            "seat",
-            "pessat",
-            "eligib",
-            "cutoff",
-            "cut-off",
-            "register",
-            "ಪ್ರವೇಶ",
-            "ಅಡ್ಮಿ",
-            "ಅರ್ಜಿ",
-            "ಸೀಟು",
-            "ನೋಂದ",
-            "ಅರ್ಹತೆ",
-            "प्रवेश",
-            "एडमि",
-            "आवेदन",
-            "सीट",
-            "पंजी",
-            "पात्र",
-            "pravesh",
-            "nondan",
-            "arhat",
-        ]
-        academics_kws = [
-            "course",
-            "syllabus",
-            "exam",
-            "marks",
-            "credit",
-            "class",
-            "semester",
-            "academ",
-            "ಕೋರ್ಸ್",
-            "ವಿಷಯ",
-            "ಪಠ್ಯಕ್ರಮ",
-            "ಪರೀಕ್ಷೆ",
-            "ಅಂಕ",
-            "ಸೆಮಿಸ್ಟ",
-            "पाठ्यक्रम",
-            "परीक्षा",
-            "अंक",
-            "सेमेस्टर",
-            "कक्षा",
-            "एकेड",
-            "parikshe",
-            "patya",
-            "sem",
-        ]
-        placements_kws = [
-            "placement",
-            "job",
-            "salary",
-            "package",
-            "recruit",
-            "company",
-            "companies",
-            "ಪ್ಲೇಸ್",
-            "ಕೆಲಸ",
-            "ಉದ್ಯೋಗ",
-            "ಸಂಬಳ",
-            "ಪ್ಯಾಕೇ",
-            "ಕಂಪನಿ",
-            "प्लेस",
-            "नौकरी",
-            "रोजगार",
-            "वेतन",
-            "पैकेज",
-            "कंपनी",
-            "kelasa",
-            "udyog",
-        ]
-        research_kws = [
-            "research",
-            "phd",
-            "ph.d",
-            "project",
-            "paper",
-            "publicat",
-            "ಸಂಶೋಧನೆ",
-            "ಪ್ರಬಂಧ",
-            "अनुसंधान",
-            "शोध",
-            "shodh",
-            "sansodhan",
-        ]
-        student_services_kws = [
-            "hostel",
-            "scholarship",
-            "library",
-            "sport",
-            "facilit",
-            "ಹಾಸ್ಟೆ",
-            "ಶಿಷ್ಯವೇ",
-            "ಗ್ರಂಥಾ",
-            "ಲೈಬ್ರ",
-            "ಕ್ರೀಡೆ",
-            "छात्रा",
-            "छात्रवृत्ति",
-            "पुस्तकालय",
-            "खेल",
-            "granthalay",
-            "kreede",
-        ]
-        navigation_kws = [
-            "where",
-            "location",
-            "map",
-            "building",
-            "floor",
-            "block",
-            "direction",
-            "room",
-            "office",
-            "toilet",
-            "canteen",
-            "cafeter",
-            "situat",
-            "located",
-            "find",
-            "reach",
-            "ಎಲ್ಲಿದೆ",
-            "ಸ್ಥಳ",
-            "ನಕ್ಷೆ",
-            "ಕಟ್ಟಡ",
-            "ಬ್ಲಾಕ್",
-            "ದಿಕ್ಕು",
-            "ಕೊಠಡಿ",
-            "ಕಚೇರಿ",
-            "ಶೌಚಾಲಯ",
-            "ಕ್ಯಾಂಟೀ",
-            "ಕೆಫೆ",
-            "कहाँ",
-            "स्थान",
-            "नक्शा",
-            "इमारत",
-            "ब्लॉक",
-            "दिशा",
-            "कममा",
-            "कार्यालय",
-            "शौचालय",
-            "कैंटीन",
-            "कैफे",
-            "ellide",
-            "kacheri",
-            "kattida",
-            "sthana",
-            "dikka",
-            "dikku",
-        ]
-
-        if any(kw in query for kw in admissions_kws):
-            domain = "admissions"
-        elif any(kw in query for kw in academics_kws):
-            domain = "academics"
-        elif any(kw in query for kw in placements_kws):
-            domain = "placements"
-        elif any(kw in query for kw in research_kws):
-            domain = "research"
-        elif any(kw in query for kw in student_services_kws):
-            domain = "student_services"
-        elif any(kw in query for kw in navigation_kws):
-            domain = "navigation"
-
-        return RIARResponse(
-            session_id=request.session_id,
-            ambiguity_detected=False,
-            ambiguity_score=0.1,
-            ambiguity_type="CLEAR",
-            refined_query=request.query,
-            domain=domain,
-            routing_confidence=0.9,
-            requires_clarification=False,
-        )
-
-    async def clarify(self, request: ClarifyRequest) -> ClarifyResponse:
-        return ClarifyResponse(
-            session_id=request.session_id,
-            refined_query=f"{request.original_query} -> {request.clarification_response}",
-            domain="admissions",
-            routing_confidence=0.9,
-            ready_for_rag=True,
         )
 
 
@@ -365,7 +167,6 @@ class TTSService:
 
 detection_service = DetectionService()
 asr_service = ASRService()
-riar_service = RIARService()
 route_service = RouteService()
 rag_service = RAGService()
 tts_service = TTSService()

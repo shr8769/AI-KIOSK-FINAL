@@ -286,7 +286,7 @@ const VidyaSahayakOrbBase: React.FC<VidyaSahayakOrbProps> = ({
 
       /* Client-side VAD (Voice Activity Detection) */
       if (activeIdRef.current === 'listening' && micOnRef.current) {
-        const silenceDurationMs = 400;
+        const silenceDurationMs = 1500;
         const timeSinceStart = performance.now() - listeningTimeStartRef.current;
 
         if (timeSinceStart < 400) {
@@ -318,12 +318,12 @@ const VidyaSahayakOrbBase: React.FC<VidyaSahayakOrbProps> = ({
         if (performance.now() < bargeInCooldownRef.current) {
           bargeInStartRef.current = null;
         } else {
-          const isSilentState = activeIdRef.current !== 'speaking';
+          const isSilentState = activeIdRef.current === 'thinking' || activeIdRef.current === 'retrieving';
           const dynamicThreshold = isSilentState
             ? Math.max(0.03, silenceThresholdRef.current + 0.01)
             : Math.max(0.05, silenceThresholdRef.current + 0.02);
             
-          const dynamicDurationMs = isSilentState ? 300 : 400;
+          const dynamicDurationMs = isSilentState ? 600 : 800;
 
           if (smoothedUserAmpRef.current > dynamicThreshold) {
             if (bargeInStartRef.current === null) {

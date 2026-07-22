@@ -9,14 +9,16 @@ interface Node {
 }
 
 interface CampusMapProps {
-  path: Node[];
+  path?: Node[];
+  pinX?: number;
+  pinY?: number;
 }
 
-export function CampusMap({ path }: CampusMapProps) {
+export function CampusMap({ path, pinX, pinY }: CampusMapProps) {
   const mapWidth = 800;
   const mapHeight = 600;
 
-  if (!path || path.length === 0) {
+  if ((!path || path.length === 0) && (pinX === undefined || pinY === undefined)) {
     return (
       <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-inner border border-zinc-200 bg-zinc-100 flex items-center justify-center text-zinc-500">
         <p>No route data available.</p>
@@ -25,9 +27,9 @@ export function CampusMap({ path }: CampusMapProps) {
   }
 
   // Create SVG polyline string for the path
-  const pointsString = path.map(node => `${(node.x / mapWidth) * 100},${(node.y / mapHeight) * 100}`).join(' ');
-  const startNode = path[0];
-  const endNode = path[path.length - 1];
+  const pointsString = path && path.length > 0 ? path.map(node => `${(node.x / mapWidth) * 100},${(node.y / mapHeight) * 100}`).join(' ') : '';
+  const startNode = path && path.length > 0 ? path[0] : null;
+  const endNode = path && path.length > 0 ? path[path.length - 1] : { x: pinX || 0, y: pinY || 0 };
 
   return (
     <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-inner border border-zinc-200 bg-zinc-100">
@@ -56,7 +58,7 @@ export function CampusMap({ path }: CampusMapProps) {
         />
         
         {/* Nodes (Junctions) */}
-        {path.map((node, index) => {
+        {path?.map((node, index) => {
           if (index === 0 || index === path.length - 1) return null; // Skip start/end
           return (
             <circle 
@@ -71,17 +73,19 @@ export function CampusMap({ path }: CampusMapProps) {
       </svg>
 
       {/* Start Pin Overlay (KIOSK) */}
-      <div 
-        className="absolute transform -translate-x-1/2 -translate-y-1/2"
-        style={{
-          left: `${(startNode.x / mapWidth) * 100}%`,
-          top: `${(startNode.y / mapHeight) * 100}%`
-        }}
-      >
-        <div className="w-4 h-4 bg-zinc-800 rounded-full border-2 border-white shadow-md flex items-center justify-center">
-          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+      {startNode && (
+        <div 
+          className="absolute transform -translate-x-1/2 -translate-y-1/2"
+          style={{
+            left: `${(startNode.x / mapWidth) * 100}%`,
+            top: `${(startNode.y / mapHeight) * 100}%`
+          }}
+        >
+          <div className="w-4 h-4 bg-zinc-800 rounded-full border-2 border-white shadow-md flex items-center justify-center">
+            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Destination Pin Overlay */}
       <div 

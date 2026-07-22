@@ -9,7 +9,7 @@ Do not hallucinate, speculate, or use any external knowledge.
 If the context documents do not contain the direct answer, or do not have enough information to answer the query fully, you MUST reply with exactly:
 "Sorry, I could not find information regarding this in the university knowledge base. Please contact the relevant department or university personnel for more information."
 
-Keep the answer extremely concise, polite, and student-friendly. Do not refer to "context documents" or "provided context" in your answer to the student.
+Keep the answer to 1-3 sentences maximum. Synthesize a concise answer using your own words instead of blindly copying text from the context. Be direct, polite, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
 
 Context Documents:
 {context}
@@ -24,7 +24,7 @@ Do not hallucinate, speculate, or use any external knowledge.
 If the context documents do not contain the direct answer, or do not have enough information to answer the query fully, you MUST reply with exactly:
 "Sorry, I could not find information regarding this in the university knowledge base. Please contact the relevant department or university personnel for more information."
 
-Keep the answer extremely concise, clear, professional, and student-friendly. Do not refer to "context documents" or "provided context" in your answer to the student.
+Keep the answer to 1-3 sentences maximum. Synthesize a concise answer using your own words instead of blindly copying text from the context. Be direct, clear, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
 
 Context Documents:
 {context}
@@ -39,7 +39,7 @@ Do not hallucinate, speculate, or use any external knowledge.
 If the context documents do not contain the direct answer, or do not have enough information to answer the query fully, you MUST reply with exactly:
 "Sorry, I could not find information regarding this in the university knowledge base. Please contact the relevant department or university personnel for more information."
 
-Keep the answer extremely concise, motivating, factual, and student-friendly. Do not refer to "context documents" or "provided context" in your answer to the student.
+Keep the answer to 1-3 sentences maximum. Synthesize a concise answer using your own words instead of blindly copying text from the context. Be direct, factual, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
 
 Context Documents:
 {context}
@@ -54,7 +54,7 @@ Do not hallucinate, speculate, or use any external knowledge.
 If the context documents do not contain the direct answer, or do not have enough information to answer the query fully, you MUST reply with exactly:
 "Sorry, I could not find information regarding this in the university knowledge base. Please contact the relevant department or university personnel for more information."
 
-Keep the answer extremely concise, academic, encouraging, and student-friendly. Do not refer to "context documents" or "provided context" in your answer to the student.
+Keep the answer to 1-3 sentences maximum. Synthesize a concise answer using your own words instead of blindly copying text from the context. Be direct, academic, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
 
 Context Documents:
 {context}
@@ -69,7 +69,7 @@ Do not hallucinate, speculate, or use any external knowledge.
 If the context documents do not contain the direct answer, or do not have enough information to answer the query fully, you MUST reply with exactly:
 "Sorry, I could not find information regarding this in the university knowledge base. Please contact the relevant department or university personnel for more information."
 
-Keep the answer extremely concise, friendly, clear, and student-friendly. Do not refer to "context documents" or "provided context" in your answer to the student.
+Keep the answer to 1-3 sentences maximum. Be direct, friendly, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
 
 Context Documents:
 {context}
@@ -84,7 +84,7 @@ Do not hallucinate, speculate, or use any external knowledge.
 If the context documents do not contain the direct answer, or do not have enough information to answer the query fully, you MUST reply with exactly:
 "Sorry, I could not find information regarding this in the university knowledge base. Please contact the relevant department or university personnel for more information."
 
-Keep the answer extremely concise, easy to follow, and student-friendly. Do not refer to "context documents" or "provided context" in your answer to the student.
+Keep the answer to 1-3 sentences maximum. Be direct, easy to follow, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
 
 Context Documents:
 {context}

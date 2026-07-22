@@ -1,0 +1,16 @@
+[Unit]
+Description=VidyaSahayak Kiosk Frontend (Next.js)
+After=network.target vidyasahayak-backend.service
+
+[Service]
+User=kiosk
+WorkingDirectory=/opt/vidyasahayak/frontend
+Environment="PATH=/usr/bin:/usr/local/bin"
+Environment="NODE_ENV=production"
+# We assume the user has run `npm run build` prior to starting this service
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

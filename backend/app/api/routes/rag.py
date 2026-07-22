@@ -53,10 +53,12 @@ async def retrieve_and_generate(request: RAGRequest, db: AsyncSession = Depends(
     sources = []
     confidence = 0.85
     
-    if settings.USE_REAL_AGENTS and coordinator:
+    if settings.USE_REAL_AGENTS:
         try:
+            from app.core.dependencies import get_coordinator_agent
+            coordinator = get_coordinator_agent()
             logger.info(f"Querying real Coordinator Agent: '{request.query}' (session: {request.session_id})")
-            raw_ans = coordinator.answer(request.query, session_id=request.session_id)
+            raw_ans = coordinator.answer(request.query)
             
             # Parse returned answer to separate answer and source
             if "\n\nSources:\n    " in raw_ans:

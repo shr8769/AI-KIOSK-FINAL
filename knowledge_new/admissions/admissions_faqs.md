@@ -45,6 +45,8 @@ Here’s a handy list of questions and answers for prospective students
 
 #### What is the eligibility criteria for admission to BTech at PES University?
 
+To be eligible for B.Tech admission, candidates must have 60% aggregate marks in Physics, Mathematics, and Chemistry in 10+2 or equivalent from a recognized board. Test scores in JEE Main or KCET are also required.
+
 #### What is the process for admission to BTech-MTech integrated program?
 
 #### I have completed my Diploma in Mechanical Engineering. Can I join PES University?

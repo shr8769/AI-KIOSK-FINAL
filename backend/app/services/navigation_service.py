@@ -100,5 +100,51 @@ class NavigationService:
 
         return None
 
+class LocationResolver:
+    """Minimal fuzzy string matcher to resolve campus locations, replacing RIAR's EntityResolver."""
+    def __init__(self):
+        import os, re
+        from rapidfuzz import fuzz
+        self.fuzz = fuzz
+        self.re = re
+        self.gazetteer = []
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "knowledge_new", "sources", "navigation"))
+        file_path = os.path.join(base_dir, "navigation_locations.json")
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                locations = json.load(f)
+            for loc in locations:
+                for alias in loc.get("aliases", []):
+                    self.gazetteer.append((self.normalize(alias), loc))
+                self.gazetteer.append((self.normalize(loc["name"]), loc))
+        except Exception as e:
+            logger.error(f"Failed to load navigation_locations.json for LocationResolver: {e}")
+
+    def normalize(self, text: str) -> str:
+        text = text.lower()
+        fillers = [
+            r"\bwhere is\b", r"\bhow do i get to\b", r"\btake me to\b", r"\bnavigate to\b",
+            r"\bfind\b", r"\bcan you tell me where\b", r"\blocate\b", r"\bshow me\b",
+            r"\bi want to go to\b", r"\bdirection to\b", r"\bdirections to\b", r"\bthe way to\b",
+            r"\btell me the way to\b", r"\bway to\b", r"\bthe\b"
+        ]
+        for filler in fillers:
+            text = self.re.sub(filler, "", text)
+        text = self.re.sub(r"[^\w\s]", "", text)
+        return self.re.sub(r"\s+", " ", text).strip()
+
+    def resolve(self, query: str) -> Optional[Dict[str, Any]]:
+        norm_query = self.normalize(query)
+        if not norm_query or not self.gazetteer:
+            return None
+        matches = []
+        for alias, loc_dict in self.gazetteer:
+            score = self.fuzz.token_sort_ratio(norm_query, alias)
+            matches.append((score, loc_dict))
+        matches.sort(key=lambda x: x[0], reverse=True)
+        if matches and matches[0][0] > 30:
+            return matches[0][1]
+        return None
 
 navigation_service = NavigationService()
+location_resolver = LocationResolver()

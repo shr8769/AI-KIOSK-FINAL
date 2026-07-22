@@ -97,7 +97,7 @@ def _load_mock_db() -> dict:
         # Auto-seed opportunities from local knowledge files if available
         opps = []
         root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-        opps_src = os.path.join(root, "knowledge", "sources", "opportunities.json")
+        opps_src = os.path.join(root, "knowledge_new", "sources", "opportunities.json")
         if os.path.exists(opps_src):
             try:
                 with open(opps_src, "r", encoding="utf-8") as f:

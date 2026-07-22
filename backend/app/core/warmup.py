@@ -35,27 +35,6 @@ def warmup_services():
         logger.error(f"Whisper warmup failed: {e}")
         startup_state.errors.append(f"Whisper: {e}")
 
-    # 2. Warm up RIAR Pipeline & Embeddings
-    startup_state.messages.append("Loading Knowledge Base...")
-    try:
-        t0 = time.time()
-        from app.core.dependencies import get_riar_pipeline
-
-        get_riar_pipeline()
-
-        # We can simulate a dummy query to warm up the LLM, the embedding model, and the agent
-        # (Skipped dummy query in local startup to avoid slow CPU inference delay)
-        # try:
-        #     pipeline.process_query("warmup_session", 1, "What is the fee structure?", "en", [])
-        # except Exception as e:
-        #     logger.warning(f"RIAR dummy query completed with expected exception during warmup: {e}")
-
-        startup_state.metrics["riar_warmup_ms"] = int((time.time() - t0) * 1000)
-        logger.info(f"RIAR Pipeline warmup complete in {startup_state.metrics['riar_warmup_ms']}ms")
-    except Exception as e:
-        logger.error(f"RIAR warmup failed: {e}")
-        startup_state.errors.append(f"RIAR: {e}")
-
     # 3. Warm up Coordinator Agent
     try:
         t0 = time.time()

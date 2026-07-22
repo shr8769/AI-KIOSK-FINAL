@@ -1,0 +1,18 @@
+[Unit]
+Description=VidyaSahayak Kiosk Backend API
+After=network.target ollama.service
+
+[Service]
+User=kiosk
+WorkingDirectory=/opt/vidyasahayak/backend
+Environment="PATH=/opt/vidyasahayak/venv/bin:/usr/bin"
+EnvironmentFile=/opt/vidyasahayak/backend/.env
+# Assuming production deployment uses standard uvicorn
+ExecStart=/opt/vidyasahayak/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+# Output buffering
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

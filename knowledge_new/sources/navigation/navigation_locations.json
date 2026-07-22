@@ -1,0 +1,179 @@
+[
+    {
+        "id": "library",
+        "name": "Central Library",
+        "building": "Knowledge Resource Center",
+        "floor": 0,
+        "room": "RM-10",
+        "aliases": [
+            "library",
+            "central library",
+            "lib"
+        ],
+        "graph_node": "Library",
+        "map_coords": {
+            "x": 672,
+            "y": 411
+        },
+        "directions": [
+            "Enter through the main campus gate",
+            "Walk straight past the central fountain",
+            "The library is the large glass building on your left."
+        ]
+    },
+    {
+        "id": "physics_lab",
+        "name": "Physics Laboratory",
+        "building": "Block 5",
+        "floor": 2,
+        "room": "PL-201",
+        "aliases": [
+            "physics lab",
+            "physics laboratory",
+            "phy lab"
+        ],
+        "graph_node": "PhysicsLab",
+        "map_coords": {
+            "x": 450,
+            "y": 300
+        },
+        "directions": [
+            "Go to Block 5",
+            "Take the elevator to the 2nd floor",
+            "Turn right, the Physics Lab is Room PL-201."
+        ]
+    },
+    {
+        "id": "placement_cell",
+        "name": "Placement Cell",
+        "building": "Administrative Block",
+        "floor": 1,
+        "room": "RM-20",
+        "aliases": [
+            "placement cell",
+            "placement office",
+            "placements"
+        ],
+        "graph_node": "PlacementCell",
+        "map_coords": {
+            "x": 328,
+            "y": 381
+        },
+        "directions": [
+            "Enter the Administrative Block",
+            "Take the stairs on your left to the 1st floor",
+            "Walk down the corridor to Room 104."
+        ]
+    },
+    {
+        "id": "research_foundation",
+        "name": "Research Foundation",
+        "building": "Engineering Block C",
+        "floor": 3,
+        "room": "RM-30",
+        "aliases": [
+            "research foundation",
+            "prf",
+            "pes research foundation"
+        ],
+        "graph_node": "Research",
+        "map_coords": {
+            "x": 512,
+            "y": 210
+        },
+        "directions": [
+            "Head to Engineering Block C",
+            "Take the elevator to the 3rd floor",
+            "Follow the signs to the Research Wing."
+        ]
+    },
+    {
+        "id": "admin_office",
+        "name": "Admin Office",
+        "building": "Administrative Block",
+        "floor": 0,
+        "room": "RM-01",
+        "aliases": [
+            "admin office",
+            "office",
+            "administration",
+            "admission block",
+            "admissions block",
+            "admission",
+            "admissions"
+        ],
+        "graph_node": "Admin",
+        "map_coords": {
+            "x": 320,
+            "y": 380
+        },
+        "directions": [
+            "Enter the Administrative Block",
+            "The Admin Office is immediately on your right."
+        ]
+    },
+    {
+        "id": "cafeteria",
+        "name": "Cafeteria",
+        "building": "Student Center",
+        "floor": 0,
+        "room": "RM-00",
+        "aliases": [
+            "cafeteria",
+            "canteen",
+            "food court"
+        ],
+        "graph_node": "Cafeteria",
+        "map_coords": {
+            "x": 800,
+            "y": 600
+        },
+        "directions": [
+            "Walk past the main academic blocks",
+            "Head towards the open sports field",
+            "The Cafeteria is the large building next to the pavilion."
+        ]
+    },
+    {
+        "id": "auditorium",
+        "name": "Main Auditorium",
+        "building": "Cultural Center",
+        "floor": 1,
+        "room": "AUD-1",
+        "aliases": [
+            "auditorium",
+            "seminar hall",
+            "main hall"
+        ],
+        "graph_node": "Auditorium",
+        "map_coords": {
+            "x": 600,
+            "y": 500
+        },
+        "directions": [
+            "Go to the Cultural Center",
+            "Take the main staircase to the 1st floor",
+            "The Auditorium doors are straight ahead."
+        ]
+    },
+    {
+        "id": "atm",
+        "name": "Campus ATM",
+        "building": "Student Center",
+        "floor": 0,
+        "room": "ATM-1",
+        "aliases": [
+            "atm",
+            "cash machine"
+        ],
+        "graph_node": "ATM",
+        "map_coords": {
+            "x": 810,
+            "y": 610
+        },
+        "directions": [
+            "Go to the Student Center",
+            "The ATM is located outside, near the main entrance."
+        ]
+    }
+]

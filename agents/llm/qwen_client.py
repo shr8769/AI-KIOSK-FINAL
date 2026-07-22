@@ -133,8 +133,8 @@ class QwenClient:
                 headers={"Content-Type": "application/json"},
                 method="POST"
             )
-            # Timeout within 5 seconds
-            with urllib.request.urlopen(req, timeout=5.0) as response:
+            # Increase timeout to 60 seconds for local generation
+            with urllib.request.urlopen(req, timeout=60.0) as response:
                 latency = time.perf_counter() - start_time
                 if response.status == 200:
                     res_data = json.loads(response.read().decode("utf-8"))

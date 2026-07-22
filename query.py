@@ -28,7 +28,7 @@ except ImportError:
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
-DEFAULT_DB_PATH = os.path.join("knowledge", "vectorstore")
+DEFAULT_DB_PATH = os.path.join("knowledge_new", "vectorstore")
 VALID_COLLECTIONS = ["admissions", "academics", "placements", "research", "student_services", "navigation"]
 
 def print_banner():

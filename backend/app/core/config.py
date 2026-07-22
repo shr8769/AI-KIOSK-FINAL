@@ -43,6 +43,7 @@ class Settings(BaseSettings):
 
     # Service flags (toggle real vs mock)
     USE_MOCK_SERVICES: bool = True
+    USE_REAL_AGENTS: bool = True
     WHISPER_MODEL_SIZE: str = "base"
     USE_BHASHINI: bool = False
     BHASHINI_USER_ID: str = ""
@@ -68,6 +69,7 @@ def get_local_ip() -> str:
     import socket
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0.1)
         # Using a public DNS IP to identify routing interface (doesn't send traffic)
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]

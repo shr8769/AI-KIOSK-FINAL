@@ -217,7 +217,7 @@ async def ingest_event(
                 import json
                 import os
 
-                opp_path = "knowledge/sources/opportunities.json"
+                opp_path = "knowledge_new/sources/opportunities.json"
                 if os.path.exists(opp_path):
                     with open(opp_path, "r", encoding="utf-8") as f:
                         opps = json.load(f)

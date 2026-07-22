@@ -14,15 +14,8 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# Instantiate the Coordinator Agent if real agents are enabled
-coordinator = None
-if settings.USE_REAL_AGENTS:
-    try:
-        from agents.coordinator.coordinator_agent import CoordinatorAgent
-        coordinator = CoordinatorAgent()
-        logger.info("Real Coordinator Agent loaded successfully in Routing route.")
-    except Exception as e:
-        logger.error(f"Failed to load real Coordinator Agent: {e}")
+# We use get_coordinator_agent() from dependencies for lazy loading to prevent blocking startup
+
 
 
 class RouteRequest(BaseModel):
@@ -47,8 +40,10 @@ async def route_to_domain(request: RouteRequest):
     Route query to appropriate domain (admissions, placements, academics, etc).
 
     """
-    if settings.USE_REAL_AGENTS and coordinator:
+    if settings.USE_REAL_AGENTS:
         try:
+            from app.core.dependencies import get_coordinator_agent
+            coordinator = get_coordinator_agent()
             logger.info(f"Routing query: '{request.refined_query}' (session: {request.session_id})")
             domain, confidence, reason, matches = coordinator.route(request.refined_query)
             if not domain:

@@ -44,7 +44,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Constants
-DEFAULT_DB_PATH = os.path.join("knowledge", "vectorstore")
+DEFAULT_DB_PATH = os.path.join("knowledge_new", "vectorstore")
 DEFAULT_KNOWLEDGE_DIR = "knowledge_new"
 
 # Configurable Mapping Layer from directories/categories to 6 legacy ChromaDB collections
@@ -140,7 +140,6 @@ def clean_markdown_content(content: str) -> str:
     ]
     compiled_patterns = [re.compile(p, re.IGNORECASE) for p in boilerplate_patterns]
     
-    # Substring checks (case-insensitive) to skip entire line if present
     chrome_substrings = [
         "back to pes.edu",
         "select a campus to explore",
@@ -153,6 +152,38 @@ def clean_markdown_content(content: str) -> str:
         "choose a campus",
         "choose a department",
         "choose a tag",
+        "menu click",
+        "menu hover",
+        "icon click",
+        "icon hover",
+        "sidemenu layout",
+        "default menu",
+        "closed menu",
+        "icon text",
+        "icon overlay",
+        "detacheddouble menu",
+        "page styles:",
+        "regularclassicmodern",
+        "layout width styles",
+        "full widthboxed",
+        "menu positions:",
+        "fixedscrollable",
+        "loader:enabledisable",
+        "menu colors:",
+        "if you want to change color",
+        "dynamically change from below",
+        "theme primary color picker",
+        "theme primary:",
+        "theme background:",
+        "menu with background image",
+        "resetcategory",
+        "support links",
+        "important links",
+        "pesu mobile apps",
+        "download ios app",
+        "download android app",
+        "follow us on :",
+        "powered bynithsearch"
     ]
     
     for line in lines:
@@ -487,18 +518,13 @@ def chunk_logical_blocks(
             continue
             
         if block.block_type == 'heading':
-            level = block.heading_level
-            text = block.heading_text
-            current_heading_path = [h for h in current_heading_path if h[0] < level]
-            current_heading_path.append((level, text))
-            
-            # Semantic chunking: only flush if current chunk is of decent size (>= 220 words)
-            if current_chunk_blocks and current_word_count >= 220:
+            # Semantic chunking: flush if current chunk has actual content BEFORE updating heading path
+            if current_chunk_blocks and any(b.block_type != 'heading' for b in current_chunk_blocks):
                 chunk_heading, chunk_subheading = get_heading_context()
                 chunk_text = build_chunk_text(chunk_heading, chunk_subheading, current_chunk_blocks)
                 chunks.append((chunk_heading, chunk_subheading, chunk_text))
                 
-                # Setup overlap
+                # Setup overlap (only carry over the last 40 words, no headings)
                 overlap_blocks = []
                 overlap_count = 0
                 for b in reversed(current_chunk_blocks):
@@ -514,6 +540,11 @@ def chunk_logical_blocks(
                 current_chunk_blocks = overlap_blocks
                 current_word_count = sum(b.words for b in overlap_blocks)
                 metrics_tracker["split"] += 1
+                
+            level = block.heading_level
+            text = block.heading_text
+            current_heading_path = [h for h in current_heading_path if h[0] < level]
+            current_heading_path.append((level, text))
             
             current_chunk_blocks.append(block)
             current_word_count += block.words
@@ -1148,7 +1179,8 @@ def main():
     logger.info("Loading SentenceTransformer embedding function (all-MiniLM-L6-v2)...")
     try:
         emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name="all-MiniLM-L6-v2"
+            model_name="all-MiniLM-L6-v2",
+            device="cpu"
         )
     except Exception as e:
         logger.critical(f"Failed to load local SentenceTransformer function: {e}")

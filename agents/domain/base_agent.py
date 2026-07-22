@@ -182,7 +182,7 @@ class BaseAgent(ABC):
             self.client = client
         else:
             if db_path is None:
-                db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge", "vectorstore"))
+                db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge_new", "vectorstore"))
             try:
                 self.client = chromadb.PersistentClient(path=db_path)
             except Exception as e:
@@ -192,7 +192,8 @@ class BaseAgent(ABC):
         if BaseAgent._shared_emb_fn is None:
             try:
                 BaseAgent._shared_emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-                    model_name="all-MiniLM-L6-v2"
+                    model_name="all-MiniLM-L6-v2",
+                    device="cpu"
                 )
             except Exception:
                 BaseAgent._shared_emb_fn = None
@@ -468,27 +469,45 @@ class BaseAgent(ABC):
             return f"Answer:\n{fallback_msg}\n\nSources:\n    None"
             
         # 5. Otherwise: Generate the answer directly using Gemini or Qwen
-        source_attribution = get_natural_source_attribution(best_doc["metadata"])
-        
-        # Prepare medium confidence disclaimer
-        disclaimer = ""
-        if confidence_level == "MEDIUM":
-            contact = get_specific_contact(query, self.get_domain())
-            disclaimer = f"\n\n*(Note: While this response is based on official documents, we recommend verifying critical details directly with {contact['office_name']} at {contact['email']} or {contact['phone']}.)*"
             
         # Synthesis RAG mode
         formatted_context = ""
-        context_docs = docs[:12]
+        
+        # Deduplicate and filter context docs based on strict thresholds
+        seen_texts = set()
+        context_docs = []
+        for doc in docs:
+            doc_sim = 1.0 / (1.0 + doc["distance"])
+            # Require at least moderate similarity or keyword overlap to be included as context
+            if doc_sim < 0.45 and doc.get("keyword_score", 0.0) < 0.2 and doc.get("combined_score", 0.0) < 1.0:
+                continue
+                
+            # Simple deduplication by hash to prevent duplicate FAQs
+            text_hash = hash(doc["document"])
+            if text_hash not in seen_texts:
+                seen_texts.add(text_hash)
+                context_docs.append(doc)
+                
+            # Limit to top 3 unique, high-confidence chunks to reduce noise
+            if len(context_docs) >= 3:
+                break
+                
+        # Fallback if filtering was too aggressive
+        if not context_docs:
+            context_docs = docs[:1]
+            
         for i, doc in enumerate(context_docs, 1):
             formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
             
-        # Enhance prompt to enforce natural source attribution
+        # Concise, direct answer prompt
         prompt = (
-            f"You are the official PES University AI Campus Assistant. "
+            f"You are VidyaSahayak, the PES University AI Campus Assistant. "
             f"Answer the user query based ONLY on the provided context. "
-            f"Begin your answer with a natural attribution to the source: '{source_attribution}'. "
-            f"For example, 'According to {source_attribution}...' or 'Based on {source_attribution}...'. "
-            f"Do not expose internal document IDs or file metadata.\n\n"
+            f"Synthesize a concise answer (1-3 sentences) using your own words. "
+            f"Do not blindly copy and paste large blocks of text from the context. "
+            f"Be direct, polite, and helpful. "
+            f"Do not mention source files, document names, document IDs, or internal metadata. "
+            f"Do not start with 'According to...' or 'Based on...'. Just answer the question directly.\n\n"
             f"Context:\n{formatted_context}\n"
             f"Query: {query}\n"
             f"Answer:"
@@ -533,17 +552,19 @@ class BaseAgent(ABC):
             _, parsed_ans = self.parse_document(rag_answer)
             rag_answer = parsed_ans
             
-        # Ensure it begins with attribution; prepend if missing
-        if not any(attr in rag_answer for attr in ["According to", "Based on", "From the", "official", "PES"]):
-            rag_answer = f"According to {source_attribution}, {rag_answer[0].lower() + rag_answer[1:] if rag_answer else ''}"
+        # Strip any leftover attribution preambles the LLM may have added
+        for prefix in ["According to ", "Based on "]:
+            if rag_answer.startswith(prefix):
+                # Find the end of the attribution clause (first comma or period)
+                for sep in [", ", ". "]:
+                    idx = rag_answer.find(sep, len(prefix))
+                    if idx != -1 and idx < 120:
+                        rag_answer = rag_answer[idx + len(sep):]
+                        if rag_answer:
+                            rag_answer = rag_answer[0].upper() + rag_answer[1:]
+                        break
             
-        # Append verification disclaimer for medium confidence
-        if disclaimer:
-            rag_answer += disclaimer
-            
-        source_file = f"{self.get_domain()}.json"
-        if self.get_domain() == "navigation":
-            source_file = "locations.json"
+        source_file = self.get_domain()
             
         if "Sorry, I could not find information" in rag_answer or fallback_msg in rag_answer:
             rag_answer = fallback_msg
@@ -583,23 +604,33 @@ class BaseAgent(ABC):
             confidence_score=best_sim_score,
             fallback_used=(rag_answer == fallback_msg)
         )
-        return f"Answer:\n{rag_answer}\n\nSources:\n    {source_file}"
-                
+        
+        # --- Observability Debug Record ---
+        print("\n" + "="*40)
+        print("[DEBUG] RAG PIPELINE DEBUG RECORD")
+        print("="*40)
+        print(f"Intent:           {self.get_domain().capitalize()}")
+        if fallback_used_flag := (rag_answer == fallback_msg):
+            print(f"Retrieved:        None (Fallback Triggered)")
+            print(f"Similarity:       N/A")
+            print(f"Chunks Used:      0")
+        else:
+            print(f"Retrieved:        {best_doc.get('id', 'Unknown')}")
+            print(f"Similarity:       {best_sim_score:.4f}")
+            print(f"Chunks Used:      {len(context_docs)}")
+        print(f"Prompt Tokens:    {len(prompt)//4}")
+        print(f"Response Tokens:  {len(rag_answer)//4}")
+        print("="*40 + "\n")
+        
+        return f"Answer:\n{rag_answer}\n\nSources:\n    {source_file}"            
         # Retrieval-only mode fallback or disabled RAG
         ans_text = best_doc['answer']
         if ans_text.startswith("Answer:"):
             ans_text = ans_text[len("Answer:"):].strip()
             
-        # Programmatically prepend attribution
-        ans_text = f"According to {source_attribution}:\n\n{ans_text}"
-        
-        # Append disclaimer if medium confidence
-        if disclaimer:
-            ans_text += disclaimer
+
             
-        source_file = f"{self.get_domain()}.json"
-        if self.get_domain() == "navigation":
-            source_file = "locations.json"
+        source_file = self.get_domain()
             
         log_evaluation_trace(
             query=query,
@@ -613,7 +644,7 @@ class BaseAgent(ABC):
             confidence_score=best_sim_score,
             fallback_used=False
         )
-        return f"Answer:\n{ans_text}\n\nSources:\n    {source_file}"
+        return ans_text
 
     @abstractmethod
     def get_domain(self) -> str:

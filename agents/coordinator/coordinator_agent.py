@@ -33,7 +33,7 @@ class CoordinatorAgent:
             db_path (str, optional): Path to persistent ChromaDB storage.
         """
         if db_path is None:
-            db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge", "vectorstore"))
+            db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge_new", "vectorstore"))
             
         # Initialize a single shared client instance for resource optimization
         self.client = chromadb.PersistentClient(path=db_path)
@@ -71,7 +71,8 @@ class CoordinatorAgent:
                 "submit hard copies", "hard copies", "submit documents", "upload", "scholarship", "scholarships", "get in",
                 "get admission", "cs undergrad program", "undergrad program", "undergraduate program", "eligibility", "b.tech",
                 "pessat", "documents required", "admission documents", "migration certificate", "migration", "original documents",
-                "reporting documents", "required documents", "admission checklist", "checklist", "pesu merit", "merit", "documents"
+                "reporting documents", "required documents", "admission checklist", "checklist", "pesu merit", "merit", "documents",
+                "campus", "campuses", "locations"
             ],
             "academics": [
                 "attendance", "exam", "exams", "midterm", "midterms", "revaluation", "sgpa", "cgpa calculation", 
@@ -399,7 +400,7 @@ class CoordinatorAgent:
                     if docs:
                         best_doc = docs[0]
                         sim_score = 1.0 / (1.0 + best_doc["distance"])
-                        if sim_score >= getattr(agent, "similarity_threshold", 0.58):
+                        if sim_score >= getattr(agent, "similarity_threshold", 0.45):
                             combined_score = best_doc["combined_score"]
                             if combined_score > best_score:
                                 best_score = combined_score
@@ -424,7 +425,7 @@ class CoordinatorAgent:
                     answer=fallback_msg,
                     relevance_decision="INSUFFICIENT"
                 )
-                return f"{fallback_msg}\n\n[Source: None]"
+                return fallback_msg
             
         selected_agent = self.agents[target_domain]
         selected_agent_name = selected_agent.__class__.__name__
@@ -441,19 +442,6 @@ class CoordinatorAgent:
         except Exception as exc:
             print(f"[Error] Agent {target_domain} generated an exception: {exc}")
             raw_ans = "I encountered an error retrieving that information."
-
-        if target_domain == "navigation":
-            answer_part = raw_ans
-            source_part = ""
-            raw_ans = answer_part
-        elif "\n\n[Source: " in raw_ans:
-            answer_part, source_part = raw_ans.split("\n\n[Source: ", 1)
-            source_part = "\n\n[Source: " + source_part
-            raw_ans = answer_part + source_part
-        else:
-            answer_part = raw_ans
-            source_part = f"\n\n[Source: {target_domain.title().replace('_', ' ')}]"
-            raw_ans = answer_part + source_part
 
         return raw_ans
 

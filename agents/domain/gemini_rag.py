@@ -116,7 +116,7 @@ Answer:"""
                         break
                 except Exception as e:
                     if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
-                        if "limit: 20" in str(e) or "day" in str(e).lower() or "daily" in str(e).lower():
+                        if "day" in str(e).lower() or "daily" in str(e).lower():
                             self.is_degraded = True
                             self.degraded_at = time.time()
                             break

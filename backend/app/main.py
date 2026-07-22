@@ -8,13 +8,17 @@ Run: uvicorn app.main:app --reload
 
 import logging
 import os
+import sys
 from contextlib import asynccontextmanager
+
+# Add parent directory to sys.path to resolve 'database' imports when running from backend directory
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routes import asr, events, memory, navigation, profile, rag, riar, route, session, tts, detect
+from app.api.routes import asr, events, memory, navigation, profile, rag, route, session, tts, detect
 from app.core.config import settings
 from app.core.dependencies import ConnectionManager, get_connection_manager
 from app.core.warmup import startup_state, warmup_services
@@ -121,7 +125,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # ── Register Routers ────────────────────────────────────────────────────────
 app.include_router(events.router, prefix="/api/v1", tags=["Detection"])
 app.include_router(asr.router, prefix="/api/v1", tags=["ASR"])
-app.include_router(riar.router, prefix="/api/v1", tags=["RIAR"])
+
 app.include_router(route.router, prefix="/api/v1", tags=["Routing"])
 app.include_router(rag.router, prefix="/api/v1", tags=["RAG"])
 app.include_router(tts.router, prefix="/api/v1", tags=["TTS"])
@@ -155,3 +159,45 @@ async def ready():
         "metrics": startup_state.metrics,
         "kiosk_ip": get_local_ip(),
     }
+
+
+@app.get("/api/v1/faqs", tags=["Kiosk"])
+async def get_faqs(lang: str = "en"):
+    # Basic grouped FAQs for the kiosk UI
+    faqs = {
+        "en": {
+            "Admissions & Fees": [
+                {"question": "What is the minimum attendance required?", "answer": "You need 85% attendance.", "topic": "Admissions"},
+                {"question": "How to pay college fees?", "answer": "Fees can be paid online via the portal.", "topic": "Admissions"},
+                {"question": "Are there scholarships available?", "answer": "Yes, merit-based scholarships are available.", "topic": "Admissions"}
+            ],
+            "Campus Navigation": [
+                {"question": "Where is the central library?", "answer": "The central library is on the 3rd floor of the B block.", "topic": "Navigation"},
+                {"question": "Where is the student lounge?", "answer": "The lounge is near the main cafeteria.", "topic": "Navigation"},
+                {"question": "How to find the placement office?", "answer": "The placement office is in the administrative block.", "topic": "Navigation"}
+            ],
+            "Academics": [
+                {"question": "How do I check my results?", "answer": "Check your results on the student portal.", "topic": "Academics"},
+                {"question": "Where can I find the exam schedule?", "answer": "Exam schedules are posted on the notice board and portal.", "topic": "Academics"}
+            ]
+        },
+        "kn": {
+            "ಪ್ರವೇಶ ಮತ್ತು ಶುಲ್ಕ": [
+                {"question": "ಕನಿಷ್ಠ ಹಾಜರಾತಿ ಎಷ್ಟು ಬೇಕು?", "answer": "೮೫% ಹಾಜರಾತಿ ಕಡ್ಡಾಯ.", "topic": "Admissions"},
+                {"question": "ಶುಲ್ಕವನ್ನು ಹೇಗೆ ಪಾವತಿಸುವುದು?", "answer": "ಆನ್‌ಲೈನ್ ಪೋರ್ಟಲ್ ಮೂಲಕ ಪಾವತಿಸಬಹುದು.", "topic": "Admissions"}
+            ],
+            "ಕ್ಯಾಂಪಸ್ ನ್ಯಾವಿಗೇಶನ್": [
+                {"question": "ಕೇಂದ್ರ ಗ್ರಂಥಾಲಯ ಎಲ್ಲಿದೆ?", "answer": "ಬಿ ಬ್ಲಾಕ್‌ನ ೩ನೇ ಮಹಡಿಯಲ್ಲಿದೆ.", "topic": "Navigation"}
+            ]
+        },
+        "hi": {
+            "प्रवेश और फीस": [
+                {"question": "न्यूनतम उपस्थिति कितनी चाहिए?", "answer": "85% उपस्थिति अनिवार्य है।", "topic": "Admissions"},
+                {"question": "फीस कैसे जमा करें?", "answer": "फीस ऑनलाइन पोर्टल के माध्यम से जमा कर सकते हैं।", "topic": "Admissions"}
+            ],
+            "परिसर नेविगेशन": [
+                {"question": "केंद्रीय पुस्तकालय कहाँ है?", "answer": "बी ब्लॉक की तीसरी मंजिल पर है।", "topic": "Navigation"}
+            ]
+        }
+    }
+    return faqs.get(lang, faqs["en"])

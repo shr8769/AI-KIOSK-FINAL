@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\AI-KIOSK\backend\app\websockets\session_ws.py", line 276, in _handle_text_query
+    result = await run_query_pipeline(session_id, text, language_hint)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\AI-KIOSK\backend\app\services\query_pipeline.py", line 555, in run_query_pipeline
+    return result
+           ^^^^^^
+UnboundLocalError: cannot access local variable 'result' where it is not associated with a value

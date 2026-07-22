@@ -1,0 +1,122 @@
+[
+  {
+    "opportunity_id": "opp_001",
+    "title": "AIML Research Internship — PES Institute of Technology",
+    "type": "internship",
+    "tags": ["AIML", "machine_learning", "research", "deep_learning"],
+    "deadline": "2026-07-31",
+    "duration": "3 months (July–September)",
+    "stipend": "₹15,000/month",
+    "contact": "prof.rajan@pes.edu",
+    "description": "3-month summer internship in the AI/ML research lab. Work on computer vision and NLP projects under faculty guidance. Open to CSE/ECE B.Tech and M.Tech students.",
+    "eligibility": ["student", "professor"]
+  },
+  {
+    "opportunity_id": "opp_002",
+    "title": "Google Summer of Code 2026 — Open Source AI Projects",
+    "type": "internship",
+    "tags": ["AIML", "open_source", "software_engineering", "coding"],
+    "deadline": "2026-07-15",
+    "duration": "3 months (remote)",
+    "stipend": "$3,000–$6,600 USD",
+    "contact": "gsoc@google.com",
+    "description": "Contribute to open-source AI projects under Google mentorship. PESU has historically had 5–8 students selected every year.",
+    "eligibility": ["student"]
+  },
+  {
+    "opportunity_id": "opp_003",
+    "title": "Microsoft Engage Mentorship Program",
+    "type": "mentorship",
+    "tags": ["software_engineering", "AIML", "career", "coding"],
+    "deadline": "2026-07-20",
+    "duration": "5 weeks",
+    "stipend": "Certificate + networking",
+    "contact": "engage@microsoft.com",
+    "description": "5-week mentorship program pairing students with Microsoft engineers. Culminates in a collaborative project showcase.",
+    "eligibility": ["student"]
+  },
+  {
+    "opportunity_id": "opp_004",
+    "title": "Robotics Club — Autonomous Drone Project",
+    "type": "club_project",
+    "tags": ["robotics", "autonomous_systems", "embedded", "computer_vision"],
+    "deadline": "2026-06-30",
+    "duration": "Ongoing",
+    "stipend": null,
+    "contact": "robotics@pes.edu",
+    "description": "Join the PES Robotics Club to build an autonomous obstacle-avoidance drone for the national inter-college competition in August.",
+    "eligibility": ["student"]
+  },
+  {
+    "opportunity_id": "opp_005",
+    "title": "IEEE Student Chapter — Technical Paper Presentation",
+    "type": "competition",
+    "tags": ["research", "IEEE", "networking", "computer_vision", "AIML"],
+    "deadline": "2026-07-10",
+    "duration": "1-day event",
+    "stipend": "₹5,000 prize for first place",
+    "contact": "ieee@pes.edu",
+    "description": "Present a technical paper at the PESU IEEE Student Chapter symposium. Winners receive cash prizes and fast-track to the national IEEE conference.",
+    "eligibility": ["student", "professor"]
+  },
+  {
+    "opportunity_id": "opp_006",
+    "title": "Internship — Infosys Springboard AI Track",
+    "type": "internship",
+    "tags": ["AIML", "data_science", "industry", "software_engineering"],
+    "deadline": "2026-07-25",
+    "duration": "2 months",
+    "stipend": "₹20,000/month",
+    "contact": "careers@infosys.com",
+    "description": "Competitive AI-track internship at Infosys for pre-final year students. Selected interns receive a Pre-Placement Offer (PPO) based on performance.",
+    "eligibility": ["student"]
+  },
+  {
+    "opportunity_id": "opp_007",
+    "title": "Faculty Research Collaboration — NLP & Multilingual AI",
+    "type": "research_collab",
+    "tags": ["research", "NLP", "AIML", "multilingual", "Kannada"],
+    "deadline": "2026-07-05",
+    "duration": "6 months",
+    "stipend": null,
+    "contact": "dr.sharma@pes.edu",
+    "description": "Open collaboration for faculty and research scholars on multilingual NLP systems for Indian languages. Opportunity to publish at EMNLP or ACL.",
+    "eligibility": ["professor"]
+  },
+  {
+    "opportunity_id": "opp_008",
+    "title": "Hackathon — Smart India Hackathon 2026",
+    "type": "competition",
+    "tags": ["coding", "AIML", "robotics", "software_engineering", "team"],
+    "deadline": "2026-08-01",
+    "duration": "36-hour event",
+    "stipend": "₹1,00,000 grand prize",
+    "contact": "sih2026@gov.in",
+    "description": "National-level government hackathon. PESU will send 5 teams this year. Students can apply as teams of 6. Wide scope — healthcare, education, agriculture AI.",
+    "eligibility": ["student"]
+  },
+  {
+    "opportunity_id": "opp_009",
+    "title": "DSA & Competitive Programming Bootcamp",
+    "type": "workshop",
+    "tags": ["coding", "data_structures", "algorithms", "placement_prep"],
+    "deadline": "Rolling admissions",
+    "duration": "4 weeks",
+    "stipend": null,
+    "contact": "cdc@pes.edu",
+    "description": "Intensive 4-week bootcamp run by the Career Development Centre to prepare students for technical interviews at top product companies.",
+    "eligibility": ["student"]
+  },
+  {
+    "opportunity_id": "opp_010",
+    "title": "Amazon ML Summer School 2026",
+    "type": "workshop",
+    "tags": ["machine_learning", "AIML", "deep_learning", "industry"],
+    "deadline": "2026-07-18",
+    "duration": "4 weeks (online)",
+    "stipend": "Free + Amazon mentors",
+    "contact": "mlss@amazon.com",
+    "description": "Amazon's selective ML Summer School offering courses on supervised learning, NLP, and computer vision with Amazon Scientists as instructors.",
+    "eligibility": ["student"]
+  }
+]

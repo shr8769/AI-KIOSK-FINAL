@@ -120,54 +120,6 @@ def get_coordinator_agent():
     logger.info("CoordinatorAgent ready.")
     return agent
 
-
-# ── RIAR Pipeline ─────────────────────────────────────────────────────
-
-
-@lru_cache(maxsize=1)
-def get_riar_pipeline():
-    """
-    Lazy-loads RIARPipeline with Gemini LLM or local Ollama (Qwen) + mocked ChromaDB/embeddings.
-    Only executed when first audio_chunk arrives.
-    """
-    logger.info("Lazy-loading RIAR Pipeline...")
-    import sys
-
-    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-    if root not in sys.path:
-        sys.path.insert(0, root)
-
-    from riar.pipeline import RIARPipeline  # noqa
-
-    google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
-    if google_key:
-        logger.info("Initializing RIAR LLM with Gemini (ChatGoogleGenerativeAI)")
-        from langchain_google_genai import ChatGoogleGenerativeAI  # noqa
-
-        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-    else:
-        logger.info(
-            "GOOGLE_API_KEY missing. Initializing RIAR LLM with local Ollama (qwen3:latest)"
-        )
-        from langchain_ollama import ChatOllama  # noqa
-
-        llm = ChatOllama(model="qwen3:latest")
-
-    import chromadb
-    db_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../../..", "knowledge", "vectorstore")
-    )
-    chroma_client = chromadb.PersistentClient(path=db_path)
-
-    pipeline = RIARPipeline(
-        vector_store=chroma_client,
-        llm_client=llm,
-        embedding_model=None,
-    )
-    logger.info("RIAR Pipeline ready.")
-    return pipeline
-
-
 # ── Translation helpers ───────────────────────────────────────────────
 
 
@@ -265,28 +217,3 @@ def translate_from_english(text: str, target_lang: str) -> str:
         logger.error(f"Translation from English failed: {e}")
         return text
 
-
-# ── RIAR enabled flag ─────────────────────────────────────────────────
-def _check_ollama_running() -> bool:
-    import socket
-
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(0.5)
-            s.connect(("localhost", 11434))
-        return True
-    except Exception:
-        return False
-
-
-def _is_riar_enabled() -> bool:
-    google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
-    if google_key:
-        return True
-    if _check_ollama_running():
-        return True
-    return False
-
-
-RIAR_ENABLED: bool = _is_riar_enabled()
-logger.info(f"RIAR Pipeline activation status: {RIAR_ENABLED}")
