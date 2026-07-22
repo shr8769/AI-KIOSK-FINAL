@@ -144,7 +144,7 @@ class LocationResolver:
             score = self.fuzz.token_sort_ratio(norm_query, alias)
             matches.append((score, loc_dict))
         matches.sort(key=lambda x: x[0], reverse=True)
-        if matches and matches[0][0] > 30:
+        if matches and matches[0][0] > 65:
             return matches[0][1]
         return None
 
