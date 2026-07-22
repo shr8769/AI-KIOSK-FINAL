@@ -97,7 +97,7 @@ export default function NavigationPage({ params }: { params: any }) {
 
         {/* Map Area */}
         <div className="p-4 bg-zinc-50 border-b border-zinc-100">
-          <CampusMap pinX={navData.map_coords.x} pinY={navData.map_coords.y} />
+          <CampusMap path={navData.path || []} />
         </div>
 
         {/* Directions List */}
