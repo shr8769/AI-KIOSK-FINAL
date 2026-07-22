@@ -6,11 +6,7 @@ from typing import Tuple, Optional
 from config.contact_config import get_specific_contact, format_fallback_message
 from config import llm_config
 
-try:
-    import chromadb
-except ImportError:
-    pass
-
+import chromadb
 # Import all domain agents
 from agents.domain.admissions_agent import AdmissionsAgent
 from agents.domain.academics_agent import AcademicsAgent
