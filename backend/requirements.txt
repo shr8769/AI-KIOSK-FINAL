@@ -42,3 +42,4 @@ asyncpg>=0.29.0
 pgvector>=0.3.1
 rapidfuzz==3.9.3
 langchain-ollama==0.1.3
+pyttsx3==2.90
