@@ -25,12 +25,17 @@ def warmup_services():
     # 1. Warm up ASR (Whisper)
     try:
         t0 = time.time()
-        from app.services.speech.asr_service import asr_service
-
-        asr_service.preload()
-        asr_service.warmup_inference()
-        startup_state.metrics["whisper_load_ms"] = int((time.time() - t0) * 1000)
-        logger.info(f"Whisper warmup complete in {startup_state.metrics['whisper_load_ms']}ms")
+        from app.core.config import settings
+        
+        if settings.USE_MOCK_SERVICES:
+            logger.info("Skipping Whisper warmup since USE_MOCK_SERVICES is True.")
+            startup_state.metrics["whisper_load_ms"] = 0
+        else:
+            from app.services.speech.asr_service import asr_service
+            asr_service.preload()
+            asr_service.warmup_inference()
+            startup_state.metrics["whisper_load_ms"] = int((time.time() - t0) * 1000)
+            logger.info(f"Whisper warmup complete in {startup_state.metrics['whisper_load_ms']}ms")
     except Exception as e:
         logger.error(f"Whisper warmup failed: {e}")
         startup_state.errors.append(f"Whisper: {e}")
