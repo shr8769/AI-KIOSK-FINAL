@@ -15,12 +15,11 @@ For each change type:
 
 import hashlib
 import logging
-import os
 import re
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List
 
 try:
     import chromadb
@@ -30,20 +29,18 @@ except ImportError:
     sys.exit(1)
 
 from scripts.data_ingestion.sync.manifest import SyncManifest, ManifestEntry
-from scripts.data_ingestion.sync.change_detector import ChangeType
 from scripts.data_ingestion.sync import SYNC_SYSTEM_VERSION
 
 logger = logging.getLogger("sync.embedding_updater")
 
 # Import chunking utilities from existing ingestion pipeline
-from ingest_markdown import (
+from ingest_markdown import (  # noqa: E402
     parse_markdown_file,
     clean_markdown_content,
     split_into_logical_blocks,
     chunk_logical_blocks,
     validate_chunk,
     get_legacy_collection,
-    LEGACY_MAPPING,
     VALID_COLLECTIONS,
 )
 

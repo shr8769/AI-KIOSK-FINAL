@@ -2,10 +2,8 @@ import os
 import json
 import argparse
 import time
-import shutil
-from typing import Dict, Any, List
+from typing import Dict
 from datetime import datetime
-import requests
 
 from new_backend.scraper.config import (
     RAW_DIR, CLEAN_DIR, KNOWLEDGE_NEW_DIR, START_URL, MAX_DEPTH, MAX_PAGES, TARGET_URLS
@@ -310,7 +308,7 @@ def main():
     
     # Instantiate helper elements
     from new_backend.scraper.cleaner import HTMLCleaner
-    cleaner = HTMLCleaner()
+    HTMLCleaner()
     dummy_crawler = PESCrawler()  # For slugification and category lookup
 
     if args.crawl_bfs:

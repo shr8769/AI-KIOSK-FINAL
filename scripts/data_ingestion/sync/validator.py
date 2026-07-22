@@ -9,10 +9,9 @@ after every sync run.
 
 import logging
 import os
-import random
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List
 
 try:
     import chromadb

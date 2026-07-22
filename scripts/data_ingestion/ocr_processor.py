@@ -12,15 +12,13 @@ Gracefully skips if Tesseract is not installed.
 import io
 import logging
 import os
-import re
 from pathlib import Path
 from typing import Dict, List, Optional
-from urllib.parse import urlparse
 
 import requests
 
 from scripts.data_ingestion.crawler_config import (
-    OCR_MIN_IMAGE_WIDTH, OCR_MIN_IMAGE_HEIGHT, OCR_ENABLED, OUTPUT_DIR,
+    OCR_MIN_IMAGE_WIDTH, OCR_MIN_IMAGE_HEIGHT, OCR_ENABLED,
 )
 
 logger = logging.getLogger("ocr_processor")
@@ -206,7 +204,7 @@ def process_images_for_ocr(image_urls: List[Dict]) -> Dict:
             if page_file and os.path.exists(page_file):
                 try:
                     with open(page_file, "a", encoding="utf-8") as f:
-                        f.write(f"\n\n---\n\n## OCR Extracted Text\n\n")
+                        f.write("\n\n---\n\n## OCR Extracted Text\n\n")
                         f.write(f"*Extracted from image: {url}*\n\n")
                         f.write(text)
                         f.write("\n")

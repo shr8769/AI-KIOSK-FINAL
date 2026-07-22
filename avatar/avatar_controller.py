@@ -1,7 +1,6 @@
 import logging
 from enum import Enum
 import threading
-import time
 
 logger = logging.getLogger(__name__)
 

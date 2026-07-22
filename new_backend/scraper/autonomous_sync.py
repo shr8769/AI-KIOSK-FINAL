@@ -24,14 +24,14 @@ root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 
-from new_backend.scraper.config import (
-    RAW_DIR, CLEAN_DIR, KNOWLEDGE_NEW_DIR, TARGET_URLS,
+from new_backend.scraper.config import (  # noqa: E402
+    KNOWLEDGE_NEW_DIR, TARGET_URLS,
     SYNC_INTERVAL_HOURS, TRACKER_FILE_PATH, AUTONOMOUS_LOG_FILE,
     HEADERS, REQUEST_TIMEOUT
 )
-from new_backend.scraper.utils import slugify, format_frontmatter
-from new_backend.scraper.crawler import PESCrawler
-from new_backend.scraper.incremental_ingester import ingest_single_file, delete_single_file_chunks
+from new_backend.scraper.utils import slugify, format_frontmatter  # noqa: E402
+from new_backend.scraper.crawler import PESCrawler  # noqa: E402
+from new_backend.scraper.incremental_ingester import ingest_single_file, delete_single_file_chunks  # noqa: E402
 
 # Setup logging specific to autonomous sync
 logger = logging.getLogger("autonomous_sync")

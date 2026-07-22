@@ -2,17 +2,16 @@ import os
 import sys
 import logging
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 # Ensure the repository root is in python path
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 
-import chromadb
-from chromadb.utils import embedding_functions
-import ingest_markdown
-from new_backend.scraper.config import KNOWLEDGE_NEW_DIR
+import chromadb  # noqa: E402
+from chromadb.utils import embedding_functions  # noqa: E402
+import ingest_markdown  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

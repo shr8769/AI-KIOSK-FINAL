@@ -337,7 +337,7 @@ async def run_query_pipeline(
                     "room": top_loc.get("room"),
                     "kiosk_ip": get_local_ip()
                 }
-                
+
                 # Construct real-time response programmatically
                 room_text = f" (room {top_loc.get('room')})" if top_loc.get('room') else ""
                 answer_en = f"The {top_loc.get('name')} is located in {top_loc.get('building')} on Floor {top_loc.get('floor')}{room_text}. Please scan the QR code on the screen for step-by-step directions."

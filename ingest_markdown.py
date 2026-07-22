@@ -92,7 +92,7 @@ LEGACY_MAPPING = {
 
 VALID_COLLECTIONS = ["admissions", "academics", "placements", "research", "student_services", "navigation"]
 
-import threading
+import threading  # noqa: E402
 seen_file_hashes = set()
 hashes_lock = threading.Lock()
 
@@ -262,7 +262,7 @@ def split_giant_table(table_text: str, max_words: int = 180) -> List[str]:
     """
     Splits a giant markdown table into multiple smaller tables, repeating the headers and separators.
     """
-    lines = [l.strip() for l in table_text.split("\n") if l.strip()]
+    lines = [line.strip() for line in table_text.split("\n") if line.strip()]
     if len(lines) < 3:
         return [table_text]
         
@@ -714,12 +714,12 @@ def validate_chunk(chunk_text: str) -> Tuple[bool, str]:
     if words < 8:
         return False, f"Too short ({words} words)"
         
-    raw_lines = [l.strip() for l in answer_text.split("\n") if l.strip()]
+    raw_lines = [line.strip() for line in answer_text.split("\n") if line.strip()]
     if not raw_lines:
         return False, "Blank content"
         
     # Check heading-only
-    if all(l.startswith("#") for l in raw_lines):
+    if all(line.startswith("#") for line in raw_lines):
         return False, "Heading-only content"
         
     # Check remaining UI boilerplate keywords
@@ -970,7 +970,7 @@ def run_random_chunk_inspection(chunks: List[Dict[str, Any]], count: int = 50):
         is_broken_code = (backtick_count % 2 != 0)
         
         is_broken_table = False
-        lines = [l.strip() for l in doc.split("\n") if l.strip()]
+        lines = [line.strip() for line in doc.split("\n") if line.strip()]
         for line in lines:
             if line.startswith("|"):
                 if not line.endswith("|"):

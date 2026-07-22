@@ -1,5 +1,4 @@
 import unittest
-from bs4 import BeautifulSoup
 from new_backend.scraper.cleaner import HTMLCleaner
 
 class TestHTMLCleaner(unittest.TestCase):

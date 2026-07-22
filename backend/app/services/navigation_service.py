@@ -144,7 +144,7 @@ class LocationResolver:
             score = self.fuzz.token_set_ratio(norm_query, alias)
             matches.append((score, loc_dict))
         matches.sort(key=lambda x: x[0], reverse=True)
-        
+
         if matches and matches[0][0] > 80:
             best_score = matches[0][0]
             top_locs = set()
@@ -153,11 +153,11 @@ class LocationResolver:
                     top_locs.add(loc["name"])
                 else:
                     break
-            
+
             if len(top_locs) > 1:
                 # Ambiguous query like "lab" matches multiple different labs
                 return None
-                
+
             return matches[0][1]
         return None
 

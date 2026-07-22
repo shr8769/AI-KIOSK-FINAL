@@ -2,20 +2,17 @@ import os
 import sys
 import unittest
 import tempfile
-import json
 import hashlib
-from unittest.mock import patch, MagicMock, mock_open
-from pathlib import Path
+from unittest.mock import patch, MagicMock
 
 # Ensure paths are set up correctly
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 
-from new_backend.scraper.autonomous_sync import (
+from new_backend.scraper.autonomous_sync import (  # noqa: E402
     calculate_hash, load_tracker, save_tracker, check_url_headers, run_sync_cycle
 )
-from new_backend.scraper.incremental_ingester import ingest_single_file, delete_single_file_chunks
 
 class TestAutonomousSync(unittest.TestCase):
 

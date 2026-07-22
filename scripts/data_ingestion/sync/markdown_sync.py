@@ -9,15 +9,12 @@ based on change detection results.
 
 import logging
 import os
-import re
 import shutil
-import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
 
 from scripts.data_ingestion.sync.manifest import SyncManifest, ManifestEntry
-from scripts.data_ingestion.sync.change_detector import ChangeSet, ChangeType, ChangeRecord
 from scripts.data_ingestion.sync import SYNC_SYSTEM_VERSION
 
 logger = logging.getLogger("sync.markdown_sync")

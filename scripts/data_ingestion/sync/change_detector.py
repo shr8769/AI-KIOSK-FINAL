@@ -11,9 +11,9 @@ import hashlib
 import logging
 from enum import Enum
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Set
 
-from scripts.data_ingestion.sync.manifest import SyncManifest, ManifestEntry
+from scripts.data_ingestion.sync.manifest import SyncManifest
 
 logger = logging.getLogger("sync.change_detector")
 

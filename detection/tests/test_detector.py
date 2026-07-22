@@ -120,7 +120,7 @@ def test_presence_monitor_timing(mock_yolo):
     # 1. Person appears at t=0.0
     simulate_frame(True, 0.0)
     assert len(detected_events) == 0
-    assert monitor.is_person_present == False
+    assert not monitor.is_person_present
 
     # 2. Person still there at t=0.1 (not yet 0.2s threshold)
     simulate_frame(True, 0.1)
@@ -129,12 +129,12 @@ def test_presence_monitor_timing(mock_yolo):
     # 3. Person still there at t=0.25 (crosses 0.2s threshold)
     simulate_frame(True, 0.25)
     assert len(detected_events) == 1
-    assert monitor.is_person_present == True
+    assert monitor.is_person_present
 
     # 4. Person leaves at t=0.3
     simulate_frame(False, 0.3)
     assert len(left_events) == 0
-    assert monitor.is_person_present == True
+    assert monitor.is_person_present
 
     # 5. Person still absent at t=0.5 (0.5 - 0.25 < 0.4s threshold)
     simulate_frame(False, 0.5)
@@ -143,4 +143,4 @@ def test_presence_monitor_timing(mock_yolo):
     # 6. Person absent at t=0.7 (0.7 - 0.25 > 0.4s threshold)
     simulate_frame(False, 0.7)
     assert len(left_events) == 1
-    assert monitor.is_person_present == False
+    assert not monitor.is_person_present

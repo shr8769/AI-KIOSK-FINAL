@@ -87,7 +87,7 @@ def _clean_whisper_transcript(text: str) -> str:
         r"\bsgpa\b": "SGPA",
         r"\bpessat\b": "PESSAT"
     }
-    
+
     for pattern, replacement in domain_corrections.items():
         text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
 

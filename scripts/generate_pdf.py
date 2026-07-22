@@ -1,5 +1,4 @@
 from markdown_pdf import MarkdownPdf, Section
-import sys
 
 def main():
     try:

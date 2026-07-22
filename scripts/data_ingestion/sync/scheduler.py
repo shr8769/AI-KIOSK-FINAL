@@ -8,7 +8,6 @@ without requiring external dependencies.
 """
 
 import logging
-import re
 import time
 from datetime import datetime, timezone, timedelta
 from typing import Callable, Optional

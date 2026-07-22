@@ -1,12 +1,11 @@
 import time
-import subprocess
 import os
 import sys
 
 # Add project root to PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from avatar.avatar_controller import AvatarController, AvatarState
+from avatar.avatar_controller import AvatarController
 from detection.detector import DetectorStub
 
 def main():

@@ -56,11 +56,13 @@ def generate_report():
     md.append("")
     md.append("### Modified Files")
     for f in modified_files:
-        md.append(f"- [{os.path.basename(f)}](file:///{project_root.replace('\\', '/')}/{f})")
+        clean_proj_root = project_root.replace('\\', '/')
+        md.append(f"- [{os.path.basename(f)}](file:///{clean_proj_root}/{f})")
     md.append("")
     md.append("### Created Files")
     for f in created_files:
-        md.append(f"- [{os.path.basename(f)}](file:///{project_root.replace('\\', '/')}/{f})")
+        clean_proj_root = project_root.replace('\\', '/')
+        md.append(f"- [{os.path.basename(f)}](file:///{clean_proj_root}/{f})")
     md.append("")
     md.append("### Deleted Files")
     md.append("- None")

@@ -7,7 +7,6 @@ Checks content quality, completeness, and flags pages for manual review.
 """
 
 import logging
-import os
 import re
 import yaml
 from pathlib import Path
@@ -181,7 +180,7 @@ def run_quality_checks() -> Dict:
 
     pass_rate = (summary["passed"] / max(summary["total_files"], 1)) * 100
 
-    logger.info(f"Quality check complete:")
+    logger.info("Quality check complete:")
     logger.info(f"  Total files: {summary['total_files']}")
     logger.info(f"  Passed: {summary['passed']} ({pass_rate:.1f}%)")
     logger.info(f"  Failed: {summary['failed']}")

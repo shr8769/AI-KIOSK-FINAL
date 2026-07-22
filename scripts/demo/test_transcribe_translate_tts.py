@@ -1,4 +1,5 @@
 """
+# ruff: noqa: E402
 Interactive Multilingual Speech & Retrieval Pipeline Test Script
 Owner: Antigravity
 
@@ -28,12 +29,12 @@ os.environ["USE_MOCK_SERVICES"] = "False"
 from backend.app.core.config import settings
 settings.USE_MOCK_SERVICES = False
 
-from backend.app.services.speech.audio_capture import audio_capture_service
-from backend.app.services.speech.asr_service import asr_service
-from backend.app.services.speech.tts_service import tts_service
-from backend.app.models.schemas import ASRRequest, TTSRequest
-from agents.coordinator.coordinator_agent import CoordinatorAgent
-from deep_translator import GoogleTranslator
+from backend.app.services.speech.audio_capture import audio_capture_service  # noqa: E402
+from backend.app.services.speech.asr_service import asr_service  # noqa: E402
+from backend.app.services.speech.tts_service import tts_service  # noqa: E402
+from backend.app.models.schemas import ASRRequest, TTSRequest  # noqa: E402
+from agents.coordinator.coordinator_agent import CoordinatorAgent  # noqa: E402
+from deep_translator import GoogleTranslator  # noqa: E402
 
 # Initialize global coordinator singleton
 print("Warming up CoordinatorAgent and loading embedding model...")

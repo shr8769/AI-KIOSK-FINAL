@@ -1,6 +1,6 @@
 import unittest
 import os
-from config.contact_config import get_specific_contact, format_fallback_message, CONTACTS
+from config.contact_config import get_specific_contact
 from agents.domain.base_agent import get_natural_source_attribution
 from agents.coordinator.coordinator_agent import CoordinatorAgent
 

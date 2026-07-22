@@ -18,15 +18,13 @@ Usage:
 
 import argparse
 import asyncio
-import json
 import logging
-import os
 import sys
 import time
 import traceback
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import yaml
 
@@ -35,15 +33,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from scripts.data_ingestion.sync import SYNC_SYSTEM_VERSION
-from scripts.data_ingestion.sync.manifest import SyncManifest
-from scripts.data_ingestion.sync.change_detector import ChangeSet, ChangeType
-from scripts.data_ingestion.sync.incremental_crawler import IncrementalCrawler
-from scripts.data_ingestion.sync.markdown_sync import MarkdownSyncManager
-from scripts.data_ingestion.sync.embedding_updater import EmbeddingUpdater
-from scripts.data_ingestion.sync.validator import SyncValidator
-from scripts.data_ingestion.sync.sync_report import SyncReportGenerator
-from scripts.data_ingestion.sync.scheduler import SyncScheduler
+from scripts.data_ingestion.sync import SYNC_SYSTEM_VERSION  # noqa: E402
+from scripts.data_ingestion.sync.manifest import SyncManifest  # noqa: E402
+from scripts.data_ingestion.sync.change_detector import ChangeType  # noqa: E402
+from scripts.data_ingestion.sync.incremental_crawler import IncrementalCrawler  # noqa: E402
+from scripts.data_ingestion.sync.markdown_sync import MarkdownSyncManager  # noqa: E402
+from scripts.data_ingestion.sync.embedding_updater import EmbeddingUpdater  # noqa: E402
+from scripts.data_ingestion.sync.validator import SyncValidator  # noqa: E402
+from scripts.data_ingestion.sync.sync_report import SyncReportGenerator  # noqa: E402
+from scripts.data_ingestion.sync.scheduler import SyncScheduler  # noqa: E402
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -471,7 +469,7 @@ Examples:
     config = load_config(args.config)
 
     # Setup logging
-    log_file = setup_logging(config)
+    setup_logging(config)
 
     # Validate-only mode
     if args.validate_only:

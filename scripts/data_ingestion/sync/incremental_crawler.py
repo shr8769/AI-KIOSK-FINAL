@@ -14,12 +14,11 @@ Does NOT modify the existing pes_crawler.py — builds on top of its utilities.
 """
 
 import asyncio
-import hashlib
 import logging
 import re
 import time
 from collections import deque
-from datetime import datetime, timezone, timedelta
+from datetime import timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -27,9 +26,7 @@ from bs4 import BeautifulSoup
 
 try:
     from playwright.async_api import (
-        async_playwright,
-        Page,
-        TimeoutError as PlaywrightTimeout,
+        async_playwright
     )
 except ImportError:
     raise ImportError(
@@ -39,30 +36,22 @@ except ImportError:
 # Reuse existing crawler utilities
 from scripts.data_ingestion.pes_crawler import (
     canonicalize_url,
-    is_allowed_domain,
-    is_blocked_path,
-    is_blocked_extension,
     is_document_url,
     url_to_filename,
     categorize_url,
     extract_content_to_markdown,
     extract_all_links,
-    expand_interactive_elements,
     render_page,
     write_markdown_file,
 )
 from scripts.data_ingestion.crawler_config import (
-    BLOCKED_EXTENSIONS,
-    DOCUMENT_EXTENSIONS,
     MIN_CONTENT_LENGTH,
-    MIN_WORD_COUNT,
 )
-from scripts.data_ingestion.sync.manifest import SyncManifest, ManifestEntry
+from scripts.data_ingestion.sync.manifest import SyncManifest
 from scripts.data_ingestion.sync.change_detector import (
     ChangeDetector,
     ChangeSet,
     ChangeType,
-    ChangeRecord,
     compute_content_hash,
 )
 from scripts.data_ingestion.sync import SYNC_SYSTEM_VERSION
@@ -72,7 +61,7 @@ logger = logging.getLogger("sync.incremental_crawler")
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
-import dataclasses
+import dataclasses  # noqa: E402
 
 
 @dataclasses.dataclass

@@ -1,4 +1,5 @@
 """
+# ruff: noqa: E402
 Interactive Speech Pipeline Test Script
 Owner: Harsha
 
@@ -9,7 +10,6 @@ import asyncio
 import base64
 import os
 import sys
-import time
 
 # Ensure project root is in python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -21,10 +21,9 @@ os.environ["USE_MOCK_SERVICES"] = "False"
 from backend.app.core.config import settings
 settings.USE_MOCK_SERVICES = False
 
-from backend.app.services.speech.audio_capture import audio_capture_service
-from backend.app.services.speech.asr_service import asr_service
-from backend.app.services.speech.tts_service import tts_service
-from backend.app.models.schemas import ASRRequest
+from backend.app.services.speech.audio_capture import audio_capture_service  # noqa: E402
+from backend.app.services.speech.asr_service import asr_service  # noqa: E402
+from backend.app.models.schemas import ASRRequest  # noqa: E402
 
 
 async def main():

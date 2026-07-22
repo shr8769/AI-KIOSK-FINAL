@@ -1,9 +1,7 @@
 import os
-import sys
 import re
 from typing import Tuple, Optional
 
-from config.contact_config import get_specific_contact, format_fallback_message
 from config import llm_config
 
 import chromadb
@@ -375,7 +373,7 @@ class CoordinatorAgent:
                     clean_res = result.strip().upper()
                     if "OUT_OF_DOMAIN" in clean_res:
                         return True
-        except Exception as e:
+        except Exception:
             pass
         return False
 
