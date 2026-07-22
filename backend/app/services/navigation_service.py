@@ -141,10 +141,23 @@ class LocationResolver:
             return None
         matches = []
         for alias, loc_dict in self.gazetteer:
-            score = self.fuzz.token_sort_ratio(norm_query, alias)
+            score = self.fuzz.token_set_ratio(norm_query, alias)
             matches.append((score, loc_dict))
         matches.sort(key=lambda x: x[0], reverse=True)
-        if matches and matches[0][0] > 65:
+        
+        if matches and matches[0][0] > 80:
+            best_score = matches[0][0]
+            top_locs = set()
+            for score, loc in matches:
+                if score == best_score:
+                    top_locs.add(loc["name"])
+                else:
+                    break
+            
+            if len(top_locs) > 1:
+                # Ambiguous query like "lab" matches multiple different labs
+                return None
+                
             return matches[0][1]
         return None
 
