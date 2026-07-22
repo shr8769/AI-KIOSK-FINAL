@@ -73,8 +73,25 @@ def _clean_whisper_transcript(text: str) -> str:
         else:
             text = text[:250]
 
-    return text.strip()
+    text = text.strip()
 
+    # Step 4: Domain-specific ASR corrections (fix common academic jargon misspellings)
+    domain_corrections = {
+        r"\bbtec\b": "B.Tech",
+        r"\bbtech\b": "B.Tech",
+        r"\bb tech\b": "B.Tech",
+        r"\bmtec\b": "M.Tech",
+        r"\bmtech\b": "M.Tech",
+        r"\bm tech\b": "M.Tech",
+        r"\bcgpa\b": "CGPA",
+        r"\bsgpa\b": "SGPA",
+        r"\bpessat\b": "PESSAT"
+    }
+    
+    for pattern, replacement in domain_corrections.items():
+        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
+
+    return text
 
 class ASRService:
     def __init__(self):
