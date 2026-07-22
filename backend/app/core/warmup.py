@@ -26,7 +26,7 @@ def warmup_services():
     try:
         t0 = time.time()
         from app.core.config import settings
-        
+
         if settings.USE_MOCK_SERVICES:
             logger.info("Skipping Whisper warmup since USE_MOCK_SERVICES is True.")
             startup_state.metrics["whisper_load_ms"] = 0
