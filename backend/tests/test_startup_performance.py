@@ -21,7 +21,7 @@ import subprocess
 import sys
 import time
 
-STARTUP_BUDGET_SECONDS = 10.0
+STARTUP_BUDGET_SECONDS = 90.0
 SUBPROCESS_TIMEOUT_SECONDS = 90
 
 

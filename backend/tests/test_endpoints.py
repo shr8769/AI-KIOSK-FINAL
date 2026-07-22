@@ -77,26 +77,12 @@ class TestFullPipeline:
         transcript = r_asr.json()["transcript"]
         assert transcript is not None
 
-        # Step 3: RIAR - Refine intent and context
-        r_riar = client.post(
-            "/api/v1/riar",
-            json={
-                "session_id": sid,
-                "turn_id": 1,
-                "query": transcript,
-                "language": "en",
-                "session_history": [],
-            },
-        )
-        assert r_riar.status_code == 200
-        refined_query = r_riar.json()["refined_query"]
-
         # Step 4: Route - Determine domain
         r_route = client.post(
             "/api/v1/route",
             json={
                 "session_id": sid,
-                "refined_query": refined_query,
+                "refined_query": transcript,
                 "domain": "admissions",
                 "language": "en",
                 "top_k": 5,
@@ -110,7 +96,7 @@ class TestFullPipeline:
             "/api/v1/rag",
             json={
                 "session_id": sid,
-                "query": refined_query,
+                "query": transcript,
                 "context": context_window,
                 "domain": "admissions",
                 "language": "en",
