@@ -1,7 +1,8 @@
-import uuid
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
+import uuid
+
 from database.models.models import Memory
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class MemoryStore:
         Generates embedding for the memory content and inserts it into the database.
         """
         memory_id = f"mem_{uuid.uuid4().hex[:12]}"
-        
+
         embedding = None
         model = get_embedding_model()
         if model:
@@ -41,7 +42,7 @@ class MemoryStore:
                 embedding = emb_list
             except Exception as e:
                 logger.error(f"Error encoding embedding: {e}")
-                
+
         db_memory = Memory(
             memory_id=memory_id,
             user_id=user_id,
@@ -49,10 +50,10 @@ class MemoryStore:
             topic=topic,
             embedding=embedding
         )
-        
+
         self.db.add(db_memory)
         await self.db.commit()
         await self.db.refresh(db_memory)
-        
+
         logger.info(f"Memory stored: id={memory_id} | user={user_id} | topic='{topic}'")
         return db_memory

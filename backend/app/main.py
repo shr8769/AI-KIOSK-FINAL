@@ -18,7 +18,17 @@ from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routes import asr, events, memory, navigation, profile, rag, route, session, tts, detect
+from app.api.routes import (
+    asr,
+    events,
+    memory,
+    navigation,
+    profile,
+    rag,
+    route,
+    session,
+    tts,
+)
 from app.core.config import settings
 from app.core.dependencies import ConnectionManager, get_connection_manager
 from app.core.warmup import startup_state, warmup_services

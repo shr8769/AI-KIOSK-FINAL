@@ -84,9 +84,9 @@ class ASRService:
         """Lazy load Whisper model to avoid slow server startup."""
         if self.model is None:
             model_size = "large-v3-turbo"
-            from faster_whisper import WhisperModel
             import torch
-            
+            from faster_whisper import WhisperModel
+
             if torch.cuda.is_available():
                 logger.info(f"Loading faster-whisper model '{model_size}' on GPU (CUDA)...")
                 self.model = WhisperModel(model_size, device="cuda", compute_type="float16")
@@ -94,7 +94,7 @@ class ASRService:
                 logger.info(f"Loading faster-whisper model '{model_size}' on CPU...")
                 # Using configured model with int8 quantization for speed on CPU
                 self.model = WhisperModel(model_size, device="cpu", compute_type="int8")
-                
+
             logger.info(f"faster-whisper model '{model_size}' loaded.")
         return self.model
 

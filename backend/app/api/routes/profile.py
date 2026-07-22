@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
-from typing import Dict, Any
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from typing import Any, Dict
+
+from database.models.models import User
 
 # We import the DB dependency and models from our database layer
 from database.postgres.connection import get_db
-from database.models.models import User
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 router = APIRouter()
 
@@ -29,7 +30,7 @@ async def get_profile(user_id: str, db: AsyncSession = Depends(get_db)):
     user = result.scalars().first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-        
+
     return ProfileResponse(
         user_id=user.user_id,
         name=user.name,

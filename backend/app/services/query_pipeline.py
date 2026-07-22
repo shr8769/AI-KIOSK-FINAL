@@ -1,4 +1,3 @@
-import json
 import re
 import time
 from typing import Any, Dict, Optional
@@ -14,9 +13,9 @@ from app.core.session_store import (
     add_user_turn,
     get_session,
 )
-from app.models.schemas import TTSRequest, TurnModel
-from app.services.speech.tts_service import tts_service
+from app.models.schemas import TTSRequest
 from app.services.fast_router import get_strict_fast_path_domain
+from app.services.speech.tts_service import tts_service
 
 
 def _clean_agent_answer(raw: str) -> str:
@@ -221,7 +220,7 @@ async def run_query_pipeline(
                         if turn.get("role") == "agent":
                             last_agent_turn = turn
                             break
-                    
+
                     if last_agent_turn:
                         try:
                             import asyncio
@@ -256,16 +255,9 @@ async def run_query_pipeline(
     # Persist user turn
     await add_user_turn(session_id, clean_transcript)
 
-    raw_history = updated_session.metadata.get("history", []) if updated_session else []
-    history_turns = [
-        TurnModel(turn_id=i + 1, role=t["role"], text=t["content"])
-        for i, t in enumerate(raw_history)
-    ]
-
-
     # 2. Fast-Path Router (Bypass LLM for common demo intents)
     fast_domain = get_strict_fast_path_domain(query_en)
-    
+
     if fast_domain:
         logger.info(f"Fast-path matched for text query '{query_en}' -> {fast_domain}")
         target_domain = fast_domain
@@ -273,20 +265,20 @@ async def run_query_pipeline(
     else:
         coordinator = get_coordinator_agent()
         best_domain, confidence, reason, _ = coordinator.route(query_en)
-        
+
         # Lightweight clarification mechanism for genuinely low-confidence cases
         if confidence < 0.45:
             logger.info(f"Low confidence routing ({confidence:.2f}): Triggering clarification.")
             question_en = coordinator.check_ambiguity(query_en)
             if not question_en:
                 question_en = "Could you please clarify your question or specify what you are looking for?"
-            
+
             import asyncio
             question_native = await asyncio.to_thread(translate_from_english, question_en, target_lang=detected_lang)
             if detected_lang in ("kn", "hi"):
                 question_native = await make_conversational(question_native, detected_lang)
             await add_agent_turn(session_id, question_native)
-            
+
             from app.core.session_store import update_session_metadata
             await update_session_metadata(
                 session_id,
@@ -298,7 +290,7 @@ async def run_query_pipeline(
                     }
                 }
             )
-            
+
             try:
                 tts_resp = await tts_service.synthesize(
                     TTSRequest(session_id=session_id, text=question_native, language=detected_lang)
@@ -307,7 +299,7 @@ async def run_query_pipeline(
             except Exception as e:
                 logger.error(f"TTS Synthesis failed for clarification: {e}")
                 audio_url = None
-                
+
             return {
                 "type": "clarifying",
                 "text": question_native,
@@ -317,7 +309,7 @@ async def run_query_pipeline(
                 "navigation": None,
                 "language": detected_lang,
             }
-            
+
         target_domain = best_domain if best_domain else "general"
         refined_query = query_en
         logger.info(f"CoordinatorAgent routed query to: {target_domain} (Confidence: {confidence:.2f})")
@@ -334,13 +326,13 @@ async def run_query_pipeline(
         )
         answer_en = _clean_agent_answer(full_answer)
         is_fallback = _is_fallback_answer(answer_en)
-        
+
         # Extract the location for the QR Code using LocationResolver
         if not is_fallback:
             try:
                 from app.services.navigation_service import location_resolver, navigation_service
                 top_loc = location_resolver.resolve(refined_query)
-                
+
                 if top_loc:
                     from app.core.config import get_local_ip
                     nav_id = await navigation_service.create_session(top_loc)
@@ -370,7 +362,7 @@ async def run_query_pipeline(
         if not was_refined:
             # Evidence is not clear/sufficient, question back the user for clarification first
             question_en = "I'm sorry, I couldn't find clear information on that. Could you please provide more details or specify what you are looking for?"
-            
+
             import asyncio
             question_native = await asyncio.to_thread(translate_from_english, question_en, target_lang=detected_lang)
             if detected_lang in ("kn", "hi"):
@@ -527,7 +519,7 @@ async def run_query_pipeline(
                 user_id = db_sess.user_id
 
         latency_ms = int((time.perf_counter() - start_time) * 1000)
-        
+
         async def log_to_db():
             try:
                 async with AsyncSessionLocal() as db_session:
@@ -545,7 +537,7 @@ async def run_query_pipeline(
                     )
             except Exception as e:
                 logger.error(f"Background DB logging failed: {e}")
-                
+
         import asyncio
         asyncio.create_task(log_to_db())
 

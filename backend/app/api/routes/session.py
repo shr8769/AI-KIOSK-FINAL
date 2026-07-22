@@ -3,17 +3,18 @@ Session Management Route — GET/POST /session
 Owner: Harsha
 """
 
+import logging
+from typing import Optional
+
+from database.models.models import Session
+from database.postgres.connection import get_db
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from typing import Optional
-import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from database.postgres.connection import get_db
-from database.models.models import Session
-from app.services.session_history_manager import SessionHistoryManager
 from app.services.memory_manager import MemoryManager
+from app.services.session_history_manager import SessionHistoryManager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -38,7 +39,7 @@ async def get_session(session_id: str, db: AsyncSession = Depends(get_db)):
         select(Session).filter(Session.session_id == session_id)
     )
     db_session = result.scalars().first()
-    
+
     if not db_session:
         # Fallback for compatibility or if the DB has not been seeded yet
         if session_id == "demo_session_id":
@@ -51,7 +52,7 @@ async def get_session(session_id: str, db: AsyncSession = Depends(get_db)):
                 user_id="usr_demo_123"
             )
         raise HTTPException(status_code=404, detail="Session not found")
-        
+
     return SessionInfo(
         session_id=db_session.session_id,
         status="active",
@@ -68,11 +69,11 @@ async def close_session(session_id: str, db: AsyncSession = Depends(get_db)):
     Close a session, summarize any remaining dialog turns, store them, and clear session logs.
     """
     logger.info(f"Closing session: {session_id}")
-    
+
     # 1. Retrieve dialog history
     history = SessionHistoryManager.get_history(session_id)
     turns_count = len(history)
-    
+
     # 2. Archive remaining history if present
     if turns_count > 0:
         result = await db.execute(select(Session).filter(Session.session_id == session_id))
@@ -88,10 +89,10 @@ async def close_session(session_id: str, db: AsyncSession = Depends(get_db)):
                 logger.error(f"Error storing final memories during session close: {e}")
         else:
             logger.warning(f"Session {session_id} not found in database; cannot archive final memories.")
-            
+
         # 3. Clear session history log
         SessionHistoryManager.clear_history(session_id)
-        
+
     return {
         "session_id": session_id,
         "action": "session_closed",

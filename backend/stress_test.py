@@ -1,7 +1,8 @@
 import asyncio
-import websockets
 import json
 import time
+
+import websockets
 
 WS_URL = "ws://localhost:8000/api/v1/chat/stress-test-session"
 
@@ -30,7 +31,7 @@ async def send_query(query_text, idx):
                 }
             }
             await ws.send(json.dumps(payload))
-            response = await ws.recv()
+            await ws.recv()
             latency = time.time() - start_time
             print(f"[Query {idx}] Latency: {latency:.2f}s | Success")
             return latency
@@ -39,16 +40,16 @@ async def send_query(query_text, idx):
         return -1
 
 async def main():
-    print(f"Starting stress test with 3 concurrent connections...")
+    print("Starting stress test with 3 concurrent connections...")
     tasks = []
     for i, query in enumerate(TEST_QUERIES[:3]):
         tasks.append(asyncio.create_task(send_query(query, i)))
-    
+
     results = await asyncio.gather(*tasks)
-    
+
     successful = [r for r in results if r > 0]
     if successful:
-        print(f"\n--- Stress Test Results ---")
+        print("\n--- Stress Test Results ---")
         print(f"Total Requests: {len(TEST_QUERIES)}")
         print(f"Successful: {len(successful)}")
         print(f"Failed: {len(TEST_QUERIES) - len(successful)}")

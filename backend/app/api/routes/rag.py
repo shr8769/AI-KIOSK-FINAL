@@ -3,18 +3,19 @@ RAG Route — POST /rag (Retrieval-Augmented Generation)
 Owner: Harsha
 """
 
+import logging
+from typing import Optional
+
+from database.models.models import Session
+from database.postgres.connection import get_db
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from typing import Optional
-import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from database.postgres.connection import get_db
-from database.models.models import Session
-from app.services.session_history_manager import SessionHistoryManager
-from app.services.memory_manager import MemoryManager
 from app.core.config import settings
+from app.services.memory_manager import MemoryManager
+from app.services.session_history_manager import SessionHistoryManager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -52,14 +53,14 @@ async def retrieve_and_generate(request: RAGRequest, db: AsyncSession = Depends(
     """
     sources = []
     confidence = 0.85
-    
+
     if settings.USE_REAL_AGENTS:
         try:
             from app.core.dependencies import get_coordinator_agent
             coordinator = get_coordinator_agent()
             logger.info(f"Querying real Coordinator Agent: '{request.query}' (session: {request.session_id})")
             raw_ans = coordinator.answer(request.query)
-            
+
             # Parse returned answer to separate answer and source
             if "\n\nSources:\n    " in raw_ans:
                 answer, source_part = raw_ans.split("\n\nSources:\n    ", 1)
@@ -69,7 +70,7 @@ async def retrieve_and_generate(request: RAGRequest, db: AsyncSession = Depends(
             else:
                 answer = raw_ans
                 sources = []
-                
+
             # Retrieve routing details to estimate confidence
             _, conf, _, _ = coordinator.route(request.query)
             confidence = conf if conf > 0 else 0.85
@@ -80,10 +81,10 @@ async def retrieve_and_generate(request: RAGRequest, db: AsyncSession = Depends(
     else:
         answer = f"[MOCK] Info matching '{request.query}' in domain '{request.domain}'."
         sources = []
-    
+
     # Track the turn
     SessionHistoryManager.append_turn(request.session_id, request.query, answer)
-    
+
     # Auto-archive memories if N (5) turns are reached
     history = SessionHistoryManager.get_history(request.session_id)
     if len(history) >= 5:

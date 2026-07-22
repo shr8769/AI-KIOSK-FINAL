@@ -103,7 +103,9 @@ class NavigationService:
 class LocationResolver:
     """Minimal fuzzy string matcher to resolve campus locations, replacing RIAR's EntityResolver."""
     def __init__(self):
-        import os, re
+        import os
+        import re
+
         from rapidfuzz import fuzz
         self.fuzz = fuzz
         self.re = re

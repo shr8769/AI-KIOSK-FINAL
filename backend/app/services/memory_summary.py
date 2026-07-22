@@ -1,6 +1,7 @@
-import logging
 import json
+import logging
 import re
+
 from agents.llm.qwen_client import QwenClient
 
 logger = logging.getLogger(__name__)
@@ -38,11 +39,11 @@ Respond strictly in JSON format as follows:
                     }
         except Exception as e:
             logger.error(f"Error generating memory summary from LLM: {e}")
-            
+
         # Simple local rule-based fallback if LLM parser fails
         words = conversation_text.split()
         summary = " ".join(words[:8]) + ("..." if len(words) > 8 else "")
-        
+
         # Simple keyword matching for topic
         topic = "general"
         text_lower = conversation_text.lower()
@@ -54,7 +55,7 @@ Respond strictly in JSON format as follows:
             topic = "placements"
         elif "direction" in text_lower or "where" in text_lower or "building" in text_lower or "map" in text_lower:
             topic = "navigation"
-            
+
         return {
             "summary": summary,
             "topic": topic

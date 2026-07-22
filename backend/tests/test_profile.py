@@ -1,7 +1,9 @@
-from fastapi.testclient import TestClient
 import pytest
-from app.main import app
 from database.postgres.connection import get_db
+from fastapi.testclient import TestClient
+
+from app.main import app
+
 
 # Mock database classes representing records returned from query results
 class MockUserRecord:
@@ -19,10 +21,10 @@ class MockSessionRecord:
 class MockDbResult:
     def __init__(self, record):
         self.record = record
-        
+
     def scalars(self):
         return self
-        
+
     def first(self):
         return self.record
 
@@ -34,7 +36,7 @@ class MockAsyncSession:
     async def execute(self, statement):
         if self.return_none:
             return MockDbResult(None)
-            
+
         stmt_str = str(statement).lower()
         if "from users" in stmt_str:
             return MockDbResult(MockUserRecord())

@@ -48,7 +48,7 @@ async def route_to_domain(request: RouteRequest):
             domain, confidence, reason, matches = coordinator.route(request.refined_query)
             if not domain:
                 domain = "navigation"  # default fallback
-                
+
             return RouteResponse(
                 session_id=request.session_id,
                 domain=domain,
@@ -58,7 +58,7 @@ async def route_to_domain(request: RouteRequest):
             )
         except Exception as e:
             logger.error(f"Error executing real routing check: {e}")
-            
+
     # Mock fallback
     return RouteResponse(
         session_id=request.session_id,

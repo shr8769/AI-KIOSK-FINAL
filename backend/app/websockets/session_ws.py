@@ -24,8 +24,8 @@ from app.core.session_store import (
     log_barge_in,
     mark_turn_interrupted,
 )
-from app.services.speech.asr_service import asr_service
 from app.models.schemas import ASRRequest, TTSRequest
+from app.services.speech.asr_service import asr_service
 from app.services.speech.tts_service import tts_service
 
 # Re-export manager for events.py
@@ -95,10 +95,10 @@ async def websocket_session_handler(
                 if active_task and not active_task.done():
                     active_task.cancel()
                     logger.info(f"WS [{session_id}] Cancelled active task due to new audio_chunk")
-                
+
                 turn_token = str(uuid.uuid4())
                 active_turn_tokens[session_id] = turn_token
-                
+
                 active_task = asyncio.create_task(
                     _handle_audio_chunk(mgr, session_id, payload, turn_token)
                 )
@@ -112,7 +112,7 @@ async def websocket_session_handler(
                 reason = payload.get("reason", "unknown")
                 position_ms = payload.get("position_ms", 0)
                 logger.info(f"WS [{session_id}] Barge-in interrupt received for turn {turn_id} (Reason: {reason}, Pos: {position_ms}ms).")
-                
+
                 active_turn_tokens[session_id] = str(uuid.uuid4()) # Invalidate previous token
 
                 await mark_turn_interrupted(session_id)
@@ -129,10 +129,10 @@ async def websocket_session_handler(
                 if active_task and not active_task.done():
                     active_task.cancel()
                     logger.info(f"WS [{session_id}] Cancelled active task due to new text_query")
-                
+
                 turn_token = str(uuid.uuid4())
                 active_turn_tokens[session_id] = turn_token
-                
+
                 active_task = asyncio.create_task(
                     _handle_text_query(mgr, session_id, payload, turn_token)
                 )

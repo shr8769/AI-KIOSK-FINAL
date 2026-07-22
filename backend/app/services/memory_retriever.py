@@ -1,8 +1,10 @@
 import logging
+
+from database.models.models import Memory
+from sqlalchemy import or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import or_
-from database.models.models import Memory
+
 from app.services.memory_store import get_embedding_model
 
 logger = logging.getLogger(__name__)
@@ -21,10 +23,10 @@ class MemoryRetriever:
         if not model:
             logger.warning("Embedding model unavailable. Performing keyword-fallback retrieval.")
             return await self._fallback_retrieve(user_id, query_text, limit)
-            
+
         try:
             query_emb = model.encode(query_text).tolist()
-            
+
             # Use pgvector cosine_distance sorting
             result = await self.db.execute(
                 select(Memory)
@@ -44,11 +46,11 @@ class MemoryRetriever:
         try:
             words = [w.strip() for w in query_text.lower().split() if w.strip()]
             stmt = select(Memory).filter(Memory.user_id == user_id)
-            
+
             if words:
                 conditions = [Memory.content.ilike(f"%{w}%") for w in words]
                 stmt = stmt.filter(or_(*conditions))
-            
+
             stmt = stmt.order_by(Memory.created_at.desc()).limit(limit)
             res = await self.db.execute(stmt)
             return res.scalars().all()

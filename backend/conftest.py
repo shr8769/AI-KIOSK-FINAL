@@ -6,15 +6,13 @@ Provides shared test configuration, fixtures, and utilities.
 Runs BEFORE any test session to set up environment and provide shared fixtures.
 """
 
+import asyncio
 import os
 import sys
-import asyncio
-import pytest
-from typing import Generator
 from datetime import datetime
+from typing import Generator
 
-
-
+import pytest
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -27,9 +25,11 @@ os.environ.setdefault("DEBUG", "true")
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
 
 # ── NOW import app after environment is configured
-from app.main import app  # noqa: E402
-from fastapi.testclient import TestClient  # noqa: E402
 from database.postgres.connection import get_db  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+
+from app.main import app  # noqa: E402
+
 
 # ── Mock Database Layer for Global Test Overrides ──
 class MockUserRecord:
@@ -55,10 +55,10 @@ class MockMemoryRecord:
 class MockDbResult:
     def __init__(self, record):
         self.record = record
-        
+
     def scalars(self):
         return self
-        
+
     def first(self):
         return self.record
 
@@ -73,7 +73,7 @@ class MockAsyncSession:
     async def execute(self, statement):
         if self.return_none:
             return MockDbResult(None)
-            
+
         stmt_str = str(statement).lower()
         if "from users" in stmt_str:
             return MockDbResult(MockUserRecord())
@@ -126,15 +126,16 @@ def dispose_engine():
     yield
     import asyncio
     import threading
+
     from database.postgres.connection import engine
-    
+
     def run_dispose():
         loop = asyncio.new_event_loop()
         try:
             loop.run_until_complete(engine.dispose())
         finally:
             loop.close()
-            
+
     t = threading.Thread(target=run_dispose)
     t.start()
     t.join()

@@ -1,6 +1,7 @@
 import re
 from typing import Optional
 
+
 def get_strict_fast_path_domain(query_en: str) -> Optional[str]:
     """
     Deterministically route highly specific demo queries to bypass the LLM.
@@ -8,9 +9,9 @@ def get_strict_fast_path_domain(query_en: str) -> Optional[str]:
     """
     if not query_en:
         return None
-        
+
     query_lower = query_en.lower().strip()
-    
+
     # NAVIGATION MATCHES
     # Must explicitly ask for location, direction, or "where is"
     nav_patterns = [
@@ -19,11 +20,11 @@ def get_strict_fast_path_domain(query_en: str) -> Optional[str]:
         r"^where can i find (the|an? )?.+$",
         r"^locate .+$"
     ]
-    
+
     for pattern in nav_patterns:
         if re.match(pattern, query_lower):
             return "navigation"
-            
+
     # ADMISSIONS MATCHES
     # Must explicitly mention admissions context
     admission_patterns = [
@@ -33,17 +34,17 @@ def get_strict_fast_path_domain(query_en: str) -> Optional[str]:
         r"^admission(s)? (details|info|information)\b",
         r"^i want to take admission\b"
     ]
-    
+
     for pattern in admission_patterns:
         if re.search(pattern, query_lower):
             return "admissions"
-            
+
     # ACADEMICS MATCHES (Optional, strictly scoped)
     academic_patterns = [
         r"^what courses are offered\b",
         r"^what is the syllabus for\b"
     ]
-    
+
     for pattern in academic_patterns:
         if re.search(pattern, query_lower):
             return "academics"

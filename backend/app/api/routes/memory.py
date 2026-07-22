@@ -1,8 +1,10 @@
+from typing import List, Optional
+
+from database.postgres.connection import get_db
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from database.postgres.connection import get_db
+
 from app.services.memory_manager import MemoryManager
 
 router = APIRouter()

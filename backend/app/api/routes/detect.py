@@ -4,17 +4,18 @@ Owner: Harsha (Engineering Lead) — endpoint
        Haseeb (Project Lead) — fires events from detection module
 """
 
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+import logging
+import uuid
 from datetime import datetime
 from typing import Optional
-import uuid
-import logging
+
+from database.models.models import Session, User
+from database.postgres.connection import get_db
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from database.postgres.connection import get_db
-from database.models.models import User, Session
 from app.services.memory_manager import MemoryManager
 
 logger = logging.getLogger(__name__)
@@ -53,7 +54,7 @@ async def create_session_on_detection(request: DetectRequest, db: AsyncSession =
     user_id = request.user_id
     if not user_id:
         user_id = f"usr_auto_{uuid.uuid4().hex[:8]}"
-        
+
     name = request.name
     if not name:
         name = f"New User {user_id[-8:]}"
@@ -61,7 +62,7 @@ async def create_session_on_detection(request: DetectRequest, db: AsyncSession =
     # Auto-register user if not present
     result = await db.execute(select(User).filter(User.user_id == user_id))
     db_user = result.scalars().first()
-    
+
     if not db_user:
         db_user = User(
             user_id=user_id,
