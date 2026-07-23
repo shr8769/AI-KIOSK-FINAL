@@ -58,8 +58,7 @@ COLLECTIONS_MAP = {
     "academics": os.path.join("academics", "faq.json"),
     "placements": os.path.join("placements", "faq.json"),
     "research": os.path.join("research", "faq.json"),
-    "student_services": os.path.join("student_services", "faq.json"),
-    "navigation": os.path.join("navigation", "locations.json"),
+    "student_services": os.path.join("student_services", "faq.json")
 }
 
 def generate_unique_id(collection_name: str, item: Dict[str, Any], index: int) -> str:
