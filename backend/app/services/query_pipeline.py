@@ -251,9 +251,23 @@ async def run_query_pipeline(
     if outstanding:
         was_refined = True
         orig_q = outstanding.get("original_query")
-        # Simple merge: combine original query with clarification response
-        query_en = f"{orig_q} {query_en}"
-        logger.info(f"Merged clarification: '{orig_q}' + response -> '{query_en}'")
+        clarification_q = outstanding.get("clarification_question")
+
+        try:
+            import asyncio
+            coordinator = get_coordinator_agent()
+            history = [{"query": orig_q, "response": clarification_q or ""}]
+            rewritten = await asyncio.to_thread(
+                coordinator.reformulate_query, query_en, history
+            )
+            if rewritten and rewritten.lower() != query_en.lower():
+                logger.info(f"Smart clarification merge: '{orig_q}' + '{query_en}' -> '{rewritten}'")
+                query_en = rewritten
+            else:
+                query_en = f"{orig_q} {query_en}"
+        except Exception as e:
+            logger.error(f"Clarification rewrite failed: {e}")
+            query_en = f"{orig_q} {query_en}"
 
         from app.core.session_store import update_session_metadata
         await update_session_metadata(session_id, {"outstanding_clarification": None})
@@ -279,7 +293,8 @@ async def run_query_pipeline(
         best_domain, confidence, reason, _ = coordinator.route(query_en)
 
         # Lightweight clarification mechanism for genuinely low-confidence cases
-        if confidence < 0.45:
+        is_complex = len(query_en.split()) > 6
+        if confidence < 0.45 and not was_refined and not is_complex:
             logger.info(f"Low confidence routing ({confidence:.2f}): Triggering clarification.")
             question_en = coordinator.check_ambiguity(query_en)
             if not question_en:
