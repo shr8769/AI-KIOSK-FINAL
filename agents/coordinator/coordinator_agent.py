@@ -79,7 +79,11 @@ class CoordinatorAgent:
                 "classes", "missed class", "missed classes", "miss", "audit", "midterms schedule", "seating arrangement", 
                 "posted", "visa", "makeup exam", "makeup exams", "missed exam", "missed exams", "transcript for visa", 
                 "official transcript for visa", "transcript", "transcripts", "official transcript", "official transcripts",
-                "calendar", "academic calendar"
+                "calendar", "academic calendar",
+                "isa", "isas", "esa", "esas", "assessment", "assessments", "in semester", "end semester",
+                "teaching", "teaching style", "pedagogy", "teaching methodology",
+                "result", "results", "marksheet", "mark sheet",
+                "absent", "absence", "hall ticket", "revaluation cost", "revaluation fee"
             ],
             "placements": [
                 "microsoft", "amazon", "internship", "internships", "placement", "placements", "recruitment", 
@@ -109,7 +113,10 @@ class CoordinatorAgent:
                 "ieee", "ieee journals", "access online research journals", "research journals access", "library database", "library databases",
                 "form", "forms", "that form",
                 "transport", "transportation", "bus", "buses", "shuttle", "shuttles", "commute", "bus route", "bus routes", "bus fee", "bus fees",
-                "event", "events", "club", "clubs", "fest", "fests", "activities", "extracurricular"
+                "event", "events", "club", "clubs", "fest", "fests", "activities", "extracurricular",
+                "complaint", "lost", "found", "lost and found", "security", "cctv", "footage", "stolen",
+                "food", "mess food", "mess", "menu", "canteen food", "dining",
+                "alumni", "notable alumni", "famous", "personalities"
             ],
             "navigation": [
                 "where", "location", "directions", "located", "reach", "how do i get to", "building", 

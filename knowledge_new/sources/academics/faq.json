@@ -153,5 +153,55 @@
         "topic": "Timetable",
         "question": "What should I do if two of my registered courses have conflicting lecture timings in the timetable?",
         "answer": "The enrollment portal prevents registration for conflicting classes. If a conflict arises due to a rescheduling, you must contact your academic advisor to change one of the courses."
+    },
+    {
+        "topic": "ISA and ESA",
+        "question": "How many ISAs (In-Semester Assessments) and ESAs (End-Semester Assessments) are conducted in a semester?",
+        "answer": "Each semester has 2 ISAs (In-Semester Assessments) and 1 ESA (End-Semester Assessment). ISAs are conducted online using a fully automated platform during the semester, while the ESA is conducted at the end of the semester in pen-and-paper mode with image-processing-based grading."
+    },
+    {
+        "topic": "ISA and ESA",
+        "question": "What are the different types of assessments and exams conducted at PES University?",
+        "answer": "PES University conducts three types of assessments: (1) ISAs (In-Semester Assessments) conducted online via a fully automated platform, (2) ESAs (End-Semester Assessments) in pen-and-paper mode with image-processing for grading, and (3) Hybrid mode assessments combining computer-based testing (CBT) with pen-and-paper options. Each method ensures fairness, efficiency, and timely feedback."
+    },
+    {
+        "topic": "ISA and ESA",
+        "question": "Is in-semester examination (ISA) revaluation free? How much does it cost to apply for revaluation in end-semester examination (ESA)?",
+        "answer": "ISA revaluation is not available as ISAs are conducted online with automated grading. For ESA (End-Semester Assessment) revaluation, there is a fee of approximately Rs. 500 per subject. If the revaluation results in a grade change, the fee may be refunded. You must apply within 7 working days of the results being published."
+    },
+    {
+        "topic": "ISA and ESA",
+        "question": "I was absent for my in-semester examination (ISA). What should I do?",
+        "answer": "If you missed an ISA, contact your department's academic office immediately. You need to submit a medical certificate or a valid reason within 3 working days. If approved, a makeup ISA will be arranged by your department. Contact the Examination Cell at exam.cell@pes.edu or phone +91 80 26721983 (Ext. 205) for further assistance."
+    },
+    {
+        "topic": "Teaching",
+        "question": "What is the teaching style and pedagogy at PES University?",
+        "answer": "PES University employs a blend of teaching methodologies including case-based learning with real business scenarios, research article writing, seminar presentations, flipped classrooms, and experiential learning. Faculty use cutting-edge facilities for rigorous research, digital learning, and superior lab experiences. The curriculum emphasizes contemporary relevance, industry exposure, and practical application alongside theoretical foundations."
+    },
+    {
+        "topic": "Results",
+        "question": "I am not able to access my end semester examination results. What should I do?",
+        "answer": "If you cannot access your results, first try clearing your browser cache and logging in again to the student portal. If the issue persists, contact the IT Helpdesk or the Examination Cell at exam.cell@pes.edu or phone +91 80 26721983 (Ext. 205). Results are typically published within 30 days after the last exam date."
+    },
+    {
+        "topic": "Lost and Found",
+        "question": "I lost my laptop or personal belongings on campus. What should I do?",
+        "answer": "Immediately report the loss to the campus security office located near the main gate. File a written complaint with the security team and provide details like the item description, last known location, and time. You can also contact the Student Services office at student.services@pes.edu or phone +91 80 26721983 (Ext. 102). The security team can help check CCTV footage from the relevant area."
+    },
+    {
+        "topic": "Lost and Found",
+        "question": "How can I look for CCTV footage on campus?",
+        "answer": "Students cannot directly access CCTV footage. You must file a formal complaint or request with the campus security office located near the main gate. The security team will review the footage internally and assist with your inquiry. Contact the security office or Student Services at student.services@pes.edu for assistance."
+    },
+    {
+        "topic": "Alumni",
+        "question": "Can you tell me about PES University alumni and notable personalities who studied here?",
+        "answer": "PES University has a strong alumni network with graduates working in top companies globally including Google, Microsoft, Amazon, and Deloitte. Notable alumni include leaders in technology, business, and research. You can connect with fellow alumni through the PES Alumni Network portal. For more details, visit the alumni section on the PES University website or contact the Alumni Relations Office."
+    },
+    {
+        "topic": "Hostel Food",
+        "question": "How is the food at the PES University hostel mess?",
+        "answer": "Food at PES hostels is provided according to a regular menu fixed by the college management. The menu features a mix of north and south Indian cuisines. Both vegetarian and non-vegetarian options are available. The mess operates on fixed timings for breakfast, lunch, snacks, and dinner. Requests from students to change the menu are generally not entertained, but feedback can be submitted through the hostel committee."
     }
 ]

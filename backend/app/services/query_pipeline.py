@@ -293,8 +293,10 @@ async def run_query_pipeline(
         best_domain, confidence, reason, _ = coordinator.route(query_en)
 
         # Lightweight clarification mechanism for genuinely low-confidence cases
-        is_complex = len(query_en.split()) > 6
-        if confidence < 0.45 and not was_refined and not is_complex:
+        is_complex = len(query_en.split()) > 5
+        # Detect opinion/reputation queries about PES that don't need clarification
+        is_opinion = any(w in query_en.lower() for w in ["good", "bad", "better", "best", "worst", "worth", "ranking", "ranked", "reputation"])
+        if confidence < 0.45 and not was_refined and not is_complex and not is_opinion:
             logger.info(f"Low confidence routing ({confidence:.2f}): Triggering clarification.")
             question_en = coordinator.check_ambiguity(query_en)
             if not question_en:
@@ -384,6 +386,33 @@ async def run_query_pipeline(
         )
         answer_en = _clean_agent_answer(full_answer)
         is_fallback = _is_fallback_answer(answer_en)
+
+        # Contact-aware enrichment: if user asks for contact info, inject structured data
+        contact_keywords = ["contact", "phone", "email", "call", "reach out", "get in touch"]
+        if any(kw in refined_query.lower() for kw in contact_keywords):
+            try:
+                from config.contact_config import get_specific_contact
+                contact = get_specific_contact(refined_query, domain=target_domain)
+                contact_text = (
+                    f"\n\nFor further assistance, contact the {contact['office_name']}:\n"
+                    f"Email: {contact['email']}\n"
+                    f"Phone: {contact['phone']}\n"
+                    f"Location: {contact['location']}"
+                )
+                # If the answer is a fallback, replace it entirely with contact info
+                if is_fallback:
+                    answer_en = (
+                        f"For your query, please contact the {contact['office_name']}.\n\n"
+                        f"Email: {contact['email']}\n"
+                        f"Phone: {contact['phone']}\n"
+                        f"Location: {contact['location']}\n"
+                        f"Website: {contact['website']}"
+                    )
+                    is_fallback = False
+                else:
+                    answer_en = answer_en.rstrip() + contact_text
+            except Exception as e:
+                logger.warning(f"Contact enrichment failed: {e}")
 
     if is_fallback:
         if not was_refined:
