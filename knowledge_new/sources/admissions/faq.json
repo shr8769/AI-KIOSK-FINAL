@@ -31,33 +31,28 @@
     },
     {
         "topic": "Fees",
-        "question": "How much is the tuition fee per semester for undergraduate programs?",
-        "answer": "For the current academic year, undergraduate tuition is $15,500 per semester for full-time domestic students taking between 12 and 18 credit hours. Part-time tuition is charged at a rate of $1,100 per credit hour."
-    },
-    {
-        "topic": "Fees",
-        "question": "Are there different fee structures for international students compared to domestic students?",
-        "answer": "Yes, international students are subject to an international tuition rate of $22,000 per semester. This rate covers additional university support services, mandatory international orientation, and visa processing compliance."
+        "question": "How much is the fee structure for B.Tech programs like Computer Science Engineering?",
+        "answer": "The fee structure for B.Tech programs (including Computer Science Engineering, ECE, Mechanical, etc.) is generally INR 4,50,000 per annum under the PESU Merit/PESSAT quota, and INR 4,50,000 per annum for the JEE Main Quota. There may also be higher fee categories depending on the admission quota."
     },
     {
         "topic": "Fees",
         "question": "What auxiliary fees (housing, activities, insurance) should I expect in addition to tuition?",
-        "answer": "In addition to tuition, students should budget for a student activity and facilities fee ($450/semester), mandatory health insurance ($1,200/year, waiverable if you have equivalent coverage), and campus housing/dining packages (averaging $6,500/semester)."
+        "answer": "In addition to the tuition fee, there is typically a one-time non-refundable administrative charge of ₹10,000. Hostel and dining fees vary depending on the accommodation type chosen."
     },
     {
         "topic": "Fees",
         "question": "What are the payment methods and installment options available for paying tuition fees?",
-        "answer": "Tuition can be paid via credit/debit card, e-check, domestic/international bank wire, or through our monthly installment plan, which divides the semester balance into four interest-free monthly payments for a nominal setup fee of $50."
+        "answer": "Tuition fees are usually paid via Demand Drafts (DD) drawn in favor of 'PES UNIVERSITY GENERAL FUND' payable at Bangalore during the counseling process."
     },
     {
         "topic": "Fees",
         "question": "Is the application fee refundable if my application is rejected?",
-        "answer": "No, the $75 application fee is non-refundable. This fee goes toward the administrative costs of processing, verifying, and evaluating candidate applications."
+        "answer": "No, the application processing fee is generally non-refundable."
     },
     {
         "topic": "Fees",
         "question": "What happens if I miss the tuition payment deadline?",
-        "answer": "A late payment fee of $150 will be applied to your student account, and a financial hold will be placed. This hold prevents you from adding/dropping courses, registering for future terms, or obtaining official transcripts."
+        "answer": "Missing the tuition payment deadline or failing to bring the required Demand Drafts during counseling will result in you not being allowed to participate in the seat selection process or losing your allotted seat."
     },
     {
         "topic": "Scholarships",
