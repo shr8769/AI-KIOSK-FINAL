@@ -74,7 +74,7 @@ def local_spelling_corrector(query: str) -> str:
             corrected_words.append(w)
             continue
         if len(clean_w) >= 4:
-            matches = difflib.get_close_matches(clean_w, STANDARD_TERMS, n=1, cutoff=0.75)
+            matches = difflib.get_close_matches(clean_w, STANDARD_TERMS, n=1, cutoff=0.85)
             if matches:
                 punc = re.search(r"[^\w]+$", w)
                 suffix = punc.group(0) if punc else ""
@@ -130,13 +130,13 @@ async def make_conversational(text: str, lang: str) -> str:
         f"You are a friendly university AI kiosk assistant. "
         f"Rewrite the following {lang_name} text to sound natural and conversational, "
         f"like how educated urban Indians actually speak — mixing {lang_name} grammar with "
-        f"common English words (technical terms, brand names, numbers, and short phrases can stay in English). "
-        f"CRITICAL: You MUST write the final output entirely in the Roman alphabet (English/Latin letters/Hinglish). Do NOT use Devanagari or Kannada scripts. "
+        f"common English words (technical terms, brand names, numbers, and short phrases should stay in English but be written in the native script if possible, or left in English script if better). "
+        f"CRITICAL: You MUST write the final output primarily in the native script (Devanagari for Hindi, Kannada script for Kannada). Do NOT output fully Romanized Hinglish/Kanglish. "
+        f"Do not use overly pure/formal {lang_name}. Keep it warm, friendly, and short. "
         f"Keep all factual information exactly the same. Do NOT translate everything to English. "
-        f"Keep it warm, friendly, and short. Return ONLY the rewritten Romanized text, no explanation.\n"
-        f"{mix_example}\n"
+        f"Return ONLY the rewritten text, no explanation.\n"
         f"Text to rewrite:\n{text}\n"
-        f"Conversational Romanized {lang_name} version:"
+        f"Conversational version:"
     )
 
     try:
