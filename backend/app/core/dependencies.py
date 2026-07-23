@@ -130,14 +130,16 @@ def _get_translation_llm():
         from langchain_google_genai import ChatGoogleGenerativeAI
         return ChatGoogleGenerativeAI(model="gemini-2.5-flash")
     else:
-        from langchain_ollama import ChatOllama
-        return ChatOllama(model="qwen3:latest")
+        # Avoid hanging on slow local LLMs for real-time translation
+        return None
 
 
 def translate_to_english_llm(text: str, source_lang: str) -> str:
     """Translates conversational or mixed native query to clear English using LLM."""
     try:
         llm = _get_translation_llm()
+        if not llm:
+            return None
         lang_name = "Kannada" if source_lang == "kn" else "Hindi"
         prompt = f"""Translate this conversational, mixed {lang_name} user query into standard, clear English.
 User query: "{text}"
@@ -155,6 +157,8 @@ def translate_from_english_llm(text: str, target_lang: str) -> str:
     """Translates English to conversational, mixed target language using LLM with loanword preservation."""
     try:
         llm = _get_translation_llm()
+        if not llm:
+            return None
         lang_name = "Kannada" if target_lang == "kn" else "Hindi"
         prompt = f"""You are a professional, human-like translator for the PES University AI Kiosk.
 Translate the following English text into conversational, natural {lang_name} as spoken by students and faculty in daily life.
