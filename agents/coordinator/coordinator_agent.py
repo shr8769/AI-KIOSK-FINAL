@@ -108,7 +108,8 @@ class CoordinatorAgent:
                 "doctor", "resident doctor", "medical services", "central library", "university central library", "library open",
                 "ieee", "ieee journals", "access online research journals", "research journals access", "library database", "library databases",
                 "form", "forms", "that form",
-                "transport", "transportation", "bus", "buses", "shuttle", "shuttles", "commute", "bus route", "bus routes", "bus fee", "bus fees"
+                "transport", "transportation", "bus", "buses", "shuttle", "shuttles", "commute", "bus route", "bus routes", "bus fee", "bus fees",
+                "event", "events", "club", "clubs", "fest", "fests", "activities", "extracurricular"
             ],
             "navigation": [
                 "where", "location", "directions", "located", "reach", "how do i get to", "building", 
