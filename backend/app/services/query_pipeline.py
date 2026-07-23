@@ -49,11 +49,23 @@ def _is_fallback_answer(text: str) -> bool:
 
 def local_spelling_corrector(query: str) -> str:
     import difflib
-    STANDARD_TERMS = [
-        "microsoft", "admissions", "placement", "placements", "scholarship", "scholarships",
-        "internship", "internships", "academic", "academics", "hostel", "hostels",
-        "canteen", "library", "office", "entrance", "fees", "admission"
-    ]
+    from app.core.dependencies import get_coordinator_agent
+    
+    try:
+        coordinator = get_coordinator_agent()
+        standard_terms_set = set()
+        for keywords in coordinator.routing_rules.values():
+            for kw in keywords:
+                for word in kw.split():
+                    if len(word) >= 4:
+                        standard_terms_set.add(word.lower())
+        STANDARD_TERMS = list(standard_terms_set)
+    except Exception:
+        STANDARD_TERMS = [
+            "microsoft", "admissions", "placement", "placements", "scholarship", "scholarships",
+            "internship", "internships", "academic", "academics", "hostel", "hostels",
+            "canteen", "library", "office", "entrance", "fees", "admission", "attendance", "engineering"
+        ]
     words = query.split()
     corrected_words = []
     for w in words:

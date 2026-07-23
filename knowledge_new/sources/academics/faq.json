@@ -1,5 +1,10 @@
 [
     {
+        "topic": "Programs",
+        "question": "What are the different engineering programs or branches of engineering that PES University offers?",
+        "answer": "PES University offers B.Tech undergraduate programs in Computer Science and Engineering (CSE), Electronics and Communication Engineering (ECE), Mechanical Engineering (ME), Electrical and Electronics Engineering (EEE), and Biotechnology (BT). They also offer M.Tech and Ph.D. research programs in these disciplines."
+    },
+    {
         "topic": "Attendance",
         "question": "What is the minimum attendance percentage required to be eligible to write final exams?",
         "answer": "Students must maintain a minimum of 75% attendance in each registered course to be eligible to sit for the final semester examinations."
