@@ -110,7 +110,7 @@ class LocationResolver:
         self.fuzz = fuzz
         self.re = re
         self.gazetteer = []
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "knowledge_new", "sources", "navigation"))
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "knowledge", "sources", "navigation"))
         file_path = os.path.join(base_dir, "navigation_locations.json")
         try:
             with open(file_path, "r", encoding="utf-8") as f:

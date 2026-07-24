@@ -15,7 +15,7 @@ class NavigationEngine:
                     "..",
                     "..",
                     "..",
-                    "knowledge_new",
+                    "knowledge",
                     "sources",
                     "navigation",
                     "navigation_graph.json",

@@ -27,7 +27,7 @@ class CoordinatorAgent:
             db_path (str, optional): Path to persistent ChromaDB storage.
         """
         if db_path is None:
-            db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge_new", "vectorstore"))
+            db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge", "vectorstore"))
             
         # Initialize a single shared client instance for resource optimization
         self.client = chromadb.PersistentClient(path=db_path)
