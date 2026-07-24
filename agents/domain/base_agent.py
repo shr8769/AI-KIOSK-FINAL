@@ -156,6 +156,9 @@ class BaseAgent(ABC):
     and keyword overlap scoring.
     """
     _shared_emb_fn = None
+    _shared_qwen_client = None
+    _shared_synthesizer = None
+
     def __init__(
         self, 
         collection_name: str, 
@@ -175,8 +178,13 @@ class BaseAgent(ABC):
         self.similarity_threshold = 0.58  # Updated baseline low confidence threshold
         
         if self.rag_enabled:
-            self.qwen_client = QwenClient()
-            self.synthesizer = GeminiSynthesizer()
+            if BaseAgent._shared_qwen_client is None:
+                BaseAgent._shared_qwen_client = QwenClient()
+            self.qwen_client = BaseAgent._shared_qwen_client
+
+            if BaseAgent._shared_synthesizer is None:
+                BaseAgent._shared_synthesizer = GeminiSynthesizer()
+            self.synthesizer = BaseAgent._shared_synthesizer
         
         if client is not None:
             self.client = client
