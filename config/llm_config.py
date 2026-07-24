@@ -14,4 +14,4 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:8b")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 # Primary LLM choice: 'qwen' or 'gemini'
-PRIMARY_LLM = os.getenv("PRIMARY_LLM", "gemini")
+PRIMARY_LLM = os.getenv("PRIMARY_LLM", "qwen")
