@@ -1,0 +1,81 @@
+# ══════════════════════════════════════════════════════════════
+# Autonomous Agent Configuration
+# ══════════════════════════════════════════════════════════════
+# Central config for all autonomous agents in the AI-KIOSK.
+# The KnowledgeSyncAgent also reads sync_config.yaml for
+# crawler/ingestion settings — this file controls the agent
+# scheduling and behavior layer on top.
+
+# ── Knowledge Synchronization Agent ──────────────────────────
+knowledge_sync:
+  enabled: true
+  sync_config_path: "sync_config.yaml"          # Path to existing sync pipeline config
+  schedule_interval_hours: 24                     # How often to run (hours)
+  schedule_cron: "0 2 * * *"                      # Cron expression (overrides interval if set)
+  use_cron: true                                   # true = use cron, false = use interval
+  max_history: 30                                  # Keep last N sync run summaries
+  lock_timeout_seconds: 3600                       # Max duration before considering a sync stale
+  on_startup_sync: false                           # Run a sync immediately on agent start
+  dry_run: false                                   # Default to dry-run mode (no changes)
+  max_pages_override: null                         # Override max_pages from sync_config (null = use sync_config value)
+
+# ── Announcement Monitor Agent ───────────────────────────────
+announcements:
+  enabled: true
+  target_url: "https://www.pesuacademy.com/Academy/s/studentProfilePESU"
+  check_interval_minutes: 30                       # How often to check for new announcements
+  cache_path: "data/announcements.json"            # Announcement persistence file
+  max_announcements: 500                           # Max announcements to store in cache
+  expire_after_days: 90                            # Mark announcements as expired after N days
+  archive_after_days: 180                          # Archive announcements after N days
+  new_badge_hours: 48                              # Show "New" badge for N hours after first seen
+  use_mock_data: true                              # Use mock/demo data (set false when credentials available)
+
+  # PESU Academy Authentication (required when use_mock_data = false)
+  credentials:
+    username: ""                                    # PESU SRN (e.g., PES1UG21CS999)
+    password: ""                                    # Password (prefer env var: PESU_ACADEMY_PASSWORD)
+
+  # Scraping behavior
+  scraping:
+    timeout_seconds: 30
+    max_retries: 3
+    retry_delay_seconds: 5
+    user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 PESUKioskBot/2.0"
+
+# ── Rate Limiting & Safety ───────────────────────────────────
+safety:
+  respect_robots_txt: true
+  min_request_interval_seconds: 2.0                # Minimum delay between requests
+  max_requests_per_minute: 20                      # Global rate limit
+  max_consecutive_errors: 5                        # Stop agent after N consecutive errors
+  error_cooldown_minutes: 15                       # Wait before retrying after max errors
+
+# ── Retry Policy ─────────────────────────────────────────────
+retry:
+  max_retries: 3
+  base_delay_seconds: 5
+  max_delay_seconds: 300                           # 5 minutes max backoff
+  exponential_backoff: true
+  jitter: true                                      # Add random jitter to prevent thundering herd
+
+# ── Logging ──────────────────────────────────────────────────
+logging:
+  log_dir: "logs/agents"
+  log_level: "INFO"                                # DEBUG | INFO | WARNING | ERROR
+  max_log_files: 30
+  console_output: true
+  file_output: true
+
+# ── Agent Runner ─────────────────────────────────────────────
+runner:
+  graceful_shutdown_timeout_seconds: 30
+  health_check_interval_seconds: 60
+
+# ── Admin Dashboard ──────────────────────────────────────────
+admin:
+  auto_sync_enabled: true
+  default_interval: "daily"               # 5min | 15min | 1hour | daily
+  dashboard_refresh_seconds: 30
+  require_approval: false                  # If true, new pages stay in "pending" until approved
+
