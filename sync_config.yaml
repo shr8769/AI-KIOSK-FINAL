@@ -7,11 +7,16 @@
 crawler:
   seed_urls:
     - "https://pes.edu/"
+    - "https://pes.edu/admissions/"
+    - "https://pes.edu/academics/"
+    - "https://pes.edu/placements/"
+    - "https://pes.edu/campus-life/"
+    - "https://pes.edu/research/"
   allowed_domains:
     - "pes.edu"
   allow_subdomains: true
-  max_depth: 10
-  max_pages: 2000
+  max_depth: 1
+  max_pages: 300
   politeness_delay: 2.0        # seconds between requests
   request_timeout: 30000       # Playwright page timeout (ms)
   max_retries: 3               # retries per page on transient failure

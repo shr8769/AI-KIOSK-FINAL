@@ -74,7 +74,7 @@ class MarkdownSyncManager:
 
         Returns True on success.
         """
-        if not markdown_path or not os.path.exists(markdown_path):
+        if markdown_path and not os.path.exists(markdown_path):
             logger.warning(f"Markdown file not found for NEW page: {canonical_url}")
             return False
 
@@ -85,8 +85,8 @@ class MarkdownSyncManager:
             canonical_url=canonical_url,
             last_crawl_time=now,
             content_hash=content_hash,
-            markdown_path=str(Path(markdown_path).as_posix()),
-            markdown_hash=self._compute_file_hash(markdown_path),
+            markdown_path=str(Path(markdown_path).as_posix()) if markdown_path else "",
+            markdown_hash=self._compute_file_hash(markdown_path) if markdown_path else "",
             category=category,
             collection="",  # Will be set by embedding_updater
             status="active",
@@ -97,8 +97,11 @@ class MarkdownSyncManager:
             first_seen=now,
         )
         self.manifest.set_entry(entry)
-        self.stats["created"] += 1
-        logger.info(f"NEW markdown registered: {markdown_path}")
+        if markdown_path:
+            self.stats["created"] += 1
+            logger.info(f"NEW markdown registered: {markdown_path}")
+        else:
+            logger.debug(f"NEW page registered (no markdown): {canonical_url}")
         return True
 
     def process_modified_page(
@@ -140,8 +143,11 @@ class MarkdownSyncManager:
             # chunk_ids will be cleared and re-populated by embedding_updater
         )
 
-        self.stats["updated"] += 1
-        logger.info(f"MODIFIED markdown updated: {canonical_url}")
+        if markdown_path:
+            self.stats["updated"] += 1
+            logger.info(f"MODIFIED markdown updated: {canonical_url}")
+        else:
+            logger.debug(f"MODIFIED page registered (no markdown): {canonical_url}")
         return True
 
     def process_deleted_page(self, canonical_url: str) -> bool:

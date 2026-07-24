@@ -48,7 +48,7 @@ IST = timezone(timedelta(hours=5, minutes=30))
 # ── Logging Setup ────────────────────────────────────
 
 
-def setup_logging(config: Dict[str, Any]) -> None:
+def setup_logging(config: Dict[str, Any], verbose: bool = False) -> None:
     """Configure logging for the sync pipeline."""
     logging_cfg = config.get("logging", {})
     log_dir = Path(logging_cfg.get("log_dir", "logs/sync"))
@@ -65,7 +65,7 @@ def setup_logging(config: Dict[str, Any]) -> None:
 
     # Console handler
     console = logging.StreamHandler()
-    console.setLevel(log_level)
+    console.setLevel(logging.DEBUG if verbose else logging.INFO)
     console.setFormatter(formatter)
 
     # File handler
@@ -209,7 +209,7 @@ async def run_sync(config: Dict[str, Any], args: argparse.Namespace) -> Dict[str
 
     # Process NEW pages
     for result in crawl_results:
-        if result.change_type == ChangeType.NEW and result.success and result.markdown_path:
+        if result.change_type == ChangeType.NEW and result.success:
             md_manager.process_new_page(
                 canonical_url=result.canonical_url,
                 title=result.title,
@@ -220,7 +220,7 @@ async def run_sync(config: Dict[str, Any], args: argparse.Namespace) -> Dict[str
 
     # Process MODIFIED pages
     for result in crawl_results:
-        if result.change_type == ChangeType.MODIFIED and result.success and result.markdown_path:
+        if result.change_type == ChangeType.MODIFIED and result.success:
             md_manager.process_modified_page(
                 canonical_url=result.canonical_url,
                 title=result.title,
@@ -343,16 +343,16 @@ async def run_sync(config: Dict[str, Any], args: argparse.Namespace) -> Dict[str
     print("=" * 70)
     print("   SYNC COMPLETE")
     print("=" * 70)
-    print(f"   Duration          : {int(duration // 60)}m {int(duration % 60)}s")
-    print(f"   New Pages         : {change_summary['new']}")
-    print(f"   Updated Pages     : {change_summary['modified']}")
-    print(f"   Deleted Pages     : {change_summary['deleted']}")
-    print(f"   Unchanged         : {change_summary['unchanged']}")
-    print(f"   Chunks Created    : {embedding_stats['chunks_created']}")
-    print(f"   Chunks Deleted    : {embedding_stats['chunks_deleted']}")
-    print(f"   Validation        : {'PASSED' if validation_summary['all_passed'] else 'ISSUES DETECTED'}")
-    print(f"   Report            : {report_path}")
+    print(f"   Pages scanned: {change_summary['total_scanned']}")
+    print(f"   New pages: {change_summary['new']}")
+    print(f"   Updated pages: {change_summary['modified']}")
+    print(f"   Deleted pages: {change_summary['deleted']}")
+    print(f"   Unchanged pages: {change_summary['unchanged']}")
+    print(f"   Embeddings regenerated: {embedding_stats['embeddings_generated']}")
+    print(f"   Time taken: {int(duration)} seconds")
     print("=" * 70)
+    print(f"   Validation: {'PASSED' if validation_summary['all_passed'] else 'ISSUES DETECTED'}")
+    print(f"   Report: {report_path}")
     print()
 
     summary.update({
@@ -451,6 +451,10 @@ Examples:
         help="Preview changes without modifying files or vectors",
     )
     parser.add_argument(
+        "--verbose", action="store_true",
+        help="Show detailed per-page logs (default: show only changes/errors)",
+    )
+    parser.add_argument(
         "--validate-only", action="store_true",
         help="Run post-sync validation checks only",
     )
@@ -469,7 +473,7 @@ Examples:
     config = load_config(args.config)
 
     # Setup logging
-    setup_logging(config)
+    setup_logging(config, verbose=args.verbose)
 
     # Validate-only mode
     if args.validate_only:

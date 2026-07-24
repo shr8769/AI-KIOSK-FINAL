@@ -16,6 +16,7 @@ Does NOT modify the existing pes_crawler.py — builds on top of its utilities.
 import asyncio
 import logging
 import re
+import sys
 import time
 from collections import deque
 from datetime import timezone, timedelta
@@ -137,6 +138,7 @@ class IncrementalCrawler:
 
         # Crawl state
         self.visited: Set[str] = set()
+        self.queued_urls: Dict[str, int] = {}
         self.discovered_urls: Set[str] = set()
         self.crawl_results: List[CrawlResult] = []
         self.document_urls: List[str] = []
@@ -194,11 +196,25 @@ class IncrementalCrawler:
 
             # Seed the BFS queue
             queue = deque()
+            
+            # 1. Seed index pages for new discovery (depth 0)
             for seed_url in self.seed_urls:
                 canonical = canonicalize_url(seed_url)
                 if canonical:
-                    queue.append((canonical, 0))
-                    self.stats["urls_discovered"] += 1
+                    self.queued_urls[canonical] = 0
+
+            # 2. Seed known pages for refresh (depth 1 to prevent recursive discovery)
+            known_urls = self.manifest.get_active_urls()
+            for url in known_urls:
+                canonical = canonicalize_url(url)
+                if canonical and canonical not in self.queued_urls:
+                    self.queued_urls[canonical] = 1
+
+            # Populate queue
+            for url, depth in self.queued_urls.items():
+                queue.append((url, depth))
+                self.discovered_urls.add(url)
+                self.stats["urls_discovered"] += 1
 
             pages_crawled = 0
 
@@ -219,7 +235,10 @@ class IncrementalCrawler:
                 self.discovered_urls.add(canonical)
                 self.stats["urls_visited"] += 1
 
-                logger.info(
+                sys.stdout.write(f"\r   Scanning pages: {pages_crawled + 1} / {self.max_pages} ...")
+                sys.stdout.flush()
+
+                logger.debug(
                     f"[{pages_crawled + 1}/{self.max_pages}] "
                     f"Depth={depth} Crawling: {canonical}"
                 )
@@ -232,7 +251,7 @@ class IncrementalCrawler:
                         break
                     if attempt < self.max_retries:
                         wait = attempt * 2
-                        logger.info(f"  Retry {attempt}/{self.max_retries} in {wait}s...")
+                        logger.debug(f"  Retry {attempt}/{self.max_retries} in {wait}s...")
                         await asyncio.sleep(wait)
 
                 if not html:
@@ -266,18 +285,20 @@ class IncrementalCrawler:
                     h1 = soup.find("h1")
                     title = h1.get_text(strip=True) if h1 else url_to_filename(canonical)
 
-                # Discover links (BFS expansion)
-                new_links = extract_all_links(soup, canonical)
-                for link in new_links:
-                    if link not in self.visited:
-                        if is_document_url(link):
-                            if link not in self.document_urls:
-                                self.document_urls.append(link)
-                                self.stats["documents_found"] += 1
-                        else:
-                            queue.append((link, depth + 1))
-                            self.discovered_urls.add(link)
-                            self.stats["urls_discovered"] += 1
+                # Discover links (BFS expansion) ONLY if depth < max_depth
+                if depth < self.max_depth:
+                    new_links = extract_all_links(soup, canonical)
+                    for link in new_links:
+                        if link not in self.visited and link not in self.queued_urls:
+                            if is_document_url(link):
+                                if link not in self.document_urls:
+                                    self.document_urls.append(link)
+                                    self.stats["documents_found"] += 1
+                            else:
+                                self.queued_urls[link] = depth + 1
+                                queue.append((link, depth + 1))
+                                self.discovered_urls.add(link)
+                                self.stats["urls_discovered"] += 1
 
                 # Extract content
                 from scripts.data_ingestion.pes_crawler import extract_breadcrumb
@@ -308,7 +329,7 @@ class IncrementalCrawler:
 
                 if change_type == ChangeType.UNCHANGED:
                     self.stats["pages_skipped_unchanged"] += 1
-                    logger.info(f"  -> Skipped (unchanged): {canonical}")
+                    logger.debug(f"  -> Skipped (unchanged): {canonical}")
                     await asyncio.sleep(self.politeness_delay)
                     continue
 
@@ -334,6 +355,8 @@ class IncrementalCrawler:
                         else:
                             self.stats["markdown_files_updated"] += 1
 
+                        sys.stdout.write("\r" + " " * 60 + "\r")
+                        sys.stdout.flush()
                         logger.info(
                             f"  -> {change_type.value.upper()}: {filepath.name} "
                             f"({word_count} words)"
@@ -361,6 +384,8 @@ class IncrementalCrawler:
                 await asyncio.sleep(self.politeness_delay)
 
             await browser.close()
+            sys.stdout.write("\r" + " " * 60 + "\r")
+            sys.stdout.flush()
 
         # Detect deletions — URLs in manifest but not discovered
         self.change_detector.detect_deletions(self.discovered_urls)
@@ -376,11 +401,13 @@ class IncrementalCrawler:
 
         logger.info("=" * 60)
         logger.info(f"Crawl complete in {self.stats['crawl_duration_human']}")
-        logger.info(f"Pages visited: {self.stats['urls_visited']}")
-        logger.info(f"New: {self.stats['pages_new']}, "
-                     f"Modified: {self.stats['pages_modified']}, "
-                     f"Unchanged: {self.stats['pages_skipped_unchanged']}")
-        logger.info(f"Deletions detected: {len(change_set.deleted)}")
+        logger.info(
+            f"Pages scanned: {self.stats['urls_visited']} | "
+            f"New: {self.stats['pages_new']} | "
+            f"Updated: {self.stats['pages_modified']} | "
+            f"Deleted: {len(change_set.deleted)} | "
+            f"Unchanged: {self.stats['pages_skipped_unchanged']}"
+        )
         logger.info("=" * 60)
 
         return change_set, self.crawl_results
