@@ -1,111 +1,76 @@
 ---
-title: "CIE - Center for Innovation and Entrepreneurship"
-url: https://cie.pes.edu/careers
+title: "Careers"
+url: https://pes.edu/careers
 category: placements
 breadcrumb: ""
-last_crawled: "2026-07-16T11:10:30.536682+05:30"
+last_crawled: "2026-07-24T02:21:08.831293+05:30"
 ---
 
-Join Our Team
+### Work With Us
 
-# Build the Future ofEntrepreneurship Education
+Shape tomorrow’s leaders in a vibrant, collaborative environment
 
-Join CIE and be part of a dynamic team that's shaping the next generation of entrepreneurs, innovators, and change-makers.
+### Submit your interest and CV
 
-## Our Values &Culture
+[Mail](mailto:careers@pes.edu)
 
-We're more than just a workplace – we're a community of passionate individuals united by our mission to transform entrepreneurship education.
+### Submit your interest and CV
 
-### Innovation First
+[Mail](mailto:careers@pes.edu)
 
-We constantly push boundaries and embrace new ideas to advance entrepreneurship education.
+### Work With Us
 
-### Student-Centric
+Shape tomorrow’s leaders in
+a vibrant, collaborative environment
 
-Every decision we make is guided by what's best for our students and their success.
+### Openings (1)
 
-### Collaborative Excellence
+Seeking Visionary Nation Builders in Education
 
-We believe in the power of teamwork and collective intelligence to achieve greatness.
+### Lead as Our Next Vice Chancellor
 
-### Impact Driven
+PES University invites distinguished academics and thought leaders to guide the future of education, drive innovation and advance impactful research as its next Vice Chancellor. This is a pivotal opportunity to influence academic excellence and inspire the next generation of learners, thinkers and nation builders.
 
-We measure our success by the positive impact we create in the entrepreneurship ecosystem.
+Be part of the PES community where your expertise makes a lasting impact. We look forward to discussing your Vision for the Role and Alignment of your future with the Institution.
 
-## Why WorkWith Us?
+Eligibility:We seek a pragmatic professional with an outstanding record of teaching distinction and/or recognized industry engagement. The successful candidate will cultivate a culture of integrity, creativity, and excellence that elevates the University’s profile on the world stage.
 
-We offer comprehensive benefits and opportunities that support your professional growth and personal well-being.
+Experience:Applicants should possess distinguished industry research achievements and/or at least ten years of experience as a professor / senior academic leadership position. A track record of institution building, transformative initiatives, and meaningful global collaborations is essential.
 
-### Innovation Culture
+Expectations:The Vice Chancellor will shape strategic priorities, provide academic direction, and maintain the University’s technical relevance. Key responsibilities include promoting research excellence, driving innovation with measurable societal impact, and strengthening international partnerships while encouraging interdisciplinary learning across all programs.
 
-Be part of cutting-edge projects that shape the future of entrepreneurship education.
+Please submit your updated resume, along with a brief note highlighting your academic and research achievements, teaching and mentorship experience, leadership roles, industry exposure, and institutional contributions, to careers@pes.edu. Candidates must meet the minimum qualifications and eligibility requirements as prescribed by the UGC.
 
-### Professional Growth
+Application Deadline: 31 October 2025
 
-Comprehensive learning opportunities, mentorship, and career advancement programs.
+[Mail to careers@pes.edu](mailto:careers@pes.edu)
 
-### Work-Life Balance
+### With a focus on interdisciplinary research and industry collaboration, you will find ample opportunities for professional growth and development at PES. We are committed to fostering a culture of continuous learning, transparency and respect to deliver our mission of helping students navigate the real world and find their own true north.
 
-Flexible working arrangements, wellness programs, and supportive work environment.
+### Chancellor's message for parents of prospective students
 
-### Competitive Benefits
+Prof. D. JawaharChancellor, PES University
 
-Attractive compensation packages, health insurance, and performance bonuses.
+### Express your interest in working with PES
 
-## ApplicationProcess
+[Mail your resume to careers@pes.edu](mailto:careers@pes.edu)
 
-Our streamlined hiring process is designed to be fair, transparent, and efficient while ensuring the best fit for both candidates and our organization.
+### You may also be interested in
 
-1
+### Giving to PES
 
-### Application Submission
+The generous support from patrons like you has been instrumental in the remarkable growth of our university. Your continued contribution will play a vital role in transforming PES into a world-class university.
 
-Submit your application through our online portal with required documents.
+### Staying in Touch
 
-2
+Join Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.
 
-### Initial Screening
+### Discovering our Newsletters
 
-Our HR team reviews applications and shortlists candidates for next round.
-
-3
-
-### Interview Process
-
-Participate in technical and behavioral interviews with hiring managers.
-
-4
-
-### Final Decision
-
-Receive feedback and job offer details within one week of final interview.
-
-## Ready to Join Our Mission?
-
-If you're passionate about entrepreneurship education and want to make a meaningful impact, we'd love to hear from you.
-
-### Innovation Focus
-
-Work on cutting-edge projects
-
-### Great Team
-
-Collaborate with amazing people
-
-### Meaningful Impact
-
-Shape the future of education
-
-Contact HR Team
-
-Questions about careers at CIE?
-
-cieoffice@pes.edu
-$
-/$
+The Student Newsletter is your guide to what’s happening on campus and in the student community. Find out about PES events, leadership, career and the amazing achievements of your fellow PESU students!
 
 ---
 
 ## Contact Information
 
-**Emails:** cieoffice@pes.edu
+**Emails:** careers@pes.edu, careers@pes.eduWith, careers@pes.eduYou

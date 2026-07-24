@@ -3,7 +3,7 @@ title: "Grievances Redressal Comittee"
 url: https://pes.edu/grc
 category: general
 breadcrumb: ""
-last_crawled: "2026-07-16T11:17:17.851662+05:30"
+last_crawled: "2026-07-24T02:19:40.063266+05:30"
 ---
 
 ### Grievances Redressal Comittee (GRC)

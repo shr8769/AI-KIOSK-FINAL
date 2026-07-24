@@ -1,10 +1,13 @@
 ---
-title: PES University Page
-url: https://pes.edu/undergraduate/
+title: "Undergraduate Programs"
+url: https://pes.edu/undergraduate
 category: programs
-scrape_date: '2026-07-16'
-source: PES University Official Portal
+breadcrumb: ""
+last_crawled: "2026-07-24T02:23:31.301641+05:30"
 ---
+
+Programs
+All ProgramsInstitutes/ DepartmentsUndergraduatePostgraduateResearchExecutive EducationWIL ProgramFacultyLearning ToolsAcademic Calendar
 
 ### Undergraduate Programs
 
@@ -12,80 +15,109 @@ Undergraduate programs at PES provide opportunities to discover, learn and grow.
 
 ### Institute of Engineering
 
-- [Bachelor of Technology (B.Tech)](https://pes.edu/btech/)
-- [Bachelor of Technology (B.Tech) – Diploma Lateral Entry](https://pes.edu/btech/)
-- [Bachelor of Computer Application (BCA)](https://pes.edu/bca/)
+- Bachelor of Technology (B.Tech)
+- Bachelor of Technology (B.Tech) – Diploma Lateral Entry
+- Bachelor of Computer Application (BCA)
 
 ### Institute of Medicine
 
-- [Bachelor of Medicine, Bachelor of Surgery (MBBS)](https://pes.edu/mbbs/)
+- Bachelor of Medicine, Bachelor of Surgery (MBBS)
 
 ### Institute of Architecture
 
-- [Bachelor of Architecture (B.Arch)](https://pes.edu/barch/)
+- Bachelor of Architecture (B.Arch)
 
 ### Institute of Design
 
-- [Bachelor of Design (B.Des)](https://pes.edu/bdes/)
+- Bachelor of Design (B.Des)
 
 ### Institute of Management and Commerce
 
-- [Bachelor of Business Administration (BBA) – General / Honors](https://pes.edu/bba/)
-- [Bachelor of Business Administration (Hons) in Business Analytics – BBA (Hons) in Business Analytics](https://pes.edu/bbaanalytics/)
-- [Bachelor of Business Administration in Hospitality & Event Management – BBA-HEM](https://pes.edu/bbahem/)
-- [Bachelor of Business Administration in Sports Management – BBA in Sports Management](https://pes.edu/bbasports/)
-- [Bachelor of Commerce (Hons) with ACCA – BCom (Hons) With ACCA](https://pes.edu/bcomacca/)
-- [Bachelor of Commerce (Hons) with CMA – BCom (Hons) with CMA](https://pes.edu/bcomcma/)
-- [Bachelor of Commerce (Hons) with CFA – BCom (Hons) with CFA](https://pes.edu/bcom-hons-cfa/)
-- [Bachelor of Commerce (General / Hons.) – BCom (General / Hons.)](https://pes.edu/bcom/)
-- [Bachelor of Commerce (Hons.) in Finance and Accounting (CA Embedded) – BCom (Hons.) with CA](https://pes.edu/bcomca/)
+- Bachelor of Business Administration (BBA) – General / Honors
+- Bachelor of Business Administration (Hons) in Business Analytics – BBA (Hons) in Business Analytics
+- Bachelor of Business Administration in Hospitality & Event Management – BBA-HEM
+- Bachelor of Business Administration in Sports Management – BBA in Sports Management
+- Bachelor of Commerce (Hons) with ACCA – BCom (Hons) With ACCA
+- Bachelor of Commerce (Hons) with CMA – BCom (Hons) with CMA
+- Bachelor of Commerce (Hons) with CFA – BCom (Hons) with CFA
+- Bachelor of Commerce (General / Hons.) – BCom (General / Hons.)
+- Bachelor of Commerce (Hons.) in Finance and Accounting (CA Embedded) – BCom (Hons.) with CA
 
 ### Institute of Economics
 
-- [Bachelor of Science (B.Sc) in Economics – Honors](https://pes.edu/bsceconomics/)
+- Bachelor of Science (B.Sc) in Economics – Honors
 
 ### Institute of Psychology
 
-- [Bachelor of Science (B.Sc) in Psychology – General / Honors](https://pes.edu/bscpsychology/)
+- Bachelor of Science (B.Sc) in Psychology – General / Honors
 
 ### Institute of Arts
 
-- [Bachelor of Arts (B.A) in Performing Arts – General / Honors](https://pes.edu/bapa/)
+- Bachelor of Arts (B.A) in Performing Arts – General / Honors
 
 ### Institute of Journalism and Mass Communication
 
-- [Bachelor of Science (B.Sc.) in Journalism & Mass Communication – Honors](https://pes.edu/bscjmc/)
+- Bachelor of Science (B.Sc.) in Journalism & Mass Communication – Honors
 
 ### Institute of Nursing
 
-- [Bachelor of Science (B.Sc.) in Nursing](https://pes.edu/nursing/)
+- Bachelor of Science (B.Sc.) in Nursing
 
 ### Institute of Physiotherapy
 
-- [Bachelor of Physiotherapy](https://pes.edu/bpt/)
+- Bachelor of Physiotherapy
 
 ### Institute of Allied Health Sciences
 
-- [B.Sc. (Hons) Medical Science](https://pes.edu/bscmedical/)
-- [B.Sc. (Hons) Cardiac Care Technology](https://pes.edu/bsccct/)
-- [B.Sc. (Hons) Dialysis Therapy Technology](https://pes.edu/bscdtt/)
-- [B.Sc. (Hons) Anaesthesia and Operation Theatre Technology](https://pes.edu/bscaot/)
-- [B.Sc. (Hons) Emergency Medical Technology](https://pes.edu/bscemt/)
-- [B.Sc. (Hons) Medical Laboratory Technology](https://pes.edu/bscmlt/)
-- [B.Sc. (Hons) Medical Radiology and Imaging Technology](https://pes.edu/bscmrit/)
+- B.Sc. (Hons) Medical Science
+- B.Sc. (Hons) Cardiac Care Technology
+- B.Sc. (Hons) Dialysis Therapy Technology
+- B.Sc. (Hons) Anaesthesia and Operation Theatre Technology
+- B.Sc. (Hons) Emergency Medical Technology
+- B.Sc. (Hons) Medical Laboratory Technology
+- B.Sc. (Hons) Medical Radiology and Imaging Technology
 
 ### Institute of Pharmaceutical Sciences
 
-- [Bachelor of Pharmacy (B.Pharm)](https://pes.edu/bpharm/)
-- [Doctor of Pharmacy (Pharm.D)](https://pes.edu/pharmd/)
+- Bachelor of Pharmacy (B.Pharm)
+- Doctor of Pharmacy (Pharm.D)
 
 ### Institute of Law
 
-- [BBA-LLB (Hons) and BA-LLB (Hons)](https://pes.edu/ugllb/)
-- [LLB (Hons)](https://pes.edu/pgllb/)
+- BBA-LLB (Hons) and BA-LLB (Hons)
+- LLB (Hons)
+
+- All Programs
+- Institutes/ Departments
+- Undergraduate
+- Postgraduate
+- Research
+- Executive Education
+- WIL Program
+- Faculty
+- Learning Tools
+- Academic Calendar
 
 ### How to apply
 
 See the eligibility criteria and important information for our programs
 
 [Learn more](https://pes.edu/admissions/)
+
+### Study at PES
+
+[Register for Admissions Now](https://admissions.pes.edu/)
+
+### You may also be interested in
+
+### Giving to PES
+
+The generous support from patrons like you has been instrumental in the remarkable growth of our university. Your continued contribution will play a vital role in transforming PES into a world-class university.
+
+### Staying in Touch
+
+Join Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.
+
+### Discovering our Newsletters
+
+The Student Newsletter is your guide to what’s happening on campus and in the student community. Find out about PES events, leadership, career and the amazing achievements of your fellow PESU students!

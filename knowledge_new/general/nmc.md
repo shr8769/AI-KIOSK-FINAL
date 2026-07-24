@@ -1,9 +1,0 @@
----
-title: "NMC | PESIMSR"
-url: https://pesimsr.pes.edu/nmc
-category: general
-breadcrumb: ""
-last_crawled: "2026-07-16T11:01:37.018572+05:30"
----
-
-Back to pes.eduWork With UsMARBGovt. ApprovalContactApply NowNMCNMCNational Medical Commission compliance information, regulatory documents, and institutional details for PESIMSR, Kuppam.NMCUniversityDr. YSR University of Health Sciences, VijayawadaCollegeDean & PrincipalMedical SuperintendentCommitteesCollege Council CommitteeAnti Ragging CommitteeGrievance Redressal CommitteeCurriculum CommitteeDisciplinary CommitteeLibrary CommitteeMEU CommitteeSkill Lab CommitteeMentor Mentee CommitteeInstitutional Human Ethics CommitteeInstitutional Animal Ethics CommitteeHospital Infection Control CommitteePharmacovigilance CommitteeCASH CommitteeResearch CommitteeHSCHostel CommitteeHIECGRCGoverning CouncilIPR CommitteeMateriovigilance Expert Committee (MEC)Pharmacovigilance Causality Assessment Committee (PvCAC)HospitalHospital RegistrationNumber of BedsNumber of Beds in EmergencyInpatients Registered and AdmittedOutpatients RegisteredNumber of Deaths Reported to Municipality / Village RegisterNumber of Births ReportedWebsite / Email ID of Corporation – Birth RecordsAddress and Pin Code – Death RecordsAddress and Pin Code – Birth RecordsWebsite / Email ID of Corporation – Death RecordsGovernment Approvals & InfrastructureGovernment ApprovalsHostelsTeaching StaffAnatomyPhysiologyBiochemistryPharmacologyPathologyMicrobiologyForensic MedicineCommunity MedicineGeneral MedicineDVLPsychiatryPediatricsGeneral SurgeryOrthopaedicsOphthalmologyENTOBGAnaesthesiologyDentistryRadio DiagnosisEmergency MedicineNon Teaching Staff

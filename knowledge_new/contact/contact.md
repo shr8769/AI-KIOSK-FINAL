@@ -1,9 +1,9 @@
 ---
 title: "Contact"
-url: https://www.pes.edu/contact
+url: https://pes.edu/contact
 category: contact
 breadcrumb: ""
-last_crawled: "2026-07-16T12:18:04.759688+05:30"
+last_crawled: "2026-07-24T02:25:59.427488+05:30"
 ---
 
 ### Contact Us
@@ -156,6 +156,6 @@ The Student Newsletter is your guide to what’s happening on campus and in the 
 
 ## Contact Information
 
-**Emails:** contact@amaatra.pes.edu, principal@pesimsr.pes.edu, int.office@pes.edu, admissions@pespublicschool.com, library@pes.edu, pesuplacements@pes.edu, admissions@pes.edu
+**Emails:** principal@pesimsr.pes.edu, contact@amaatra.pes.edu, pesuplacements@pes.edu, admissions@pes.edu, admissions@pespublicschool.com, library@pes.edu, int.office@pes.edu
 
-**Phone:** 0801072872, +918066186610, 0801029729, +918026722108, +918026721983, 9901812003, 7729997241, 0802672949, +918022429391
+**Phone:** +918066186610, 0801029729, +918022429391, +918026721983, +918026722108, 9901812003, 0801072872, 7729997241, 0802672949

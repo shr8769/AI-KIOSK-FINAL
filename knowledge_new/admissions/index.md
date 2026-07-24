@@ -3,11 +3,11 @@ title: "PES University - Admissions"
 url: https://admissions.pes.edu/
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-07-16T10:53:34.159543+05:30"
+last_crawled: "2026-07-24T02:57:50.847442+05:30"
 ---
 
 Admissions
-										2026Now OpenChoose your program to registerPESU will use only JEE Main and KCET scores for B.Tech AdmissionsEngineeringB.Tech
+										2026Now OpChoose your program to registerPESU will use only JEE Main and KCET scores for B.Tech AdmissionsEngineeringB.Tech
 														(Diploma Lateral Entry)M.TechMedicineMBBSManagement and CommerceBBA (Gen / Hons)BBA
 														(Hons) Business AnalyticsBBA
 														(Sports Management)BBA
@@ -18,7 +18,7 @@ Admissions
 														(Hons) PsychologyM.Sc.
 														PsychologyLawLLB
 														(Hons)LL.M.Computer
-											ApplicationsBCAMCAArtsB.A
+											ApplicationsBCAArtsB.A
 														in Performing ArtsJournalism
 											and Mass CommunicationB.Sc.
 														(Hons) Journalism and Mass CommunicationEconomicsB.Sc.

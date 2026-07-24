@@ -3,7 +3,7 @@ title: "Academy"
 url: https://admissions.pes.edu/Academy
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-07-16T10:48:34.015498+05:30"
+last_crawled: "2026-07-24T02:20:46.240924+05:30"
 ---
 
 Not Registered? Register hereWelcome BackLogin to Your AccountLoginForgot

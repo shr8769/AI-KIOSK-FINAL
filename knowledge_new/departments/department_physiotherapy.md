@@ -1,9 +1,0 @@
----
-title: "Physiotherapy"
-url: https://news.pes.edu/department/physiotherapy
-category: departments
-breadcrumb: ""
-last_crawled: "2026-07-16T10:57:31.908973+05:30"
----
-
-Back to PES.eduPES.eduEventsClubsContactAdmissionsBrowse by CampusSelect a campus to explore its newsChoose a CampusPESU RR CampusPESU RR CampusPESU EC CampusPESU EC CampusPESU HN CampusPESU HN CampusPESIMSRPESIMSRAmaatra AcademyThe Amaatra AcademyPES Public SchoolPES Public SchoolPESUIMSRPESUIMSRBrowse by DepartmentExplore news from every academic departmentChoose a DepartmentScience & HumanitiesBrowse news →Computer ScienceBrowse news →BiotechnologyBrowse news →MechanicalBrowse news →CivilBrowse news →Electronics & CommunicationBrowse news →Electrical & ElectronicsBrowse news →Computer ApplicationBrowse news →Management StudiesBrowse news →ArchitectureBrowse news →DesignBrowse news →LawBrowse news →NursingBrowse news →PhysiotherapyBrowse news →Allied Health SciencesBrowse news →PsychologyBrowse news →Computer Science (AI & ML)Browse news →Physical EducationBrowse news →BiochemistryBrowse news →Browse by TagsFind stories by topic and interestChoose a TagAlumniClubs & ActivitiesEventIn The MediaQuotesResearchSportsWorkshopStaff AchievementsStudent AchievementsDanceMotivationInnovativeWebinarTechnicalAdmissionMusicCompetitionHackathonFoodConferenceIndustry VisitStartupTalksCodeingBooksReadingCulturalSocialActivitiesPES University NewsESCQuick FiltersHot NewsFeaturedPress NotePESU RR CampusPESU EC CampusPESU HN CampusPESIMSRAmaatra AcademyPES Public SchoolPESUIMSRPopular Tags#Alumni#Clubs & Activities#Event#In The Media#Quotes#Research#Sports#Workshop#Staff Achievements#Student AchievementsPressEnterto search  ·↑↓navigate  ·ESCcloseBrowsing CategoryPhysiotherapy0 articles·PES University NewsPhysiotherapyAll NewsNo articles yetNo content found for this category. Please check back later.Back to HomeRead full story
