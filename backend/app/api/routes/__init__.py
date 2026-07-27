@@ -1,7 +1,20 @@
 """
 API Route Handlers
 """
-from . import asr, detect, memory, profile, rag, route, session, tts
+from . import (
+    admin_knowledge,
+    admin_sync,
+    announcements,
+    asr,
+    detect,
+    knowledge_sync,
+    memory,
+    profile,
+    rag,
+    route,
+    session,
+    tts,
+)
 
 __all__ = [
     "detect",
@@ -12,5 +25,9 @@ __all__ = [
     "session",
     "profile",
     "memory",
+    "announcements",
+    "knowledge_sync",
+    "admin_knowledge",
+    "admin_sync",
 ]
 

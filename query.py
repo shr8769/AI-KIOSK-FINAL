@@ -14,7 +14,6 @@ Features:
 import os
 import argparse
 import logging
-from typing import Any, List, Dict
 
 try:
     import chromadb

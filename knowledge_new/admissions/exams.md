@@ -1,10 +1,13 @@
 ---
-title: PES University Page
-url: https://pes.edu/exams/
+title: "Qualifying Exams​"
+url: https://pes.edu/exams
 category: admissions
-scrape_date: '2026-07-16'
-source: PES University Official Portal
+breadcrumb: ""
+last_crawled: "2026-07-24T02:27:35.957010+05:30"
 ---
+
+Admissions
+PES Entrance ProcessEligibility & OverviewQualifying ExamsProgram IntakeFee DetailsImportant DatesDocuments RequiredScholarshipsLoyalty ProgramTransportationHostelCampus TourFAQsDownload Brochure
 
 ### Qualifying Exams​
 
@@ -12,7 +15,7 @@ A list of qualifying exams for admissions to PES is provided below
 
 ### B.Tech
 
-JEE Main, Karnataka CET. However, registration from  [https://admissions.pes.edu](https://admissions.pes.edu)  is mandatory.
+JEE Main, Karnataka CET. However, registration fromhttps://admissions.pes.eduis mandatory.
 
 ### MBBS
 
@@ -20,29 +23,31 @@ Admissions are exclusively through the KEA (Karnataka Examination Authority) cou
 
 ### Law Programs
 
-PES Entrance Process – Register from  [https://admissions.pes.edu](https://admissions.pes.edu) . BBA-LLB (Hons), BA-LLB (Hons), LLB (Hons), LL.M. programs. For BBA-LLB (Hons) and BA-LLB (Hons), CLAT scores are also accepted. However, registration from  [https://admissions.pes.edu](https://admissions.pes.edu)  is mandatory even if the candidate seeks admission through CLAT score.
+PES Entrance Process – Register fromhttps://admissions.pes.edu. BBA-LLB (Hons), BA-LLB (Hons), LLB (Hons), LL.M. programs. For BBA-LLB (Hons) and BA-LLB (Hons), CLAT scores are also accepted. However, registration fromhttps://admissions.pes.eduis mandatory even if the candidate seeks admission through CLAT score.
 
 ### B.Arch
 
+Admissions is primarily based on the NATA score of the candidate. However, registration fromhttps://admissions.pes.eduis mandatory even if the admission is through NATA scores.
+
 ### MBA
 
-PES Entrance Process – Register from  [https://admissions.pes.edu](https://admissions.pes.edu) . MAT, CAT, CMAT, NMAT, GMAT, ATMA scores are also accepted. However, registration from  [https://admissions.pes.edu](https://admissions.pes.edu)  is mandatory even if the candidate seeks admission through MAT, CAT, CMAT, NMAT, GMAT, ATMA scores.
+PES Entrance Process – Register fromhttps://admissions.pes.edu. MAT, CAT, CMAT, NMAT, GMAT, ATMA scores are also accepted. However, registration fromhttps://admissions.pes.eduis mandatory even if the candidate seeks admission through MAT, CAT, CMAT, NMAT, GMAT, ATMA scores.
 
 ### M.Tech
 
-PES Entrance Process – Register from  [https://admissions.pes.edu](https://admissions.pes.edu) . GATE scores are also accepted. However, registration from  [https://admissions.pes.edu](https://admissions.pes.edu)  is mandatory even if the candidate seeks admission through GATE.
+PES Entrance Process – Register fromhttps://admissions.pes.edu. GATE scores are also accepted. However, registration fromhttps://admissions.pes.eduis mandatory even if the candidate seeks admission through GATE.
 
 ### B.Des
 
-PES Entrance Process – Register from  [https://admissions.pes.edu](https://admissions.pes.edu) . UCEED scores are also accepted. However, registration from  [https://admissions.pes.edu](https://admissions.pes.edu)  is mandatory even if the candidate seeks admission through UCEED.
+PES Entrance Process – Register fromhttps://admissions.pes.edu. UCEED scores are also accepted. However, registration fromhttps://admissions.pes.eduis mandatory even if the candidate seeks admission through UCEED.
 
 ### M.Des
 
-PES Entrance Process – Register from  [https://admissions.pes.edu](https://admissions.pes.edu) . CEED scores are also accepted. However, registration from  [https://admissions.pes.edu](https://admissions.pes.edu)  is mandatory even if the candidate seeks admission through CEED.
+PES Entrance Process – Register fromhttps://admissions.pes.edu. CEED scores are also accepted. However, registration fromhttps://admissions.pes.eduis mandatory even if the candidate seeks admission through CEED.
 
 ### For all other courses
 
-For all the other courses, PES Entrance Process is the only entrance through which a candidate can secure admission to PES University. Register from  [https://admissions.pes.edu](https://admissions.pes.edu)
+For all the other courses, PES Entrance Process is the only entrance through which a candidate can secure admission to PES University. Register fromhttps://admissions.pes.edu
 
 ### Note
 
@@ -50,4 +55,40 @@ Karnataka PGCET and CET are applicable for the courses as prescribed by Governme
 
 PES University reserves the full right to consideration of an entrance exam for admission to any of its courses.
 
-For more information about PES Entrance Process and to register, please visit  [https://admissions.pes.edu](https://admissions.pes.edu)
+For more information about PES Entrance Process and to register, please visithttps://admissions.pes.edu
+
+- PES Entrance Process
+- Eligibility & Overview
+- Qualifying Exams
+- Program Intake
+- Fee Details
+- Important Dates
+- Documents Required
+- Scholarships
+- Loyalty Program
+- Transportation
+- Hostel
+- Campus Tour
+- FAQs
+
+Orange Separator
+Brochure Link
+[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+
+### Study at PES
+
+[Register for Admissions Now](https://admissions.pes.edu/)
+
+### You may also be interested in
+
+### Giving to PES
+
+The generous support from patrons like you has been instrumental in the remarkable growth of our university. Your continued contribution will play a vital role in transforming PES into a world-class university.
+
+### Staying in Touch
+
+Join Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.
+
+### Discovering our Newsletters
+
+The Student Newsletter is your guide to what’s happening on campus and in the student community. Find out about PES events, leadership, career and the amazing achievements of your fellow PESU students!

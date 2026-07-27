@@ -15,8 +15,8 @@ if hasattr(sys.stderr, "reconfigure"):
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(project_root)
 
-from agents.coordinator.coordinator_agent import CoordinatorAgent
-from evaluation.metrics.custom_metrics import (
+from agents.coordinator.coordinator_agent import CoordinatorAgent  # noqa: E402
+from evaluation.metrics.custom_metrics import (  # noqa: E402
     calculate_faithfulness,
     calculate_context_precision,
     calculate_context_recall,

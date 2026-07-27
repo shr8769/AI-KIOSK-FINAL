@@ -81,8 +81,8 @@ def capture_embeddings(n_frames: int) -> list:
         logger.error(f"Cannot open camera {camera_index}. Check CAMERA_INDEX env var.")
         sys.exit(1)
 
-    print(f"\n>>> Camera opened. Look directly at the camera.")
-    print(f">>> Waiting for InsightFace model to load (may take ~10 seconds)...")
+    print("\n>>> Camera opened. Look directly at the camera.")
+    print(">>> Waiting for InsightFace model to load (may take ~10 seconds)...")
 
     # Wait for InsightFace to finish loading
     for _ in range(60):
@@ -113,7 +113,7 @@ def capture_embeddings(n_frames: int) -> list:
             embeddings.append(emb)
             print(f"  ✓ Frame {len(embeddings)}/{n_frames} captured.")
         else:
-            print(f"  ✗ No face in frame — please look at the camera.")
+            print("  ✗ No face in frame — please look at the camera.")
 
         attempts += 1
         time.sleep(0.3)
@@ -174,14 +174,14 @@ def main():
     )
 
     if success:
-        print(f"\n✅ Enrollment complete!")
+        print("\n✅ Enrollment complete!")
         print(f"   User ID  : {user_id}")
         print(f"   Name     : {name}")
         print(f"   Role     : {role}")
         print(f"   Interests: {interests}")
-        print(f"\n   This user will now be recognised at the kiosk.")
+        print("\n   This user will now be recognised at the kiosk.")
     else:
-        print(f"\n❌ Enrollment FAILED. Check logs above.")
+        print("\n❌ Enrollment FAILED. Check logs above.")
         sys.exit(1)
 
 

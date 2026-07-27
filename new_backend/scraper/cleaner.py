@@ -1,6 +1,6 @@
 import re
 import logging
-from typing import Dict, Any, Tuple, Set, List
+from typing import Dict, Any, Tuple, Set
 from bs4 import BeautifulSoup, Tag, NavigableString, Comment
 from urllib.parse import urljoin
 from new_backend.scraper.config import CONTENT_SELECTORS

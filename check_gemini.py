@@ -44,10 +44,10 @@ print("=" * 60)
 pinned_full_name = f"models/{PINNED_MODEL}"
 if pinned_full_name not in available and PINNED_MODEL not in [a.split("/")[-1] for a in available]:
     print(f"  ⚠️  '{PINNED_MODEL}' is NOT in your available models list.")
-    print(f"      This model is likely deprecated/retired for your key.")
-    print(f"      Any call to it is probably throwing, and if your code catches")
-    print(f"      that exception broadly, it's silently falling back to Qwen")
-    print(f"      every single time -- which would explain latency + inconsistent quality.")
+    print("      This model is likely deprecated/retired for your key.")
+    print("      Any call to it is probably throwing, and if your code catches")
+    print("      that exception broadly, it's silently falling back to Qwen")
+    print("      every single time -- which would explain latency + inconsistent quality.")
 else:
     try:
         model = genai.GenerativeModel(PINNED_MODEL)

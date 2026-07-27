@@ -1,9 +1,9 @@
 ---
-title: PES University Page
-url: https://pes.edu/placements/
+title: "Placements"
+url: https://pes.edu/placements
 category: placements
-scrape_date: '2026-07-16'
-source: PES University Official Portal
+breadcrumb: ""
+last_crawled: "2026-07-24T02:56:03.486431+05:30"
 ---
 
 ### Placements
@@ -12,12 +12,48 @@ Our strong placement outcomes are a result of our focus on comprehensive career 
 
 ### Are you ready to get started on your university journey?
 
+[Apply](https://admissions.pes.edu/)
+
+### Are you ready to get started on your university journey?
+
+[Apply](https://admissions.pes.edu)
+
 ### Placements
+
+Our strong placement outcomes are a result of our focus on comprehensive career development for all students.
 
 ### Placement Statistics
 
-Our graduates are recruited for diverse roles in Technology, Administration, Business Development, Employee Engagement, People’s Operations. Marketing, and Finance, among others. The graduating batch of 2025 was placed exceptionally well across each major sector and industry. A detailed report of these placement seasons can be viewed in the Placement Brochure.
+Our graduates are recruited for diverse roles inTechnology,Administration, Business Development, Employee Engagement, People’s Operations. Marketing, and Finance, among others. The graduating batch of 2025 was placed exceptionally well across each major sector and industry. A detailed report of these placement seasons can be viewed in the Placement Brochure.
 
-350+Participating Companies₹68 lpaHighest Salary Offered1500+Placements Offers1250+Internships Offers
+347
++
+Participating Companies
+₹
+68
+lpa
+Highest Salary Offered
+1485
++
+Placements Offers
+1237
++
+Internships Offers
 
 ### PES alumni can be found in these leading companies
+
+### PES alumni can be found in these leading companies
+
+### You may also be interested in
+
+### Giving to PES
+
+The generous support from patrons like you has been instrumental in the remarkable growth of our university. Your continued contribution will play a vital role in transforming PES into a world-class university.
+
+### Staying in Touch
+
+Join Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.
+
+### Discovering our Newsletters
+
+The Student Newsletter is your guide to what’s happening on campus and in the student community. Find out about PES events, leadership, career and the amazing achievements of your fellow PESU students!

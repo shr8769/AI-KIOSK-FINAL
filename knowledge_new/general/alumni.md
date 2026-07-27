@@ -1,134 +1,57 @@
 ---
-title: "CIE - Center for Innovation and Entrepreneurship"
-url: https://cie.pes.edu/alumni
+title: "Alumni"
+url: https://pes.edu/alumni
 category: general
 breadcrumb: ""
-last_crawled: "2026-07-16T11:08:47.954158+05:30"
+last_crawled: "2026-07-24T02:20:15.336261+05:30"
 ---
 
-Alumni Network
+### Alumni
 
-# Stay Connected, Give BackGrow Together
+Our vibrant alumni network spans various continents and industries
 
-Join our thriving alumni community and continue your journey of innovation while helping shape the future of entrepreneurship.
+### Remain connected through our active alumni association
 
-[Alumni Directory](https://cie.pes.edu/alumni/directory)
-[Give Back](https://cie.pes.edu/alumni/give-back)
+[Sign up now](https://pes.almaconnect.com/)
 
-## Our Growing Alumni Network
+### Remain connected through our active alumni association
 
-Join a vibrant community of entrepreneurs, innovators, and industry leaders who continue to shape the future.
+[Sign up now](https://pes.almaconnect.com/)
 
-500+
-Active Alumni
-150+
-Startups Founded
-$50M+
-Funding Raised
-200+
-Industry Leaders
+### Alumni
 
-## Alumni Dashboard
+Our vibrant alumni network spans various continents and industries
 
-Alumni Directory
-Connect with fellow alumni
+### Hear From Our Alums
 
-Search and connect with alumni from your batch or field of interest. Build meaningful professional relationships.
+PES alums have ventured into numerous fields – from pioneering research and technology to leading global corporations.
 
-Search by Batch
-Filter by Industry
-Location Based
-[Browse Directory](https://cie.pes.edu/alumni/directory)
-Give Back
-Support the next generation
+### Always part of the PESU family
 
-Mentor students, invest in startups, or contribute to CIE's mission through various giving opportunities.
+Our alumni look back on their time at PES University! The people they met, the lessons they learned, and the experiences that shaped their journey, hear what made their PESU experience unforgettable.
 
-Mentorship Programs
-Alumni Angel Fund
-Guest Lectures
-[Explore Opportunities](https://cie.pes.edu/alumni/give-back)
-Stay Connected
-Join the community
+### Alumni Chapters
 
-Join the PES University alumni association and stay updated with the latest news and events.
+We will be opening chapters in different geographies to provide an accessible, fun, and consistent point of contact for alumni. These will bring alumni together to provide quality local programs and events which appeals to a wide variety of alumni. These chapters will also act as a source of information about the University, they provide a local contact for alumni, parents, and current and future students.
 
-Alumni Newsletter
-Networking Events
-Social Platforms
-[Join Network](https://cie.pes.edu/alumni/stay-connected)
-CIE Newsletter
-Innovation updates
+### Pesuvians for Life
 
-Stay updated with innovation stories, startup success journeys, and community updates from CIE.
+See glimpses of our alumni meet at our Golden Jubilee celebrations, where past students got together to celebrate, reminisce and reconnect.
 
-10+ Issues Published
-Success Stories
-Community Updates
-[Read Newsletter](https://cie.pes.edu/newsletter)
+### Remain connected through our active alumni association
 
-## Alumni Spotlights
+[Sign up now](https://pes.almaconnect.com/)
 
-AM
+### You may also be interested in
 
-### Aditya Mehta
+### Giving to PES
 
-Founder & CEO, Epicure Robotics
+The generous support from patrons like you has been instrumental in the remarkable growth of our university. Your continued contribution will play a vital role in transforming PES into a world-class university.
 
-Batch of 2019
+### Staying in Touch
 
-Leading innovation in robotics and automation, building solutions that transform industries.
+Join Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.
 
-RR
+### Discovering our Newsletters
 
-### Rohith Ramesh
-
-Tech Entrepreneur
-
-Batch of 2018
-
-Successful entrepreneur and mentor, actively involved in CIE's alumni mentorship programs.
-
-RR
-
-### Radha Rajappa
-
-Product Manager, Tech Giant
-
-Batch of 2017
-
-Leading product innovation at a major tech company and mentoring students in product management.
-
-## Latest Alumni News
-
-[View All News](https://cie.pes.edu/alumni/news)
-December 15, 2024
-
-### Alumni Startup Raises $2M Series A
-
-Congratulations to our alumnus whose AI-powered healthcare startup successfully closed their Series A funding round.
-
-Funding
-December 10, 2024
-
-### Alumni Mentorship Program Launch
-
-New structured mentorship program connecting experienced alumni with current students and recent graduates.
-
-Mentorship
-December 5, 2024
-
-### Global Alumni Meetup Success
-
-Over 200 alumni from 15 countries participated in our virtual global networking event.
-
-Networking
-
-## Ready to Reconnect with CIE?
-
-Join our alumni network and continue your journey of innovation while helping shape the future of entrepreneurship.
-
-[Browse Alumni Directory](https://cie.pes.edu/alumni/directory)
-[Start Giving Back](https://cie.pes.edu/alumni/give-back)
-$
-/$
+The Student Newsletter is your guide to what’s happening on campus and in the student community. Find out about PES events, leadership, career and the amazing achievements of your fellow PESU students!

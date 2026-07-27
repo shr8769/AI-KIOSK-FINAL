@@ -1,0 +1,25 @@
+{
+  "nodes": [
+    { "id": "main_gate", "name": "Main Gate", "x": 0, "y": 0, "floor": 0 },
+    { "id": "admin_block", "name": "Admissions & Admin Block", "x": 50, "y": 50, "floor": 0 },
+    { "id": "academic_block", "name": "Academic Block", "x": 100, "y": 50, "floor": 0 },
+    { "id": "placement_cell", "name": "Placement Cell", "x": 50, "y": 60, "floor": 1 },
+    { "id": "mrd_auditorium", "name": "MRD Auditorium", "x": 120, "y": 100, "floor": 0 },
+    { "id": "library", "name": "Central Library", "x": 150, "y": 80, "floor": 0 },
+    { "id": "food_court", "name": "Food Court / Canteen", "x": 200, "y": 150, "floor": 0 },
+    { "id": "hostel_office", "name": "Hostel Office", "x": 250, "y": 200, "floor": 0 },
+    { "id": "research_block", "name": "Research Block", "x": 180, "y": 120, "floor": 0 },
+    { "id": "medical_center", "name": "Medical Center", "x": 80, "y": 180, "floor": 0 }
+  ],
+  "edges": [
+    { "from": "main_gate", "to": "admin_block", "cost": 50 },
+    { "from": "admin_block", "to": "academic_block", "cost": 50 },
+    { "from": "admin_block", "to": "placement_cell", "cost": 10 },
+    { "from": "academic_block", "to": "mrd_auditorium", "cost": 60 },
+    { "from": "academic_block", "to": "library", "cost": 40 },
+    { "from": "library", "to": "research_block", "cost": 50 },
+    { "from": "mrd_auditorium", "to": "food_court", "cost": 80 },
+    { "from": "food_court", "to": "hostel_office", "cost": 70 },
+    { "from": "admin_block", "to": "medical_center", "cost": 130 }
+  ]
+}

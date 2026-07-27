@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Dict
 
-from scripts.data_ingestion.crawler_config import CRAWL_REPORT_FILE, OUTPUT_DIR
+from scripts.data_ingestion.crawler_config import CRAWL_REPORT_FILE
 
 logger = logging.getLogger("crawl_report")
 

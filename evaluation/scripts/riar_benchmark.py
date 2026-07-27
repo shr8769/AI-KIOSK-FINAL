@@ -17,7 +17,6 @@ from typing import List, Dict
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from riar.pipeline import RIARPipeline
-from backend.app.models.shared_models import Turn
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

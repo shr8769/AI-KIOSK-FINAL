@@ -7,6 +7,11 @@ import time
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Tuple
 
+try:
+    import chromadb
+    from chromadb.utils import embedding_functions
+except ImportError:
+    pass
 logger = logging.getLogger(__name__)
 
 SYNONYMS = {
@@ -43,16 +48,11 @@ def normalize_word(w: str) -> str:
 
 
 
-try:
-    import chromadb
-    from chromadb.utils import embedding_functions
-except ImportError:
-    pass
 
-from agents.domain.gemini_rag import GeminiSynthesizer
-from config import llm_config
-from agents.llm.qwen_client import QwenClient
-from config.contact_config import get_specific_contact, format_fallback_message
+from agents.domain.gemini_rag import GeminiSynthesizer  # noqa: E402
+from config import llm_config  # noqa: E402
+from agents.llm.qwen_client import QwenClient  # noqa: E402
+from config.contact_config import format_fallback_message  # noqa: E402
 
 def log_evaluation_trace(
     query: str,
@@ -190,7 +190,7 @@ class BaseAgent(ABC):
             self.client = client
         else:
             if db_path is None:
-                db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge_new", "vectorstore"))
+                db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge", "vectorstore"))
             try:
                 self.client = chromadb.PersistentClient(path=db_path)
             except Exception as e:
@@ -450,11 +450,11 @@ class BaseAgent(ABC):
         is_sufficient = (best_sim_score >= threshold) or (best_doc.get("keyword_score", 0.0) >= 0.3) or (best_doc.get("combined_score", 0.0) >= 1.2)
         
         if best_sim_score >= 0.65:
-            confidence_level = "HIGH"
+            pass
         elif is_sufficient:
-            confidence_level = "MEDIUM"
+            pass
         else:
-            confidence_level = "LOW"
+            pass
             
         if not is_sufficient:
             if debug:
@@ -628,10 +628,10 @@ class BaseAgent(ABC):
         print("[DEBUG] RAG PIPELINE DEBUG RECORD")
         print("="*40)
         print(f"Intent:           {self.get_domain().capitalize()}")
-        if fallback_used_flag := (rag_answer == fallback_msg):
-            print(f"Retrieved:        None (Fallback Triggered)")
-            print(f"Similarity:       N/A")
-            print(f"Chunks Used:      0")
+        if rag_answer == fallback_msg:
+            print("Retrieved:        None (Fallback Triggered)")
+            print("Similarity:       N/A")
+            print("Chunks Used:      0")
         else:
             print(f"Retrieved:        {best_doc.get('id', 'Unknown')}")
             print(f"Similarity:       {best_sim_score:.4f}")

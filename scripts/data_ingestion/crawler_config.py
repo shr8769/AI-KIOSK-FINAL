@@ -5,7 +5,6 @@ Centralized configuration for the PES University recursive website crawler.
 All tuneable constants live here so the crawler modules stay clean.
 """
 
-import os
 from pathlib import Path
 
 # ──────────────────────────────────────────────

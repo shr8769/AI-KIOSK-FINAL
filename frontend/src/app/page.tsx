@@ -5,6 +5,7 @@ import { VidyaSahayakOrb } from '@/components/orb';
 import { OrbController } from '@/components/orb/OrbController';
 import type { OrbState } from '@/components/orb/orbStates';
 import { NavigationCard } from '@/components/ui/NavigationCard';
+import { AnnouncementPanel } from '@/components/ui/AnnouncementPanel';
 
 const getWsBaseUrl = () => {
   if (typeof window !== 'undefined') {
@@ -1502,6 +1503,11 @@ export default function KioskPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* ── Announcements Panel ── */}
+      <div className="w-full max-w-2xl mx-auto px-4 relative z-10 mb-4">
+        <AnnouncementPanel refreshInterval={60000} maxDisplay={5} />
       </div>
 
       {/* ── Footer ── */}

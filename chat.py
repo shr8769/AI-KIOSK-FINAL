@@ -59,7 +59,7 @@ else:
     )
 
 # Import agent pipeline after setup
-from agents.coordinator.coordinator_agent import CoordinatorAgent
+from agents.coordinator.coordinator_agent import CoordinatorAgent  # noqa: E402
 
 def main():
     parser = argparse.ArgumentParser(description="PES University Campus AI Kiosk Terminal Chat")

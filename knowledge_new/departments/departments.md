@@ -1,10 +1,13 @@
 ---
-title: PES University Page
-url: https://pes.edu/departments/
+title: "Departments"
+url: https://pes.edu/departments
 category: departments
-scrape_date: '2026-07-16'
-source: PES University Official Portal
+breadcrumb: ""
+last_crawled: "2026-07-24T02:24:07.990123+05:30"
 ---
+
+Programs
+All ProgramsInstitutes/ DepartmentsUndergraduatePostgraduateResearchExecutive EducationWIL ProgramFacultyLearning ToolsAcademic Calendar
 
 ### Departments
 
@@ -12,70 +15,99 @@ The various departments under our institutes are as listed below.
 
 ### Institute of Engineering
 
-- [Computer Science Engineering](https://cs.pes.edu)
-- [Computer Science Engineering (Artificial Intelligence and Machine Learning)](https://aiml.pes.edu)
-- [Electronics & Communication Engineering](https://ec.pes.edu)
-- [Electrical & Electronics Engineering](https://eee.pes.edu)
-- [Mechanical Engineering](https://mech.pes.edu)
-- [Biotechnology](https://bt.pes.edu)
-- [Computer Applications](https://mca.pes.edu)
+- Computer Science Engineering
+- Computer Science Engineering (Artificial Intelligence and Machine Learning)
+- Electronics & Communication Engineering
+- Electrical & Electronics Engineering
+- Mechanical Engineering
+- Biotechnology
+- Computer Applications
 
 ### Institute of Medicine
 
-- [Bachelor of Medicine, Bachelor of Surgery (MBBS)](https://pes.edu/mbbs/)
+- Bachelor of Medicine, Bachelor of Surgery (MBBS)
 
 ### Institute of Architecture
 
-- [Bachelor of Architecture (B.Arch)](https://arch.pes.edu)
+- Bachelor of Architecture (B.Arch)
 
 ### Institute of Design
 
-- [Bachelor of Design (B.Des)](https://pes.edu/bdes/)
-- [Master of Design (M.Des)](https://pes.edu/mdes/)
+- Bachelor of Design (B.Des)
+- Master of Design (M.Des)
 
 ### Institute of Management and Commerce
 
-- [Management Studies](https://mgmt.pes.edu)
-- [Commerce](https://commerce.pes.edu)
+- Management Studies
+- Commerce
 
 ### Institute of Economics
 
-- [Economics](https://economics.pes.edu)
+- Economics
 
 ### Institute of Psychology
 
-- [Psychology](http://psychology.pes.edu)
+- Psychology
 
 ### Institute of Law
 
-- [Law](https://law.pes.edu)
+- Law
 
 ### Institute of Journalism and Mass Communication
 
-- [B.Sc. (Hons) Journalism and Mass Communication](https://pes.edu/bscjmc/)
+- B.Sc. (Hons) Journalism and Mass Communication
 
 ### Institute of Arts
 
-- [B.A (Hons) Performing Arts](https://pes.edu/bapa/)
+- B.A (Hons) Performing Arts
 
 ### Institute of Allied Health Sciences
 
-- [Allied Health Sciences](https://ahs.pes.edu)
+- Allied Health Sciences
 
 ### Institute of Nursing
 
-- [Nursing](https://nursing.pes.edu)
+- Nursing
 
 ### Institute of Physiotherapy
 
-- [Physiotherapy](https://physio.pes.edu)
+- Physiotherapy
 
 ### Institute of Pharmaceutical Sciences
 
-- [Pharmaceutical Science](https://pharmacy.pes.edu)
+- Pharmaceutical Science
+
+- All Programs
+- Institutes/ Departments
+- Undergraduate
+- Postgraduate
+- Research
+- Executive Education
+- WIL Program
+- Faculty
+- Learning Tools
+- Academic Calendar
 
 ### How to apply
 
 See the eligibility criteria and important information for our programs
 
 [Learn more](https://pes.edu/admissions/)
+
+### Study at PES
+
+[Register for Admissions Now](https://admissions.pes.edu/)
+
+### You may also be interested in
+
+### Giving to PES
+
+The generous support from patrons like you has been instrumental in the remarkable growth of our university. Your continued contribution will play a vital role in transforming PES into a world-class university.
+
+### Staying in Touch
+
+Join Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.
+
+### Discovering our Newsletters
+
+The Student Newsletter is your guide to what’s happening on campus and in the student community. Find out about PES events, leadership, career and the amazing achievements of your fellow PESU students!

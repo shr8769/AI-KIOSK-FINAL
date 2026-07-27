@@ -21,7 +21,7 @@ import logging
 import time
 import argparse
 import hashlib
-from typing import Dict, List, Any, Tuple
+from typing import Dict, Any, Tuple
 
 try:
     import chromadb

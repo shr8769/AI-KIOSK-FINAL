@@ -3,7 +3,7 @@ title: "Campus Tour"
 url: https://pes.edu/tour
 category: general
 breadcrumb: ""
-last_crawled: "2026-07-16T10:48:47.569740+05:30"
+last_crawled: "2026-07-24T02:30:10.521306+05:30"
 ---
 
 Admissions

@@ -19,8 +19,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import (
+    admin_knowledge,
+    admin_sync,
+    announcements,
     asr,
     events,
+    knowledge_sync,
     memory,
     navigation,
     profile,
@@ -32,6 +36,7 @@ from app.api.routes import (
 from app.core.config import settings
 from app.core.dependencies import ConnectionManager, get_connection_manager
 from app.core.warmup import startup_state, warmup_services
+from app.websockets.admin_ws import admin_sync_ws_handler
 from app.websockets.session_ws import websocket_session_handler
 
 logging.basicConfig(
@@ -143,13 +148,23 @@ app.include_router(session.router, prefix="/api/v1", tags=["Session"])
 app.include_router(navigation.router, prefix="/api/v1", tags=["Navigation"])
 app.include_router(profile.router, prefix="/api/v1", tags=["Profile"])
 app.include_router(memory.router, prefix="/api/v1", tags=["Memory"])
+app.include_router(announcements.router, prefix="/api/v1", tags=["Announcements"])
+app.include_router(knowledge_sync.router, prefix="/api/v1", tags=["Knowledge Sync"])
+app.include_router(admin_knowledge.router, prefix="/api/v1", tags=["Admin Knowledge"])
+app.include_router(admin_sync.router, prefix="/api/v1", tags=["Admin Sync"])
 
-# WebSocket Route
+# WebSocket Routes
 @app.websocket("/ws/session/{session_id}")
 async def websocket_endpoint(
     websocket: WebSocket, session_id: str, mgr: ConnectionManager = Depends(get_connection_manager)
 ):
     await websocket_session_handler(websocket, session_id, mgr)
+
+
+@app.websocket("/ws/admin/sync")
+async def admin_sync_websocket(websocket: WebSocket):
+    """WebSocket for real-time sync progress monitoring."""
+    await admin_sync_ws_handler(websocket)
 
 
 @app.get("/health", tags=["Health"])

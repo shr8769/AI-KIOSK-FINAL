@@ -122,20 +122,7 @@ def client() -> Generator:
 
 
 @pytest.fixture(autouse=True)
-def dispose_engine():
+async def dispose_engine():
     yield
-    import asyncio
-    import threading
-
     from database.postgres.connection import engine
-
-    def run_dispose():
-        loop = asyncio.new_event_loop()
-        try:
-            loop.run_until_complete(engine.dispose())
-        finally:
-            loop.close()
-
-    t = threading.Thread(target=run_dispose)
-    t.start()
-    t.join()
+    await engine.dispose()

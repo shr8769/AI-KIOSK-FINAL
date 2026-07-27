@@ -59,7 +59,6 @@ def save_db(data: dict):
 def capture_embeddings(n_frames: int, camera_index: int) -> list:
     """Capture N face embeddings from the webcam using InsightFace."""
     import cv2
-    import numpy as np
     from detection.face_extractor import FaceExtractor
 
     extractor = FaceExtractor()
@@ -69,8 +68,8 @@ def capture_embeddings(n_frames: int, camera_index: int) -> list:
         logger.error(f"Cannot open camera {camera_index}. Check CAMERA_INDEX env var.")
         sys.exit(1)
 
-    print(f"\n>>> Camera opened. Look directly at the camera.")
-    print(f">>> Waiting for InsightFace model to load (~5-10 seconds)...")
+    print("\n>>> Camera opened. Look directly at the camera.")
+    print(">>> Waiting for InsightFace model to load (~5-10 seconds)...")
 
     for _ in range(30):
         if extractor.is_ready:
@@ -110,7 +109,7 @@ def capture_embeddings(n_frames: int, camera_index: int) -> list:
             embeddings.append(emb)
             print(f"  [OK] Frame {len(embeddings)}/{n_frames} captured.")
         else:
-            print(f"  [!!] No face detected -- move closer to the camera.")
+            print("  [!!] No face detected -- move closer to the camera.")
 
         attempts += 1
         time.sleep(0.3)
@@ -138,13 +137,12 @@ def average_embedding(embeddings: list) -> list:
 
 def verify_enrollment():
     """Quick sanity-check: show all enrolled users and their embedding stats."""
-    import numpy as np
 
     data = load_db()
     users = data.get("users", {})
 
     if not users:
-        print(f"  [!!] No users enrolled yet. Run with --name to enroll someone.")
+        print("  [!!] No users enrolled yet. Run with --name to enroll someone.")
         return
 
     print(f"\n{'='*60}")
@@ -204,7 +202,7 @@ def main():
     user_id   = args.user_id or f"usr_{name.lower().replace(' ', '_')}_{uuid.uuid4().hex[:6]}"
 
     print(f"\n{'='*55}")
-    print(f"  FR-8 Local Face Enrollment")
+    print("  FR-8 Local Face Enrollment")
     print(f"{'='*55}")
     print(f"  Name      : {name}")
     print(f"  Role      : {role}")
@@ -233,10 +231,10 @@ def main():
     }
     save_db(data)
 
-    print(f"\n[OK] Enrollment complete!")
+    print("\n[OK] Enrollment complete!")
     print(f"   {name} is now registered in mock_firestore.json")
-    print(f"   The kiosk will greet them by name when they walk up.\n")
-    print(f"   Run --verify to confirm all enrollments.")
+    print("   The kiosk will greet them by name when they walk up.\n")
+    print("   Run --verify to confirm all enrollments.")
 
 
 if __name__ == "__main__":

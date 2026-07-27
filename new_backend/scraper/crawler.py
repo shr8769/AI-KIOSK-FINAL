@@ -10,10 +10,9 @@ from selenium.webdriver.edge.options import Options
 
 from new_backend.scraper.config import (
     START_URL, ALLOWED_DOMAINS, CATEGORY_MAPPING, IGNORED_PATTERNS,
-    NEWS_PATTERN, HEADERS, RATE_LIMIT_DELAY, REQUEST_TIMEOUT,
-    MAX_DEPTH, MAX_PAGES
+    NEWS_PATTERN, RATE_LIMIT_DELAY, MAX_DEPTH, MAX_PAGES
 )
-from new_backend.scraper.utils import setup_logging, slugify
+from new_backend.scraper.utils import setup_logging
 from new_backend.scraper.cleaner import HTMLCleaner
 
 logger = setup_logging()
@@ -501,7 +500,7 @@ class PESCrawler:
             html_content = driver.page_source
             soup = BeautifulSoup(html_content, "lxml")
             links = self.discover_links(soup, url)
-            internal_links = [l for l in links if self._is_same_domain(self._normalize_url(l))]
+            internal_links = [link for link in links if self._is_same_domain(self._normalize_url(link))]
             self.page_reports[url]["internal_links_count"] = len(internal_links)
         except Exception as e:
             logger.error(f"Error parsing links from {url}: {e}")

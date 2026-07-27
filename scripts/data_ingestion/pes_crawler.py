@@ -11,7 +11,6 @@ of accordions/tabs/FAQs, and clean Markdown output.
 import asyncio
 import json
 import logging
-import os
 import re
 import time
 import hashlib
@@ -24,7 +23,7 @@ from urllib.parse import urljoin, urlparse, urlunparse, parse_qs, urlencode
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 try:
-    from playwright.async_api import async_playwright, Page, Browser, TimeoutError as PlaywrightTimeout
+    from playwright.async_api import async_playwright, Page, TimeoutError as PlaywrightTimeout
 except ImportError:
     raise ImportError("Playwright is required. Install with: pip install playwright && playwright install chromium")
 
@@ -35,7 +34,7 @@ from scripts.data_ingestion.crawler_config import (
     BLOCKED_EXTENSIONS, DOCUMENT_EXTENSIONS, BLOCKED_PATHS, STRIP_PARAMS,
     ACCORDION_SELECTORS, TAB_SELECTORS, LOAD_MORE_SELECTORS, FAQ_SELECTORS,
     CATEGORY_MAP, DEFAULT_CATEGORY,
-    MIN_WORD_COUNT, MIN_CONTENT_LENGTH, CHECKPOINT_INTERVAL,
+    MIN_CONTENT_LENGTH, CHECKPOINT_INTERVAL,
 )
 
 logger = logging.getLogger("pes_crawler")
@@ -833,7 +832,7 @@ class PESCrawler:
                 else:
                     self.stats["pages_skipped"] += 1
                     self.stats["skipped_urls"].append({"url": url, "reason": "insufficient_content"})
-                    logger.info(f"  -> Skipped (insufficient content)")
+                    logger.info("  -> Skipped (insufficient content)")
 
                 self.stats["pages_successful"] += 1
                 pages_crawled += 1

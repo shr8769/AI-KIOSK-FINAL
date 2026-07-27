@@ -1,9 +1,7 @@
 import os
-import sys
 import re
 from typing import Tuple, Optional
 
-from config.contact_config import get_specific_contact, format_fallback_message
 from config import llm_config
 
 import chromadb
@@ -29,7 +27,7 @@ class CoordinatorAgent:
             db_path (str, optional): Path to persistent ChromaDB storage.
         """
         if db_path is None:
-            db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge_new", "vectorstore"))
+            db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge", "vectorstore"))
             
         # Initialize a single shared client instance for resource optimization
         self.client = chromadb.PersistentClient(path=db_path)
@@ -383,7 +381,7 @@ class CoordinatorAgent:
                     clean_res = result.strip().upper()
                     if "OUT_OF_DOMAIN" in clean_res:
                         return True
-        except Exception as e:
+        except Exception:
             pass
         return False
 

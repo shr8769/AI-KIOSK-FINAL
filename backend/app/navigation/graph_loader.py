@@ -14,7 +14,10 @@ class GraphLoader:
 
     def _load(self):
         if not os.path.exists(self.json_path):
-            raise FileNotFoundError(f"Graph file not found: {self.json_path}")
+            import logging
+            logging.getLogger(__name__).warning(f"Graph file not found: {self.json_path}. Initializing empty graph.")
+            self.graph = GraphModel(nodes=[], edges=[])
+            return
 
         with open(self.json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)

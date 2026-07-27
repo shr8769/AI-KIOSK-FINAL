@@ -13,7 +13,7 @@ if hasattr(sys.stderr, "reconfigure"):
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(project_root)
 
-from agents.coordinator.coordinator_agent import CoordinatorAgent
+from agents.coordinator.coordinator_agent import CoordinatorAgent  # noqa: E402
 
 def analyze_failures():
     datasets_dir = os.path.join(project_root, "evaluation", "datasets")
@@ -228,12 +228,14 @@ def analyze_failures():
     md_report.append("")
     md_report.append("### Modified Files")
     for f in modified_files:
-        md_report.append(f"- [{os.path.basename(f)}](file:///{project_root.replace('\\', '/')}/{f})")
+        clean_proj_root = project_root.replace('\\', '/')
+        md_report.append(f"- [{os.path.basename(f)}](file:///{clean_proj_root}/{f})")
     md_report.append("")
     
     md_report.append("### Created Files")
     for f in created_files:
-        md_report.append(f"- [{os.path.basename(f)}](file:///{project_root.replace('\\', '/')}/{f})")
+        clean_proj_root = project_root.replace('\\', '/')
+        md_report.append(f"- [{os.path.basename(f)}](file:///{clean_proj_root}/{f})")
     md_report.append("")
     
     md_report.append("### Deleted Files")

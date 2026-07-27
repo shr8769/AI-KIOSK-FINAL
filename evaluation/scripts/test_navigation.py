@@ -13,7 +13,7 @@ if hasattr(sys.stderr, "reconfigure"):
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(project_root)
 
-from agents.coordinator.coordinator_agent import CoordinatorAgent
+from agents.coordinator.coordinator_agent import CoordinatorAgent  # noqa: E402
 
 def run_navigation_test():
     print("Initializing CoordinatorAgent...")

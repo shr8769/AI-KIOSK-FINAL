@@ -16,3 +16,9 @@ include = [
     "agents*",
     "config*",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "backend"
+]
+norecursedirs = ["scripts", "scratch", "venv", "node_modules", "detection"]

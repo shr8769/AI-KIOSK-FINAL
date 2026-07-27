@@ -1,7 +1,6 @@
 # config/contact_config.py
 # Central configuration for all university office contacts
 
-import re
 from typing import Optional
 
 CONTACTS = {

@@ -1,10 +1,5 @@
 from typing import Any
 
-try:
-    import chromadb
-    from chromadb.utils import embedding_functions
-except ImportError:
-    pass
 
 from agents.domain.base_agent import BaseAgent
 

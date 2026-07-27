@@ -3,7 +3,7 @@ title: "Seat Surrender"
 url: https://pes.edu/seat-surrender
 category: general
 breadcrumb: ""
-last_crawled: "2026-07-16T10:55:01.660052+05:30"
+last_crawled: "2026-07-24T02:21:53.998857+05:30"
 ---
 
 Admissions
@@ -11,7 +11,7 @@ PES Entrance ProcessEligibility & OverviewQualifying ExamsProgram IntakeFee Deta
 
 ### B.Tech Seat Surrender
 
-For Students who wish to surrender their B.Tech Merit PESU JEE Main / EAC / PESU KCET seats
+For Students who wish to surrender their B.Tech PESU JEE / EAC / B.Tech PESU KCET Seat
 
 ### Step 1
 

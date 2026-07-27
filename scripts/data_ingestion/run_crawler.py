@@ -70,7 +70,7 @@ def setup_logging(verbose: bool = False):
 async def run_pipeline(args):
     """Execute the full crawl pipeline."""
 
-    logger = logging.getLogger("pes_crawler")
+    logging.getLogger("pes_crawler")
 
     print()
     print("=" * 70)
@@ -116,7 +116,6 @@ async def run_pipeline(args):
     ocr_stats = None
     if is_ocr_available():
         # OCR images are tracked during crawl; for now we log availability
-        from scripts.data_ingestion.ocr_processor import process_images_for_ocr
         # Note: In a full implementation, image URLs would be collected during crawl
         # For now, this is a placeholder that checks OCR readiness
         ocr_stats = {"total": 0, "processed": 0, "text_found": 0, "skipped": 0, "failed": 0}
@@ -145,7 +144,7 @@ async def run_pipeline(args):
         for url in retry_urls:
             retry_crawler.queue.append((url, 0))
 
-        retry_stats = await retry_crawler.crawl()
+        await retry_crawler.crawl()
 
         # Re-run quality checks
         quality_stats = run_quality_checks()

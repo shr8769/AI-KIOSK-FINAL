@@ -10,7 +10,8 @@ def extract_conflicts():
     
     with open("conflict_report.txt", "w", encoding="utf-8") as out:
         for f in files:
-            if not os.path.exists(f): continue
+            if not os.path.exists(f):
+                continue
             out.write(f"=== {f} ===\n")
             with open(f, "r", encoding="utf-8", errors="ignore") as file:
                 lines = file.readlines()

@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Main Gate",
+    "building": "Main Entrance",
+    "floor": "0",
+    "node_id": "main_gate",
+    "aliases": ["gate", "entrance", "entry gate"]
+  },
+  {
+    "name": "Admissions & Admin Block",
+    "building": "Admin Block",
+    "floor": "0",
+    "node_id": "admin_block",
+    "aliases": ["admissions office", "admin office", "admission counter"]
+  },
+  {
+    "name": "Academic Block",
+    "building": "Academic Block",
+    "floor": "0",
+    "node_id": "academic_block",
+    "aliases": ["classrooms", "lecture hall"]
+  },
+  {
+    "name": "Placement Cell",
+    "building": "Admin Block",
+    "floor": "1",
+    "node_id": "placement_cell",
+    "aliases": ["placements office", "career office"]
+  },
+  {
+    "name": "MRD Auditorium",
+    "building": "MRD Block",
+    "floor": "0",
+    "node_id": "mrd_auditorium",
+    "aliases": ["mrd", "auditorium"]
+  },
+  {
+    "name": "Central Library",
+    "building": "Library Block",
+    "floor": "0",
+    "node_id": "library",
+    "aliases": ["library", "reading room"]
+  },
+  {
+    "name": "Food Court / Canteen",
+    "building": "Student Amenities",
+    "floor": "0",
+    "node_id": "food_court",
+    "aliases": ["food court", "canteen", "cafeteria"]
+  },
+  {
+    "name": "Hostel Office",
+    "building": "Hostel Block",
+    "floor": "0",
+    "node_id": "hostel_office",
+    "aliases": ["hostels", "warden office"]
+  },
+  {
+    "name": "Research Block",
+    "building": "Research Block",
+    "floor": "0",
+    "node_id": "research_block",
+    "aliases": ["research center", "labs"]
+  },
+  {
+    "name": "Medical Center",
+    "building": "Health Center",
+    "floor": "0",
+    "node_id": "medical_center",
+    "aliases": ["clinic", "health center", "infirmary"]
+  }
+]

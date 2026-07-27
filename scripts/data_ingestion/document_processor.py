@@ -9,7 +9,6 @@ for each document.
 
 import logging
 import os
-import re
 import hashlib
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
