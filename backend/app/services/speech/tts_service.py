@@ -156,12 +156,13 @@ class TTSService:
         Saves output file to the static/audio directory and returns public audio URL.
         """
         import re
+
         from app.models.schemas import TTSResponse
 
         # Clean text for TTS (remove markdown links and raw URLs)
         clean_text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', request.text)
         clean_text = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', 'the link provided', clean_text)
-        
+
         start_time = time.time()
 
         # Ensure static audio directory exists

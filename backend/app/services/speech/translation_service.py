@@ -95,7 +95,6 @@ def _get_nllb():
 
     try:
         from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-        import torch
 
         model_name = "facebook/nllb-200-distilled-600M"
         logger.info(f"Loading NLLB model '{model_name}' on CPU...")
@@ -136,7 +135,7 @@ def _nllb_translate_chunk(text: str, source_lang: str, target_lang: str) -> Opti
         import torch
         tokenizer.src_lang = src
         inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
-        
+
         # Forcing CPU due to PyTorch not supporting RTX 5050 (sm_120) yet
         # if torch.cuda.is_available():
         #     inputs = {k: v.to("cuda") for k, v in inputs.items()}
@@ -152,7 +151,7 @@ def _nllb_translate_chunk(text: str, source_lang: str, target_lang: str) -> Opti
                 early_stopping=True,
                 no_repeat_ngram_size=3,
             )
-            
+
         result = tokenizer.decode(translated_ids[0], skip_special_tokens=True).strip()
 
         if _is_degenerate(result):
@@ -293,7 +292,6 @@ class OfflineTranslationService:
                     placeholder_map[placeholder] = matches[0]
                     modified_text = pattern.sub(placeholder, modified_text)
 
-        direction = f"{source}_to_{target}"
 
         def restore_placeholders(translated_text: str) -> str:
             if not placeholder_map:

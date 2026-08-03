@@ -127,8 +127,8 @@ def _get_translation_llm():
     """Lazily load the LLM client for high-quality conversational translations."""
     google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
     if google_key:
-        from langchain_google_genai import ChatGoogleGenerativeAI
         from config.llm_config import GEMINI_MODEL
+        from langchain_google_genai import ChatGoogleGenerativeAI
         return ChatGoogleGenerativeAI(model=GEMINI_MODEL)
     else:
         # Avoid hanging on slow local LLMs for real-time translation

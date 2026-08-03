@@ -49,8 +49,9 @@ def _is_fallback_answer(text: str) -> bool:
 
 def local_spelling_corrector(query: str) -> str:
     import difflib
+
     from app.core.dependencies import get_coordinator_agent
-    
+
     try:
         coordinator = get_coordinator_agent()
         standard_terms_set = set()
@@ -113,7 +114,7 @@ async def make_conversational(text: str, lang: str) -> str:
         return text
 
     lang_name = {"kn": "Kannada", "hi": "Hindi"}[lang]
-    mix_example = {
+    {
         "kn": (
             "Example:\n"
             "  Formal: 'ವಿದ್ಯಾರ್ಥಿಗಳ ನೇಮಕಾತಿ ಮಾಹಿತಿಗಾಗಿ placement cell ಗೆ ಸಂಪರ್ಕಿಸಿ.'\n"
