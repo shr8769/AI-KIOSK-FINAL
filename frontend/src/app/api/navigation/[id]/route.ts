@@ -17,6 +17,17 @@ export async function GET(
     const id = resolvedParams.id;
     
     if (!redis) {
+      // Fallback to local FastAPI backend for local development/testing
+      try {
+        const backendRes = await fetch(`http://127.0.0.1:8000/api/v1/navigation/${id}`);
+        if (backendRes.ok) {
+           const data = await backendRes.json();
+           // The backend returns { status: "success", data: session_payload }
+           return NextResponse.json(data.data);
+        }
+      } catch (e) {
+        console.warn('Local backend fallback failed:', e);
+      }
       return NextResponse.json(
         { error: 'Upstash Redis is not configured on this deployment' },
         { status: 500 }

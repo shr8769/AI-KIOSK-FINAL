@@ -315,6 +315,17 @@ class AnnouncementStore:
 
     # ── Query Methods ────────────────────────────────────────
 
+    def _parse_date(self, date_str: str) -> str:
+        if not date_str:
+            return ""
+        try:
+            import dateutil.parser
+            cleaned = date_str.replace("Date:", "").strip()
+            dt = dateutil.parser.parse(cleaned)
+            return dt.isoformat()
+        except Exception:
+            return ""
+
     def get_active(self) -> List[Dict[str, Any]]:
         """Get all active (new + active) announcements, newest first."""
         results = []
@@ -323,7 +334,11 @@ class AnnouncementStore:
                 d = ann.to_dict()
                 d["is_new"] = ann.is_new(self.new_badge_hours)
                 results.append(d)
-        results.sort(key=lambda x: x["first_seen"], reverse=True)
+        
+        def sort_key(x):
+            return (self._parse_date(x.get("posted_date", "")), x.get("first_seen", ""))
+            
+        results.sort(key=sort_key, reverse=True)
         return results
 
     def get_latest(self, limit: int = 10) -> List[Dict[str, Any]]:
@@ -334,7 +349,11 @@ class AnnouncementStore:
     def get_all(self) -> List[Dict[str, Any]]:
         """Get all announcements regardless of status."""
         results = [ann.to_dict() for ann in self._announcements.values()]
-        results.sort(key=lambda x: x["first_seen"], reverse=True)
+        
+        def sort_key(x):
+            return (self._parse_date(x.get("posted_date", "")), x.get("first_seen", ""))
+            
+        results.sort(key=sort_key, reverse=True)
         return results
 
     def get_by_status(self, status: str) -> List[Dict[str, Any]]:

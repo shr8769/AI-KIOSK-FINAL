@@ -128,7 +128,8 @@ def _get_translation_llm():
     google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
     if google_key:
         from langchain_google_genai import ChatGoogleGenerativeAI
-        return ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+        from config.llm_config import GEMINI_MODEL
+        return ChatGoogleGenerativeAI(model=GEMINI_MODEL)
     else:
         # Avoid hanging on slow local LLMs for real-time translation
         return None

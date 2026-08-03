@@ -1,0 +1,13 @@
+function handleShowMoreAnnouncement(controllerMode,actionType,announcementId){
+	var formData = {
+			controllerMode : controllerMode,
+			actionType : actionType,
+			AnnouncementId:announcementId,
+			menuId : this.menuId,
+		};
+		bgCurtain();
+		doAjaxCall('studentProfilePESUAdmin', 'POST', formData, function(data) {
+			$('#StudentProfilePESUContent').html(data);
+			removeBgCurtain();
+		});
+}

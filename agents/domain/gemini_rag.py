@@ -107,6 +107,7 @@ Answer:"""
                     response = self.client.models.generate_content(
                         model=self.model_name,
                         contents=prompt,
+                        config={'temperature': 0.3}
                     )
                     if response.text:
                         self.is_degraded = False

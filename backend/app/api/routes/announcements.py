@@ -14,7 +14,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 # Ensure project root is on path for agent imports
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -42,17 +42,17 @@ def _get_store() -> AnnouncementStore:
                     config = yaml.safe_load(f)
                 ann_cfg = config.get("announcements", {})
                 _store = AnnouncementStore(
-                    cache_path=ann_cfg.get("cache_path", "data/announcements.json"),
+                    cache_path=str(PROJECT_ROOT / ann_cfg.get("cache_path", "data/announcements.json")),
                     max_announcements=ann_cfg.get("max_announcements", 500),
                     expire_after_days=ann_cfg.get("expire_after_days", 90),
                     archive_after_days=ann_cfg.get("archive_after_days", 180),
                     new_badge_hours=ann_cfg.get("new_badge_hours", 48),
                 )
             else:
-                _store = AnnouncementStore()
+                _store = AnnouncementStore(cache_path=str(PROJECT_ROOT / "data/announcements.json"))
         except Exception as e:
             logger.error(f"Error initializing announcement store: {e}")
-            _store = AnnouncementStore()
+            _store = AnnouncementStore(cache_path=str(PROJECT_ROOT / "data/announcements.json"))
     return _store
 
 
@@ -103,6 +103,7 @@ async def get_announcements():
     whether it was first seen within the last 48 hours.
     """
     store = _get_store()
+    store.load()
     active = store.get_active()
     return AnnouncementsResponse(
         announcements=[AnnouncementItem(**a) for a in active],
@@ -120,7 +121,10 @@ async def get_latest_announcements(
     Returns the most recent active announcements up to the specified limit.
     """
     store = _get_store()
+    print("DEBUG CACHE PATH:", store.cache_path)
+    store.load()
     latest = store.get_latest(limit=limit)
+    print("DEBUG ACTIVE:", len(latest))
     return AnnouncementsResponse(
         announcements=[AnnouncementItem(**a) for a in latest],
         total=len(latest),

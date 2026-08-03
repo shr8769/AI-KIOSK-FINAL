@@ -155,8 +155,13 @@ class TTSService:
         Convert text to speech.
         Saves output file to the static/audio directory and returns public audio URL.
         """
+        import re
         from app.models.schemas import TTSResponse
 
+        # Clean text for TTS (remove markdown links and raw URLs)
+        clean_text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', request.text)
+        clean_text = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', 'the link provided', clean_text)
+        
         start_time = time.time()
 
         # Ensure static audio directory exists
@@ -189,7 +194,7 @@ class TTSService:
 
             logger.info(f"Synthesizing speech via Edge-TTS (voice={voice}, rate={rate_str})...")
             communicate = edge_tts.Communicate(
-                request.text, voice, rate=rate_str, boundary="WordBoundary"
+                clean_text, voice, rate=rate_str, boundary="WordBoundary"
             )
 
             total_duration = 0.0
@@ -229,7 +234,7 @@ class TTSService:
 
                 logger.info(f"Synthesizing speech via MMS-TTS (lang={req_lang})...")
                 duration = await asyncio.to_thread(
-                    _synthesize_mms, request.text, req_lang, filepath
+                    _synthesize_mms, clean_text, req_lang, filepath
                 )
 
                 latency_ms = int((time.time() - start_time) * 1000)
@@ -259,7 +264,7 @@ class TTSService:
             filepath = os.path.join(static_dir, filename)
 
             logger.info(f"Synthesizing speech via gTTS (lang={lang})...")
-            tts = gTTS(text=request.text, lang=lang)
+            tts = gTTS(text=clean_text, lang=lang)
             await asyncio.to_thread(tts.save, filepath)
 
             words = len(request.text.split())
@@ -283,7 +288,7 @@ class TTSService:
 
             duration = await asyncio.to_thread(
                 _run_pyttsx3_synthesis,
-                request.text,
+                clean_text,
                 filepath,
                 getattr(request, "voice_id", "default"),
                 getattr(request, "speed", 1.0),

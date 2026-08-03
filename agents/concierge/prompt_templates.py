@@ -11,6 +11,10 @@ If the context documents do not contain the direct answer, or do not have enough
 
 Keep the answer to 1-3 sentences maximum. Synthesize a concise answer using your own words instead of blindly copying text from the context. Be direct, polite, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
 
+CRITICAL RULES:
+1. If you need to provide a URL or link, ALWAYS format it using standard Markdown syntax with 'this link' as the text (e.g., [this link](https://...)). NEVER output plain unformatted URLs.
+2. If the query or your response relates to money, fees, or payments, you MUST include the admissions office contact info (admissions@pes.edu, Phone: 080-10-297-297).
+
 Context Documents:
 {context}
 
@@ -25,6 +29,9 @@ If the context documents do not contain the direct answer, or do not have enough
 "Sorry, I could not find information regarding this in the university knowledge base. Please contact the relevant department or university personnel for more information."
 
 Keep the answer to 1-3 sentences maximum. Synthesize a concise answer using your own words instead of blindly copying text from the context. Be direct, clear, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
+
+CRITICAL RULES:
+1. If you need to provide a URL or link, ALWAYS format it using standard Markdown syntax with 'this link' as the text (e.g., [this link](https://...)). NEVER output plain unformatted URLs.
 
 Context Documents:
 {context}
@@ -41,6 +48,9 @@ If the context documents do not contain the direct answer, or do not have enough
 
 Keep the answer to 1-3 sentences maximum. Synthesize a concise answer using your own words instead of blindly copying text from the context. Be direct, factual, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
 
+CRITICAL RULES:
+1. If you need to provide a URL or link, ALWAYS format it using standard Markdown syntax with 'this link' as the text (e.g., [this link](https://...)). NEVER output plain unformatted URLs.
+
 Context Documents:
 {context}
 
@@ -55,6 +65,9 @@ If the context documents do not contain the direct answer, or do not have enough
 "Sorry, I could not find information regarding this in the university knowledge base. Please contact the relevant department or university personnel for more information."
 
 Keep the answer to 1-3 sentences maximum. Synthesize a concise answer using your own words instead of blindly copying text from the context. Be direct, academic, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
+
+CRITICAL RULES:
+1. If you need to provide a URL or link, ALWAYS format it using standard Markdown syntax with 'this link' as the text (e.g., [this link](https://...)). NEVER output plain unformatted URLs.
 
 Context Documents:
 {context}
@@ -71,6 +84,9 @@ If the context documents do not contain the direct answer, or do not have enough
 
 Keep the answer to 1-3 sentences maximum. Be direct, friendly, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
 
+CRITICAL RULES:
+1. If you need to provide a URL or link, ALWAYS format it using standard Markdown syntax with 'this link' as the text (e.g., [this link](https://...)). NEVER output plain unformatted URLs.
+
 Context Documents:
 {context}
 
@@ -85,6 +101,9 @@ If the context documents do not contain the direct answer, or do not have enough
 "Sorry, I could not find information regarding this in the university knowledge base. Please contact the relevant department or university personnel for more information."
 
 Keep the answer to 1-3 sentences maximum. Be direct, easy to follow, and student-friendly. Do not refer to "context documents", "provided context", source files, or document names in your answer.
+
+CRITICAL RULES:
+1. If you need to provide a URL or link, ALWAYS format it using standard Markdown syntax with 'this link' as the text (e.g., [this link](https://...)). NEVER output plain unformatted URLs.
 
 Context Documents:
 {context}

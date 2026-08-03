@@ -82,85 +82,84 @@ def _split_sentences(text: str) -> list[str]:
     return [s.strip() for s in result if s.strip()]
 
 
-# ── MarianMT cache ────────────────────────────────────────────────────────────
+# ── NLLB cache ──────────────────────────────────────────────────────────────────
 
-_marian_models: dict = {}
-_marian_tokenizers: dict = {}
+_nllb_model = None
+_nllb_tokenizer = None
 
-_MARIAN_MAP = {
-    "hi_to_en": "Helsinki-NLP/opus-mt-hi-en",
-    "en_to_hi": "Helsinki-NLP/opus-mt-en-hi",
-    "kn_to_en": "Helsinki-NLP/opus-mt-dra-en",
-    "en_to_kn": "Helsinki-NLP/opus-mt-en-dra",
-}
-
-# Language prefix tokens for the multilingual Dravidian model
-_MARIAN_PREFIX = {
-    "en_to_kn": ">>kan<< ",
-    "kn_to_en": ">>eng<< ",
-}
-
-
-def _get_marian(direction: str):
-    """Lazy-load and cache MarianMT model + tokenizer (bypasses pipeline())."""
-    if direction in _marian_models:
-        return _marian_models[direction], _marian_tokenizers[direction]
-
-    model_name = _MARIAN_MAP.get(direction)
-    if not model_name:
-        return None, None
+def _get_nllb():
+    """Lazy-load and cache NLLB model + tokenizer."""
+    global _nllb_model, _nllb_tokenizer
+    if _nllb_model is not None:
+        return _nllb_model, _nllb_tokenizer
 
     try:
-        from transformers import MarianMTModel, MarianTokenizer
+        from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+        import torch
 
-        logger.info(f"Loading MarianMT model '{model_name}'...")
-        tok = MarianTokenizer.from_pretrained(model_name)
-        mdl = MarianMTModel.from_pretrained(model_name)
-        mdl.eval()
-        _marian_tokenizers[direction] = tok
-        _marian_models[direction] = mdl
-        logger.info(f"MarianMT model '{model_name}' loaded.")
-        return mdl, tok
+        model_name = "facebook/nllb-200-distilled-600M"
+        logger.info(f"Loading NLLB model '{model_name}' on CPU...")
+        _nllb_tokenizer = AutoTokenizer.from_pretrained(model_name)
+        _nllb_model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        _nllb_model.eval()
+
+        # Forcing CPU due to PyTorch not supporting RTX 5050 (sm_120) yet
+        # if torch.cuda.is_available():
+        #     _nllb_model.to("cuda")
+
+        logger.info(f"NLLB model '{model_name}' loaded on CPU.")
+        return _nllb_model, _nllb_tokenizer
     except Exception as e:
-        logger.error(f"Failed to load MarianMT '{model_name}': {e}")
+        logger.error(f"Failed to load NLLB: {e}")
         return None, None
 
 
-def _marian_translate_chunk(text: str, direction: str) -> Optional[str]:
-    """Translate a single text chunk with MarianMT. Returns None on failure."""
-    model, tokenizer = _get_marian(direction)
+def _nllb_translate_chunk(text: str, source_lang: str, target_lang: str) -> Optional[str]:
+    """Translate a single text chunk with NLLB. Returns None on failure."""
+    model, tokenizer = _get_nllb()
     if model is None:
         return None
 
-    prefix = _MARIAN_PREFIX.get(direction, "")
-    src_text = prefix + text
+    # NLLB language code mapping
+    nllb_map = {
+        "en": "eng_Latn",
+        "hi": "hin_Deva",
+        "kn": "kan_Knda",
+    }
+    src = nllb_map.get(source_lang)
+    tgt = nllb_map.get(target_lang)
+
+    if not src or not tgt:
+        return None
 
     try:
         import torch
+        tokenizer.src_lang = src
+        inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+        
+        # Forcing CPU due to PyTorch not supporting RTX 5050 (sm_120) yet
+        # if torch.cuda.is_available():
+        #     inputs = {k: v.to("cuda") for k, v in inputs.items()}
 
-        inputs = tokenizer(
-            [src_text], return_tensors="pt", padding=True, truncation=True, max_length=512
-        )
+        forced_bos_id = tokenizer.convert_tokens_to_ids(tgt)
+
         with torch.no_grad():
             translated_ids = model.generate(
                 **inputs,
+                forced_bos_token_id=forced_bos_id,
                 max_new_tokens=512,
                 num_beams=4,
                 early_stopping=True,
                 no_repeat_ngram_size=3,
             )
+            
         result = tokenizer.decode(translated_ids[0], skip_special_tokens=True).strip()
-
-        # Strip language tokens if model echoed them
-        for tok_prefix in [">>kan<<", ">>eng<<", ">>hin<<"]:
-            if result.startswith(tok_prefix):
-                result = result[len(tok_prefix) :].strip()
 
         if _is_degenerate(result):
             return None
         return result
     except Exception as e:
-        logger.error(f"MarianMT inference failed ({direction}): {e}")
+        logger.error(f"NLLB inference failed ({source_lang}->{target_lang}): {e}")
         return None
 
 
@@ -307,28 +306,28 @@ class OfflineTranslationService:
             return pattern.sub(replace_match, translated_text)
 
         # ── Tier 1: Google Translate ──────────────────────────────────────────
-        try:
-            from deep_translator import GoogleTranslator
-            # Use 'auto' source only when source is unknown; explicit codes are faster & more reliable
-            gt_source = "auto" if source not in ("en", "hi", "kn") else source
-            translated = GoogleTranslator(source=gt_source, target=target).translate(modified_text)
-            if translated and not _is_degenerate(translated):
-                final_result = restore_placeholders(translated)
-                logger.info(f"Google Translate succeeded ({source}->{target}): '{text[:40]}' -> '{final_result[:40]}'")
-                self._set_cached_translation(text, source, target, final_result)
-                return final_result
-            logger.warning("Google Translate returned degenerate output. Falling back to MarianMT.")
-        except Exception as e:
-            logger.warning(f"Google Translate unavailable ({e}). Falling back to MarianMT.")
+        # DISABLED for testing: Forcing NLLB entirely.
+        # try:
+        #     from deep_translator import GoogleTranslator
+        #     gt_source = "auto" if source not in ("en", "hi", "kn") else source
+        #     translated = GoogleTranslator(source=gt_source, target=target).translate(modified_text)
+        #     if translated and not _is_degenerate(translated):
+        #         final_result = restore_placeholders(translated)
+        #         logger.info(f"Google Translate succeeded ({source}->{target}): '{text[:40]}' -> '{final_result[:40]}'")
+        #         self._set_cached_translation(text, source, target, final_result)
+        #         return final_result
+        #     logger.warning("Google Translate returned degenerate output. Falling back to NLLB.")
+        # except Exception as e:
+        #     logger.warning(f"Google Translate unavailable ({e}). Falling back to NLLB.")
 
-        # ── Tier 2: MarianMT (offline, sentence-chunked) ──────────────────────
-        if direction in _MARIAN_MAP:
+        # ── Tier 2: NLLB (offline, sentence-chunked) ───────────────────────────
+        if source in ("en", "hi", "kn") and target in ("en", "hi", "kn"):
             sentences = _split_sentences(modified_text)
             translated_parts = []
             all_ok = True
 
             for sentence in sentences:
-                part = _marian_translate_chunk(sentence, direction)
+                part = _nllb_translate_chunk(sentence, source, target)
                 if part is None:
                     all_ok = False
                     break
@@ -337,13 +336,13 @@ class OfflineTranslationService:
             if all_ok and translated_parts:
                 result = " ".join(translated_parts)
                 final_result = restore_placeholders(result)
-                logger.info(f"MarianMT translation succeeded ({source}->{target}).")
+                logger.info(f"NLLB translation succeeded ({source}->{target}).")
                 self._set_cached_translation(text, source, target, final_result)
                 return final_result
 
             # Try the full text as one chunk (for very short inputs)
             if len(sentences) == 1 or not all_ok:
-                result = _marian_translate_chunk(modified_text, direction)
+                result = _nllb_translate_chunk(modified_text, source, target)
                 if result:
                     final_result = restore_placeholders(result)
                     self._set_cached_translation(text, source, target, final_result)

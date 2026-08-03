@@ -11,6 +11,7 @@ for development/testing.
 """
 
 import logging
+import os
 import re
 import sys
 from datetime import timezone, timedelta
@@ -132,8 +133,8 @@ class AnnouncementMonitorAgent(BaseAutonomousAgent):
 
         # Credentials (for real scraping)
         creds = ann_cfg.get("credentials", {})
-        self._username = creds.get("username", "")
-        self._password = creds.get("password", "")
+        self._username = os.getenv("PESU_ACADEMY_USERNAME", creds.get("username", ""))
+        self._password = os.getenv("PESU_ACADEMY_PASSWORD", creds.get("password", ""))
 
         # Initialize the announcement store
         self._store = AnnouncementStore(
@@ -303,19 +304,23 @@ class AnnouncementMonitorAgent(BaseAutonomousAgent):
                 delay = safety_cfg.get("min_request_interval_seconds", 2.0)
                 await asyncio.sleep(delay)
 
+                # Navigate to the target URL (login page) first
+                await page.goto(self._target_url, wait_until="networkidle")
+                await asyncio.sleep(delay)
+
                 # Login if credentials available
                 if self._username and self._password:
                     try:
                         # Fill login form
                         await page.fill(
-                            'input[placeholder="PRN / SRN"]',
+                            'input[name="j_username"]',
                             self._username,
                         )
                         await page.fill(
-                            'input[placeholder="Password"], input[type="password"]',
+                            'input[name="j_password"]',
                             self._password,
                         )
-                        await page.click('button[type="submit"], #loginBtn')
+                        await page.click('button[id^="postloginform"]', force=True)
                         await page.wait_for_load_state("networkidle")
                         await asyncio.sleep(delay)
 
@@ -325,13 +330,17 @@ class AnnouncementMonitorAgent(BaseAutonomousAgent):
                         await browser.close()
                         return self._get_mock_announcements()
 
-                # Navigate to student profile page
-                await page.goto(self._target_url, wait_until="networkidle")
+                # Navigate to student profile page if logged in
+                if self._username and self._password:
+                    await page.goto("https://www.pesuacademy.com/Academy/s/studentProfilePESU", wait_until="networkidle")
+                else:
+                    await page.goto(self._target_url, wait_until="networkidle")
                 await asyncio.sleep(delay)
 
                 # Extract ONLY announcements
                 # Look for common announcement containers
                 announcement_selectors = [
+                    ".announcements-inner li",
                     ".announcement",
                     ".announcements-list",
                     "#announcementsTab",
@@ -349,13 +358,13 @@ class AnnouncementMonitorAgent(BaseAutonomousAgent):
                         if elements:
                             for el in elements:
                                 title_el = await el.query_selector(
-                                    "h3, h4, h5, .title, .announcement-title, strong"
+                                    "h3, h4, h5, .title, .announcement-title, strong, .anc-text p"
                                 )
                                 body_el = await el.query_selector(
-                                    "p, .body, .announcement-body, .content, .description"
+                                    ".body, .announcement-body, .content, .description"
                                 )
                                 date_el = await el.query_selector(
-                                    ".date, .timestamp, time, .posted-date, small"
+                                    ".date, .timestamp, time, .posted-date, small, .published-date"
                                 )
 
                                 title = (
@@ -373,6 +382,35 @@ class AnnouncementMonitorAgent(BaseAutonomousAgent):
                                     if date_el
                                     else ""
                                 ).strip()
+
+                                # Try to fetch detailed body if it's a PESU Academy announcement
+                                a_el = await el.query_selector("a[onclick*='handleShowMoreAnnouncement']")
+                                if a_el:
+                                    onclick_val = await a_el.get_attribute("onclick")
+                                    if onclick_val:
+                                        match = re.search(r'handleShowMoreAnnouncement\((.*?),(.*?),(.*?)\)', onclick_val.replace(' ', ''))
+                                        if match:
+                                            c_mode, a_type, ann_id = match.groups()
+                                            try:
+                                                detail_html = await page.evaluate(f'''() => {{
+                                                    return new Promise((resolve, reject) => {{
+                                                        $.ajax({{
+                                                            url: '/Academy/s/studentProfilePESUAdmin',
+                                                            type: 'POST',
+                                                            data: {{ controllerMode: {c_mode}, actionType: {a_type}, AnnouncementId: {ann_id} }},
+                                                            success: function(data) {{ resolve(data); }},
+                                                            error: function(err) {{ reject(err); }}
+                                                        }});
+                                                    }});
+                                                }}''')
+                                                from bs4 import BeautifulSoup
+                                                soup = BeautifulSoup(detail_html, "html.parser")
+                                                body_div = soup.select_one('.col-md-12')
+                                                if body_div:
+                                                    body = body_div.get_text(separator='\\n', strip=True)
+                                                await asyncio.sleep(0.5) # rate limit requests
+                                            except Exception as e:
+                                                self.logger.error(f"Failed to fetch detail for {ann_id}: {e}")
 
                                 if title or body:
                                     announcements.append({

@@ -131,7 +131,7 @@ def format_fallback_message(query: str, domain: Optional[str] = None) -> str:
         f"I couldn't find reliable information regarding your question.\n"
         f"For accurate assistance, please contact the {contact['office_name']}.\n\n"
         f"Office Location: {contact['location']}\n"
-        f"Email: {contact['email']}\n"
+        f"Email: [{contact['email']}](mailto:{contact['email']})\n"
         f"Phone: {contact['phone']}\n"
-        f"Website: {contact['website']}"
+        f"Website: [this link]({contact['website']})"
     )

@@ -1,9 +1,228 @@
 ---
-title: "About College | PESIMSR"
-url: https://pesimsr.pes.edu/
+title: "PES University – Education for the real world"
+url: https://pes.edu/
 category: general
 breadcrumb: ""
-last_crawled: "2026-07-24T02:30:02.771226+05:30"
+last_crawled: "2026-07-28T14:45:46.561687+05:30"
 ---
 
-Back to pes.eduWork With UsMARBGovt. ApprovalContactApply NowAboutLearn about PES Institute of Medical Sciences and Research — our history, values, and commitment to excellence in medical education.About CollegeAbout PESIMSR — KuppamModern medicine, built for the villages ofRayalaseema.Founded on 11 September 2001 by Dr. M.R. Doreswamy, PESIMSR was built on a single conviction: rural Andhra Pradesh deserved a medical college and hospital equal to any in the country.Est. 2001·MCI recognized·UG & PG programsMain Hospital BlockClinical TrainingCampus GroundsLecture & Research Wing2001year EstablishedUG+PGCourses Offered3States Served — AP · TN · KA1Attached Teaching HospitalOur HistoryA founder's dream, and a district's need.PESIMSR is the brainchild of our Founder Chairman, Dr. M.R. Doreswamy — his dream to establish a medical college and hospital with modern facilities in service of the rural population of Rayalaseema.Today it stands as the most modern medical college in the Rayalaseema districts of Andhra Pradesh, educating budding doctors while delivering state-of-the-art care to the local population and to patients from the bordering districts of Tamil Nadu and Karnataka.PESIMSR is a permanently recognized medical college under the MCI and the Government of India's Ministry of Health & Family Welfare, offering both undergraduate and postgraduate courses.Meet our leadershipWhy We ExistAn epidemiological shift demands a different kind of college."A challenge of the new millennium — and an opportunity for those who desire societal well-being."India ranks 11th in the world by the size of its economy, yet 162nd by GNP per capita. As the country moves through an epidemiological transition, infectious disease is receding while lifestyle-driven conditions — cardiovascular disease, diabetes, hypertension, neurological disorders — are rising sharply.The World Bank's Health Sectoral Priority Review projected a doubling of cardiovascular mortality in India between 1985 and 2015. PESIMSR exists as a direct response: a college that reflects the care, concern and commitment of the PES Group to societal well-being.Read our vision & missionGet StartedThree ways to know PESIMSR01 — AdmissionsCourses & how to applyEverything you need on eligibility, the application process, and how to apply to our UG and PG programs.Learn more →02 — ProgramsAcademic programsPESIMSR's programs are sought after nationally, built around admitting and developing the best talent in medicine.Learn more →03 — Campus LifeLife on campusA leafy campus with residential facilities planned to international standards, for studying, living and interaction.Learn more →M.B.B.S. AdmissionHow the process worksThree requirements, assessed in sequence, before a candidate is admitted to the program.01Qualifying educationTwo years of Intermediate Education from the Board of Intermediate Studies, Hyderabad, with Physics, Chemistry and Biology as optional subjects — or an equivalent examination recognized by NTR University of Health Sciences, Vijayawada.02Minimum marks & English proficiencyNot less than 50% of total marks in science subjects combined at the qualifying examination, with proficiency in English considered essential.03Age requirementCandidates must have completed 17 years of age at the time of admission.04Ongoing evaluationAcademic progress is assessed through internal assessments and examinations in theory, practical and clinical work at the end of every semester, followed by a compulsory one-year rotating internship before registration as a qualified physician."His dream was a medical college and hospital with modern facilities, built to serve the rural population — not around it."On Founder Chairman Dr. M.R. DoreswamyReady When You AreBegin your journey toward medicine at PESIMSR.Start an ApplicationView ProgramsCitizen's Charter
+Master of Design (M.Des)Design. Innovate. Lead - with 
+M.Des at PES University.INTRODUCINGLearn More
+
+Book your Campus Tour– Register and explore our learning spaces, labs, student life and more.
+
+### Admissions 2026 Closing Soon
+
+Over 60+ Programs to choose from.B.Tech Admissions 2026 with JEE Mains & KCET Scores only.Register now.
+
+### Scholarships
+
+Rs. 140+ Crores merit scholarships given till date. Several PESU Scholarships are available for eligible students.
+
+### Research Driven Learning
+
+Basic engineering research at PES is a systematic pursuit for greater…
+
+### International Internships
+
+PES Summer offers the opportunity to dive into exciting subjects…
+
+### Placements
+
+Our strong placement outcomes are a result of our focus on comprehensive career development for all students.
+
+B.Tech Admissions 2026 with JEE Mains & KCET Scores only.
+
+### ADMISSIONS 2026 CLOSING SOON
+
+[Register](https://admissions.pes.edu/)
+
+Book Campus TourResearch Driven LearningInternational InternshipsScholarshipsPh.D and M.Tech by ResearchPlacements
+
+### Our Campuses
+
+PES has four Bengaluru-based campuses and two in Andhra Pradesh.
+
+- PES UniversityPES UniversityRR Campus, Banashankari
+- PES UniversityPES UniversityEC Campus, Electronic City
+- PES UniversityPES UniversityHanumanth Nagar Campus
+- PES IMSRPES IMSRKuppam, Andhra Pradesh
+- The Amaatra AcademyThe Amaatra AcademyOff Sarjapur Road
+- PES Public SchoolPES Public SchoolChittoor, Andhra Pradesh
+- SSM Public SchoolSSM Public SchoolBanashankari, Bengaluru
+
+1. 1
+2. 2
+3. 3
+
+### Our Campuses
+
+PES has four Bengaluru-based campuses and two in Andhra Pradesh.
+
+- SSM Public SchoolSSM Public SchoolBanashankari, Bengaluru
+- PES UniversityPES UniversityRR Campus, Banashankari
+- PES UniversityPES UniversityEC Campus, Electronic City
+- PES UniversityPES UniversityHanumanth Nagar Campus
+- PES IMSRPES IMSRKuppam, Andhra Pradesh
+- The Amaatra AcademyThe Amaatra AcademyOff Sarjapur Road
+- PES Public SchoolPES Public SchoolChittoor, Andhra Pradesh
+- SSM Public SchoolSSM Public SchoolBanashankari, Bengaluru
+- PES UniversityPES UniversityRR Campus, Banashankari
+
+1. 1
+2. 2
+3. 3
+4. 4
+5. 5
+6. 6
+7. 7
+
+## Academics
+
+Preparing students to follow their own North Star and become responsible citizens and leaders.
+
+### Undergraduate Education
+
+A rich learning experience that combines deep subject-area expertise with all-round development
+
+### Postgraduate Education
+
+Advanced fields of knowledge that help you develop specialisations and leadership skills
+
+### Lifelong Learning
+
+Continuing executive education for working professionals to upskill while you work
+
+## Meet our Faculty
+
+### Dr. Shailashree Haridas
+
+Dean, Faculty of Management & Commerce
+
+### Dr. V Krishna
+
+Dean, Student Affairs
+
+### Dr. Shylaja S S
+
+Director of Cloud Computing & Big Data (CCBD), Centre for Data Sciences & Applied Machine Learning (CDSAML)
+
+##### Ranked #1
+
+#1 University in Karnataka – New Universities Under 5 YearsKSURF 2019
+
+##### India’s Most Trusted
+
+PES University placed seventh on the list of INDIA’S MOST TRUSTED Educational Institutes. Source: TRA.
+
+##### Top 25 M.Tech College
+
+PES University in the list of Top 25 M.Tech colleges in IndiaCareerindia
+
+##### Ranked #6
+
+PES University is ranked sixth in the Outlook-ICARE India University Rankings 2019.
+
+## Academics
+
+Preparing students to follow their own North Star and become responsible citizens and leaders.
+
+### Undergraduate Education
+
+A rich learning experience that combines deep subject-area expertise with all-round development
+
+### Postgraduate Education
+
+Advanced fields of knowledge that help you develop specialisations and leadership skills
+
+### Lifelong Learning
+
+Continuing executive education for working professionals to upskill while you work
+
+## Meet our Faculty
+
+### Dr. Shailashree Haridas
+
+Dean, Faculty of Management & Commerce
+
+### Dr. V Krishna
+
+Dean, Student Affairs
+
+### Dr. Shylaja S S
+
+Director of Cloud Computing & Big Data (CCBD), Centre for Data Sciences & Applied Machine Learning (CDSAML)
+
+##### Ranked #1
+
+#1 University in Karnataka – New Universities Under 5 YearsKSURF 2019
+
+##### India’s Most Trusted
+
+PES University placed seventh on the list of INDIA’S MOST TRUSTED Educational Institutes. Source: TRA.
+
+##### Top 25 M.Tech College
+
+PES University in the list of Top 25 M.Tech colleges in IndiaCareerindia
+
+##### Ranked #6
+
+PES University is ranked sixth in the Outlook-ICARE India University Rankings 2019.
+
+# Pesuvians for Life
+
+Explore inspiring stories and experiences from our alumni
+
+## Placements
+
+Our alumni work at leading
+
+organisations around the world
+
+## Placements
+
+Our alumni work at leading organisations around the world
+
+## Pesuvians for Life
+
+Explore inspiring stories and experiences from our alumni
+
+## Research
+
+Our 8 Centres of Excellence work on inter-disciplinary research and provide vibrant hubs where students, faculty and industry can collaborate
+
+## Research
+
+Our 8 Centres of Excellence work on inter-disciplinary research and provide vibrant hubs where students, faculty and industry can collaborate
+
+CIE is the launchpad to inspire students and startups to develop innovative world-changing ideas and help them become role-model entrepreneurs.
+
+C-ISFCR aims to provide facilities to test and understand the practical aspects of information security in existing and emerging areas.
+
+CORI brings together the expertise of accomplished engineers and enthusiasm of students to provide deep insights and evolve leading edge solutions.
+
+## Campus Life
+
+AGILE: Our unique,holistic student approach
+
+Reverberating 3 virtues Forgiveness.,.
+
+PES University’s 3rd edition of The Amateur.,.
+
+Learning drive on motivation, training and.,.
+
+Reverberating 3 virtues Forgiveness.,.
+
+### You may also be interested in
+
+### Giving to PES
+
+The generous support from patrons like you has been instrumental in the remarkable growth of our university. Your continued contribution will play a vital role in transforming PES into a world-class university.
+
+### Staying in Touch
+
+Join Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.
+
+### Discovering our Newsletters
+
+The Student Newsletter is your guide to what’s happening on campus and in the student community. Find out about PES events, leadership, career and the amazing achievements of your fellow PESU students!

@@ -7,6 +7,7 @@ import { drawGlassShell, drawAura } from './orbCanvas2D';
 import { startMicAnalysis, stopMicAnalysis, getWavBase64, MicHandle } from './orbAudio';
 import { Typewriter } from '@/components/ui/typewriter-text';
 import { OrbController } from './OrbController';
+import ReactMarkdown from 'react-markdown';
 
 interface VidyaSahayakOrbProps {
   controller: OrbController;
@@ -431,7 +432,21 @@ const VidyaSahayakOrbBase: React.FC<VidyaSahayakOrbProps> = ({
             {label}
           </p>
           <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 22, color: 'rgba(255,255,255,0.95)', marginTop: 16, textAlign: 'center', fontWeight: 500, letterSpacing: '0.01em', transition: 'all 0.6s ease', maxWidth: '80%' }}>
-            <Typewriter key={desc} text={desc} speed={30} delay={showMic ? 3000 : 0} cursor="|" className="inline-block" />
+            <div key={desc} style={{ animation: 'fadeIn 0.5s ease-in', wordBreak: 'break-word', whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>
+              <ReactMarkdown
+                components={{
+                  a: ({node, ...props}) => <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: '#00e5ff', textDecoration: 'underline' }} />
+                }}
+              >
+                {desc}
+              </ReactMarkdown>
+            </div>
+            <style>{`
+              @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(5px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+            `}</style>
           </div>
         </div>
       )}

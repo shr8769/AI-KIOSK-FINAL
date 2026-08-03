@@ -110,6 +110,7 @@ export function AnnouncementPanel({
       const apiBase = getApiBaseUrl();
       const response = await fetch(`${apiBase}/api/v1/announcements/latest?limit=${maxDisplay}`, {
         signal: AbortSignal.timeout(10000),
+        cache: 'no-store',
       });
 
       if (!response.ok) {
@@ -150,10 +151,12 @@ export function AnnouncementPanel({
 
       <div className="relative bg-zinc-950/40 border border-zinc-800/80 rounded-2xl overflow-hidden backdrop-blur-xl">
         {/* Header */}
-        <button
+        <div
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-zinc-900/30 transition-colors duration-200"
+          className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-zinc-900/30 transition-colors duration-200 cursor-pointer"
           id="announcement-panel-toggle"
+          role="button"
+          tabIndex={0}
         >
           <div className="flex items-center gap-3">
             <span className="text-lg" role="img" aria-label="announcements">📢</span>
@@ -205,7 +208,7 @@ export function AnnouncementPanel({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
             </svg>
           </div>
-        </button>
+        </div>
 
         {/* Content */}
         <div

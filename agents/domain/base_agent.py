@@ -190,7 +190,7 @@ class BaseAgent(ABC):
             self.client = client
         else:
             if db_path is None:
-                db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge", "vectorstore"))
+                db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "knowledge_new", "vectorstore"))
             try:
                 self.client = chromadb.PersistentClient(path=db_path)
             except Exception as e:
@@ -526,6 +526,8 @@ class BaseAgent(ABC):
             f"  COMEDK = Consortium of Medical, Engineering and Dental Colleges of Karnataka\n"
             f"  CIE = Center for Innovation and Entrepreneurship\n"
             f"  MRD = Prof. M.R. Doreswamy (scholarship name)\n\n"
+            f"Rule: If you need to provide a URL or link, ALWAYS format it using standard Markdown syntax with 'this link' as the text (e.g., [this link](https://...)). NEVER output plain unformatted URLs.\n"
+            f"Rule: If the user's query or your response relates to money, fees, or payments, you MUST include the contact info for the admissions office (admissions@pes.edu, Phone: 080-10-297-297) so they can contact them directly.\n\n"
             f"Context:\n{formatted_context}\n"
             f"Query: {query}\n"
             f"Answer:"
