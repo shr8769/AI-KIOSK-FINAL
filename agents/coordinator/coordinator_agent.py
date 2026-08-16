@@ -90,7 +90,7 @@ class CoordinatorAgent:
                 "ppo", "salary", "job", "jobs", "job offer", "job offers", "placement drive", "placement drives", 
                 "signing", "acceptance", "portal", "placement cell", "resume verification", "eligibility requirements",
                 "apply for placements", "apply for placement", "placement eligibility", "placements eligibility",
-                "offer", "offers", "two offers"
+                "offer", "offers", "two offers", "company", "companies", "top companies", "alumni"
             ],
             "research": [
                 "publication", "publications", "journal", "journals", "conference", "conferences", 

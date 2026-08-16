@@ -101,6 +101,12 @@ async def correct_and_normalize_query(query: str, detected_lang: str) -> str:
     query_lower = query_lower.replace("btech", "B.Tech")
     query_lower = query_lower.replace("b tech", "B.Tech")
     query_lower = query_lower.replace("mrd", "Prof. MRD Scholarship")
+    
+    # Alumni phonetic fallbacks
+    query_lower = query_lower.replace("aluminium", "alumni")
+    query_lower = query_lower.replace("aluminy", "alumni")
+    query_lower = query_lower.replace("best alumni", "pes alumni")
+    query_lower = query_lower.replace("base alumni", "pes alumni")
     query = query_lower
 
     # 1. Run local spelling correction fast-path
