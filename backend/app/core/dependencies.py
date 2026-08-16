@@ -155,19 +155,6 @@ English translation:"""
                 return translated
     except Exception as e:
         logger.warning(f"LLM translation to English failed: {e}")
-        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "quota" in str(e).lower():
-            logger.info("Falling back to local Ollama (qwen3) for translation to English...")
-            try:
-                from config.llm_config import OLLAMA_MODEL
-                from langchain_ollama import ChatOllama
-                ollama = ChatOllama(model=OLLAMA_MODEL)
-                fallback_resp = ollama.invoke(prompt)
-                if fallback_resp and fallback_resp.content:
-                    translated = fallback_resp.content.strip().strip('"').strip("'")
-                    if translated:
-                        return translated
-            except Exception as oe:
-                logger.error(f"Ollama translation fallback failed: {oe}")
     return text
 
 
@@ -200,19 +187,6 @@ Conversational {lang_name} translation:"""
                 return translated
     except Exception as e:
         logger.warning(f"LLM translation from English failed: {e}")
-        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "quota" in str(e).lower():
-            logger.info("Falling back to local Ollama (qwen3) for translation from English...")
-            try:
-                from config.llm_config import OLLAMA_MODEL
-                from langchain_ollama import ChatOllama
-                ollama = ChatOllama(model=OLLAMA_MODEL)
-                fallback_resp = ollama.invoke(prompt)
-                if fallback_resp and fallback_resp.content:
-                    translated = fallback_resp.content.strip().strip('"').strip("'")
-                    if translated:
-                        return translated
-            except Exception as oe:
-                logger.error(f"Ollama translation fallback failed: {oe}")
     return text
 
 
