@@ -174,8 +174,8 @@ class LocationResolver:
                 locations = json.load(f)
             for loc in locations:
                 for alias in loc.get("aliases", []):
-                    self.gazetteer.append((self.normalize(alias), loc))
-                self.gazetteer.append((self.normalize(loc["name"]), loc))
+                    self.gazetteer.append((self.normalize(alias), alias, loc))
+                self.gazetteer.append((self.normalize(loc["name"]), loc["name"], loc))
         except Exception as e:
             logger.error(f"Failed to load navigation_locations.json for LocationResolver: {e}")
 
@@ -197,15 +197,15 @@ class LocationResolver:
         if not norm_query or not self.gazetteer:
             return None
         matches = []
-        for alias, loc_dict in self.gazetteer:
-            score = self.fuzz.token_set_ratio(norm_query, alias)
-            matches.append((score, loc_dict))
+        for norm_alias, orig_alias, loc_dict in self.gazetteer:
+            score = self.fuzz.token_set_ratio(norm_query, norm_alias)
+            matches.append((score, orig_alias, loc_dict))
         matches.sort(key=lambda x: x[0], reverse=True)
 
         if matches and matches[0][0] > 80:
             best_score = matches[0][0]
             top_locs = set()
-            for score, loc in matches:
+            for score, orig_alias, loc in matches:
                 if score == best_score:
                     top_locs.add(loc["name"])
                 else:
@@ -215,7 +215,9 @@ class LocationResolver:
                 # Ambiguous query like "lab" matches multiple different labs
                 return None
 
-            return matches[0][1]
+            best_loc = matches[0][2].copy()
+            best_loc["matched_name"] = matches[0][1].title()
+            return best_loc
         return None
 
 navigation_service = NavigationService()

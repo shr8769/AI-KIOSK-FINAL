@@ -357,10 +357,11 @@ async def run_query_pipeline(
                 from app.core.config import get_local_ip
                 nav_id = await navigation_service.create_session(top_loc)
                 nav_url = navigation_service.build_url(nav_id)
+                matched_display_name = top_loc.get('matched_name', top_loc.get('name'))
                 nav_payload = {
                     "navigation_id": nav_id,
                     "url": nav_url,
-                    "destination_name": top_loc.get("name"),
+                    "destination_name": matched_display_name,
                     "building": top_loc.get("building"),
                     "floor": top_loc.get("floor"),
                     "room": top_loc.get("room"),
@@ -369,7 +370,7 @@ async def run_query_pipeline(
 
                 # Construct real-time response programmatically
                 room_text = f" (room {top_loc.get('room')})" if top_loc.get('room') else ""
-                answer_en = f"The {top_loc.get('name')} is located in {top_loc.get('building')} on Floor {top_loc.get('floor')}{room_text}. Please scan the QR code on the screen for step-by-step directions."
+                answer_en = f"The {matched_display_name} is located in {top_loc.get('building')} on Floor {top_loc.get('floor')}{room_text}. Please scan the QR code on the screen for step-by-step directions."
             else:
                 answer_en = "I'm sorry, I could not find that location on the campus map. Please check the department directory."
                 is_fallback = True
