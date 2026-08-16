@@ -304,19 +304,18 @@ class OfflineTranslationService:
             return pattern.sub(replace_match, translated_text)
 
         # ── Tier 1: Google Translate ──────────────────────────────────────────
-        # DISABLED for testing: Forcing NLLB entirely.
-        # try:
-        #     from deep_translator import GoogleTranslator
-        #     gt_source = "auto" if source not in ("en", "hi", "kn") else source
-        #     translated = GoogleTranslator(source=gt_source, target=target).translate(modified_text)
-        #     if translated and not _is_degenerate(translated):
-        #         final_result = restore_placeholders(translated)
-        #         logger.info(f"Google Translate succeeded ({source}->{target}): '{text[:40]}' -> '{final_result[:40]}'")
-        #         self._set_cached_translation(text, source, target, final_result)
-        #         return final_result
-        #     logger.warning("Google Translate returned degenerate output. Falling back to NLLB.")
-        # except Exception as e:
-        #     logger.warning(f"Google Translate unavailable ({e}). Falling back to NLLB.")
+        try:
+            from deep_translator import GoogleTranslator
+            gt_source = "auto" if source not in ("en", "hi", "kn") else source
+            translated = GoogleTranslator(source=gt_source, target=target).translate(modified_text)
+            if translated and not _is_degenerate(translated):
+                final_result = restore_placeholders(translated)
+                logger.info(f"Google Translate succeeded ({source}->{target}): '{text[:40]}' -> '{final_result[:40]}'")
+                self._set_cached_translation(text, source, target, final_result)
+                return final_result
+            logger.warning("Google Translate returned degenerate output. Falling back to NLLB.")
+        except Exception as e:
+            logger.warning(f"Google Translate unavailable ({e}). Falling back to NLLB.")
 
         # ── Tier 2: NLLB (offline, sentence-chunked) ───────────────────────────
         if source in ("en", "hi", "kn") and target in ("en", "hi", "kn"):
