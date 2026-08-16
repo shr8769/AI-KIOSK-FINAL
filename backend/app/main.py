@@ -64,7 +64,8 @@ async def lifespan(app: FastAPI):
     agent_process = None
     try:
         agent_script = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "run_agents.py"))
-        agent_process = subprocess.Popen([sys.executable, agent_script, "--announcements-only"])
+        config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "agent_config.yaml"))
+        agent_process = subprocess.Popen([sys.executable, agent_script, "--config", config_path, "--announcements-only"])
         logger.info("🤖 Autonomous agents process launched dynamically.")
     except Exception as e:
         logger.error(f"Failed to launch autonomous agents: {e}")
