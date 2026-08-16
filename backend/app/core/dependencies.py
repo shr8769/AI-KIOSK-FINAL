@@ -124,12 +124,11 @@ def get_coordinator_agent():
 
 
 def _get_translation_llm():
-    """Lazily load the LLM client for high-quality conversational translations."""
-    google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
+    """Lazily load the Google GenAI client for high-quality conversational translations."""
+    google_key = os.environ.get("GOOGLE_API_KEY", "").strip() or os.environ.get("GEMINI_API_KEY", "").strip()
     if google_key:
-        from config.llm_config import GEMINI_MODEL
-        from langchain_google_genai import ChatGoogleGenerativeAI
-        return ChatGoogleGenerativeAI(model=GEMINI_MODEL)
+        from google import genai
+        return genai.Client(api_key=google_key)
     else:
         # Avoid hanging on slow local LLMs for real-time translation
         return None
@@ -138,28 +137,47 @@ def _get_translation_llm():
 def translate_to_english_llm(text: str, source_lang: str) -> str:
     """Translates conversational or mixed native query to clear English using LLM."""
     try:
-        llm = _get_translation_llm()
-        if not llm:
+        client = _get_translation_llm()
+        if not client:
             return None
+        from config.llm_config import GEMINI_MODEL
         lang_name = "Kannada" if source_lang == "kn" else "Hindi"
         prompt = f"""Translate this conversational, mixed {lang_name} user query into standard, clear English.
 User query: "{text}"
 English translation:"""
-        response = llm.invoke(prompt)
-        translated = response.content.strip().strip('"').strip("'")
-        if translated:
-            return translated
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt
+        )
+        if response and response.text:
+            translated = response.text.strip().strip('"').strip("'")
+            if translated:
+                return translated
     except Exception as e:
         logger.warning(f"LLM translation to English failed: {e}")
+        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "quota" in str(e).lower():
+            logger.info("Falling back to local Ollama (qwen3) for translation to English...")
+            try:
+                from config.llm_config import OLLAMA_MODEL
+                from langchain_ollama import ChatOllama
+                ollama = ChatOllama(model=OLLAMA_MODEL)
+                fallback_resp = ollama.invoke(prompt)
+                if fallback_resp and fallback_resp.content:
+                    translated = fallback_resp.content.strip().strip('"').strip("'")
+                    if translated:
+                        return translated
+            except Exception as oe:
+                logger.error(f"Ollama translation fallback failed: {oe}")
     return text
 
 
 def translate_from_english_llm(text: str, target_lang: str) -> str:
     """Translates English to conversational, mixed target language using LLM with loanword preservation."""
     try:
-        llm = _get_translation_llm()
-        if not llm:
+        client = _get_translation_llm()
+        if not client:
             return None
+        from config.llm_config import GEMINI_MODEL
         lang_name = "Kannada" if target_lang == "kn" else "Hindi"
         prompt = f"""You are a professional, human-like translator for the PES University AI Kiosk.
 Translate the following English text into conversational, natural {lang_name} as spoken by students and faculty in daily life.
@@ -172,12 +190,29 @@ Rules:
 
 English text: "{text}"
 Conversational {lang_name} translation:"""
-        response = llm.invoke(prompt)
-        translated = response.content.strip().strip('"').strip("'")
-        if translated:
-            return translated
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt
+        )
+        if response and response.text:
+            translated = response.text.strip().strip('"').strip("'")
+            if translated:
+                return translated
     except Exception as e:
         logger.warning(f"LLM translation from English failed: {e}")
+        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "quota" in str(e).lower():
+            logger.info("Falling back to local Ollama (qwen3) for translation from English...")
+            try:
+                from config.llm_config import OLLAMA_MODEL
+                from langchain_ollama import ChatOllama
+                ollama = ChatOllama(model=OLLAMA_MODEL)
+                fallback_resp = ollama.invoke(prompt)
+                if fallback_resp and fallback_resp.content:
+                    translated = fallback_resp.content.strip().strip('"').strip("'")
+                    if translated:
+                        return translated
+            except Exception as oe:
+                logger.error(f"Ollama translation fallback failed: {oe}")
     return text
 
 

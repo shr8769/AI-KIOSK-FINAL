@@ -127,3 +127,4 @@ class NavigationEngine:
 
 # Singleton instance
 navigation_engine = NavigationEngine()
+

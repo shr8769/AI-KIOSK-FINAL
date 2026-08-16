@@ -356,12 +356,11 @@ class AnnouncementMonitorAgent(BaseAutonomousAgent):
                     try:
                         elements = await page.query_selector_all(selector)
                         if elements:
-                            for el in elements:
+                            # Iterate in reverse so the top items get added last (larger first_seen timestamp)
+                            # This ensures that sorting by first_seen DESCENDING preserves the correct top-to-bottom DOM order!
+                            for el in reversed(elements):
                                 title_el = await el.query_selector(
                                     "h3, h4, h5, .title, .announcement-title, strong, .anc-text p"
-                                )
-                                body_el = await el.query_selector(
-                                    ".body, .announcement-body, .content, .description"
                                 )
                                 date_el = await el.query_selector(
                                     ".date, .timestamp, time, .posted-date, small, .published-date"
@@ -370,24 +369,24 @@ class AnnouncementMonitorAgent(BaseAutonomousAgent):
                                 title = (
                                     await title_el.inner_text()
                                     if title_el
-                                    else ""
-                                ).strip()
-                                body = (
-                                    await body_el.inner_text()
-                                    if body_el
-                                    else ""
-                                ).strip()
-                                date = (
-                                    await date_el.inner_text()
-                                    if date_el
-                                    else ""
-                                ).strip()
+                                    else "Untitled"
+                                )
 
-                                # Try to fetch detailed body if it's a PESU Academy announcement
+                                body = await el.evaluate('''el => {
+                                    const b = el.querySelector(".body, .announcement-body, .content, .description") || el;
+                                    if (b !== el) {
+                                        return b.innerText.trim();
+                                    } else {
+                                        return el.innerText.trim();
+                                    }
+                                }''')
+                                
+                                # Try to fetch detailed body and PDF links if it's a PESU Academy announcement
                                 a_el = await el.query_selector("a[onclick*='handleShowMoreAnnouncement']")
                                 if a_el:
                                     onclick_val = await a_el.get_attribute("onclick")
                                     if onclick_val:
+                                        import re
                                         match = re.search(r'handleShowMoreAnnouncement\((.*?),(.*?),(.*?)\)', onclick_val.replace(' ', ''))
                                         if match:
                                             c_mode, a_type, ann_id = match.groups()
@@ -403,14 +402,41 @@ class AnnouncementMonitorAgent(BaseAutonomousAgent):
                                                         }});
                                                     }});
                                                 }}''')
+                                                
                                                 from bs4 import BeautifulSoup
                                                 soup = BeautifulSoup(detail_html, "html.parser")
+                                                
+                                                # Extract full text
                                                 body_div = soup.select_one('.col-md-12')
                                                 if body_div:
                                                     body = body_div.get_text(separator='\\n', strip=True)
+                                                    
+                                                # Extract PDF links
+                                                links = []
+                                                for a_tag in soup.find_all('a', href=True):
+                                                    href = a_tag['href']
+                                                    if 'handleDownloadAnoncemntdoc' in href:
+                                                        doc_match = re.search(r'handleDownloadAnoncemntdoc\([\'"](\d+)[\'"]\)', href)
+                                                        if doc_match:
+                                                            doc_id = doc_match.group(1)
+                                                            pdf_text = a_tag.get_text(strip=True)
+                                                            if not pdf_text:
+                                                                pdf_text = f"Attachment_{doc_id}.pdf"
+                                                            links.append(f"- [{pdf_text}](https://www.pesuacademy.com/Academy/s/studentProfilePESU/downloadAnoncemntdoc/{doc_id})")
+                                                            
+                                                if links:
+                                                    links = list(dict.fromkeys(links))
+                                                    body += "\\n\\n**Links & Attachments:**\\n" + "\\n".join(links)
+                                                    
                                                 await asyncio.sleep(0.5) # rate limit requests
                                             except Exception as e:
-                                                self.logger.error(f"Failed to fetch detail for {ann_id}: {e}")
+                                                self.logger.error(f"Failed to fetch detail/PDFs for {ann_id}: {e}")
+                                
+                                date = (
+                                    await date_el.inner_text()
+                                    if date_el
+                                    else ""
+                                ).strip()
 
                                 if title or body:
                                     announcements.append({

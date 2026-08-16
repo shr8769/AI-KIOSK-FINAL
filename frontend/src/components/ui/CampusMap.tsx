@@ -14,8 +14,9 @@ interface CampusMapProps {
 }
 
 export function CampusMap({ path }: CampusMapProps) {
-  const mapWidth = 956;
-  const mapHeight = 583;
+  // The logical coordinate bounds from navigation_graph.json
+  const mapWidth = 280;
+  const mapHeight = 220;
 
   const [activeFloor, setActiveFloor] = React.useState<number>(0);
 

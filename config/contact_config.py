@@ -103,10 +103,10 @@ def get_specific_contact(query: str, domain: Optional[str] = None) -> dict:
         return CONTACTS["scholarships"]
     if any(k in q for k in ["fee", "pay", "tuition", "cost", "installments", "account"]):
         return CONTACTS["finance"]
+    if any(k in q for k in ["admission", "apply", "eligibility", "eligible", "cutoff", "cut-off", "seat matrix", "intake", "rank", "kcet", "jee", "branch"]):
+        return CONTACTS["admissions"]
     if any(k in q for k in ["exam", "revaluation", "grade", "sgpa", "cgpa", "marks", "timetable", "schedule"]):
         return CONTACTS["examination_cell"]
-    if any(k in q for k in ["admission", "apply", "eligibility", "cutoff", "cut-off", "seat matrix", "intake"]):
-        return CONTACTS["admissions"]
         
     # 2. Domain-based mapping fallback
     if domain:

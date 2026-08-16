@@ -559,7 +559,17 @@ class BaseAgent(ABC):
             if debug:
                 print("[Warning] Both Qwen and Gemini are offline/degraded. Falling back to raw retrieved markdown chunk.")
             q_parsed, a_parsed = self.parse_document(best_doc['document'])
-            rag_answer = a_parsed if a_parsed else best_doc['document']
+            raw_text = a_parsed if a_parsed else best_doc['document']
+            # Clean markdown for translation and TTS
+            raw_text = re.sub(r'#+\s*', '', raw_text)
+            raw_text = re.sub(r'[*_`]', '', raw_text)
+            # Remove repetitive sentences if any
+            sentences = []
+            for s in raw_text.split('\n'):
+                s = s.strip()
+                if s and s not in sentences:
+                    sentences.append(s)
+            rag_answer = ', '.join(sentences) + '.'
             
         llm_latency = time.time() - llm_start
         total_latency = time.time() - start_time

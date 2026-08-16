@@ -32,15 +32,15 @@ Brochure Link
 
 ### Prof. MRD Scholarships
 
-Merit Certificate + 50% Tuition Fee Refund for Top 5% of the Students based on their CGPA.
+The Prof. MRD Scholarship provides a Merit Certificate + 50% Tuition Fee Refund for the Top 5% of the Students based on their CGPA.
 
 ### Prof. CNR Rao Scholarships
 
-Merit Certificate + 40% Tuition Fee Refund for the next 20% of the Students based on their SGPA.
+The Prof. CNR Rao Scholarship provides a Merit Certificate + 40% Tuition Fee Refund for the next 20% of the Students based on their SGPA.
 
 ### Distinction Awards
 
-Merit Certificate for Students securing 7.75+ SGPA.
+The Distinction Award provides a Merit Certificate for Students securing 7.75+ SGPA.
 
 Note:
 

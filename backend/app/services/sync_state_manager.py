@@ -511,7 +511,7 @@ class SyncStateManager:
             google_key = os.environ.get("GOOGLE_API_KEY", "").strip()
             if google_key:
                 from langchain_google_genai import ChatGoogleGenerativeAI
-                llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+                llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash")
             else:
                 from langchain_ollama import ChatOllama
                 llm = ChatOllama(model="qwen3:latest")

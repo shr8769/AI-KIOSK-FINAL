@@ -51,7 +51,7 @@ class GeminiTranslator(BaseTranslator):
     Used for initial prototype before offline IndicTrans2 deployment.
     Falls back gracefully if quota is exceeded.
     """
-    def __init__(self, api_key: str = None, model_name: str = "gemini-2.5-flash"):
+    def __init__(self, api_key: str = None, model_name: str = "gemini-3.5-flash"):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
         self.client = None

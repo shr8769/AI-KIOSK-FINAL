@@ -13,6 +13,10 @@ PES Entrance ProcessEligibility & OverviewQualifying ExamsProgram IntakeFee Deta
 
 From every corner of the city to the heart of campus — PES University's transportation service ensures a safe, timely, and hassle-free journey for every student.
 
+### Transportation Registration Link
+
+To register for the university transportation and bus services, or to view the bus routes, please visit the official transportation portal at [this link](https://pes.edu/transportation/).
+
 ### Choose a campus
 
 - PESU Ring Road CampusRR Campus

@@ -85,18 +85,30 @@ def local_spelling_corrector(query: str) -> str:
     return " ".join(corrected_words)
 
 
-async def correct_and_normalize_query(query: str) -> str:
+async def correct_and_normalize_query(query: str, detected_lang: str) -> str:
     """
     Spelling correction and semantic query normalization.
     Fixes spelling errors and rephrases input into clear English matching target vocabulary.
     """
+    # Hardcoded phonetic fallbacks for ASR errors
+    query_lower = query.lower()
+    query_lower = query_lower.replace("passage", "pessat")
+    query_lower = query_lower.replace("pesat", "pessat")
+    query_lower = query_lower.replace("p stat", "pessat")
+    query_lower = query_lower.replace("k set", "kcet")
+    query_lower = query_lower.replace("v tech", "B.Tech")
+    query_lower = query_lower.replace("be tech", "B.Tech")
+    query_lower = query_lower.replace("btech", "B.Tech")
+    query_lower = query_lower.replace("b tech", "B.Tech")
+    query_lower = query_lower.replace("mrd", "Prof. MRD Scholarship")
+    query = query_lower
+
     # 1. Run local spelling correction fast-path
     try:
         query = local_spelling_corrector(query)
     except Exception as e:
         logger.error(f"Local spelling correction failed: {e}")
 
-    # Bypass LLM query normalization entirely to save latency (saves ~500ms-1s per turn)
     return query
 
 
@@ -113,42 +125,26 @@ async def make_conversational(text: str, lang: str) -> str:
     if lang not in ("kn", "hi"):
         return text
 
-    lang_name = {"kn": "Kannada", "hi": "Hindi"}[lang]
-    {
-        "kn": (
-            "Example:\n"
-            "  Formal: 'ವಿದ್ಯಾರ್ಥಿಗಳ ನೇಮಕಾತಿ ಮಾಹಿತಿಗಾಗಿ placement cell ಗೆ ಸಂಪರ್ಕಿಸಿ.'\n"
-            "  Conversational: 'Placement ಬಗ್ಗೆ ತಿಳಿಯಬೇಕಾದ್ರೆ, placement cell ಅನ್ನ directly contact ಮಾಡ್ಬಹುದು!'\n"
-        ),
-        "hi": (
-            "Example:\n"
-            "  Formal: 'छात्रों के लिए placement सेल से संपर्क करें.'\n"
-            "  Conversational: 'Placement के बारे में जानना है, toh placement cell ko directly contact kar sakte ho!'\n"
-        ),
-    }[lang]
-
-    prompt = (
-        f"You are a friendly university AI kiosk assistant. "
-        f"Rewrite the following {lang_name} text to sound natural and conversational, "
-        f"like how educated urban Indians actually speak — mixing {lang_name} grammar with "
-        f"common English words (technical terms, brand names, numbers, and short phrases should stay in English but be written in the native script if possible, or left in English script if better). "
-        f"CRITICAL: You MUST write the final output primarily in the native script (Devanagari for Hindi, Kannada script for Kannada). Do NOT output fully Romanized Hinglish/Kanglish. "
-        f"Do not use overly pure/formal {lang_name}. Keep it warm, friendly, and short. "
-        f"Keep all factual information exactly the same. Do NOT translate everything to English. "
-        f"Return ONLY the rewritten text, no explanation.\n"
-        f"Text to rewrite:\n{text}\n"
-        f"Conversational version:"
-    )
-
     try:
         import asyncio
+        from app.core.dependencies import get_coordinator_agent
         coordinator = get_coordinator_agent()
         admissions_agent = coordinator.agents.get("admissions")
+        
         if admissions_agent:
-            response = await asyncio.to_thread(admissions_agent.synthesizer.synthesize, query=prompt, context_docs=[], domain="default")
+            # Reusing the existing GeminiSynthesizer, which has Auto-Fallback to Ollama 
+            # if the Gemini API limit (429) is hit!
+            domain_key = f"conversational_{lang}"
+            response = await asyncio.to_thread(
+                admissions_agent.synthesizer.synthesize, 
+                query=text, 
+                context_docs=[], 
+                domain=domain_key
+            )
+            
             if response and len(response) >= 5:
                 result = response.strip().strip('"').strip("'")
-                logger.info(f"make_conversational ({lang}): '{text[:50]}' -> '{result[:50]}'")
+                logger.info(f"make_conversational ({lang}) (Synthesizer): '{text[:50]}' -> '{result[:50]}'")
                 return result
     except Exception as e:
         logger.warning(f"make_conversational failed ({lang}): {e}")
@@ -251,24 +247,28 @@ async def run_query_pipeline(
     was_refined = False
     if outstanding:
         was_refined = True
-        orig_q = outstanding.get("original_query")
+        orig_q = outstanding.get("original_query") or ""
         clarification_q = outstanding.get("clarification_question")
 
-        try:
-            import asyncio
-            coordinator = get_coordinator_agent()
-            history = [{"query": orig_q, "response": clarification_q or ""}]
-            rewritten = await asyncio.to_thread(
-                coordinator.reformulate_query, query_en, history
-            )
-            if rewritten and rewritten.lower() != query_en.lower():
-                logger.info(f"Smart clarification merge: '{orig_q}' + '{query_en}' -> '{rewritten}'")
-                query_en = rewritten
-            else:
+        if orig_q.strip():
+            try:
+                import asyncio
+                coordinator = get_coordinator_agent()
+                history = [{"query": orig_q, "response": clarification_q or ""}]
+                rewritten = await asyncio.to_thread(
+                    coordinator.reformulate_query, query_en, history
+                )
+                if rewritten and rewritten.lower() != query_en.lower():
+                    logger.info(f"Smart clarification merge: '{orig_q}' + '{query_en}' -> '{rewritten}'")
+                    query_en = rewritten
+                else:
+                    query_en = f"{orig_q} {query_en}"
+            except Exception as e:
+                logger.error(f"Clarification rewrite failed: {e}")
                 query_en = f"{orig_q} {query_en}"
-        except Exception as e:
-            logger.error(f"Clarification rewrite failed: {e}")
-            query_en = f"{orig_q} {query_en}"
+        else:
+            # Nothing to merge if original query was empty
+            logger.info("Smart clarification merge skipped because original query was empty.")
 
         from app.core.session_store import update_session_metadata
         await update_session_metadata(session_id, {"outstanding_clarification": None})
@@ -277,7 +277,7 @@ async def run_query_pipeline(
         updated_session = await get_session(session_id)
 
     # Correct and normalize spelling/phrasing variations
-    query_en = await correct_and_normalize_query(query_en)
+    query_en = await correct_and_normalize_query(query_en, detected_lang)
 
     # Persist user turn
     await add_user_turn(session_id, clean_transcript)
@@ -305,8 +305,6 @@ async def run_query_pipeline(
 
             import asyncio
             question_native = await asyncio.to_thread(translate_from_english, question_en, target_lang=detected_lang)
-            if detected_lang in ("kn", "hi"):
-                question_native = await make_conversational(question_native, detected_lang)
             await add_agent_turn(session_id, question_native)
 
             from app.core.session_store import update_session_metadata
@@ -422,8 +420,6 @@ async def run_query_pipeline(
 
             import asyncio
             question_native = await asyncio.to_thread(translate_from_english, question_en, target_lang=detected_lang)
-            if detected_lang in ("kn", "hi"):
-                question_native = await make_conversational(question_native, detected_lang)
             await add_agent_turn(session_id, question_native)
 
             from app.core.session_store import update_session_metadata
@@ -531,8 +527,6 @@ async def run_query_pipeline(
         if detected_lang in ("kn", "hi")
         else answer_en
     )
-    if detected_lang in ("kn", "hi"):
-        answer_native = await make_conversational(answer_native, detected_lang)
     await add_agent_turn(session_id, answer_native)
 
     response_text = answer_native
@@ -599,6 +593,8 @@ async def run_query_pipeline(
         asyncio.create_task(log_to_db())
 
     except Exception as db_e:
-        logger.error(f"Failed to setup background DB logging: {db_e}")
+        # Suppress verbose DB logging errors when postgres is intentionally offline
+        if "[Errno 10061]" not in str(db_e) and "Connection refused" not in str(db_e):
+            logger.warning(f"Background DB logging warning: {db_e}")
 
     return result

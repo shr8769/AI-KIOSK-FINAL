@@ -26,7 +26,7 @@ export async function startMicAnalysis(): Promise<MicHandle | null> {
       video: false,
     });
 
-    const audioCtx = new AudioContextClass() as AudioContext;
+    const audioCtx = new AudioContextClass({ sampleRate: 16000 }) as AudioContext;
     if (audioCtx.state === 'suspended') {
       await audioCtx.resume();
     }

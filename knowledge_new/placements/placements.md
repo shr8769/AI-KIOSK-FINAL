@@ -44,6 +44,11 @@ Internships Offers
 
 ### PES alumni can be found in these leading companies
 
+PES University maintains active recruitment relationships with many top-tier product-based companies and global firms. The top Tier-1 companies coming for college placements include:
+- **Big Tech & Product Companies:** Amazon, Microsoft, Meta, Google, Intuit, Adobe, Cisco, VMware, Nvidia, eBay, and Akamai.
+- **Fintech & Consulting:** Goldman Sachs, Morgan Stanley, J.P. Morgan, Deloitte, and various global management consulting firms.
+- **Others:** Flipkart, Netflix, Sprinklr, Citrix, Yahoo, Shell, and Sabre Travel Technologies.
+
 ### You may also be interested in
 
 ### Giving to PES

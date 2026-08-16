@@ -20,13 +20,19 @@ Fee Structure for the different programs are provided below
 #### Bachelor of Technology (B.Tech)
 
 - **Computer Science and Engineering (CSE)** & **CSE (Artificial Intelligence & Machine Learning - AIML)**
-  - JEE Main Quota Fee – INR 5,50,000 / Annum
+  - KCET Quota Fee – ~INR 1,14,000 / Annum
+  - PESSAT Quota Fee – INR 5,00,000 / Annum
+  - Management / JEE Main Quota Fee – INR 5,50,000 / Annum
 - **Electronics and Communication Engineering (ECE)**
-  - JEE Main Quota Fee – INR 5,00,000 / Annum
+  - KCET Quota Fee – ~INR 1,14,000 / Annum
+  - PESSAT Quota Fee – INR 4,50,000 / Annum
+  - Management / JEE Main Quota Fee – INR 5,00,000 / Annum
 - **Mechanical Engineering (ME)**, **Electrical and Electronics Engineering (EEE)**, & **Biotechnology (BT)**
-  - JEE Main Quota Fee – INR 4,50,000 / Annum
+  - KCET Quota Fee – ~INR 1,14,000 / Annum
+  - PESSAT Quota Fee – INR 4,00,000 / Annum
+  - Management / JEE Main Quota Fee – INR 4,50,000 / Annum
 
-*(For Higher fee category / Management / NRI / Foreign / Sponsored / OCI / PIO seats Fee: Please contact the Office of Admissions or write to admissions@pes.edu)*
+*(For NRI / Foreign / Sponsored / OCI / PIO seats Fee: Please contact the Office of Admissions or write to admissions@pes.edu)*
 #### Bachelor of Technology (B.Tech) – Diploma Lateral Entry
 
 #### Bachelor of Architecture (B.Arch)

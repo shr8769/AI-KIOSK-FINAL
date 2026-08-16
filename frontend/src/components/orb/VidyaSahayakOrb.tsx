@@ -366,7 +366,7 @@ const VidyaSahayakOrbBase: React.FC<VidyaSahayakOrbProps> = ({
 
   /* Manage mic toggle syncing with controller state */
   useEffect(() => {
-    const isInteractionActive = ['listening', 'thinking', 'speaking', 'retrieving', 'clarifying'].includes(activeId);
+    const isInteractionActive = ['listening', 'clarifying'].includes(activeId);
     if (isInteractionActive) {
       if (!micOnRef.current) {
         (async () => {

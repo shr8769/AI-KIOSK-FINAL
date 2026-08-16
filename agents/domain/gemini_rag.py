@@ -12,7 +12,7 @@ class GeminiSynthesizer:
     Provides compatibility fallbacks if Google GenAI SDK or API keys are missing.
     Fallback to local Qwen (Ollama) is used if GEMINI_API_KEY is not set.
     """
-    def __init__(self, api_key: str = None, model_name: str = "gemini-2.5-flash"):
+    def __init__(self, api_key: str = None, model_name: str = "gemini-3.5-flash"):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
         self.client = None
@@ -26,23 +26,20 @@ class GeminiSynthesizer:
                 self.client = genai.Client(api_key=self.api_key)
                 logger.info(f"Initialized Gemini client successfully with model {model_name}.")
             except Exception as e:
-                logger.error(f"Failed to initialize Gemini client: {e}. Falling back to local Ollama (qwen3:latest).")
-                self._init_ollama()
+                logger.error(f"Failed to initialize Gemini client: {e}. Falling back exclusively to local Ollama.")
         else:
-            logger.info("GEMINI_API_KEY not found in environment. Initializing local Ollama (qwen3:latest) fallback.")
-            self._init_ollama()
+            logger.info("GEMINI_API_KEY not found in environment. Relying exclusively on local Ollama.")
+            
+        # ALWAYS initialize Ollama so it's ready as a fallback if Gemini goes down
+        self._init_ollama()
 
     def _init_ollama(self):
         try:
-            import socket
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.settimeout(0.5)
-                s.connect(("localhost", 11434))
             from langchain_ollama import ChatOllama
             self.ollama_client = ChatOllama(model="qwen3:latest")
-            logger.info("Initialized local Ollama client successfully with model qwen3:latest.")
-        except Exception as e:
-            logger.warning(f"Ollama service is not running on localhost:11434 ({e}). RAG synthesis fallback will be unavailable.")
+            logger.info("Initialized local Ollama client (qwen3:latest) for fallback.")
+        except ImportError as e:
+            logger.warning(f"langchain_ollama not installed. Fallback unavailable. {e}")
             self.ollama_client = None
 
     def synthesize(self, query: str, context_docs: list, domain: str) -> str:
@@ -67,14 +64,21 @@ Query: {query}
 
 Answer:"""
 
-        if not context_docs:
-            prompt = query
-        else:
-            # Format context
-            formatted_context = ""
+        # Format context
+        formatted_context = ""
+        if context_docs:
             for i, doc in enumerate(context_docs, 1):
                 formatted_context += f"Document {i} (ID: {doc.get('id', 'unknown')}):\n{doc.get('document', '')}\n\n"
-            prompt = template.format(context=formatted_context, query=query)
+        
+        # Some templates don't require {context} (e.g., conversational rewrites).
+        # We try to format with context, and if that fails or isn't needed, we just use the query.
+        try:
+            if "{context}" in template:
+                prompt = template.format(context=formatted_context, query=query)
+            else:
+                prompt = template.format(query=query)
+        except Exception:
+            prompt = query
 
         if self.is_degraded:
             import time
@@ -107,7 +111,10 @@ Answer:"""
                     response = self.client.models.generate_content(
                         model=self.model_name,
                         contents=prompt,
-                        config={'temperature': 0.3}
+                        config={
+                            'temperature': 0.3,
+                            'automatic_function_calling': {'disable': True}
+                        }
                     )
                     if response.text:
                         self.is_degraded = False
@@ -208,6 +215,9 @@ INSUFFICIENT"""
                     response = self.client.models.generate_content(
                         model=self.model_name,
                         contents=prompt,
+                        config={
+                            'automatic_function_calling': {'disable': True}
+                        }
                     )
                     if response.text:
                         self.is_degraded = False

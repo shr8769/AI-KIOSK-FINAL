@@ -57,6 +57,17 @@ async def lifespan(app: FastAPI):
     from app.core.session_store import get_session, init_db
 
     await init_db()
+    
+    # Launch autonomous agents automatically in the background
+    import subprocess
+    import sys
+    agent_process = None
+    try:
+        agent_script = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "run_agents.py"))
+        agent_process = subprocess.Popen([sys.executable, agent_script, "--announcements-only"])
+        logger.info("🤖 Autonomous agents process launched dynamically.")
+    except Exception as e:
+        logger.error(f"Failed to launch autonomous agents: {e}")
 
     # Seed demo session for frontend local development
     try:
@@ -112,6 +123,16 @@ async def lifespan(app: FastAPI):
         await close_redis()
     except Exception:
         pass
+        
+    # Terminate the autonomous agents process if it was started
+    if 'agent_process' in locals() and agent_process:
+        try:
+            agent_process.terminate()
+            agent_process.wait(timeout=5)
+            logger.info("🤖 Autonomous agents process terminated.")
+        except Exception as e:
+            logger.error(f"Error terminating agents: {e}")
+            
     logger.info("⏹  VidyaSahayak backend shutting down...")
 
 

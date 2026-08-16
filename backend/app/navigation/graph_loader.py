@@ -35,4 +35,8 @@ class GraphLoader:
         for edge in self.graph.edges:
             if edge.from_node == node_id:
                 neighbors[edge.to_node] = edge
+            elif edge.to_node == node_id:
+                # Create a reverse edge on the fly
+                reverse_edge = Edge(**{"from": edge.to_node, "to": edge.from_node, "cost": edge.cost})
+                neighbors[edge.from_node] = reverse_edge
         return neighbors

@@ -1,0 +1,46 @@
+{
+  "nodes": [
+    { "id": "KIOSK", "name": "Information Kiosk", "x": 85, "y": 55, "floor": 0 },
+    { "id": "main_gate", "name": "Main Gate", "x": 220, "y": 60, "floor": 0 },
+    { "id": "admin_block", "name": "Admissions & Admin Block", "x": 165, "y": 115, "floor": 0 },
+    { "id": "placement_cell", "name": "Placement Cell", "x": 165, "y": 115, "floor": 1 },
+    { "id": "academic_block", "name": "Academic Block", "x": 130, "y": 150, "floor": 0 },
+    { "id": "mrd_auditorium", "name": "MRD Auditorium", "x": 190, "y": 180, "floor": 0 },
+    { "id": "library", "name": "Central Library", "x": 85, "y": 115, "floor": 0 },
+    { "id": "food_court", "name": "Food Court / Canteen", "x": 160, "y": 180, "floor": 4 },
+    { "id": "hostel_office", "name": "Hostel Office", "x": 40, "y": 150, "floor": 0 },
+    { "id": "research_block", "name": "Research Block", "x": 200, "y": 150, "floor": 0 },
+    { "id": "medical_center", "name": "Medical Center", "x": 40, "y": 80, "floor": 0 },
+    
+    { "id": "j_tl", "name": "North-West Junction", "x": 85, "y": 80, "floor": 0 },
+    { "id": "j_tr", "name": "North-East Junction", "x": 150, "y": 80, "floor": 0 },
+    { "id": "j_br", "name": "South-East Junction", "x": 180, "y": 150, "floor": 0 },
+    { "id": "j_bl", "name": "South-West Junction", "x": 85, "y": 150, "floor": 0 },
+    
+    { "id": "lift_1_f0", "name": "Main Lift", "x": 160, "y": 180, "floor": 0 },
+    { "id": "lift_1_f4", "name": "Main Lift", "x": 160, "y": 180, "floor": 4 }
+  ],
+  "edges": [
+    { "from": "KIOSK", "to": "j_tl", "cost": 25 },
+    { "from": "medical_center", "to": "j_tl", "cost": 45 },
+    { "from": "library", "to": "j_tl", "cost": 35 },
+    { "from": "library", "to": "j_bl", "cost": 35 },
+    { "from": "hostel_office", "to": "j_bl", "cost": 45 },
+    { "from": "academic_block", "to": "j_bl", "cost": 45 },
+    { "from": "academic_block", "to": "j_br", "cost": 50 },
+    { "from": "mrd_auditorium", "to": "j_br", "cost": 30 },
+    { "from": "research_block", "to": "j_br", "cost": 20 },
+    { "from": "admin_block", "to": "j_br", "cost": 35 },
+    { "from": "admin_block", "to": "j_tr", "cost": 35 },
+    { "from": "main_gate", "to": "j_tr", "cost": 70 },
+    { "from": "j_tl", "to": "j_tr", "cost": 65 },
+    { "from": "j_tl", "to": "j_bl", "cost": 70 },
+    { "from": "j_bl", "to": "j_br", "cost": 95 },
+    { "from": "j_tr", "to": "j_br", "cost": 70 },
+    
+    { "from": "admin_block", "to": "placement_cell", "cost": 15 },
+    { "from": "j_br", "to": "lift_1_f0", "cost": 30 },
+    { "from": "lift_1_f0", "to": "lift_1_f4", "cost": 100 },
+    { "from": "lift_1_f4", "to": "food_court", "cost": 10 }
+  ]
+}
