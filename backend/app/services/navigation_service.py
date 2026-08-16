@@ -21,9 +21,66 @@ class NavigationService:
         self.ttl_seconds = 15 * 60  # 15 minutes
         self.ttl_seconds = 15 * 60  # 15 minutes
 
+    def _get_tunnel_url(self) -> str:
+        """Read the ngrok public URL from frontend/public/tunnel.json and verify it's reachable."""
+        import pathlib
+        try:
+            tunnel_path = pathlib.Path(__file__).resolve().parents[3] / "frontend" / "public" / "tunnel.json"
+            if tunnel_path.exists():
+                import json as _json
+                data = _json.loads(tunnel_path.read_text(encoding="utf-8"))
+                url = data.get("publicUrl", "").strip().rstrip("/")
+                if url and url.startswith("http"):
+                    # Quick liveness check (0.5s timeout) — stale ngrok URLs should fail fast
+                    try:
+                        import httpx as _httpx
+                        r = _httpx.get(f"{url}/tunnel.json", timeout=0.5, follow_redirects=False)
+                        if r.status_code < 500:
+                            return url
+                    except Exception:
+                        logger.debug("Ngrok tunnel URL in tunnel.json is stale or unreachable.")
+        except Exception:
+            pass
+        return ""
+
     def build_url(self, nav_id: str) -> str:
-        base_url = settings.PUBLIC_WEB_APP_URL.rstrip('/') if settings.PUBLIC_WEB_APP_URL else "http://localhost:3000"
-        return f"{base_url}/navigation/{nav_id}?t={int(time.time())}"
+        """
+        Build the QR-code URL for a navigation session.
+        Priority:
+          1. PUBLIC_WEB_APP_URL (Vercel cloud — requires maps deployed there)
+          2. Live ngrok tunnel URL from tunnel.json (works anywhere, maps served locally)
+          3. PUBLIC_BASE_URL setting (explicit override)
+          4. LAN IP of this machine (works on same campus WiFi)
+          5. http://localhost:3000 last-resort fallback
+        """
+        # 1. Vercel cloud URL (Prioritized)
+        if settings.PUBLIC_WEB_APP_URL:
+            base_url = settings.PUBLIC_WEB_APP_URL.rstrip('/')
+            logger.info(f"Navigation QR will use Vercel URL: {base_url}")
+            return f"{base_url}/navigation/{nav_id}?t={int(time.time())}"
+
+        # 2. Live ngrok tunnel
+        ngrok = self._get_tunnel_url()
+        if ngrok:
+            logger.info(f"Navigation QR will use ngrok tunnel: {ngrok}")
+            return f"{ngrok}/navigation/{nav_id}?t={int(time.time())}"
+
+        # 3. Explicit public base URL override
+        if settings.PUBLIC_BASE_URL:
+            base_url = settings.PUBLIC_BASE_URL.rstrip('/')
+            logger.info(f"Navigation QR will use PUBLIC_BASE_URL: {base_url}")
+            return f"{base_url}/navigation/{nav_id}?t={int(time.time())}"
+
+        # 4. LAN IP — phones on the same WiFi can reach this
+        from app.core.config import get_local_ip
+        lan_ip = get_local_ip()
+        if lan_ip and lan_ip not in ("localhost", "127.0.0.1"):
+            lan_url = f"http://{lan_ip}:3000"
+            logger.info(f"Navigation QR will use LAN IP: {lan_url}")
+            return f"{lan_url}/navigation/{nav_id}?t={int(time.time())}"
+
+        # 5. Last-resort local fallback
+        return f"http://localhost:3000/navigation/{nav_id}?t={int(time.time())}"
 
     async def create_session(self, metadata: Dict[str, Any]) -> str:
         """Creates a temporary navigation session and returns the navigation_id."""

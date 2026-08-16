@@ -127,21 +127,22 @@ async def make_conversational(text: str, lang: str) -> str:
 
     try:
         import asyncio
+
         from app.core.dependencies import get_coordinator_agent
         coordinator = get_coordinator_agent()
         admissions_agent = coordinator.agents.get("admissions")
-        
+
         if admissions_agent:
-            # Reusing the existing GeminiSynthesizer, which has Auto-Fallback to Ollama 
+            # Reusing the existing GeminiSynthesizer, which has Auto-Fallback to Ollama
             # if the Gemini API limit (429) is hit!
             domain_key = f"conversational_{lang}"
             response = await asyncio.to_thread(
-                admissions_agent.synthesizer.synthesize, 
-                query=text, 
-                context_docs=[], 
+                admissions_agent.synthesizer.synthesize,
+                query=text,
+                context_docs=[],
                 domain=domain_key
             )
-            
+
             if response and len(response) >= 5:
                 result = response.strip().strip('"').strip("'")
                 logger.info(f"make_conversational ({lang}) (Synthesizer): '{text[:50]}' -> '{result[:50]}'")
