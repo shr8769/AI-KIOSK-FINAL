@@ -27,7 +27,7 @@ export async function GET(
     const resolvedParams = await params;
     const id = resolvedParams.id;
 
-    const backendBaseUrl = (process.env.BACKEND_API_BASE_URL || process.env.NEXT_PUBLIC_BACKEND_URL || process.env.PUBLIC_BASE_URL || '').replace(/\/$/, '');
+    const backendBaseUrl = (process.env.BACKEND_API_BASE_URL || process.env.NEXT_PUBLIC_BACKEND_URL || process.env.PUBLIC_BASE_URL || 'http://127.0.0.1:8000/api/v1').replace(/\/$/, '');
     if (backendBaseUrl) {
       try {
         const backendRes = await fetch(`${backendBaseUrl}/navigation/${id}`, {
