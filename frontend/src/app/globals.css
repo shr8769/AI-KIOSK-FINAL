@@ -1,19 +1,50 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-  }
+/* ─── PES University Brand Color System ─────────────────────────── */
+:root {
+  /* Brand Colors */
+  --pes-navy:    #303870;
+  --pes-orange:  #E87818;
+  --pes-light:   #F8F8F8;
+
+  /* Homepage Colors */
+  --pes-blue:    #0F3689;
+  --pes-warm:    #AB6849;
+  --pes-steel:   #C6D2E2;
+  --pes-dark:    #1F2835;
+  --pes-slate:   #6B83AC;
+  --pes-deep:    #222F2A;
+
+  /* Semantic tokens */
+  --background:   var(--pes-dark);
+  --foreground:   var(--pes-light);
+  --accent:       var(--pes-orange);
+  --accent-2:     var(--pes-blue);
+  --border-color: rgba(107, 131, 172, 0.25);
+  --card-bg:      rgba(31, 40, 53, 0.75);
+  --surface:      rgba(48, 56, 112, 0.15);
 }
 
 @layer base {
   * {
-    border-color: hsl(var(--border));
+    border-color: var(--border-color);
   }
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', 'Outfit', system-ui, -apple-system, sans-serif;
   }
 }
+
+/* ─── Custom Scrollbar ─── */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(31,40,53,0.5); border-radius: 999px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(232,120,24,0.4); border-radius: 999px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(232,120,24,0.7); }
+
+/* ─── Animate Fade In ─── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.35s ease-out both; }

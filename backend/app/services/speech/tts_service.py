@@ -35,22 +35,73 @@ _MMS_MODEL_MAP = {
     "kn": "facebook/mms-tts-kan",
 }
 
-# Default Microsoft Edge-TTS neural voices (high-quality online TTS)
+# Default Microsoft Edge-TTS neural voices (Female high-quality online TTS)
 _EDGE_VOICE_MAP = {
-    "kn": "kn-IN-SapnaNeural",
-    "hi": "hi-IN-SwaraNeural",
-    "en": "en-IN-NeerjaNeural",
+    "kn": "kn-IN-SapnaNeural",    # Female Kannada
+    "hi": "hi-IN-SwaraNeural",    # Female Hindi
+    "en": "en-IN-NeerjaNeural",   # Female Indian English
 }
 
-# Shorthand mapping for custom voice selection
+# Shorthand mapping for custom voice selection (All mapped to natural female voices by default)
 _SHORT_VOICE_MAP = {
     "sapna": "kn-IN-SapnaNeural",
-    "gagan": "kn-IN-GaganNeural",
     "swara": "hi-IN-SwaraNeural",
-    "madhur": "hi-IN-MadhurNeural",
     "neerja": "en-IN-NeerjaNeural",
-    "prabhat": "en-IN-PrabhatNeural",
+    "female": "en-IN-NeerjaNeural",
 }
+
+
+def normalize_for_speech(text: str, lang: str = "en") -> str:
+    """
+    Normalizes text for speech synthesis so that numbers, percentages,
+    English loanwords (e.g. 'exams', 'F grade'), and symbols are clearly articulated.
+    """
+    import re
+
+    if not text:
+        return ""
+
+    # Remove markdown links and raw URLs
+    clean = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
+    clean = re.sub(r'http[s]?://\S+', 'the link provided', clean)
+    # Remove markdown formatting characters
+    clean = re.sub(r'[*_#`~]', '', clean)
+
+    # Normalize quotes around single letters or grades: 'F' -> F, "A" -> A
+    clean = re.sub(r'[\'\"‘“]([A-Za-z0-9])[\'\"’”]', r' \1 ', clean)
+    clean = clean.replace("'", " ").replace('"', " ")
+
+    req_lang = (lang or "en").lower().split("-")[0]
+
+    if req_lang in ("hi", "hindi"):
+        # Convert percent symbol: 75% -> 75 प्रतिशत
+        clean = re.sub(r'(\d+)\s*%', r'\1 प्रतिशत', clean)
+        clean = clean.replace('%', ' प्रतिशत')
+        # Standardize 'एग्ज़ाम्स' / 'एग्ज़ाम' (remove nuqta collision that breaks phonemizers)
+        clean = clean.replace('एग्ज़ाम्स', 'एग्जाम्स').replace('एग्ज़ाम', 'एग्जाम')
+        # Common English grades and single letters in Hindi context
+        clean = re.sub(r'\bF\b', 'एफ', clean)
+        clean = re.sub(r'\bA\b', 'ए', clean)
+        clean = re.sub(r'\bB\b', 'बी', clean)
+        clean = re.sub(r'\bC\b', 'सी', clean)
+        clean = re.sub(r'\bD\b', 'डी', clean)
+        clean = re.sub(r'\bS\b', 'एस', clean)
+    elif req_lang in ("kn", "kannada"):
+        # Convert percent symbol: 75% -> 75 ಪ್ರತಿಶತ
+        clean = re.sub(r'(\d+)\s*%', r'\1 ಪ್ರತಿಶತ', clean)
+        clean = clean.replace('%', ' ಪ್ರತಿಶತ')
+        clean = re.sub(r'\bF\b', 'ಎಫ್', clean)
+        clean = re.sub(r'\bA\b', 'ಎ', clean)
+        clean = re.sub(r'\bB\b', 'ಬಿ', clean)
+        clean = re.sub(r'\bS\b', 'ಎಸ್', clean)
+    else:
+        # English: 75% -> 75 percent
+        clean = re.sub(r'(\d+)\s*%', r'\1 percent', clean)
+        clean = clean.replace('%', ' percent')
+
+    # Collapse multiple spaces
+    clean = re.sub(r'\s+', ' ', clean).strip()
+    return clean
 
 
 def _get_edge_voice(lang: str, voice_id: str) -> str:
@@ -159,9 +210,10 @@ class TTSService:
 
         from app.models.schemas import TTSResponse
 
-        # Clean text for TTS (remove markdown links and raw URLs)
-        clean_text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', request.text)
-        clean_text = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', 'the link provided', clean_text)
+        req_lang = (request.language or "en").lower().split("-")[0]
+
+        # Clean and normalize text for natural speech (handles numbers, %, loanwords, and punctuation)
+        clean_text = normalize_for_speech(request.text, req_lang)
 
         start_time = time.time()
 
@@ -179,9 +231,7 @@ class TTSService:
                 latency_ms=latency_ms,
             )
 
-        req_lang = (request.language or "en").lower().split("-")[0]
-
-        # ── 1. Edge-TTS (online, Microsoft Neural TTS - best quality) ─────────
+        # ── 1. Edge-TTS (online, Microsoft Neural Female Voices - highest quality) ────
         try:
             import edge_tts
 
@@ -193,7 +243,7 @@ class TTSService:
             filename = f"response_{request.session_id}_{uuid.uuid4().hex[:8]}.mp3"
             filepath = os.path.join(static_dir, filename)
 
-            logger.info(f"Synthesizing speech via Edge-TTS (voice={voice}, rate={rate_str})...")
+            logger.info(f"Synthesizing speech via Edge-TTS (female voice={voice}, rate={rate_str})...")
             communicate = edge_tts.Communicate(
                 clean_text, voice, rate=rate_str, boundary="WordBoundary"
             )
@@ -204,14 +254,12 @@ class TTSService:
                     if chunk.get("type") == "audio":
                         f.write(chunk["data"])
                     elif chunk.get("type") == "WordBoundary":
-                        # offset and duration are in 100-nanosecond units (10,000,000 per second)
                         offset = chunk.get("offset", 0)
                         duration = chunk.get("duration", 0)
                         total_duration = (offset + duration) / 10000000.0
 
-            # If no WordBoundary info received, estimate duration based on word count
             if total_duration == 0.0:
-                words = len(request.text.split())
+                words = len(clean_text.split())
                 total_duration = max(1.0, round(words * 0.45, 2))
 
             latency_ms = int((time.time() - start_time) * 1000)
@@ -224,16 +272,48 @@ class TTSService:
             )
         except Exception as e:
             logger.warning(
-                f"Edge-TTS synthesis failed: {e}. Falling back to offline fallback (MMS-TTS)."
+                f"Edge-TTS synthesis failed: {e}. Falling back to gTTS (Google Female Neural TTS)."
             )
 
-        # ── 2. MMS-TTS (fully offline fallback, Hindi & Kannada) ──────────────
+        # ── 2. gTTS (online, Google Natural Female Voice - resilient fallback) ────────
+        try:
+            from gtts import gTTS
+
+            lang = "en"
+            tld = "co.in"
+            if req_lang in ("kn", "kannada"):
+                lang = "kn"
+            elif req_lang in ("hi", "hindi"):
+                lang = "hi"
+
+            filename = f"response_{request.session_id}_{uuid.uuid4().hex[:8]}.mp3"
+            filepath = os.path.join(static_dir, filename)
+
+            logger.info(f"Synthesizing speech via gTTS female voice (lang={lang})...")
+            tts = gTTS(text=clean_text, lang=lang, tld=tld if lang == "en" else "com")
+            await asyncio.to_thread(tts.save, filepath)
+
+            words = len(clean_text.split())
+            duration = max(1.0, round(words * 0.45, 2))
+            latency_ms = int((time.time() - start_time) * 1000)
+
+            return TTSResponse(
+                session_id=request.session_id,
+                audio_url=f"/static/audio/{filename}",
+                duration_seconds=duration,
+                format="mp3",
+                latency_ms=latency_ms,
+            )
+        except Exception as e:
+            logger.warning(f"gTTS synthesis failed: {e}. Falling back to offline fallback (MMS-TTS).")
+
+        # ── 3. MMS-TTS (offline HuggingFace fallback, Hindi & Kannada) ──────────────
         if req_lang in _MMS_MODEL_MAP:
             try:
                 filename = f"response_{request.session_id}_{uuid.uuid4().hex[:8]}.wav"
                 filepath = os.path.join(static_dir, filename)
 
-                logger.info(f"Synthesizing speech via MMS-TTS (lang={req_lang})...")
+                logger.info(f"Synthesizing speech via offline MMS-TTS (lang={req_lang})...")
                 duration = await asyncio.to_thread(
                     _synthesize_mms, clean_text, req_lang, filepath
                 )
@@ -248,39 +328,8 @@ class TTSService:
                 )
             except Exception as e:
                 logger.warning(
-                    f"MMS-TTS synthesis failed for lang={req_lang}: {e}. Falling back to gTTS."
+                    f"MMS-TTS synthesis failed for lang={req_lang}: {e}. Falling back to pyttsx3."
                 )
-
-        # ── 3. gTTS (online fallback, good quality multilingual) ───────────────
-        try:
-            from gtts import gTTS
-
-            lang = "en"
-            if req_lang in ("kn", "kannada"):
-                lang = "kn"
-            elif req_lang in ("hi", "hindi"):
-                lang = "hi"
-
-            filename = f"response_{request.session_id}_{uuid.uuid4().hex[:8]}.mp3"
-            filepath = os.path.join(static_dir, filename)
-
-            logger.info(f"Synthesizing speech via gTTS (lang={lang})...")
-            tts = gTTS(text=clean_text, lang=lang)
-            await asyncio.to_thread(tts.save, filepath)
-
-            words = len(request.text.split())
-            duration = max(1.0, round(words * 0.45, 2))
-            latency_ms = int((time.time() - start_time) * 1000)
-
-            return TTSResponse(
-                session_id=request.session_id,
-                audio_url=f"/static/audio/{filename}",
-                duration_seconds=duration,
-                format="mp3",
-                latency_ms=latency_ms,
-            )
-        except Exception as e:
-            logger.warning(f"gTTS synthesis failed or not installed: {e}. Falling back to pyttsx3.")
 
         # ── 4. pyttsx3 SAPI5 (offline fallback, English only, last resort) ────
         try:

@@ -416,6 +416,8 @@ const VidyaSahayakOrbBase: React.FC<VidyaSahayakOrbProps> = ({
           height={canvasSize}
           style={{ position: 'absolute', top: 0, left: 0, width: size, height: size, borderRadius: '50%' }}
         />
+
+        
         {/* Layer 4: Glass shell + membrane */}
         <canvas
           ref={glassCanvasRef}
@@ -428,17 +430,70 @@ const VidyaSahayakOrbBase: React.FC<VidyaSahayakOrbProps> = ({
       {/* ── Labels & Assistant Response ── */}
       {showLabels && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 32, minHeight: 90 }}>
-          <p style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 11, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', fontWeight: 600, transition: 'all 0.6s ease' }}>
+          <p style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 11, letterSpacing: '0.2em', color: 'rgba(48,56,112,0.4)', textTransform: 'uppercase', fontWeight: 600, transition: 'all 0.6s ease' }}>
             {label}
           </p>
-          <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 22, color: 'rgba(255,255,255,0.95)', marginTop: 16, textAlign: 'center', fontWeight: 500, letterSpacing: '0.01em', transition: 'all 0.6s ease', maxWidth: '80%' }}>
-            <div key={desc} style={{ animation: 'fadeIn 0.5s ease-in', wordBreak: 'break-word', whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>
+          <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 22, color: '#303870', marginTop: 16, textAlign: 'center', fontWeight: 500, letterSpacing: '0.01em', transition: 'all 0.6s ease', maxWidth: '85%' }}>
+            <div key={desc} style={{ animation: 'fadeIn 0.5s ease-in', wordBreak: 'break-word', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
               <ReactMarkdown
+                urlTransform={(url) => url}
                 components={{
-                  a: ({node, ...props}) => <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: '#00e5ff', textDecoration: 'underline' }} />
+                  a: ({node, href, children, ...props}) => {
+                    const isExternal = href?.startsWith('http://') || href?.startsWith('https://');
+                    return (
+                      <a
+                        {...props}
+                        href={href}
+                        target={isExternal ? '_blank' : undefined}
+                        rel={isExternal ? 'noopener noreferrer' : undefined}
+                        style={{
+                          color: '#1d4ed8',
+                          textDecoration: 'underline',
+                          textUnderlineOffset: '4px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          wordBreak: 'break-all',
+                          display: 'inline-block',
+                          margin: '0 2px',
+                          transition: 'color 0.2s ease, transform 0.1s ease',
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.color = '#E87818';
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.color = '#1d4ed8';
+                        }}
+                      >
+                        {children}
+                      </a>
+                    );
+                  }
                 }}
               >
-                {desc}
+                {(() => {
+                  if (!desc) return '';
+                  let text = desc;
+                  // 1. Repair unclosed or mangled translated markdown links: "ಈ ಲಿಂಕ್ (https://pes.edu/..." -> "[ಈ ಲಿಂಕ್](https://pes.edu/...)"
+                  text = text.replace(/(\b[^\n\r()[\]]+?)\s*\(\s*(https?:\/\/[^\s)]+)\s*\)?/g, '[$1]($2)');
+                  // 2. Extract existing valid markdown links to placeholders
+                  const links: string[] = [];
+                  text = text.replace(/\[[^\]]+\]\([^)]+\)/g, (match) => {
+                    links.push(match);
+                    return `__MD_LINK_${links.length - 1}__`;
+                  });
+                  // 3. Autolink bare URLs
+                  text = text.replace(/(https?:\/\/[^\s<>()]+)/g, '[$1]($1)');
+                  // 4. Autolink email addresses
+                  text = text.replace(/\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b/g, '[$1](mailto:$1)');
+                  // 5. Restore placeholders
+                  links.forEach((link, idx) => {
+                    text = text.replace(`__MD_LINK_${idx}__`, link);
+                  });
+                  return text;
+                })()}
               </ReactMarkdown>
             </div>
             <style>{`

@@ -14,6 +14,18 @@ from contextlib import asynccontextmanager
 # Add parent directory to sys.path to resolve 'database' imports when running from backend directory
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
+# Configure UTF-8 safe encoding for console logging on Windows
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -49,7 +61,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown lifecycle."""
-    logger.info("🚀 VidyaSahayak backend starting...")
+    logger.info("[KIOSK] VidyaSahayak backend starting...")
     logger.info(f"   Mode: {'DEBUG' if settings.DEBUG else 'PRODUCTION'}")
     logger.info(f"   Using mock services: {settings.USE_MOCK_SERVICES}")
 
@@ -66,7 +78,7 @@ async def lifespan(app: FastAPI):
         agent_script = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "run_agents.py"))
         config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "agent_config.yaml"))
         agent_process = subprocess.Popen([sys.executable, agent_script, "--config", config_path, "--announcements-only"])
-        logger.info("🤖 Autonomous agents process launched dynamically.")
+        logger.info("[AGENTS] Autonomous agents process launched dynamically.")
     except Exception as e:
         logger.error(f"Failed to launch autonomous agents: {e}")
 
@@ -248,3 +260,5 @@ async def get_faqs(lang: str = "en"):
         }
     }
     return faqs.get(lang, faqs["en"])
+# Reload trigger: 2026-11-16 12:44
+

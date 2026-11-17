@@ -74,16 +74,15 @@ function FloorSlide({
 
   return (
     <div
-      className="relative w-full shrink-0"
-      style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT}` }}
+      className="relative w-full shrink-0 rounded-2xl overflow-hidden bg-zinc-100"
+      style={{ aspectRatio: `${MAP_WIDTH} / ${MAP_HEIGHT}`, minHeight: '220px' }}
     >
-      {/* Floor image */}
-      <Image
+      {/* Floor image with direct static loading */}
+      <img
         src={getFloorMapImage(floor)}
         alt={`${FLOOR_LABELS[floor] ?? `Floor ${floor}`} Map`}
-        fill
-        className="object-cover rounded-2xl"
-        priority
+        className="w-full h-full object-cover block rounded-2xl select-none"
+        loading="eager"
       />
 
       {/* Floor label badge */}

@@ -23,6 +23,18 @@ import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+# Ensure UTF-8 output encoding for Windows CMD / PowerShell
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 # Ensure project root is on path
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -135,7 +147,7 @@ def run_agents(args: argparse.Namespace) -> None:
     print(f"   Starting {len(agents)} agent(s)...\n")
     for agent in agents:
         agent.start_scheduled()
-        print(f"   🚀 {agent.agent_name} — started")
+        print(f"   [+] {agent.agent_name} — started")
 
     print()
     print("=" * 70)

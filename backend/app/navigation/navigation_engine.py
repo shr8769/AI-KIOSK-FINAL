@@ -83,7 +83,7 @@ class NavigationEngine:
         and constructs the payload to be saved in Redis.
         """
         destination_name = destination_metadata.get("destination_name", destination_metadata.get("name", "Unknown Destination"))
-        target_node_id = destination_metadata.get("graph_node")
+        target_node_id = destination_metadata.get("graph_node", destination_metadata.get("node_id"))
 
         if not target_node_id:
             # Fallback: attempt to find the node by destination name

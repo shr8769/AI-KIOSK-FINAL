@@ -56,12 +56,28 @@ Fee Structure for the different programs are provided below
 #### Bachelor of Commerce (Hons) with CFA – B.Com (Hons) with CFA
 
 #### Bachelor of Business Administration (BBA) – General/ Hons
+- PESSAT / Merit Quota Fee – INR 2,60,000 / Annum
+- One time non-refundable administrative charges – INR 10,000
 
 #### Bachelor of Business Administration (BBA) – Business Analytics (Hons)
+- PESSAT / Merit Quota Fee – INR 3,00,000 / Annum
+- One time non-refundable administrative charges – INR 10,000
 
 #### Bachelor of Business Administration – Hospitality & Event Management (BBA-HEM)
+- PESSAT / Merit Quota Fee – INR 2,20,000 / Annum
+- One time non-refundable administrative charges – INR 10,000
 
 #### Bachelor of Business Administration (BBA) – Sports Management
+- PESSAT / Merit Quota Fee – INR 2,20,000 / Annum
+- One time non-refundable administrative charges – INR 10,000
+
+#### Bachelor of Business Administration and LLB – BBA, LLB (Hons)
+- Tuition Fee – INR 2,50,000 / Annum
+- One time non-refundable administrative charges – INR 10,000
+
+#### Bachelor of Computer Applications (BCA)
+- PESSAT / Merit Quota Fee – INR 2,60,000 / Annum
+- One time non-refundable administrative charges – INR 10,000
 
 #### Bachelor of Arts (B.A) in Performing Arts
 

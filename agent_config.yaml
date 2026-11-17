@@ -23,7 +23,7 @@ knowledge_sync:
 announcements:
   enabled: true
   target_url: "https://www.pesuacademy.com/Academy/s/studentProfilePESU"
-  check_interval_minutes: 1                        # How often to check for new announcements
+  check_interval_minutes: 15                       # How often to check for new announcements
   cache_path: "data/announcements.json"            # Announcement persistence file
   max_announcements: 500                           # Max announcements to store in cache
   expire_after_days: 90                            # Mark announcements as expired after N days
@@ -31,10 +31,10 @@ announcements:
   new_badge_hours: 48                              # Show "New" badge for N hours after first seen
   use_mock_data: false                             # Use mock/demo data (set false when credentials available)
 
-  # PESU Academy Authentication (required when use_mock_data = false)
+  # PESU Academy Authentication (prefer env vars: PESU_ACADEMY_USERNAME & PESU_ACADEMY_PASSWORD)
   credentials:
-    username: "PES2202300447"                                    # PESU SRN (e.g., PES1UG21CS999)
-    password: "haseeb1234"                                    # Password (prefer env var: PESU_ACADEMY_PASSWORD)
+    username: ""
+    password: ""
 
   # Scraping behavior
   scraping:

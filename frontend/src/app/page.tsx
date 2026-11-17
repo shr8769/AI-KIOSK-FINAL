@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VidyaSahayakOrb } from '@/components/orb';
 import { OrbController } from '@/components/orb/OrbController';
@@ -309,7 +310,7 @@ export default function KioskPage() {
     } else if (lang === 'kn') {
       confirmationText = "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?";
     } else if (lang === 'hi') {
-      confirmationText = "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकता हूँ?";
+      confirmationText = "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकती हूँ?";
     }
 
     try {
@@ -363,7 +364,7 @@ export default function KioskPage() {
       } else if (selectedLanguage === 'kn') {
         confirmationText = "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?";
       } else if (selectedLanguage === 'hi') {
-        confirmationText = "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकता हूँ?";
+        confirmationText = "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकती हूँ?";
       }
 
       orbController.setState('thinking');
@@ -739,8 +740,8 @@ export default function KioskPage() {
             }
           }
         }
-      } catch (e) {
-        console.warn('Waiting for backend readiness...', e);
+      } catch (_e) {
+        // Backend is still warming up, retry quietly without console spam
       }
       if (isMounted && !isBackendReady) {
         setTimeout(pollReady, 1000);
@@ -874,55 +875,81 @@ export default function KioskPage() {
 
   if (!hasInteracted) {
     return (
-      <main className="min-h-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black flex flex-col items-center justify-center p-4 relative overflow-hidden">
-        {/* Decorative background aura */}
-        <div className="absolute w-[500px] h-[500px] rounded-full bg-indigo-500/10 blur-[120px] -top-40 -left-40 animate-pulse pointer-events-none" />
-        <div className="absolute w-[500px] h-[500px] rounded-full bg-emerald-500/5 blur-[120px] -bottom-40 -right-40 animate-pulse pointer-events-none" />
-        
-        {/* Main Card */}
-        <div className="relative z-10 w-full max-w-md p-8 rounded-3xl border border-zinc-800 bg-zinc-950/60 backdrop-blur-xl shadow-2xl flex flex-col items-center text-center space-y-8">
-          {/* Logo / Icon */}
-          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-500 to-emerald-500 flex items-center justify-center p-[2px] shadow-lg shadow-indigo-500/20">
-            <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center">
-              <svg className="w-8 h-8 text-emerald-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
+      <main className="min-h-screen flex flex-col relative overflow-hidden" style={{background: '#F8F8F8'}}>
+        {/* Top PES brand bar */}
+        <div className="h-1.5 w-full flex-shrink-0 z-50 relative" style={{background: 'linear-gradient(90deg, #303870 0%, #E87818 50%, #303870 100%)'}} />
+
+        {/* ── Top Nav Bar ── */}
+        <div className="relative z-10 flex items-center justify-between px-8 py-3 flex-shrink-0 shadow-sm" style={{borderBottom: '1px solid rgba(48,56,112,0.1)', background: '#FFFFFF'}}>
+          <div className="flex items-center gap-6">
+            <div className="bg-white p-1 rounded">
+              <Image src="/logo.png" alt="PES University" width={110} height={35} className="object-contain" />
+            </div>
+            <div className="w-px h-8 bg-zinc-200" />
+            <div className="flex flex-col text-left">
+              <span className="font-bold text-base tracking-wide" style={{color: '#303870'}}>VidyaSahayak</span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{color: '#E87818'}}>PES University AI Assistant</span>
             </div>
           </div>
+          <span className="text-xs font-bold tracking-widest uppercase" style={{color: '#6B83AC'}}>Campus Kiosk</span>
+        </div>
 
-          <div className="space-y-3">
-            <h1 className="text-3xl font-bold tracking-tight text-white font-sans bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400">
-              VidyaSahayak AI
+        {/* Main content — centered, frameless, open */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-8 py-12" style={{gap: '48px'}}>
+          
+          {/* Icon */}
+          <div className="relative">
+            <div className="w-28 h-28 rounded-full flex items-center justify-center" style={{background: 'rgba(232,120,24,0.08)', border: '1.5px solid rgba(232,120,24,0.35)', boxShadow: '0 0 40px rgba(232,120,24,0.1)'}}>
+              <svg className="w-12 h-12" fill="none" stroke="#E87818" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+            </div>
+            <div className="absolute inset-0 rounded-full animate-ping opacity-10" style={{background: 'transparent', border: '1px solid #E87818'}} />
+          </div>
+
+          {/* Title block */}
+          <div style={{gap: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <h1 className="font-bold" style={{fontSize: '48px', letterSpacing: '-0.02em', color: '#303870', lineHeight: 1.1}}>
+              VidyaSahayak
             </h1>
-            <p className="text-sm text-zinc-400 tracking-wider uppercase font-semibold">
-              PES University Kiosk
-            </p>
-            <p className="text-xs text-zinc-500 max-w-xs mx-auto">
-              Welcome! Talk to VidyaSahayak in English, Hindi, or Kannada. Enable audio output to begin.
+            <div className="flex items-center gap-3">
+              <div className="h-px w-10 opacity-40" style={{background: '#E87818'}} />
+              <span className="text-xs font-bold uppercase tracking-[0.3em]" style={{color: '#E87818'}}>PES University AI</span>
+              <div className="h-px w-10 opacity-40" style={{background: '#E87818'}} />
+            </div>
+            <p className="text-base max-w-md leading-relaxed mt-2" style={{color: '#6B83AC'}}>
+              Your campus assistant for directions, academics, placements, and more.
             </p>
           </div>
 
+          {/* CTA */}
           {!isBackendReady ? (
-            <div className="w-full py-4 px-6 rounded-2xl bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center space-y-2">
-              <svg className="w-6 h-6 text-indigo-500 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <div className="flex flex-col items-center gap-3">
+              <svg className="w-7 h-7 animate-spin" fill="none" viewBox="0 0 24 24" style={{color: '#E87818'}}>
+                <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"></circle>
+                <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
               </svg>
-              <span className="text-sm text-zinc-300 font-medium animate-pulse">{startupMessage}</span>
+              <span className="text-sm font-medium" style={{color: '#6B83AC'}}>{startupMessage}</span>
             </div>
           ) : (
-            <div className="w-full flex flex-col gap-3">
-              <button
-                onClick={() => {
-                  unlockAudio();
-                  setHasInteracted(true);
-                }}
-                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              >
-                Start Interaction
-              </button>
-            </div>
+            <button
+              onClick={() => { unlockAudio(); setHasInteracted(true); }}
+              className="transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] focus:outline-none"
+              style={{background: 'linear-gradient(135deg, #303870 0%, #0F3689 45%, #E87818 100%)', padding: '18px 56px', borderRadius: '100px', color: '#F8F8F8', fontWeight: 700, fontSize: '14px', letterSpacing: '0.18em', textTransform: 'uppercase', boxShadow: '0 8px 32px rgba(232,120,24,0.2), 0 2px 8px rgba(48,56,112,0.15)'}}
+            >
+              Tap to Begin
+            </button>
           )}
+
+          {/* Language hint */}
+          <p className="text-xs font-semibold" style={{color: '#303870', letterSpacing: '0.05em'}}>
+            Available in English · ಕನ್ನಡ · हिंदी
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="relative z-10 flex items-center justify-center py-4">
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em]" style={{color: 'rgba(48,56,112,0.3)'}}>PES University AI Campus Kiosk</p>
         </div>
       </main>
     );
@@ -930,28 +957,39 @@ export default function KioskPage() {
 
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black flex flex-col items-center justify-between py-10 px-4 relative overflow-hidden">
-      
-      {/* ── Top Premium Wordmark ── */}
-      <div className="w-full flex flex-col items-center justify-center relative z-10 space-y-2 mt-2">
-        <h1 className="font-sans text-[11px] tracking-[0.3em] text-zinc-300 uppercase font-semibold">
-          VidyaSahayak
-        </h1>
-        <p className="font-sans text-[9px] tracking-[0.2em] text-zinc-500 uppercase">
-          PES University AI Assistant
-        </p>
+    <main className="min-h-screen flex flex-col relative overflow-hidden" style={{background: '#F8F8F8'}}>
+      {/* Top PES brand bar */}
+      <div className="h-1.5 w-full flex-shrink-0 z-50 relative" style={{background: 'linear-gradient(90deg, #303870 0%, #E87818 50%, #303870 100%)'}} />
+
+      {/* ── Top Nav Bar ── */}
+      <div className="relative z-10 flex items-center justify-between px-8 py-3 flex-shrink-0 shadow-sm" style={{borderBottom: '1px solid rgba(48,56,112,0.1)', background: '#FFFFFF'}}>
+        <div className="flex items-center gap-6">
+          <div className="bg-white p-1 rounded">
+            <Image src="/logo.png" alt="PES University" width={110} height={35} className="object-contain" />
+          </div>
+          <div className="w-px h-8 bg-zinc-200" />
+          <div className="flex flex-col">
+            <span className="font-bold text-base tracking-wide" style={{color: '#303870'}}>VidyaSahayak</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{color: '#E87818'}}>PES University AI Assistant</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{background: 'rgba(232,120,24,0.08)', border: '1px solid rgba(232,120,24,0.2)'}}>
+          <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{background: '#E87818'}} />
+          <span className="text-[10px] font-bold uppercase tracking-widest" style={{color: '#E87818'}}>Live</span>
+        </div>
       </div>
 
-      {/* ── Split Screen Interaction Space ─────────────────────── */}
-      <div className="relative z-20 flex-1 flex flex-col lg:flex-row items-stretch justify-center w-full max-w-6xl gap-8 mt-6">
+      {/* ── Split Screen ── */}
+      <div className="relative z-20 flex-1 flex flex-col lg:flex-row items-stretch justify-center w-full gap-0">
         
-        {/* Left Side: Orb & Identified User Info */}
-        <div className="w-full lg:w-[45%] flex flex-col items-center justify-center p-4">
+        {/* Left Side: Orb (Light Theme) */}
+        <div className="relative w-full lg:w-[40%] flex flex-col items-center justify-center p-8 overflow-hidden" style={{background: '#F8F8F8'}}>
+          
           <VidyaSahayakOrb 
             controller={orbController}
             autoDemo={false}
             showLabels={true}
-            showControls={true}
+            showControls={false}
             showMic={isLanguageSelected && isCommModeSelected && communicationMode === 'voice'}
             size={420} 
           />
@@ -972,37 +1010,37 @@ export default function KioskPage() {
           )}
 
           {identifiedUser && typeof identifiedUser.name === 'string' && identifiedUser.name.length > 0 && (
-            <div className="mt-4 p-4 w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950/60 backdrop-blur-xl shadow-lg flex flex-col space-y-3 animate-fade-in text-left">
+            <div className="mt-4 p-4 w-full max-w-md rounded-2xl shadow-lg flex flex-col space-y-3 animate-fade-in text-left" style={{background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.15)'}}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-emerald-500 flex items-center justify-center p-[1px]">
-                    <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center text-xs font-bold text-white uppercase">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center p-[1px]" style={{background: 'linear-gradient(135deg, #303870, #E87818)'}}>
+                    <div className="w-full h-full rounded-full flex items-center justify-center text-xs font-bold text-white uppercase" style={{background: '#1F2835'}}>
                       {identifiedUser.name?.slice(0, 2)}
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-white">{identifiedUser.name}</h3>
-                    <p className="text-[10px] text-zinc-400 capitalize">{identifiedUser.role} • {identifiedUser.userId}</p>
+                    <h3 className="text-sm font-semibold" style={{color: '#303870'}}>{identifiedUser.name}</h3>
+                    <p className="text-[10px] capitalize" style={{color: '#6B83AC'}}>{identifiedUser.role} • {identifiedUser.userId}</p>
                   </div>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] uppercase font-bold tracking-wider border border-emerald-500/20">
+                <span className="px-2.5 py-0.5 rounded-full text-[9px] uppercase font-bold tracking-wider" style={{background: 'rgba(232,120,24,0.12)', color: '#E87818', border: '1px solid rgba(232,120,24,0.25)'}}>
                   Recognized
                 </span>
               </div>
               
               {identifiedUser.recommendations && identifiedUser.recommendations.length > 0 && (
-                <div className="pt-2.5 border-t border-zinc-900 space-y-2">
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Recommended Opportunities:</p>
+                <div className="pt-2.5 space-y-2" style={{borderTop: '1px solid rgba(107,131,172,0.15)'}}>
+                  <p className="text-[10px] uppercase tracking-wider font-semibold" style={{color: '#6B83AC'}}>Recommended Opportunities:</p>
                   <div className="space-y-1.5">
                     {identifiedUser.recommendations.map((rec: any, idx: number) => (
-                      <div key={idx} className="p-2 rounded-xl bg-zinc-900/40 hover:bg-zinc-900 transition-colors border border-zinc-800">
+                      <div key={idx} className="p-2 rounded-xl transition-colors" style={{background: '#F8F8F8', border: '1px solid rgba(48,56,112,0.1)'}}>
                         <div className="flex justify-between items-start">
-                          <h4 className="text-xs font-medium text-white">{rec.title}</h4>
-                          <span className="text-[8px] text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded uppercase font-semibold border border-indigo-500/10">{rec.category}</span>
+                          <h4 className="text-xs font-medium" style={{color: '#303870'}}>{rec.title}</h4>
+                          <span className="text-[8px] px-1.5 py-0.5 rounded uppercase font-semibold" style={{color: '#E87818', background: 'rgba(232,120,24,0.1)', border: '1px solid rgba(232,120,24,0.15)'}}>{rec.category}</span>
                         </div>
-                        <p className="text-[10px] text-zinc-400 mt-1 line-clamp-2 leading-relaxed">{rec.description}</p>
+                        <p className="text-[10px] mt-1 line-clamp-2 leading-relaxed" style={{color: '#6B83AC'}}>{rec.description}</p>
                         {rec.contact && (
-                          <p className="text-[9px] text-zinc-500 mt-1 font-sans">Contact: {rec.contact}</p>
+                          <p className="text-[9px] mt-1 font-sans" style={{color: '#AB6849'}}>Contact: {rec.contact}</p>
                         )}
                       </div>
                     ))}
@@ -1013,45 +1051,51 @@ export default function KioskPage() {
           )}
         </div>
 
-        {/* Right Side: Queries & FAQs Panel */}
-        <div className="w-full lg:w-[55%] flex flex-col justify-start p-6 bg-zinc-950/40 border border-zinc-800/80 rounded-3xl backdrop-blur-xl shadow-xl space-y-6">
+        {/* Right Side: Queries & FAQs Panel (Light Theme) */}
+        <div className="w-full lg:w-[60%] flex flex-col justify-start p-8 space-y-6 overflow-y-auto" style={{borderLeft: '1px solid rgba(48,56,112,0.1)', background: '#F8F8F8'}}>
           
           {/* Registration Panel */}
           {showRegistration && (
             <div className="flex flex-col space-y-6 w-full max-w-md mx-auto animate-fade-in text-left">
               <div>
-                <h2 className="text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400">
-                  New Visitor detected
+                <h2 className="text-xl font-bold" style={{color: '#303870'}}>
+                  New Visitor Detected
                 </h2>
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-xs mt-1" style={{color: '#6B83AC'}}>
                   Please enroll your profile to proceed with personalized support.
                 </p>
               </div>
 
               {newUserType === null ? (
                 <div className="space-y-4 pt-4">
-                  <p className="text-xs text-zinc-300 font-medium">Are you a student or a visitor?</p>
+                  <p className="text-xs font-medium" style={{color: '#303870'}}>Are you a student or a visitor?</p>
                   <div className="flex gap-4">
                     <button
                       onClick={() => setNewUserType('student')}
-                      className="flex-1 py-6 rounded-2xl border border-zinc-800 bg-zinc-950/60 text-center hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                      className="flex-1 py-6 rounded-2xl text-center hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                      style={{background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.15)', boxShadow: '0 4px 12px rgba(48,56,112,0.05)'}}
+                      onMouseEnter={e => (e.currentTarget.style.border = '1px solid #E87818')}
+                      onMouseLeave={e => (e.currentTarget.style.border = '1px solid rgba(48,56,112,0.15)')}
                     >
                       <span className="text-2xl block mb-2">🎓</span>
-                      <span className="text-sm font-semibold text-white">Student</span>
+                      <span className="text-sm font-semibold" style={{color: '#303870'}}>Student</span>
                     </button>
                     <button
                       onClick={() => setNewUserType('visitor')}
-                      className="flex-1 py-6 rounded-2xl border border-zinc-800 bg-zinc-950/60 text-center hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                      className="flex-1 py-6 rounded-2xl text-center hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                      style={{background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.15)', boxShadow: '0 4px 12px rgba(48,56,112,0.05)'}}
+                      onMouseEnter={e => (e.currentTarget.style.border = '1px solid #E87818')}
+                      onMouseLeave={e => (e.currentTarget.style.border = '1px solid rgba(48,56,112,0.15)')}
                     >
                       <span className="text-2xl block mb-2">💼</span>
-                      <span className="text-sm font-semibold text-white">Visitor</span>
+                      <span className="text-sm font-semibold" style={{color: '#303870'}}>Visitor</span>
                     </button>
                   </div>
                 </div>
               ) : (
                 <form onSubmit={submitRegistration} className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
-                    <span className="text-xs font-bold text-indigo-400 capitalize">
+                  <div className="flex items-center justify-between pb-2" style={{borderBottom: '1px solid rgba(107,131,172,0.2)'}}>
+                    <span className="text-xs font-bold capitalize" style={{color: '#E87818'}}>
                       Registering as {newUserType}
                     </span>
                     <button
@@ -1063,26 +1107,28 @@ export default function KioskPage() {
                         setRegImageSrc(null);
                         setRegStatus(null);
                       }}
-                      className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors"
+                      className="text-[10px] font-semibold uppercase tracking-wider transition-colors hover:text-white"
+                      style={{color: '#6B83AC'}}
                     >
                       ← Back
                     </button>
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Full Name</label>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{color: '#6B83AC'}}>Full Name</label>
                     <input 
                       type="text" 
                       required
                       value={regName}
                       onChange={(e) => setRegName(e.target.value)}
                       placeholder="Enter full name"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
+                      className="w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none"
+                      style={{background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.2)', color: '#303870'}}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{color: '#6B83AC'}}>
                       {newUserType === 'student' ? 'SRN (Student Register Number)' : 'Phone Number'}
                     </label>
                     <input 
@@ -1091,15 +1137,16 @@ export default function KioskPage() {
                       value={regUserId}
                       onChange={(e) => setRegUserId(e.target.value)}
                       placeholder={newUserType === 'student' ? "e.g., PES1202300001" : "e.g., +91 9876543210"}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 text-sm"
+                      className="w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none"
+                      style={{background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.2)', color: '#303870'}}
                     />
                   </div>
 
                   {/* Face Capture Section */}
                   <div className="flex flex-col items-center">
-                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-2 self-start">Face Capture</label>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider mb-2 self-start" style={{color: '#6B83AC'}}>Face Capture</label>
                     
-                    <div className="relative w-full aspect-video rounded-xl border border-zinc-800 bg-zinc-950 overflow-hidden shadow-inner group">
+                    <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-inner group" style={{background: '#1F2835', border: '1px solid rgba(107,131,172,0.25)'}}>
                       {cameraError ? (
                         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
                           <svg className="w-10 h-10 text-rose-500 mb-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1134,7 +1181,8 @@ export default function KioskPage() {
                         <button
                           type="button"
                           onClick={retakePhoto}
-                          className="w-full py-2.5 px-4 rounded-xl border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-900 transition-all duration-200 text-xs font-semibold flex items-center justify-center space-x-2"
+                          className="w-full py-2.5 px-4 rounded-xl border transition-all duration-200 text-xs font-semibold flex items-center justify-center space-x-2"
+                          style={{border: '1px solid rgba(48,56,112,0.2)', color: '#303870', background: '#FFFFFF'}}
                         >
                           Retake Photo
                         </button>
@@ -1143,7 +1191,8 @@ export default function KioskPage() {
                           type="button"
                           disabled={!!cameraError}
                           onClick={capturePhoto}
-                          className="w-full py-2.5 px-4 rounded-xl bg-indigo-600/80 text-white hover:bg-indigo-600 transition-all duration-200 text-xs font-semibold flex items-center justify-center space-x-2"
+                          className="w-full py-2.5 px-4 rounded-xl text-white transition-all duration-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-2"
+                          style={{background: 'linear-gradient(135deg, #303870, #0F3689)'}}
                         >
                           Capture Photo
                         </button>
@@ -1165,7 +1214,8 @@ export default function KioskPage() {
                     <button 
                       type="submit"
                       disabled={regLoading || !regImageSrc}
-                      className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-40 disabled:pointer-events-none text-xs"
+                      className="w-full py-3 px-4 rounded-xl text-white font-bold hover:shadow-lg transition-all duration-200 disabled:opacity-40 disabled:pointer-events-none text-xs uppercase tracking-wider"
+                      style={{background: 'linear-gradient(135deg, #303870 0%, #E87818 100%)'}}
                     >
                       {regLoading ? 'Registering...' : 'Enroll & Continue'}
                     </button>
@@ -1177,139 +1227,144 @@ export default function KioskPage() {
 
           {/* Combined Selection Panel */}
           {!showRegistration && !(isLanguageSelected && isCommModeSelected) && (
-            <div className="flex flex-col items-center justify-center space-y-6 py-4 animate-fade-in w-full max-w-md mx-auto">
-              {/* Language Selection */}
-              <div className="w-full flex flex-col space-y-3">
-                <div className="flex items-center space-x-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                  </span>
-                  <p className="text-[10px] text-zinc-300 uppercase tracking-[0.25em] font-semibold font-sans">
-                    1. Choose Language / ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ / भाषा चुनें
+            <div className="flex flex-col space-y-8 py-6 animate-fade-in w-full">
+              
+              {/* Section: Language */}
+              <div className="w-full flex flex-col space-y-4">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black" style={{background: '#303870', color: '#F8F8F8'}}>1</div>
+                  <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{color: '#303870'}}>
+                    Select Language
                   </p>
                 </div>
-                <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-col gap-3 w-full">
+                  {/* English */}
                   <button
                     id="lang-btn-english"
                     onClick={() => setSelectedLanguage('en')}
-                    className={`group px-6 py-2.5 rounded-xl border text-sm font-medium transition-all duration-300 active:scale-95 uppercase tracking-wider font-sans backdrop-blur-sm ${
-                      selectedLanguage === 'en'
-                        ? 'bg-indigo-500/20 border-indigo-500 text-white shadow shadow-indigo-500/20'
-                        : 'border-zinc-700 bg-zinc-950/60 text-zinc-300 hover:text-white hover:border-indigo-500/50'
-                    }`}
+                    className="w-full flex items-center gap-4 transition-all duration-200 active:scale-[0.98] hover:scale-[1.01]"
+                    style={selectedLanguage === 'en'
+                      ? {background: 'rgba(48,56,112,0.5)', border: '2px solid #303870', borderRadius: '16px', padding: '16px 20px', boxShadow: '0 0 24px rgba(48,56,112,0.4)'}
+                      : {background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.12)', borderRadius: '16px', padding: '16px 20px'}}
                   >
-                    <span className="flex items-center justify-center gap-2">
-                      <span className="text-base">🇬🇧</span> English
-                    </span>
+                    <span className="text-2xl">🇬🇧</span>
+                    <div className="flex-1 text-left">
+                      <p className="text-base font-bold" style={{color: selectedLanguage === 'en' ? '#F8F8F8' : '#303870'}}>English</p>
+                      <p className="text-xs" style={{color: '#6B83AC'}}>Converse in English</p>
+                    </div>
+                    {selectedLanguage === 'en' && (
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{background: '#303870'}}>
+                        <svg className="w-3 h-3" fill="none" stroke="#F8F8F8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                      </div>
+                    )}
                   </button>
+
+                  {/* Kannada */}
                   <button
                     id="lang-btn-kannada"
                     onClick={() => setSelectedLanguage('kn')}
-                    className={`group px-6 py-2.5 rounded-xl border text-sm font-medium transition-all duration-300 active:scale-95 uppercase tracking-wider font-sans backdrop-blur-sm ${
-                      selectedLanguage === 'kn'
-                        ? 'bg-emerald-500/20 border-emerald-500 text-white shadow shadow-emerald-500/20'
-                        : 'border-zinc-700 bg-zinc-950/60 text-zinc-300 hover:text-white hover:border-emerald-500/50'
-                    }`}
+                    className="w-full flex items-center gap-4 transition-all duration-200 active:scale-[0.98] hover:scale-[1.01]"
+                    style={selectedLanguage === 'kn'
+                      ? {background: 'rgba(232,120,24,0.2)', border: '2px solid #E87818', borderRadius: '16px', padding: '16px 20px', boxShadow: '0 0 24px rgba(232,120,24,0.25)'}
+                      : {background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.12)', borderRadius: '16px', padding: '16px 20px'}}
                   >
-                    <span className="flex items-center justify-center gap-2">
-                      <span className="text-base">🇮🇳</span> ಕನ್ನಡ
-                    </span>
+                    <span className="text-2xl">🇮🇳</span>
+                    <div className="flex-1 text-left">
+                      <p className="text-base font-bold" style={{color: selectedLanguage === 'kn' ? '#F8F8F8' : '#303870'}}>ಕನ್ನಡ</p>
+                      <p className="text-xs" style={{color: '#6B83AC'}}>Kannada — ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ</p>
+                    </div>
+                    {selectedLanguage === 'kn' && (
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{background: '#E87818'}}>
+                        <svg className="w-3 h-3" fill="none" stroke="#F8F8F8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                      </div>
+                    )}
                   </button>
+
+                  {/* Hindi */}
                   <button
                     id="lang-btn-hindi"
                     onClick={() => setSelectedLanguage('hi')}
-                    className={`group px-6 py-2.5 rounded-xl border text-sm font-medium transition-all duration-300 active:scale-95 uppercase tracking-wider font-sans backdrop-blur-sm ${
-                      selectedLanguage === 'hi'
-                        ? 'bg-amber-500/20 border-amber-500 text-white shadow shadow-amber-500/20'
-                        : 'border-zinc-700 bg-zinc-950/60 text-zinc-300 hover:text-white hover:border-amber-500/50'
-                    }`}
+                    className="w-full flex items-center gap-4 transition-all duration-200 active:scale-[0.98] hover:scale-[1.01]"
+                    style={selectedLanguage === 'hi'
+                      ? {background: 'rgba(15,54,137,0.3)', border: '2px solid #0F3689', borderRadius: '16px', padding: '16px 20px', boxShadow: '0 0 24px rgba(15,54,137,0.3)'}
+                      : {background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.12)', borderRadius: '16px', padding: '16px 20px'}}
                   >
-                    <span className="flex items-center justify-center gap-2">
-                      <span className="text-base">🇮🇳</span> हिंदी
-                    </span>
+                    <span className="text-2xl">🇮🇳</span>
+                    <div className="flex-1 text-left">
+                      <p className="text-base font-bold" style={{color: selectedLanguage === 'hi' ? '#F8F8F8' : '#303870'}}>हिंदी</p>
+                      <p className="text-xs" style={{color: '#6B83AC'}}>Hindi — हिंदी में बात करें</p>
+                    </div>
+                    {selectedLanguage === 'hi' && (
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{background: '#0F3689'}}>
+                        <svg className="w-3 h-3" fill="none" stroke="#F8F8F8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                      </div>
+                    )}
                   </button>
                 </div>
               </div>
 
-              {/* Mode Selection */}
-              <div className="w-full flex flex-col space-y-3 pt-2">
-                <div className="flex items-center space-x-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                  </span>
-                  <p className="text-[10px] text-zinc-300 uppercase tracking-[0.25em] font-semibold font-sans">
-                    2. Select Communication Mode
+              {/* Divider */}
+              <div className="w-full h-px" style={{background: 'rgba(107,131,172,0.12)'}} />
+
+              {/* Section: Mode */}
+              <div className="w-full flex flex-col space-y-4">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black" style={{background: '#303870', color: '#F8F8F8'}}>2</div>
+                  <p className="text-sm font-bold uppercase tracking-[0.2em]" style={{color: '#303870'}}>
+                    How would you like to interact?
                   </p>
                 </div>
-                <div className="flex flex-col gap-2.5 w-full">
+                <div className="grid grid-cols-2 gap-3 w-full">
                   <button
                     onClick={() => setChosenMode('voice')}
-                    className={`group p-4 rounded-xl border text-left transition-all duration-300 active:scale-[0.98] ${
-                      chosenMode === 'voice'
-                        ? 'bg-indigo-500/10 border-indigo-500 shadow shadow-indigo-500/10'
-                        : 'border-zinc-800 bg-zinc-950/60 hover:border-indigo-500/40 hover:bg-indigo-500/5'
-                    }`}
+                    className="flex flex-col items-center gap-3 transition-all duration-200 active:scale-[0.97]"
+                    style={chosenMode === 'voice'
+                      ? {background: 'rgba(48,56,112,0.4)', border: '2px solid #303870', borderRadius: '16px', padding: '20px 16px', boxShadow: '0 0 20px rgba(48,56,112,0.3)'}
+                      : {background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.12)', borderRadius: '16px', padding: '20px 16px'}}
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center border ${
-                        chosenMode === 'voice'
-                          ? 'bg-indigo-500/20 border-indigo-400 text-white'
-                          : 'bg-indigo-500/5 border-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/15'
-                      }`}>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-xs font-semibold text-white">Voice Mode</h3>
-                        <p className="text-[10px] text-zinc-400 mt-0.5 font-normal">Talk to VidyaSahayak naturally using your voice.</p>
-                      </div>
+                    <svg className="w-7 h-7" fill="none" stroke={chosenMode === 'voice' ? '#E87818' : '#6B83AC'} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                    <div className="text-center">
+                      <p className="text-sm font-bold" style={{color: chosenMode === 'voice' ? '#F8F8F8' : '#303870'}}>🎤 Voice</p>
+                      <p className="text-[10px] mt-0.5" style={{color: '#6B83AC'}}>Speak naturally</p>
                     </div>
                   </button>
-                  
+
                   <button
                     onClick={() => setChosenMode('text')}
-                    className={`group p-4 rounded-xl border text-left transition-all duration-300 active:scale-[0.98] ${
-                      chosenMode === 'text'
-                        ? 'bg-emerald-500/10 border-emerald-500 shadow shadow-emerald-500/10'
-                        : 'border-zinc-800 bg-zinc-950/60 hover:border-emerald-500/40 hover:bg-emerald-500/5'
-                    }`}
+                    className="flex flex-col items-center gap-3 transition-all duration-200 active:scale-[0.97]"
+                    style={chosenMode === 'text'
+                      ? {background: 'rgba(232,120,24,0.15)', border: '2px solid #E87818', borderRadius: '16px', padding: '20px 16px', boxShadow: '0 0 20px rgba(232,120,24,0.2)'}
+                      : {background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.12)', borderRadius: '16px', padding: '20px 16px'}}
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center border ${
-                        chosenMode === 'text'
-                          ? 'bg-emerald-500/20 border-emerald-400 text-white'
-                          : 'bg-emerald-500/5 border-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/15'
-                      }`}>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-xs font-semibold text-white">Text Mode</h3>
-                        <p className="text-[10px] text-zinc-400 mt-0.5 font-normal">Type questions and read answers. Ideal for noisy environments.</p>
-                      </div>
+                    <svg className="w-7 h-7" fill="none" stroke={chosenMode === 'text' ? '#E87818' : '#6B83AC'} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <div className="text-center">
+                      <p className="text-sm font-bold" style={{color: chosenMode === 'text' ? '#F8F8F8' : '#303870'}}>⌨️ Text</p>
+                      <p className="text-[10px] mt-0.5" style={{color: '#6B83AC'}}>Type your query</p>
                     </div>
                   </button>
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* Proceed Button */}
               <button
                 disabled={!selectedLanguage || !chosenMode}
                 onClick={handleProceedSelection}
-                className="w-full mt-4 py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-30 disabled:pointer-events-none disabled:scale-100 text-sm bg-gradient-to-r from-indigo-600 to-emerald-600 text-white"
+                className="w-full transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-25 disabled:pointer-events-none disabled:scale-100 text-white font-bold uppercase tracking-widest"
+                style={{background: 'linear-gradient(135deg, #303870 0%, #0F3689 40%, #E87818 100%)', padding: '18px 24px', borderRadius: '100px', fontSize: '13px', letterSpacing: '0.18em', boxShadow: '0 8px 32px rgba(232,120,24,0.2)'}}
               >
-                Proceed to Conversation
+                Proceed to Conversation →
               </button>
             </div>
           )}
 
+
           {isLanguageSelected && isCommModeSelected && (
             <div className="flex flex-col space-y-6 w-full animate-fade-in">
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-3">
+              <div className="flex items-center justify-between pb-3" style={{borderBottom: '1px solid rgba(107,131,172,0.2)'}}>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => {
@@ -1322,13 +1377,13 @@ export default function KioskPage() {
                     </svg>
                   </button>
                   <div>
-                    <h2 className="text-sm font-semibold text-white">Interactive Assistant</h2>
-                    <p className="text-[10px] text-zinc-400 mt-0.5">Use voice or type your query below.</p>
+                    <h2 className="text-sm font-bold" style={{color: '#F8F8F8'}}>Interactive Assistant</h2>
+                    <p className="text-[10px] mt-0.5" style={{color: '#6B83AC'}}>Use voice or type your query below.</p>
                   </div>
                 </div>
                 
                 {/* Voice/Text Communication Toggle Switch */}
-                <div className="flex items-center bg-zinc-900 border border-zinc-800 p-0.5 rounded-xl shadow-inner">
+                <div className="flex items-center p-0.5 rounded-xl shadow-inner" style={{background: 'rgba(31,40,53,0.8)', border: '1px solid rgba(107,131,172,0.2)'}}>
                   <button
                     onClick={() => {
                       setCommunicationMode('voice');
@@ -1337,11 +1392,8 @@ export default function KioskPage() {
                       orbController.setLabels(undefined);
                       orbController.setLabels(orbController.customLabel, undefined);
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${
-                      communicationMode === 'voice'
-                        ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow'
-                        : 'text-zinc-500 hover:text-zinc-300'
-                    }`}
+                    className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300"
+                    style={communicationMode === 'voice' ? {background: 'linear-gradient(135deg, #303870, #0F3689)', color: '#F8F8F8'} : {color: '#6B83AC'}}
                   >
                     Voice
                   </button>
@@ -1361,11 +1413,8 @@ export default function KioskPage() {
                       orbController.setLabels(undefined);
                       orbController.setLabels(orbController.customLabel, undefined);
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${
-                      communicationMode === 'text'
-                        ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow'
-                        : 'text-zinc-500 hover:text-zinc-300'
-                    }`}
+                    className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300"
+                    style={communicationMode === 'text' ? {background: 'linear-gradient(135deg, #E87818, #AB6849)', color: '#F8F8F8'} : {color: '#6B83AC'}}
                   >
                     Text
                   </button>
@@ -1374,23 +1423,23 @@ export default function KioskPage() {
 
               {/* Pause / Continue banner */}
               {communicationMode === 'voice' && (
-                <div className="flex items-center justify-between p-4 rounded-2xl border border-zinc-800 bg-zinc-950/40 backdrop-blur-md animate-fade-in">
+                <div className="flex items-center justify-between p-4 rounded-2xl backdrop-blur-md animate-fade-in" style={{background: 'rgba(31,40,53,0.7)', border: '1px solid rgba(107,131,172,0.2)'}}>
                   <div className="flex items-center space-x-3">
                     <span className="relative flex h-3 w-3">
                       {isPaused ? (
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3" style={{background: '#E87818'}}></span>
                       ) : (
                         <>
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{background: '#E87818'}}></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3" style={{background: '#E87818'}}></span>
                         </>
                       )}
                     </span>
                     <div className="text-left">
-                      <p className="text-xs font-semibold text-white">
+                      <p className="text-xs font-bold" style={{color: '#F8F8F8'}}>
                         {isPaused ? "Conversation Paused" : "Assistant is Listening"}
                       </p>
-                      <p className="text-[10px] text-zinc-400 mt-0.5">
+                      <p className="text-[10px] mt-0.5" style={{color: '#6B83AC'}}>
                         {isPaused ? "Prior audio discarded. Click continue to resume." : "Talk normally, or click Pause to freeze capture."}
                       </p>
                     </div>
@@ -1416,11 +1465,10 @@ export default function KioskPage() {
                         orbController.setLabels(orbController.customLabel, 'Conversation is paused. Click continue to resume.');
                       }
                     }}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
-                      isPaused
-                        ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98]'
-                        : 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98]'
-                    }`}
+                    className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-white"
+                    style={isPaused
+                      ? {background: 'linear-gradient(135deg, #303870, #0F3689)', boxShadow: '0 2px 12px rgba(48,56,112,0.3)'}
+                      : {background: 'linear-gradient(135deg, #E87818, #AB6849)', boxShadow: '0 2px 12px rgba(232,120,24,0.3)'}}
                   >
                     {isPaused ? 'Continue' : 'Pause'}
                   </button>
@@ -1429,9 +1477,9 @@ export default function KioskPage() {
 
               {/* Sleek Text Input Bar */}
               <form onSubmit={handleTextSubmit} className="w-full relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-emerald-500/10 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity" />
-                <div className="relative flex items-center bg-zinc-950/60 border border-zinc-800 rounded-2xl overflow-hidden focus-within:border-indigo-500/50 focus-within:ring-1 focus-within:ring-indigo-500/30 backdrop-blur-xl transition-all duration-300">
-                  <div className="pl-4 text-zinc-500">
+                <div className="absolute inset-0 rounded-2xl blur-md opacity-60 group-hover:opacity-90 transition-opacity" style={{background: 'linear-gradient(135deg, rgba(48,56,112,0.15), rgba(232,120,24,0.1))'}} />
+                <div className="relative flex items-center rounded-2xl overflow-hidden backdrop-blur-xl transition-all duration-300" style={{background: 'rgba(31,40,53,0.85)', border: '1px solid rgba(107,131,172,0.3)'}}>
+                  <div className="pl-4" style={{color: '#6B83AC'}}>
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
@@ -1441,11 +1489,13 @@ export default function KioskPage() {
                     value={textQuery}
                     onChange={(e) => setTextQuery(e.target.value)}
                     placeholder="Type your question here (e.g., minimum attendance)..."
-                    className="w-full py-4 px-4 bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none"
+                    className="w-full py-4 px-4 bg-transparent text-sm focus:outline-none"
+                    style={{color: '#F8F8F8'}}
                   />
                   <button
                     type="submit"
-                    className="mr-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-xs font-semibold text-white hover:shadow-lg transition-all duration-200 active:scale-[0.98]"
+                    className="mr-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white hover:shadow-lg transition-all duration-200 active:scale-[0.98] uppercase tracking-wider"
+                    style={{background: 'linear-gradient(135deg, #303870, #E87818)'}}
                   >
                     Send
                   </button>
@@ -1456,7 +1506,7 @@ export default function KioskPage() {
               {Object.keys(faqData).length > 0 && (
                 <div className="w-full flex flex-col space-y-4 pt-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-[10px] text-zinc-400 uppercase tracking-[0.2em] font-bold">
+                    <p className="text-[10px] uppercase tracking-[0.2em] font-bold" style={{color: '#E87818'}}>
                       Explore FAQs by Topic
                     </p>
                   </div>
@@ -1470,11 +1520,10 @@ export default function KioskPage() {
                           setActiveFaqDomain(domain);
                           setExpandedFaqIndex(null);
                         }}
-                        className={`px-4 py-2 rounded-xl text-xs font-medium border transition-all duration-300 ${
-                          activeFaqDomain === domain
-                            ? 'bg-indigo-500/10 border-indigo-500/40 text-indigo-300 shadow-lg shadow-indigo-500/5'
-                            : 'bg-zinc-950/40 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
-                        }`}
+                        className="px-4 py-2 rounded-xl text-xs font-bold border transition-all duration-300"
+                        style={activeFaqDomain === domain
+                          ? {background: 'rgba(232,120,24,0.15)', border: '1px solid rgba(232,120,24,0.5)', color: '#E87818'}
+                          : {background: 'rgba(31,40,53,0.6)', border: '1px solid rgba(107,131,172,0.2)', color: '#6B83AC'}}
                       >
                         {domain}
                       </button>
@@ -1488,10 +1537,13 @@ export default function KioskPage() {
                         <button
                           key={idx}
                           onClick={() => handleFaqClick(idx, faq.question)}
-                          className="w-full px-4 py-3.5 flex items-center justify-between text-left text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-950/30 border border-zinc-800/80 hover:border-indigo-500/40 rounded-xl transition-all duration-200 hover:bg-zinc-900/25 active:scale-[0.99] group"
+                          className="w-full px-4 py-3.5 flex items-center justify-between text-left text-xs font-semibold rounded-xl transition-all duration-200 active:scale-[0.99] group"
+                          style={{background: 'rgba(48,56,112,0.1)', border: '1px solid rgba(107,131,172,0.15)', color: '#C6D2E2'}}
+                          onMouseEnter={e => { e.currentTarget.style.border = '1px solid rgba(232,120,24,0.35)'; e.currentTarget.style.color = '#F8F8F8'; e.currentTarget.style.background = 'rgba(232,120,24,0.07)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.border = '1px solid rgba(107,131,172,0.15)'; e.currentTarget.style.color = '#C6D2E2'; e.currentTarget.style.background = 'rgba(48,56,112,0.1)'; }}
                         >
                           <span className="pr-4">{faq.question}</span>
-                          <svg className="w-4 h-4 text-zinc-500 group-hover:text-indigo-400 transform transition-transform duration-200 group-hover:translate-x-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 shrink-0 transform transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="#E87818" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7-7" />
                           </svg>
                         </button>
@@ -1509,15 +1561,15 @@ export default function KioskPage() {
 
       {/* ── Live Announcements Ticker ── */}
       <div className="w-full max-w-6xl relative z-10">
-        <div className="bg-zinc-950/50 border border-zinc-800/60 rounded-xl py-2 px-0 overflow-hidden">
+        <div className="rounded-2xl py-2.5 px-0 overflow-hidden shadow-sm" style={{background: '#FFFFFF', border: '1px solid rgba(48,56,112,0.15)'}}>
           <AnnouncementTicker refreshInterval={120000} />
         </div>
       </div>
 
       {/* ── Footer ── */}
-      <div className="h-8 relative z-10 flex items-center justify-center text-center opacity-30">
-        <p className="font-sans text-[9px] tracking-[0.1em] text-zinc-500 uppercase">
-          Open Prototype
+      <div className="h-8 relative z-10 flex items-center justify-center text-center">
+        <p className="font-sans text-[9px] tracking-[0.15em] uppercase font-bold" style={{color: '#6B83AC'}}>
+          PES University AI Kiosk
         </p>
       </div>
     </main>

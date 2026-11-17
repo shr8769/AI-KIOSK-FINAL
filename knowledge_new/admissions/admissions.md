@@ -3,7 +3,7 @@ title: "Admissions"
 url: https://pes.edu/admissions
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-07-24T02:08:56.643478+05:30"
+last_crawled: "2026-08-17T19:19:19.281669+05:30"
 ---
 
 Admissions
@@ -98,7 +98,7 @@ Method of Admission
 
 Eligibility Criteria
 
-50% aggregate score in 10+2 or equivalent in any stream from a recognized board. Admission through PES Entrance Process. For additional info, refer https://admissions.pes.edu/
+50% aggregate score in 10+2 or equivalent in any stream from a recognized board. Admission through PES Entrance Process. For additional info, referhttps://admissions.pes.edu/
 
 Method of Admission
 
@@ -123,7 +123,7 @@ Method of Admission
 
 Eligibility Criteria
 
-45% aggregate score in Bachelor’s Degree from a recognized University (40% in case of SC / ST and 42% in case of OBC).  Admission through PES Entrance Process. For additional info, refer https://admissions.pes.edu/
+45% aggregate score in Bachelor’s Degree from a recognized University (40% in case of SC / ST and 42% in case of OBC).  Admission through PES Entrance Process. For additional info, referhttps://admissions.pes.edu/
 
 Method of Admission
 
@@ -158,11 +158,11 @@ Method of Admission
 
 Eligibility Criteria
 
-10+2 or equivalent with Physics, Chemistry, English and Biology from a recognized Board, with minimum 50% aggregate marks or equivalent in Physics, Chemistry and Biology. Admission through PES Entrance Process. For additional info, refer https://admissions.pes.edu/
+10+2 or equivalent with Physics, Chemistry, English and Biology from a recognized Board, with minimum 50% aggregate marks or equivalent in Physics, Chemistry and Biology. Admission through PES Entrance Process. For additional info, referhttps://admissions.pes.edu/
 
 Mode & Method of Admissions
 
-- PESU Merit Quota: Visit https://admissions.pes.edu/ to register for the entrance process. Select the program of choice. Pay the application fee and finish the full registration. Book your entrance slot. Print your entrance hall ticket. Appear for the online interview process as per the information on your hall ticket. Ensure to keep your educational transcripts and other supporting documents ready when you appear for the online interview process. This is mandatory. Results of the entrance process will be shared with the candidate within 3 working days from the date of completion of the online interview process. If selected, the email shared with the candidate will detail the process for admission, which starts with the payment of the blocking tuition fee.
+- PESU Merit QuotaVisithttps://admissions.pes.edu/to register for the entrance processSelect the program of choicePay the application fee and finish the full registrationBook your entrance slotPrint your entrance hall ticketAppear for the online interview process as per the information on your hall ticketEnsure to keep your educational transcripts and other supporting documents ready when you appear for the online interview process. This is mandatory.Results of the entrance process will be shared with the candidate within 3 working days from the date of completion of the online interview processIf selected, the email shared with the candidate will detail the process for admission, which starts with the payment of the blocking tuition fee.
 - CET Quota– Candidate to appear for the Government CET entrance exam and attend the CET counseling.
 
 ##### Institute of Nursing
@@ -181,11 +181,11 @@ Mode & Method of Admissions
 
 Eligibility Criteria
 
-10+2 (PCM/B) from a recognized board. Admission through PES Entrance Process. For additional info, refer https://admissions.pes.edu/
+10+2 (PCM/B) from a recognized board. Admission through PES Entrance Process. For additional info, referhttps://admissions.pes.edu/
 
 Mode & Method of Admissions
 
-- PESU Merit Quota: Visit https://admissions.pes.edu/ to register for the entrance process. Select the program of choice. Pay the application fee and finish the full registration. Book your entrance slot. Print your entrance hall ticket. Appear for the online interview process as per the information on your hall ticket. Ensure to keep your educational transcripts and other supporting documents ready when you appear for the online interview process. This is mandatory. Results of the entrance process will be shared with the candidate within 3 working days from the date of completion of the online interview process. If selected, the email shared with the candidate will detail the process for admission, which starts with the payment of the blocking tuition fee.
+- PESU Merit QuotaVisithttps://admissions.pes.edu/to register for the entrance processSelect the program of choicePay the application fee and finish the full registrationBook your entrance slotPrint your entrance hall ticketAppear for the online interview process as per the information on your hall ticketEnsure to keep your educational transcripts and other supporting documents ready when you appear for the online interview process. This is mandatory.Results of the entrance process will be shared with the candidate within 3 working days from the date of completion of the online interview processIf selected, the email shared with the candidate will detail the process for admission, which starts with the payment of the blocking tuition fee.
 - PGCET Quota– Candidate to appear for the Government PGCET entrance exam and attend the PGCET counseling.
 
 ### Postgraduate Programs
@@ -198,11 +198,11 @@ Mode & Method of Admissions
 
 Eligibility Criteria
 
-Candidates must have passed BCA / Bachelor Degree in Computer Science and Engineering / B.Sc. (Computer Science), with Mathematics at 10+2 level with atleast 50% marks in the qualifying examination from a UGC recognized University. For additional info, refer https://admissions.pes.edu/
+Candidates must have passed BCA / Bachelor Degree in Computer Science and Engineering / B.Sc. (Computer Science), with Mathematics at 10+2 level with atleast 50% marks in the qualifying examination from a UGC recognized University. For additional info, referhttps://admissions.pes.edu/
 
 Mode & Method of Admissions
 
-- PESU Merit Quota: Visit https://admissions.pes.edu/ to register for the entrance process. Select the program of choice. Pay the application fee and finish the full registration. Book your entrance slot. Print your entrance hall ticket. Appear for the online interview process as per the information on your hall ticket. Ensure to keep your educational transcripts and other supporting documents ready when you appear for the online interview process. This is mandatory. Results of the entrance process will be shared with the candidate within 3 working days from the date of completion of the online interview process. If selected, the email shared with the candidate will detail the process for admission, which starts with the payment of the blocking tuition fee.
+- PESU Merit QuotaVisithttps://admissions.pes.edu/to register for the entrance processSelect the program of choicePay the application fee and finish the full registrationBook your entrance slotPrint your entrance hall ticketAppear for the online interview process as per the information on your hall ticketEnsure to keep your educational transcripts and other supporting documents ready when you appear for the online interview process. This is mandatoryResults of the entrance process will be shared with the candidate within 3 working days from the date of completion of the online interview processIf selected, the email shared with the candidate will detail the process for admission, which starts with the payment of the blocking tuition fee.
 - PGCET Quota– Candidate to appear for the Government PGCET entrance exam and attend the PGCET counseling.
 
 ##### Institute of Management and Commerce

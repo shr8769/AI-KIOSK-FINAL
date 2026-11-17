@@ -61,6 +61,18 @@ def warmup_services():
         logger.error(f"Coordinator warmup failed: {e}")
         startup_state.errors.append(f"Coordinator: {e}")
 
+    # 4. Preload NLLB in background thread so Indic translation never suffers a cold-start
+    def _warmup_nllb():
+        try:
+            from app.services.speech.translation_service import _get_nllb
+            _get_nllb()
+            logger.info("NLLB translation model pre-warmed in background.")
+        except Exception as e:
+            logger.warning(f"Background NLLB warmup bypassed: {e}")
+
+    import threading
+    threading.Thread(target=_warmup_nllb, daemon=True).start()
+
     startup_state.metrics["total_startup_ms"] = int((time.time() - overall_start) * 1000)
     logger.info(f"All warmups complete. Total time: {startup_state.metrics['total_startup_ms']}ms")
 

@@ -51,15 +51,16 @@ class GeminiTranslator(BaseTranslator):
     Used for initial prototype before offline IndicTrans2 deployment.
     Falls back gracefully if quota is exceeded.
     """
-    def __init__(self, api_key: str = None, model_name: str = "gemini-3.5-flash"):
+    def __init__(self, api_key: str = None, model_name: str = "gemini-3.8-flash"):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
         self.client = None
 
         if self.api_key:
             try:
+                primary_key = self.api_key.split(",")[0].strip().strip('"').strip("'")
                 from google import genai
-                self.client = genai.Client(api_key=self.api_key)
+                self.client = genai.Client(api_key=primary_key)
             except Exception as e:
                 logger.error(f"Failed to initialize Gemini Client for translation: {e}")
         else:

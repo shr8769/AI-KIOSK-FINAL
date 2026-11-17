@@ -46,6 +46,44 @@ def _is_fallback_answer(text: str) -> bool:
     ])
 
 
+def ensure_clickable_links(text: str) -> str:
+    """
+    Ensures that all URLs, emails, and phone numbers in the text are properly
+    formatted as clickable Markdown links across all languages (en, kn, hi).
+    Fixes mangled translated markdown links like 'ಈ ಲಿಂಕ್ (https://...'
+    """
+    if not text:
+        return text
+
+    # Step 1: Repair unclosed or mangled translated markdown links
+    # e.g. "ಈ ಲಿಂಕ್ (https://pes.edu/admissions/" -> "[ಈ ಲಿಂಕ್](https://pes.edu/admissions/)"
+    text = re.sub(
+        r'(\b[^\n\r()[\]]+?)\s*\(\s*(https?://[^\s)]+)\s*\)?',
+        r'[\1](\2)',
+        text
+    )
+
+    # Step 2: Extract existing valid markdown links to placeholders
+    links = []
+    def save_link(m):
+        links.append(m.group(0))
+        return f"__MD_LINK_{len(links)-1}__"
+
+    text = re.sub(r'\[[^\]]+\]\([^\)]+\)', save_link, text)
+
+    # Step 3: Autolink bare URLs
+    text = re.sub(r'(https?://[^\s<>()]+)', r'[\1](\1)', text)
+
+    # Step 4: Autolink email addresses
+    text = re.sub(r'\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b', r'[\1](mailto:\1)', text)
+
+    # Step 5: Restore placeholders
+    for idx, l in enumerate(links):
+        text = text.replace(f"__MD_LINK_{idx}__", l)
+
+    return text
+
+
 
 def local_spelling_corrector(query: str) -> str:
     import difflib
@@ -96,6 +134,12 @@ async def correct_and_normalize_query(query: str, detected_lang: str) -> str:
     query_lower = query_lower.replace("pesat", "pessat")
     query_lower = query_lower.replace("p stat", "pessat")
     query_lower = query_lower.replace("k set", "kcet")
+    query_lower = re.sub(r'\bkota\b', 'quota', query_lower)
+    query_lower = query_lower.replace("et quota", "KCET quota")
+    query_lower = query_lower.replace("e t quota", "KCET quota")
+    query_lower = query_lower.replace("cet quota", "KCET quota")
+    query_lower = query_lower.replace("et admission", "KCET admission")
+    query_lower = query_lower.replace("cet admission", "KCET admission")
     query_lower = query_lower.replace("v tech", "B.Tech")
     query_lower = query_lower.replace("be tech", "B.Tech")
     query_lower = query_lower.replace("btech", "B.Tech")
@@ -107,6 +151,15 @@ async def correct_and_normalize_query(query: str, detected_lang: str) -> str:
     query_lower = query_lower.replace("aluminy", "alumni")
     query_lower = query_lower.replace("best alumni", "pes alumni")
     query_lower = query_lower.replace("base alumni", "pes alumni")
+    
+    # University ASR phonetic fallbacks (e.g. 'at TS' -> 'at PES')
+    query_lower = re.sub(r'\b(at\s+ts|in\s+ts|at\s+ps|in\s+ps|at\s+base|in\s+base|at\s+best)\b', 'at PES', query_lower)
+    query_lower = re.sub(r'\bts\s+(university|college|campus)\b', 'PES University', query_lower)
+    
+    # Placement and time typo fallbacks
+    query_lower = re.sub(r'\b(this|last|current)\s+yea\b', r'\1 year', query_lower)
+    query_lower = re.sub(r'\bpakage\b', 'package', query_lower)
+    query_lower = re.sub(r'\bpackeg\b', 'package', query_lower)
     query = query_lower
 
     # 1. Run local spelling correction fast-path
@@ -186,7 +239,7 @@ async def run_query_pipeline(
         confirmation_texts = {
             "en": "You selected English. How can I help you today?",
             "kn": "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
-            "hi": "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकता हूँ?",
+            "hi": "आपने हिंदी भाषा चुनी है। मैं आज आपकी क्या सहायता कर सकती हूँ?",
         }
         text_response = confirmation_texts[lang_cmd]
         try:
@@ -210,6 +263,24 @@ async def run_query_pipeline(
     from app.services.speech.translation_service import preprocess_and_detect_language
     clean_transcript, detected_lang = preprocess_and_detect_language(text, language_hint)
 
+    # Pre-process native script phonetic variations for admissions / campus terms
+    if detected_lang == "kn":
+        clean_transcript = re.sub(r'(^|\s|[^\w])(ಈಟಿ|ಇಟಿ|ಸಿಇಟಿ|ಕೆಸಿಇಟಿ)\s*(ಕೋಟ|ಕೋಟಾ|ಕೋಟೆಯ|ಕೋಟಾದ)($|\s|[^\w])', r'\g<1>KCET quota\g<4>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(ಈಟಿ|ಇಟಿ|ಸಿಇಟಿ|ಕೆಸಿಇಟಿ)\s*(ಅಡ್ಮಿಷನ್|ಅಡ್ಮಿಷನ್ಸ್|ದಾಖಲಾತಿ|ಪ್ರವೇಶ)($|\s|[^\w])', r'\g<1>KCET admission\g<4>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(ಡಾಕ್ಯುಮೆಂಟ್ಸ್|ದಾಖಲೆಗಳು|ದಾಖಲಾತಿಗಳು)\s*(ಬೇಕು|ಅಗತ್ಯ)($|\s|[^\w])', r'\g<1>documents required\g<4>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(ಕಟ್\s*ಆಫ್|ಕಟ್‌ಆಫ್|ಕಟಾಫ್)($|\s|[^\w])', r'\g<1>cutoff\g<3>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(ಫೀಸ್|ಶುಲ್ಕ|ಫೀ)($|\s|[^\w])', r'\g<1>fee structure\g<3>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(ಬಿ\.?\s*ಟೆಕ್|ಬಿಟೆಕ್)($|\s|[^\w])', r'\g<1>B.Tech\g<3>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(ಬಿ\.?\s*ಬಿ\.?\s*ಎ|ಬಿಬಿಎ)($|\s|[^\w])', r'\g<1>BBA\g<3>', clean_transcript)
+    elif detected_lang == "hi":
+        clean_transcript = re.sub(r'(^|\s|[^\w])(ब्बा|बीबीए|बी\s*बी\s*ए)($|\s|[^\w])', r'\g<1>BBA\g<3>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(बीटेक|बी\s*टेक)($|\s|[^\w])', r'\g<1>B.Tech\g<3>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(एमबीए|एम\s*बी\s*ए)($|\s|[^\w])', r'\g<1>MBA\g<3>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(बीसीए|बी\s*सी\s*ए)($|\s|[^\w])', r'\g<1>BCA\g<3>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(एमसीए|एम\s*सी\s*ए)($|\s|[^\w])', r'\g<1>MCA\g<3>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(केसीईटी|सीईटी)($|\s|[^\w])', r'\g<1>KCET\g<3>', clean_transcript)
+        clean_transcript = re.sub(r'(^|\s|[^\w])(पेसैट|पैसैट)($|\s|[^\w])', r'\g<1>PESSAT\g<3>', clean_transcript)
+
     # Translate to English if native language
     if detected_lang in ["kn", "hi"]:
         import asyncio
@@ -224,9 +295,12 @@ async def run_query_pipeline(
         outstanding = updated_session.metadata.get("outstanding_clarification")
 
     if not outstanding:
-        # Check for contextual pronouns and implicitly resolve them using history
+        # Check for contextual pronouns (it, its, they, them, their, he, his, she, her)
+        # Exclude existential clauses with 'there' (e.g. 'are there', 'is there', 'there is', 'there are')
         query_en_lower = query_en.lower()
-        if re.search(r'\b(it|its|they|them|their|he|his|she|her|there)\b', query_en_lower):
+        is_existential = bool(re.search(r'\b(is|are|was|were|will\s*be)\s+there\b|\bthere\s+(is|are|was|were)\b', query_en_lower))
+        has_pronoun = bool(re.search(r'\b(it|its|they|them|their|he|his|she|her)\b', query_en_lower)) or (not is_existential and bool(re.search(r'\b(there)\b', query_en_lower)))
+        if has_pronoun:
             if updated_session:
                 history = updated_session.metadata.get("history", [])
                 if len(history) >= 2:
@@ -384,6 +458,58 @@ async def run_query_pipeline(
             logger.error(f"Navigation QR code generation failed: {e}")
             answer_en = "I encountered an issue retrieving the navigation route."
             is_fallback = True
+    elif target_domain == "announcements":
+        try:
+            from agents.autonomous.announcement_store import AnnouncementStore
+            store = AnnouncementStore()
+            active = store.get_active()
+
+            stop_words = {
+                "what", "show", "tell", "give", "latest", "recent", "about", "there", "have",
+                "with", "this", "that", "from", "announcement", "announcements", "notice",
+                "notices", "updates", "any", "are", "the", "for", "and", "can", "please"
+            }
+            raw_words = [
+                w for w in re.sub(r'[^a-zA-Z0-9\s]', ' ', refined_query.lower()).split()
+                if len(w) >= 3 and w not in stop_words
+            ]
+            query_words = set(raw_words + [w.rstrip('s') for w in raw_words if len(w) > 4])
+            matches = []
+            if query_words:
+                for a in active:
+                    title_lower = a.get("title", "").lower()
+                    body_lower = a.get("body", "").lower()
+                    score = sum(4 for w in query_words if w in title_lower) + sum(1 for w in query_words if w in body_lower)
+                    if score > 0:
+                        matches.append((score, a))
+                matches.sort(key=lambda x: x[0], reverse=True)
+                relevant = [m[1] for m in matches[:5]]
+            else:
+                relevant = active[:5]
+
+            if relevant:
+                lines = ["Here are the latest announcements from PESU Academy:\n"]
+                for idx, a in enumerate(relevant, 1):
+                    posted = a.get("posted_date", "").replace("Date: ", "").strip()
+                    date_str = f" ({posted})" if posted else ""
+                    title = a.get("title", "Announcement")
+                    lines.append(f"{idx}. **{title}**{date_str}")
+                    body = a.get("body", "")
+                    if "Links & Attachments:" in body:
+                        links_part = body.split("Links & Attachments:")[1].strip()
+                        lines.append(f"   {links_part}")
+                    elif len(body) > len(title) + 5:
+                        snippet = body.replace("\n", " ").strip()[:140]
+                        lines.append(f"   {snippet}...")
+                answer_en = "\n".join(lines)
+                is_fallback = False
+            else:
+                answer_en = "There are currently no active announcements matching your query on PESU Academy. Please check the PESU Academy student portal."
+                is_fallback = False
+        except Exception as e:
+            logger.error(f"Failed to fetch live announcements: {e}")
+            answer_en = "I encountered an issue retrieving the latest announcements from PESU Academy."
+            is_fallback = True
     else:
         coordinator = get_coordinator_agent()
         import asyncio
@@ -535,13 +661,17 @@ async def run_query_pipeline(
         if detected_lang in ("kn", "hi")
         else answer_en
     )
+    answer_native = ensure_clickable_links(answer_native)
     await add_agent_turn(session_id, answer_native)
 
     response_text = answer_native
     ambiguity_type = "CLEAR"
     domain = target_domain
 
-    tts_text = re.sub(r"[*_#]", "", answer_native)
+    # Clean TTS text so the speaker does not read raw URLs or markdown brackets
+    tts_text = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", answer_native)
+    tts_text = re.sub(r"https?://[^\s]+", "", tts_text)
+    tts_text = re.sub(r"[*_#`]", "", tts_text)
     try:
         tts_resp = await tts_service.synthesize(
             TTSRequest(session_id=session_id, text=tts_text, language=detected_lang)

@@ -1,225 +1,633 @@
 {
   "nodes": [
     {
-      "id": "KIOSK",
-      "name": "Information Kiosk",
-      "x": 320,
-      "y": 500,
-      "floor": 0
-    },
-    {
-      "id": "main_gate",
-      "name": "Main Gate",
-      "x": 220,
-      "y": 60,
-      "floor": 0
-    },
-    {
-      "id": "admin_block",
-      "name": "Admissions & Admin Block",
-      "x": 165,
-      "y": 115,
-      "floor": 0
-    },
-    {
-      "id": "placement_cell",
-      "name": "Placement Cell",
-      "x": 165,
-      "y": 115,
-      "floor": 1
-    },
-    {
-      "id": "academic_block",
-      "name": "Academic Block",
-      "x": 130,
+      "id": "j_tl_f0",
+      "name": "Corridor",
+      "x": 280,
       "y": 150,
       "floor": 0
     },
     {
-      "id": "mrd_auditorium",
-      "name": "MRD Auditorium",
-      "x": 190,
-      "y": 180,
-      "floor": 0
-    },
-    {
-      "id": "library",
-      "name": "Central Library",
-      "x": 320,
+      "id": "j_tr_f0",
+      "name": "Corridor",
+      "x": 550,
       "y": 150,
       "floor": 0
     },
     {
-      "id": "food_court",
-      "name": "Food Court / Canteen",
-      "x": 600,
-      "y": 420,
-      "floor": 4
-    },
-    {
-      "id": "hostel_office",
-      "name": "Hostel Office",
-      "x": 40,
-      "y": 150,
-      "floor": 0
-    },
-    {
-      "id": "research_block",
-      "name": "Research Block",
-      "x": 450,
-      "y": 300,
-      "floor": 0
-    },
-    {
-      "id": "medical_center",
-      "name": "Medical Center",
-      "x": 40,
-      "y": 80,
-      "floor": 0
-    },
-    {
-      "id": "j_tl",
-      "name": "North-West Junction",
-      "x": 320,
-      "y": 300,
-      "floor": 0
-    },
-    {
-      "id": "j_tr",
-      "name": "North-East Junction",
-      "x": 450,
-      "y": 300,
-      "floor": 0
-    },
-    {
-      "id": "j_br",
-      "name": "South-East Junction",
-      "x": 450,
+      "id": "j_bl_f0",
+      "name": "Corridor",
+      "x": 280,
       "y": 420,
       "floor": 0
     },
     {
-      "id": "j_bl",
-      "name": "South-West Junction",
-      "x": 320,
+      "id": "j_br_f0",
+      "name": "Corridor",
+      "x": 580,
       "y": 420,
       "floor": 0
     },
     {
       "id": "lift_1_f0",
-      "name": "Main Lift",
-      "x": 600,
-      "y": 420,
+      "name": "Main Lift 1",
+      "x": 420,
+      "y": 150,
       "floor": 0
     },
     {
-      "id": "lift_1_f4",
-      "name": "Main Lift",
-      "x": 600,
+      "id": "lift_2_f0",
+      "name": "Main Lift 2",
+      "x": 580,
+      "y": 350,
+      "floor": 0
+    },
+    {
+      "id": "j_tl_f1",
+      "name": "Corridor",
+      "x": 280,
+      "y": 150,
+      "floor": 1
+    },
+    {
+      "id": "j_tr_f1",
+      "name": "Corridor",
+      "x": 550,
+      "y": 150,
+      "floor": 1
+    },
+    {
+      "id": "j_bl_f1",
+      "name": "Corridor",
+      "x": 280,
       "y": 420,
+      "floor": 1
+    },
+    {
+      "id": "j_br_f1",
+      "name": "Corridor",
+      "x": 580,
+      "y": 420,
+      "floor": 1
+    },
+    {
+      "id": "lift_1_f1",
+      "name": "Main Lift 1",
+      "x": 420,
+      "y": 150,
+      "floor": 1
+    },
+    {
+      "id": "lift_2_f1",
+      "name": "Main Lift 2",
+      "x": 580,
+      "y": 350,
+      "floor": 1
+    },
+    {
+      "id": "j_tl_f2",
+      "name": "Corridor",
+      "x": 280,
+      "y": 150,
+      "floor": 2
+    },
+    {
+      "id": "j_tr_f2",
+      "name": "Corridor",
+      "x": 550,
+      "y": 150,
+      "floor": 2
+    },
+    {
+      "id": "j_bl_f2",
+      "name": "Corridor",
+      "x": 280,
+      "y": 420,
+      "floor": 2
+    },
+    {
+      "id": "j_br_f2",
+      "name": "Corridor",
+      "x": 580,
+      "y": 420,
+      "floor": 2
+    },
+    {
+      "id": "lift_1_f2",
+      "name": "Main Lift 1",
+      "x": 420,
+      "y": 150,
+      "floor": 2
+    },
+    {
+      "id": "lift_2_f2",
+      "name": "Main Lift 2",
+      "x": 580,
+      "y": 350,
+      "floor": 2
+    },
+    {
+      "id": "j_tl_f3",
+      "name": "Corridor",
+      "x": 280,
+      "y": 150,
+      "floor": 3
+    },
+    {
+      "id": "j_tr_f3",
+      "name": "Corridor",
+      "x": 550,
+      "y": 150,
+      "floor": 3
+    },
+    {
+      "id": "j_bl_f3",
+      "name": "Corridor",
+      "x": 280,
+      "y": 420,
+      "floor": 3
+    },
+    {
+      "id": "j_br_f3",
+      "name": "Corridor",
+      "x": 580,
+      "y": 420,
+      "floor": 3
+    },
+    {
+      "id": "lift_1_f3",
+      "name": "Main Lift 1",
+      "x": 420,
+      "y": 150,
+      "floor": 3
+    },
+    {
+      "id": "lift_2_f3",
+      "name": "Main Lift 2",
+      "x": 580,
+      "y": 350,
+      "floor": 3
+    },
+    {
+      "id": "j_tl_f4",
+      "name": "Corridor",
+      "x": 280,
+      "y": 150,
+      "floor": 4
+    },
+    {
+      "id": "j_tr_f4",
+      "name": "Corridor",
+      "x": 550,
+      "y": 150,
+      "floor": 4
+    },
+    {
+      "id": "j_bl_f4",
+      "name": "Corridor",
+      "x": 280,
+      "y": 420,
+      "floor": 4
+    },
+    {
+      "id": "j_br_f4",
+      "name": "Corridor",
+      "x": 580,
+      "y": 420,
+      "floor": 4
+    },
+    {
+      "id": "lift_1_f4",
+      "name": "Main Lift 1",
+      "x": 420,
+      "y": 150,
+      "floor": 4
+    },
+    {
+      "id": "lift_2_f4",
+      "name": "Main Lift 2",
+      "x": 580,
+      "y": 350,
+      "floor": 4
+    },
+    {
+      "id": "KIOSK",
+      "name": "Information Kiosk",
+      "x": 520,
+      "y": 220,
+      "floor": 0
+    },
+    {
+      "id": "main_gate",
+      "name": "Main Gate",
+      "x": 550,
+      "y": 100,
+      "floor": 0
+    },
+    {
+      "id": "admin_block",
+      "name": "Admissions & Admin Block",
+      "x": 600,
+      "y": 260,
+      "floor": 0
+    },
+    {
+      "id": "academic_block",
+      "name": "Academic Block",
+      "x": 450,
+      "y": 450,
+      "floor": 0
+    },
+    {
+      "id": "mrd_auditorium",
+      "name": "MRD Auditorium",
+      "x": 650,
+      "y": 480,
+      "floor": 0
+    },
+    {
+      "id": "hostel_office",
+      "name": "Hostel Office",
+      "x": 150,
+      "y": 400,
+      "floor": 0
+    },
+    {
+      "id": "medical_center",
+      "name": "Medical Center",
+      "x": 150,
+      "y": 480,
+      "floor": 0
+    },
+    {
+      "id": "library",
+      "name": "Central Library",
+      "x": 700,
+      "y": 150,
+      "floor": 1
+    },
+    {
+      "id": "research_block",
+      "name": "Physics Lab",
+      "x": 700,
+      "y": 320,
+      "floor": 1
+    },
+    {
+      "id": "placement_cell",
+      "name": "Placement Cell",
+      "x": 150,
+      "y": 400,
+      "floor": 1
+    },
+    {
+      "id": "food_court",
+      "name": "Food Court / Cafeteria",
+      "x": 700,
+      "y": 150,
       "floor": 4
     }
   ],
   "edges": [
     {
-      "from": "KIOSK",
-      "to": "j_tl",
-      "cost": 25
-    },
-    {
-      "from": "medical_center",
-      "to": "j_tl",
-      "cost": 45
-    },
-    {
-      "from": "library",
-      "to": "j_tl",
-      "cost": 35
-    },
-    {
-      "from": "library",
-      "to": "j_bl",
-      "cost": 35
-    },
-    {
-      "from": "hostel_office",
-      "to": "j_bl",
-      "cost": 45
-    },
-    {
-      "from": "academic_block",
-      "to": "j_bl",
-      "cost": 45
-    },
-    {
-      "from": "academic_block",
-      "to": "j_br",
-      "cost": 50
-    },
-    {
-      "from": "mrd_auditorium",
-      "to": "j_br",
-      "cost": 30
-    },
-    {
-      "from": "research_block",
-      "to": "j_br",
-      "cost": 20
-    },
-    {
-      "from": "admin_block",
-      "to": "j_br",
-      "cost": 35
-    },
-    {
-      "from": "admin_block",
-      "to": "j_tr",
-      "cost": 35
-    },
-    {
-      "from": "main_gate",
-      "to": "j_tr",
-      "cost": 70
-    },
-    {
-      "from": "j_tl",
-      "to": "j_tr",
-      "cost": 65
-    },
-    {
-      "from": "j_tl",
-      "to": "j_bl",
-      "cost": 70
-    },
-    {
-      "from": "j_bl",
-      "to": "j_br",
-      "cost": 95
-    },
-    {
-      "from": "j_tr",
-      "to": "j_br",
-      "cost": 70
-    },
-    {
-      "from": "admin_block",
-      "to": "placement_cell",
-      "cost": 15
-    },
-    {
-      "from": "j_br",
+      "from": "j_tl_f0",
       "to": "lift_1_f0",
-      "cost": 30
+      "cost": 140
     },
     {
       "from": "lift_1_f0",
+      "to": "j_tr_f0",
+      "cost": 130
+    },
+    {
+      "from": "j_tl_f0",
+      "to": "j_bl_f0",
+      "cost": 270
+    },
+    {
+      "from": "j_bl_f0",
+      "to": "j_br_f0",
+      "cost": 300
+    },
+    {
+      "from": "j_tr_f0",
+      "to": "lift_2_f0",
+      "cost": 200
+    },
+    {
+      "from": "lift_2_f0",
+      "to": "j_br_f0",
+      "cost": 70
+    },
+    {
+      "from": "lift_1_f0",
+      "to": "lift_1_f1",
+      "cost": 50
+    },
+    {
+      "from": "lift_1_f1",
+      "to": "lift_1_f0",
+      "cost": 50
+    },
+    {
+      "from": "lift_2_f0",
+      "to": "lift_2_f1",
+      "cost": 50
+    },
+    {
+      "from": "lift_2_f1",
+      "to": "lift_2_f0",
+      "cost": 50
+    },
+    {
+      "from": "j_tl_f1",
+      "to": "lift_1_f1",
+      "cost": 140
+    },
+    {
+      "from": "lift_1_f1",
+      "to": "j_tr_f1",
+      "cost": 130
+    },
+    {
+      "from": "j_tl_f1",
+      "to": "j_bl_f1",
+      "cost": 270
+    },
+    {
+      "from": "j_bl_f1",
+      "to": "j_br_f1",
+      "cost": 300
+    },
+    {
+      "from": "j_tr_f1",
+      "to": "lift_2_f1",
+      "cost": 200
+    },
+    {
+      "from": "lift_2_f1",
+      "to": "j_br_f1",
+      "cost": 70
+    },
+    {
+      "from": "lift_1_f1",
+      "to": "lift_1_f2",
+      "cost": 50
+    },
+    {
+      "from": "lift_1_f2",
+      "to": "lift_1_f1",
+      "cost": 50
+    },
+    {
+      "from": "lift_2_f1",
+      "to": "lift_2_f2",
+      "cost": 50
+    },
+    {
+      "from": "lift_2_f2",
+      "to": "lift_2_f1",
+      "cost": 50
+    },
+    {
+      "from": "j_tl_f2",
+      "to": "lift_1_f2",
+      "cost": 140
+    },
+    {
+      "from": "lift_1_f2",
+      "to": "j_tr_f2",
+      "cost": 130
+    },
+    {
+      "from": "j_tl_f2",
+      "to": "j_bl_f2",
+      "cost": 270
+    },
+    {
+      "from": "j_bl_f2",
+      "to": "j_br_f2",
+      "cost": 300
+    },
+    {
+      "from": "j_tr_f2",
+      "to": "lift_2_f2",
+      "cost": 200
+    },
+    {
+      "from": "lift_2_f2",
+      "to": "j_br_f2",
+      "cost": 70
+    },
+    {
+      "from": "lift_1_f2",
+      "to": "lift_1_f3",
+      "cost": 50
+    },
+    {
+      "from": "lift_1_f3",
+      "to": "lift_1_f2",
+      "cost": 50
+    },
+    {
+      "from": "lift_2_f2",
+      "to": "lift_2_f3",
+      "cost": 50
+    },
+    {
+      "from": "lift_2_f3",
+      "to": "lift_2_f2",
+      "cost": 50
+    },
+    {
+      "from": "j_tl_f3",
+      "to": "lift_1_f3",
+      "cost": 140
+    },
+    {
+      "from": "lift_1_f3",
+      "to": "j_tr_f3",
+      "cost": 130
+    },
+    {
+      "from": "j_tl_f3",
+      "to": "j_bl_f3",
+      "cost": 270
+    },
+    {
+      "from": "j_bl_f3",
+      "to": "j_br_f3",
+      "cost": 300
+    },
+    {
+      "from": "j_tr_f3",
+      "to": "lift_2_f3",
+      "cost": 200
+    },
+    {
+      "from": "lift_2_f3",
+      "to": "j_br_f3",
+      "cost": 70
+    },
+    {
+      "from": "lift_1_f3",
       "to": "lift_1_f4",
-      "cost": 100
+      "cost": 50
     },
     {
       "from": "lift_1_f4",
+      "to": "lift_1_f3",
+      "cost": 50
+    },
+    {
+      "from": "lift_2_f3",
+      "to": "lift_2_f4",
+      "cost": 50
+    },
+    {
+      "from": "lift_2_f4",
+      "to": "lift_2_f3",
+      "cost": 50
+    },
+    {
+      "from": "j_tl_f4",
+      "to": "lift_1_f4",
+      "cost": 140
+    },
+    {
+      "from": "lift_1_f4",
+      "to": "j_tr_f4",
+      "cost": 130
+    },
+    {
+      "from": "j_tl_f4",
+      "to": "j_bl_f4",
+      "cost": 270
+    },
+    {
+      "from": "j_bl_f4",
+      "to": "j_br_f4",
+      "cost": 300
+    },
+    {
+      "from": "j_tr_f4",
+      "to": "lift_2_f4",
+      "cost": 200
+    },
+    {
+      "from": "lift_2_f4",
+      "to": "j_br_f4",
+      "cost": 70
+    },
+    {
+      "from": "KIOSK",
+      "to": "j_tr_f0",
+      "cost": 100
+    },
+    {
+      "from": "j_tr_f0",
+      "to": "KIOSK",
+      "cost": 100
+    },
+    {
+      "from": "main_gate",
+      "to": "j_tr_f0",
+      "cost": 100
+    },
+    {
+      "from": "j_tr_f0",
+      "to": "main_gate",
+      "cost": 100
+    },
+    {
+      "from": "admin_block",
+      "to": "j_tr_f0",
+      "cost": 100
+    },
+    {
+      "from": "j_tr_f0",
+      "to": "admin_block",
+      "cost": 100
+    },
+    {
+      "from": "academic_block",
+      "to": "j_br_f0",
+      "cost": 100
+    },
+    {
+      "from": "j_br_f0",
+      "to": "academic_block",
+      "cost": 100
+    },
+    {
+      "from": "mrd_auditorium",
+      "to": "j_br_f0",
+      "cost": 100
+    },
+    {
+      "from": "j_br_f0",
+      "to": "mrd_auditorium",
+      "cost": 100
+    },
+    {
+      "from": "hostel_office",
+      "to": "j_bl_f0",
+      "cost": 100
+    },
+    {
+      "from": "j_bl_f0",
+      "to": "hostel_office",
+      "cost": 100
+    },
+    {
+      "from": "medical_center",
+      "to": "j_bl_f0",
+      "cost": 100
+    },
+    {
+      "from": "j_bl_f0",
+      "to": "medical_center",
+      "cost": 100
+    },
+    {
+      "from": "library",
+      "to": "j_tr_f1",
+      "cost": 100
+    },
+    {
+      "from": "j_tr_f1",
+      "to": "library",
+      "cost": 100
+    },
+    {
+      "from": "research_block",
+      "to": "lift_2_f1",
+      "cost": 100
+    },
+    {
+      "from": "lift_2_f1",
+      "to": "research_block",
+      "cost": 100
+    },
+    {
+      "from": "placement_cell",
+      "to": "j_bl_f1",
+      "cost": 100
+    },
+    {
+      "from": "j_bl_f1",
+      "to": "placement_cell",
+      "cost": 100
+    },
+    {
+      "from": "food_court",
+      "to": "j_tr_f4",
+      "cost": 100
+    },
+    {
+      "from": "j_tr_f4",
       "to": "food_court",
-      "cost": 10
+      "cost": 100
     }
   ]
 }

@@ -21,6 +21,8 @@ from typing import Any, Dict, List
 
 logger = logging.getLogger("agent.announcement_store")
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
@@ -71,9 +73,9 @@ class Announcement:
         self.archive_at = archive_at
 
     @staticmethod
-    def _compute_hash(title: str, body: str) -> str:
-        """Generate a SHA-256 hash from title + body for deduplication."""
-        content = f"{title.strip().lower()}|{body.strip().lower()}"
+    def _compute_hash(title: str, body: str = "") -> str:
+        """Generate a stable SHA-256 hash from title for deduplication."""
+        content = title.strip().lower()
         return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
     def to_dict(self) -> Dict[str, Any]:
@@ -135,7 +137,11 @@ class AnnouncementStore:
         archive_after_days: int = 180,
         new_badge_hours: int = 48,
     ):
-        self.cache_path = Path(cache_path)
+        p = Path(cache_path)
+        if not p.is_absolute():
+            self.cache_path = (PROJECT_ROOT / p).resolve()
+        else:
+            self.cache_path = p.resolve()
         self.max_announcements = max_announcements
         self.expire_after_days = expire_after_days
         self.archive_after_days = archive_after_days
@@ -230,7 +236,13 @@ class AnnouncementStore:
             if existing:
                 # Update last_seen and preserve first_seen
                 existing.last_seen = datetime.now(IST).isoformat()
-                if existing.status == AnnouncementStatus.EXPIRED:
+                # If newer scrape has longer body (e.g. details/PDF attachments loaded), update it
+                if len(announcement.body) > len(existing.body):
+                    existing.body = announcement.body
+                if announcement.posted_date:
+                    existing.posted_date = announcement.posted_date
+                # Restore to active if it was previously expired or archived
+                if existing.status in (AnnouncementStatus.EXPIRED, AnnouncementStatus.ARCHIVED):
                     existing.status = AnnouncementStatus.ACTIVE
                 return False
             else:
@@ -290,8 +302,19 @@ class AnnouncementStore:
         with self._lock:
             for ann in self._announcements.values():
                 try:
-                    first_seen = datetime.fromisoformat(ann.first_seen)
-                    age_days = (now - first_seen).days
+                    parsed_posted = self._parse_date(ann.posted_date)
+                    if parsed_posted:
+                        dt = datetime.fromisoformat(parsed_posted)
+                        if dt.tzinfo is None:
+                            dt = dt.replace(tzinfo=IST)
+                        age_days = (now - dt).days
+                    else:
+                        first_seen = datetime.fromisoformat(ann.first_seen)
+                        age_days = (now - first_seen).days
+
+                    # If announcement is recent, ensure it is active
+                    if age_days <= self.expire_after_days and ann.status in (AnnouncementStatus.EXPIRED, AnnouncementStatus.ARCHIVED):
+                        ann.status = AnnouncementStatus.ACTIVE
 
                     if ann.status == AnnouncementStatus.NEW:
                         if age_days > (self.new_badge_hours / 24):

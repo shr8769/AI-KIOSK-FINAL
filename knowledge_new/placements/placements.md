@@ -24,21 +24,13 @@ Our strong placement outcomes are a result of our focus on comprehensive career 
 
 ### Placement Statistics
 
-Our graduates are recruited for diverse roles inTechnology,Administration, Business Development, Employee Engagement, People’s Operations. Marketing, and Finance, among others. The graduating batch of 2025 was placed exceptionally well across each major sector and industry. A detailed report of these placement seasons can be viewed in the Placement Brochure.
+Our graduates are recruited for diverse roles in Technology, Administration, Business Development, Employee Engagement, People’s Operations, Marketing, and Finance, among others. The graduating batch was placed exceptionally well across each major sector and industry. A detailed report of these placement seasons can be viewed in the Placement Brochure.
 
-347
-+
-Participating Companies
-₹
-68
-lpa
-Highest Salary Offered
-1485
-+
-Placements Offers
-1237
-+
-Internships Offers
+- **Highest Salary / Package Offered:** ₹68 LPA (Lakhs Per Annum)
+- **Average Package Range:** ₹12 LPA to ₹18 LPA for tier-1 engineering & circuit branches (see Placement Brochure for comprehensive department reports)
+- **Participating Companies:** 347+
+- **Total Placement Offers:** 1,485+
+- **Internship Offers:** 1,237+
 
 ### PES alumni can be found in these leading companies
 

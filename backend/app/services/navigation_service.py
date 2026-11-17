@@ -1,5 +1,7 @@
 import json
 import logging
+import os
+import pathlib
 import time
 import uuid
 from typing import Any, Dict, Optional
@@ -12,8 +14,28 @@ from app.navigation.navigation_engine import navigation_engine
 
 logger = logging.getLogger(__name__)
 
-# Fallback in-memory store if Redis is unavailable
-_memory_store: Dict[str, Dict[str, Any]] = {}
+# Persistent disk-backed store for navigation sessions
+_DATA_DIR = pathlib.Path(__file__).resolve().parents[3] / "data"
+_SESSIONS_FILE = _DATA_DIR / "navigation_sessions.json"
+
+def _load_disk_store() -> Dict[str, Dict[str, Any]]:
+    try:
+        if _SESSIONS_FILE.exists():
+            return json.loads(_SESSIONS_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {}
+
+def _save_disk_store(store: Dict[str, Dict[str, Any]]):
+    try:
+        _DATA_DIR.mkdir(parents=True, exist_ok=True)
+        now = time.time()
+        active = {k: v for k, v in store.items() if (now - v.get("created_at", 0)) < 1800}
+        _SESSIONS_FILE.write_text(json.dumps(active, indent=2), encoding="utf-8")
+    except Exception as e:
+        logger.warning(f"Could not persist navigation sessions: {e}")
+
+_memory_store: Dict[str, Dict[str, Any]] = _load_disk_store()
 
 
 class NavigationService:
@@ -22,7 +44,21 @@ class NavigationService:
         self.ttl_seconds = 15 * 60  # 15 minutes
 
     def _get_tunnel_url(self) -> str:
-        """Read the ngrok public URL from frontend/public/tunnel.json and verify it's reachable."""
+        """Get live ngrok public URL from local ngrok API or tunnel.json."""
+        # 1. Check local ngrok client API (instant, 100% accurate live public URL)
+        try:
+            import httpx as _httpx
+            resp = _httpx.get("http://127.0.0.1:4040/api/tunnels", timeout=0.3)
+            if resp.status_code == 200:
+                tunnels = resp.json().get("tunnels", [])
+                for t in tunnels:
+                    p_url = t.get("public_url", "")
+                    if p_url and p_url.startswith("https://"):
+                        return p_url.rstrip("/")
+        except Exception:
+            pass
+
+        # 2. Check tunnel.json file fallback
         import pathlib
         try:
             tunnel_path = pathlib.Path(__file__).resolve().parents[3] / "frontend" / "public" / "tunnel.json"
@@ -31,14 +67,7 @@ class NavigationService:
                 data = _json.loads(tunnel_path.read_text(encoding="utf-8"))
                 url = data.get("publicUrl", "").strip().rstrip("/")
                 if url and url.startswith("http"):
-                    # Quick liveness check (0.5s timeout) — stale ngrok URLs should fail fast
-                    try:
-                        import httpx as _httpx
-                        r = _httpx.get(f"{url}/tunnel.json", timeout=0.5, follow_redirects=False)
-                        if r.status_code < 500:
-                            return url
-                    except Exception:
-                        logger.debug("Ngrok tunnel URL in tunnel.json is stale or unreachable.")
+                    return url
         except Exception:
             pass
         return ""
@@ -102,58 +131,61 @@ class NavigationService:
             "directions": engine_payload.get("directions", []),
         }
 
-        try:
-            if settings.UPSTASH_REDIS_REST_URL and settings.UPSTASH_REDIS_REST_TOKEN:
+        # Always store in memory store and persist to disk for instant local and LAN access
+        _memory_store[nav_id] = session_data
+        _save_disk_store(_memory_store)
+
+        if settings.UPSTASH_REDIS_REST_URL and settings.UPSTASH_REDIS_REST_TOKEN:
+            try:
                 clean_url = settings.UPSTASH_REDIS_REST_URL.strip('"').strip("'").rstrip('/')
                 clean_token = settings.UPSTASH_REDIS_REST_TOKEN.strip('"').strip("'")
 
                 url = f"{clean_url}/"
                 headers = {"Authorization": f"Bearer {clean_token}"}
                 payload = ["SET", f"nav:{nav_id}", json.dumps(session_data), "EX", self.ttl_seconds]
-                async with httpx.AsyncClient(verify=False) as client:
+                async with httpx.AsyncClient(verify=False, timeout=1.5) as client:
                     resp = await client.post(url, json=payload, headers=headers)
                     resp.raise_for_status()
                 logger.info(f"Created Navigation Session (Upstash REST): {nav_id} for destination '{session_data['destination']}'")
-            else:
-                redis = await get_redis()
-                await redis.set(f"nav:{nav_id}", json.dumps(session_data), ex=self.ttl_seconds)
-                logger.info(f"Created Navigation Session (Local Redis): {nav_id} for destination '{session_data['destination']}'")
-        except Exception as e:
-            logger.error(f"CRITICAL: Failed to write to Upstash Redis: {e}")
-            logger.warning(f"Redis unavailable, using memory store for navigation: {e}")
-            _memory_store[nav_id] = session_data
-            logger.info(f"Created Navigation Session (Memory): {nav_id} for destination '{session_data['destination']}'")
+            except Exception as e:
+                logger.warning(f"Upstash write bypassed, using memory store for navigation: {e}")
 
         return nav_id
 
     async def get_session(self, nav_id: str) -> Optional[Dict[str, Any]]:
         """Retrieves a navigation session payload by ID."""
-        try:
-            if settings.UPSTASH_REDIS_REST_URL and settings.UPSTASH_REDIS_REST_TOKEN:
-                url = f"{settings.UPSTASH_REDIS_REST_URL.rstrip('/')}/"
-                headers = {"Authorization": f"Bearer {settings.UPSTASH_REDIS_REST_TOKEN}"}
+        # 1. Fast in-memory check (instant response for local/LAN kiosk)
+        if nav_id in _memory_store:
+            data = _memory_store[nav_id]
+            if time.time() - data.get("created_at", 0) <= self.ttl_seconds:
+                return data
+            else:
+                del _memory_store[nav_id]
+
+        # 2. Check persistent disk store (survives uvicorn reloads and restarts)
+        disk_store = _load_disk_store()
+        if nav_id in disk_store:
+            disk_data = disk_store[nav_id]
+            if time.time() - disk_data.get("created_at", 0) <= self.ttl_seconds:
+                _memory_store[nav_id] = disk_data
+                return disk_data
+
+        # 3. Upstash check if configured
+        if settings.UPSTASH_REDIS_REST_URL and settings.UPSTASH_REDIS_REST_TOKEN:
+            try:
+                clean_url = settings.UPSTASH_REDIS_REST_URL.strip('"').strip("'").rstrip('/')
+                clean_token = settings.UPSTASH_REDIS_REST_TOKEN.strip('"').strip("'")
+                url = f"{clean_url}/"
+                headers = {"Authorization": f"Bearer {clean_token}"}
                 payload = ["GET", f"nav:{nav_id}"]
-                async with httpx.AsyncClient() as client:
+                async with httpx.AsyncClient(timeout=1.5) as client:
                     resp = await client.post(url, json=payload, headers=headers)
                     if resp.status_code == 200:
                         data = resp.json()
                         if data.get("result"):
                             return json.loads(data["result"])
-            else:
-                redis = await get_redis()
-                raw = await redis.get(f"nav:{nav_id}")
-                if raw:
-                    return json.loads(raw)
-        except Exception as e:
-            logger.warning(f"Error fetching navigation session: {e}")
-
-        if nav_id in _memory_store:
-            # Simple manual TTL check for memory store
-            data = _memory_store[nav_id]
-            if time.time() - data["created_at"] > self.ttl_seconds:
-                del _memory_store[nav_id]
-                return None
-            return data
+            except Exception as e:
+                logger.warning(f"Error fetching navigation session from Upstash: {e}")
 
         return None
 

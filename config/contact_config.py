@@ -127,11 +127,12 @@ def format_fallback_message(query: str, domain: Optional[str] = None) -> str:
     Formats a natural response directing the user to the correct university office.
     """
     contact = get_specific_contact(query, domain)
+    clean_phone = contact['phone'].replace(' ', '')
     return (
         f"I couldn't find reliable information regarding your question.\n"
         f"For accurate assistance, please contact the {contact['office_name']}.\n\n"
         f"Office Location: {contact['location']}\n"
         f"Email: [{contact['email']}](mailto:{contact['email']})\n"
-        f"Phone: {contact['phone']}\n"
-        f"Website: [this link]({contact['website']})"
+        f"Phone: [{contact['phone']}](tel:{clean_phone})\n"
+        f"Website: [{contact['website']}]({contact['website']})"
     )

@@ -3,7 +3,7 @@ title: "PES University – Education for the real world"
 url: https://pes.edu/
 category: general
 breadcrumb: ""
-last_crawled: "2026-08-15T15:11:50.579235+05:30"
+last_crawled: "2026-08-17T19:18:43.434520+05:30"
 ---
 
 Master of Design (M.Des)Design. Innovate. Lead - with 
@@ -19,23 +19,17 @@ Over 60+ Programs to choose from.B.Tech Admissions 2026 with JEE Mains & KCET Sc
 
 Rs. 140+ Crores merit scholarships given till date. Several PESU Scholarships are available for eligible students.
 
-### PESU KCET Counseling
-
-16th August 2026
-
-Seats Availability
-
 ### Research Driven Learning
 
 Basic engineering research at PES is a systematic pursuit for greater…
 
-### Placements
-
-Our strong placement outcomes are a result of our focus on comprehensive career development for all students.
-
 ### International Internships
 
 PES Summer offers the opportunity to dive into exciting subjects…
+
+### Placements
+
+Our strong placement outcomes are a result of our focus on comprehensive career development for all students.
 
 B.Tech Admissions 2026 with JEE Mains & KCET Scores only.
 
@@ -43,7 +37,7 @@ B.Tech Admissions 2026 with JEE Mains & KCET Scores only.
 
 [Register](https://admissions.pes.edu/)
 
-Book Campus TourPESU KCET CounselingB.Tech Seats AvailabilityResearch Driven LearningInternational InternshipsScholarshipsPh.D and M.Tech by ResearchPlacements
+Book Campus TourResearch Driven LearningInternational InternshipsScholarshipsPh.D and M.Tech by ResearchPlacements
 
 ### Our Campuses
 

@@ -254,8 +254,8 @@ export function AnnouncementTicker({ refreshInterval = 120000 }: { refreshInterv
         onTouchStart={() => setIsPaused(true)}
         onTouchEnd={() => setIsPaused(false)}
       >
-        <div className="absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-zinc-950 to-transparent pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-zinc-950 to-transparent pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none" style={{background: 'linear-gradient(to right, #F8F8F8, transparent)'}} />
+        <div className="absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none" style={{background: 'linear-gradient(to left, #F8F8F8, transparent)'}} />
 
         <div className="absolute left-0 top-0 bottom-0 z-20 flex items-center pl-2 pr-3">
           <span className="flex items-center gap-1.5 bg-amber-500/90 backdrop-blur-sm text-[8px] font-black uppercase tracking-[0.2em] text-black px-2 py-1 rounded-md shadow-lg shadow-amber-500/20 whitespace-nowrap">
@@ -280,11 +280,11 @@ export function AnnouncementTicker({ refreshInterval = 120000 }: { refreshInterv
               {ann.is_new && (
                 <span className="text-[8px] font-black uppercase text-amber-400 tracking-wider">NEW</span>
               )}
-              <span className="text-[11px] text-zinc-300 font-medium group-hover:text-white transition-colors">{ann.title}</span>
-              <span className="text-zinc-700 text-xs">·</span>
-              <span className="text-[9px] text-zinc-600 uppercase tracking-wider">{ann.category}</span>
-              <span className="text-[9px] text-indigo-500/60 group-hover:text-indigo-400 ml-1 transition-colors">tap ↗</span>
-              <span className="text-zinc-800 ml-6">╱</span>
+              <span className="text-[11px] font-medium transition-colors" style={{color: '#303870'}}>{ann.title}</span>
+              <span className="text-xs" style={{color: 'rgba(48,56,112,0.3)'}}>·</span>
+              <span className="text-[9px] uppercase tracking-wider" style={{color: '#6B83AC'}}>{ann.category}</span>
+              <span className="text-[9px] ml-1 transition-colors" style={{color: '#E87818'}}>tap ↗</span>
+              <span className="ml-6" style={{color: 'rgba(48,56,112,0.2)'}}>╱</span>
             </button>
           ))}
         </div>

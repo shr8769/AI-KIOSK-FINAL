@@ -148,5 +148,20 @@
         "topic": "Resume requirements",
         "question": "Are spelling errors or incorrect information on a verified resume subject to disciplinary action?",
         "answer": "Yes. While spelling errors lead to warning flags, submitting falsified information (GPA inflation, fake projects/internships) results in immediate permanent debarment from the placement season."
+    },
+    {
+        "topic": "Placement statistics",
+        "question": "What is the highest package or salary offered in placements?",
+        "answer": "The highest salary offered at PES University is ₹68 LPA (Lakhs Per Annum) for the graduating batch, with 347+ participating companies, 1,485+ placement offers, and 1,237+ internship offers."
+    },
+    {
+        "topic": "Placement statistics",
+        "question": "What is the highest and the average package offered in placements this year?",
+        "answer": "The highest package offered at PES University is ₹68 LPA (Lakhs Per Annum). The average salary package across campus placements generally ranges between ₹12 LPA to ₹18 LPA for tier-1 circuit and computer science branches, and comprehensive branch-wise reports can be viewed in the annual Placement Brochure available at the Placement Cell."
+    },
+    {
+        "topic": "Placement statistics",
+        "question": "What are the overall campus placement statistics and recruiter highlights at PES University?",
+        "answer": "PES University campus placements recorded 347+ participating companies, ₹68 LPA highest salary offered, 1,485+ placement offers, and 1,237+ internship offers. Top recruiters include Amazon, Microsoft, Meta, Google, Intuit, Adobe, Cisco, Goldman Sachs, Morgan Stanley, J.P. Morgan, Deloitte, Flipkart, and Netflix."
     }
 ]

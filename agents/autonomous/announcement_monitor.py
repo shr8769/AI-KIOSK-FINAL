@@ -14,7 +14,7 @@ import logging
 import os
 import re
 import sys
-from datetime import timezone, timedelta
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -211,9 +211,17 @@ class AnnouncementMonitorAgent(BaseAutonomousAgent):
 
             # Step 3: Detect deleted announcements (only in real mode)
             deleted_count = 0
-            if not self._use_mock_data:
+            if not self._use_mock_data and len(seen_hashes) >= 10:
+                now_dt = datetime.now(IST)
                 for ann_dict in self._store.get_active():
-                    if ann_dict["content_hash"] not in seen_hashes:
+                    last_seen_str = ann_dict.get("last_seen", "")
+                    try:
+                        last_seen_dt = datetime.fromisoformat(last_seen_str)
+                        days_since_seen = (now_dt - last_seen_dt).days
+                    except Exception:
+                        days_since_seen = 0
+
+                    if ann_dict["content_hash"] not in seen_hashes and days_since_seen >= 7:
                         self._store.mark_deleted(ann_dict["content_hash"])
                         deleted_count += 1
                         self.logger.info(

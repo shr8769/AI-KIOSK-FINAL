@@ -16,6 +16,7 @@ RULES (enforced by code review + test_startup_performance.py):
 
 import logging
 import os
+import re
 from functools import lru_cache
 
 logger = logging.getLogger(__name__)
@@ -127,88 +128,166 @@ def _get_translation_llm():
     """Lazily load the Google GenAI client for high-quality conversational translations."""
     google_key = os.environ.get("GOOGLE_API_KEY", "").strip() or os.environ.get("GEMINI_API_KEY", "").strip()
     if google_key:
+        primary_key = google_key.split(",")[0].strip().strip('"').strip("'")
         from google import genai
-        return genai.Client(api_key=google_key)
+        return genai.Client(api_key=primary_key)
     else:
-        # Avoid hanging on slow local LLMs for real-time translation
         return None
 
 
 def translate_to_english_llm(text: str, source_lang: str) -> str:
     """Translates conversational or mixed native query to clear English using LLM."""
-    try:
-        client = _get_translation_llm()
-        if not client:
-            return None
-        from config.llm_config import GEMINI_MODEL
-        lang_name = "Kannada" if source_lang == "kn" else "Hindi"
-        prompt = f"""Translate this conversational, mixed {lang_name} user query into standard, clear English.
+    lang_name = "Kannada" if source_lang == "kn" else "Hindi"
+    prompt = f"""You are an expert translator for the PES University AI Kiosk.
+Translate this conversational, mixed {lang_name} user query into standard, clear English.
+Rules:
+1. Translate campus terms accurately in the context of PES University (e.g., KCET/CET quota admissions, PESSAT, placements, hostels, MRD scholarship). For example, "ಈಟಿ ಕೋಟ" or "ಸಿಇಟಿ ಕೋಟ" means "KCET quota".
+2. Output ONLY the single clean English translation sentence on one line.
+3. Do NOT include markdown bold (**), quotes, explanations, bullet points, or alternative translations.
+
 User query: "{text}"
 English translation:"""
-        response = client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=prompt
-        )
-        if response and response.text:
-            translated = response.text.strip().strip('"').strip("'")
-            if translated:
-                return translated
+
+    try:
+        from config.gemini_pool import gemini_pool
+        client, active_key = gemini_pool.get_active_client()
+        if client:
+            models_to_try = gemini_pool.get_models()
+            for m in models_to_try:
+                try:
+                    response = client.models.generate_content(
+                        model=m,
+                        contents=prompt
+                    )
+                    if response and response.text:
+                        raw = response.text.strip().split("\n")[0]
+                        clean = re.sub(r'[*_`"“”\']', '', raw).strip()
+                        if clean:
+                            return clean
+                except Exception as model_err:
+                    err_msg = str(model_err)
+                    if any(term in err_msg for term in ["504", "DEADLINE_EXCEEDED", "Gateway Timeout", "503", "UNAVAILABLE", "high demand", "timed out", "Timeout"]):
+                        logger.warning(f"Gemini translation experiencing timeout ({model_err}). Rotating key or marking degraded.")
+                        gemini_pool.mark_exhausted(active_key, retry_delay_seconds=120.0)
+                        next_client, next_key = gemini_pool.get_active_client()
+                        if next_client and next_key != active_key:
+                            client = next_client
+                            active_key = next_key
+                            continue
+                        else:
+                            gemini_pool.mark_degraded(60.0)
+                            break
+                    elif "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+                        logger.warning(f"Gemini translation quota exhausted on key ending in ...{active_key[-6:]}: {model_err}")
+                        gemini_pool.mark_exhausted(active_key)
+                        client, active_key = gemini_pool.get_active_client()
+                        if not client:
+                            break
+                        continue
+                    logger.warning(f"Translation to English with {m} failed: {model_err}")
+                    break
     except Exception as e:
-        logger.warning(f"LLM translation to English failed: {e}")
+        logger.warning(f"Gemini translation to English failed: {e}")
+
+    # Fallback to local Ollama (qwen3:latest)
+    try:
+        from langchain_ollama import ChatOllama
+        logger.info(f"Translating {lang_name} to English using local Ollama (qwen3:latest)...")
+        ollama = ChatOllama(model="qwen3:latest", timeout=15)
+        resp = ollama.invoke(prompt)
+        if resp and resp.content:
+            clean = re.sub(r'[*_`"“”\']', '', resp.content.strip().split("\n")[0]).strip()
+            if clean:
+                return clean
+    except Exception as ollama_err:
+        logger.warning(f"Ollama translation to English failed: {ollama_err}")
+
     return text
 
 
 def translate_from_english_llm(text: str, target_lang: str) -> str:
     """Translates English to conversational, mixed target language using LLM with loanword preservation."""
-    try:
-        client = _get_translation_llm()
-        if not client:
-            return None
-        from config.llm_config import GEMINI_MODEL
-        lang_name = "Kannada" if target_lang == "kn" else "Hindi"
-        prompt = f"""You are a professional, human-like translator for the PES University AI Kiosk.
+    lang_name = "Kannada" if target_lang == "kn" else "Hindi"
+    prompt = f"""You are a professional, human-like translator for the PES University AI Kiosk.
 Translate the following English text into conversational, natural {lang_name} as spoken by students and faculty in daily life.
 
 Rules:
 1. Avoid pure, textbook, or archaic {lang_name} vocabulary that sounds robotic or formal.
 2. Naturally integrate common English loanwords (e.g. "office", "placement", "internship", "admissions", "fees", "exams", "canteen", "library", "labs", "classes", "grades", "results", "attendance", "scholarship") by TRANSLITERATING them into the {lang_name} script (e.g., for Kannada, write "ಪ್ಲೇಸ್‌ಮೆಂಟ್" for placement, "ಆಫೀಸ್" for office, "ಅಡ್ಮಿಷನ್" for admission).
-3. Keep the tone friendly, conversational, helpful, and natural.
-4. Strictly return ONLY the translated text. Do not include any explanations, English subtitles, or markdown formatting.
+3. CRITICAL - PRESERVE ALL LINKS & URLS: You MUST keep all markdown links [text](url), URLs (https://...), email addresses, and phone numbers EXACTLY as in the source. Ensure every [text](url) has both matching square brackets [] and matching parentheses (). Never alter, break, or truncate URLs.
+4. Keep the tone friendly, conversational, helpful, and natural.
+5. Strictly return ONLY the translated text. Do not include any explanations, English subtitles, or conversational preamble.
 
 English text: "{text}"
 Conversational {lang_name} translation:"""
-        response = client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=prompt
-        )
-        if response and response.text:
-            translated = response.text.strip().strip('"').strip("'")
-            if translated:
-                return translated
+
+    try:
+        from config.gemini_pool import gemini_pool
+        client, active_key = gemini_pool.get_active_client()
+        if client:
+            models_to_try = gemini_pool.get_models()
+            for m in models_to_try:
+                try:
+                    response = client.models.generate_content(
+                        model=m,
+                        contents=prompt
+                    )
+                    if response and response.text:
+                        translated = response.text.strip().strip('"').strip("'")
+                        if translated:
+                            return translated
+                except Exception as model_err:
+                    err_msg = str(model_err)
+                    if any(term in err_msg for term in ["504", "DEADLINE_EXCEEDED", "Gateway Timeout", "503", "UNAVAILABLE", "high demand", "timed out", "Timeout"]):
+                        logger.warning(f"Gemini translation experiencing timeout ({model_err}). Rotating key or marking degraded.")
+                        gemini_pool.mark_exhausted(active_key, retry_delay_seconds=120.0)
+                        next_client, next_key = gemini_pool.get_active_client()
+                        if next_client and next_key != active_key:
+                            client = next_client
+                            active_key = next_key
+                            continue
+                        else:
+                            gemini_pool.mark_degraded(60.0)
+                            break
+                    elif "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+                        logger.warning(f"Gemini translation quota exhausted on key ending in ...{active_key[-6:]}: {model_err}")
+                        gemini_pool.mark_exhausted(active_key)
+                        client, active_key = gemini_pool.get_active_client()
+                        if not client:
+                            break
+                        continue
+                    logger.warning(f"Translation from English with {m} failed: {model_err}")
+                    break
     except Exception as e:
-        logger.warning(f"LLM translation from English failed: {e}")
-    return text
+        logger.warning(f"Gemini translation from English failed: {e}")
+
+    # Never block on slow local Ollama (27s) for paragraph translation!
+    # Returning None allows fast offline translation service (0.5s) to take over instantly.
+    return None
 
 
 def translate_to_english(text: str, source_lang: str = "auto") -> str:
     if not text or not text.strip() or source_lang == "en":
         return text
 
-    # Try LLM-based translation first
+    # Try fast Google / offline translation first to preserve LLM burst quota
+    try:
+        from app.services.speech.translation_service import offline_translation_service
+        translated = offline_translation_service.translate(text, source_lang, "en")
+        if translated and translated.strip().lower() != text.strip().lower():
+            logger.info(f"Translated '{text[:40]}' ({source_lang}) -> en via fast translation")
+            return translated
+    except Exception as e:
+        logger.warning(f"Fast translation to English failed, falling back to LLM: {e}")
+
+    # Fallback to LLM conversational translation if fast translation unavailable
     if source_lang in ("kn", "hi"):
         translated_llm = translate_to_english_llm(text, source_lang)
         if translated_llm and translated_llm != text:
             logger.info(f"LLM conversational translation succeeded ({source_lang} -> en)")
             return translated_llm
 
-    try:
-        from app.services.speech.translation_service import offline_translation_service
-        translated = offline_translation_service.translate(text, source_lang, "en")
-        logger.info(f"Translated '{text[:40]}' ({source_lang}) -> en")
-        return translated
-    except Exception as e:
-        logger.error(f"Translation to English failed: {e}")
-        return text
+    return text
 
 
 def translate_from_english(text: str, target_lang: str) -> str:
@@ -217,10 +296,13 @@ def translate_from_english(text: str, target_lang: str) -> str:
 
     # Try LLM-based conversational translation first
     if target_lang in ("kn", "hi"):
-        translated_llm = translate_from_english_llm(text, target_lang)
-        if translated_llm and translated_llm != text:
-            logger.info(f"LLM conversational translation succeeded (en -> {target_lang})")
-            return translated_llm
+        try:
+            translated_llm = translate_from_english_llm(text, target_lang)
+            if translated_llm and translated_llm != text:
+                logger.info(f"LLM conversational translation succeeded (en -> {target_lang})")
+                return translated_llm
+        except Exception as e:
+            logger.warning(f"LLM translation from English failed: {e}")
 
     try:
         from app.services.speech.translation_service import offline_translation_service

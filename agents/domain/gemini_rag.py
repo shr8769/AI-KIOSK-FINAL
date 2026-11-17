@@ -1,8 +1,14 @@
 import os
 import logging
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+if not os.getenv("GEMINI_API_KEY"):
+    backend_env = Path(__file__).resolve().parents[2] / "backend" / ".env"
+    if backend_env.exists():
+        load_dotenv(backend_env)
+
 logger = logging.getLogger(__name__)
 
 class GeminiSynthesizer:
@@ -12,7 +18,7 @@ class GeminiSynthesizer:
     Provides compatibility fallbacks if Google GenAI SDK or API keys are missing.
     Fallback to local Qwen (Ollama) is used if GEMINI_API_KEY is not set.
     """
-    def __init__(self, api_key: str = None, model_name: str = "gemini-3.5-flash"):
+    def __init__(self, api_key: str = None, model_name: str = "gemini-3.8-flash"):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
         self.client = None
@@ -22,8 +28,9 @@ class GeminiSynthesizer:
         
         if self.api_key:
             try:
+                primary_key = self.api_key.split(",")[0].strip().strip('"').strip("'")
                 from google import genai
-                self.client = genai.Client(api_key=self.api_key)
+                self.client = genai.Client(api_key=primary_key)
                 logger.info(f"Initialized Gemini client successfully with model {model_name}.")
             except Exception as e:
                 logger.error(f"Failed to initialize Gemini client: {e}. Falling back exclusively to local Ollama.")
@@ -101,42 +108,54 @@ Answer:"""
                         logger.error(f"Ollama generation failed: {e}")
                 return None
 
-        if self.client:
-            import time
-            max_retries = 3
-            backoff = 2.0
-
-            for attempt in range(max_retries):
+        from config.gemini_pool import gemini_pool
+        client, active_key = gemini_pool.get_active_client()
+        if client:
+            models_to_try = gemini_pool.get_models()
+            for m in models_to_try:
                 try:
-                    response = self.client.models.generate_content(
-                        model=self.model_name,
+                    response = client.models.generate_content(
+                        model=m,
                         contents=prompt,
                         config={
                             'temperature': 0.3,
                             'automatic_function_calling': {'disable': True}
                         }
                     )
-                    if response.text:
+                    if response and response.text:
                         self.is_degraded = False
                         return response.text.strip()
                     else:
-                        logger.warning("Gemini model returned empty response text.")
-                        break
+                        logger.warning(f"Gemini model {m} returned empty response text.")
                 except Exception as e:
-                    if "429" in str(e) or "quota" in str(e).lower() or "RESOURCE_EXHAUSTED" in str(e):
-                        if "day" in str(e).lower() or "daily" in str(e).lower():
+                    err_msg = str(e)
+                    if any(term in err_msg for term in ["504", "DEADLINE_EXCEEDED", "Gateway Timeout", "503", "UNAVAILABLE", "high demand", "timed out", "Timeout"]):
+                        logger.warning(f"Gemini server error / timeout on key ending in ...{active_key[-6:]}: {e}")
+                        gemini_pool.mark_exhausted(active_key, retry_delay_seconds=120.0)
+                        next_client, next_key = gemini_pool.get_active_client()
+                        if next_client and next_key != active_key:
+                            logger.info(f"Rotating to standby Gemini key ending in ...{next_key[-6:]}")
+                            client = next_client
+                            active_key = next_key
+                            continue
+                        else:
+                            gemini_pool.mark_degraded(60.0)
                             self.is_degraded = True
                             self.degraded_at = time.time()
                             break
-                        if attempt < max_retries - 1:
-                            sleep_time = backoff ** (attempt + 1)
-                            logger.warning(f"Gemini generation hit rate limit. Retrying in {sleep_time}s...")
-                            time.sleep(sleep_time)
+                    elif "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+                        logger.warning(f"Gemini quota exhausted on key ending in ...{active_key[-6:]}: {e}")
+                        gemini_pool.mark_exhausted(active_key)
+                        next_client, next_key = gemini_pool.get_active_client()
+                        if next_client and next_key != active_key:
+                            client = next_client
+                            active_key = next_key
                             continue
                         else:
                             self.is_degraded = True
                             self.degraded_at = time.time()
-                    logger.error(f"Gemini generation failed: {e}. Falling back to Ollama.")
+                            break
+                    logger.warning(f"Gemini generation with {m} failed: {e}. Falling back to Ollama.")
                     break
 
         # Fallback to Ollama if client missing or Gemini failed

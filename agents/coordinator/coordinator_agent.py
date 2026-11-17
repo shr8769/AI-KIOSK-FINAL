@@ -90,7 +90,12 @@ class CoordinatorAgent:
                 "ppo", "salary", "job", "jobs", "job offer", "job offers", "placement drive", "placement drives", 
                 "signing", "acceptance", "portal", "placement cell", "resume verification", "eligibility requirements",
                 "apply for placements", "apply for placement", "placement eligibility", "placements eligibility",
-                "offer", "offers", "two offers", "company", "companies", "top companies", "alumni"
+                "offer", "offers", "two offers", "company", "companies", "top companies", "alumni",
+                "package", "packages", "highest package", "average package", "package offered", "packages offered",
+                "highest salary", "average salary", "salary offered", "ctc", "highest ctc", "average ctc",
+                "lpa", "placement statistics", "placement stats", "placement report", "placement brochure",
+                "highest offer", "highest placement", "tier-1 companies", "tier-1 offers", "salary package",
+                "highest package offered", "average package offered", "package details"
             ],
             "research": [
                 "publication", "publications", "journal", "journals", "conference", "conferences", 
@@ -214,7 +219,7 @@ class CoordinatorAgent:
         
         # Resolve common routing conflicts
         # Extract query flags
-        has_placement_intent = any(kw in query_lower for kw in ["placement", "placements", "job", "jobs", "internship", "internships", "recruit", "recruitment", "microsoft", "amazon"])
+        has_placement_intent = any(kw in query_lower for kw in ["placement", "placements", "job", "jobs", "internship", "internships", "recruit", "recruitment", "microsoft", "amazon", "package", "packages", "salary", "ctc", "lpa", "offer", "offered"])
         has_academic_intent = any(kw in query_lower for kw in ["calculate", "calculation", "revaluation", "request", "transcript", "transcripts", "seating", "attendance", "exam", "exams", "timetable", "repeat"])
         has_admission_intent = any(kw in query_lower for kw in ["admission", "admissions", "apply", "get in", "undergrad", "undergraduate", "high school", "eligibility", "predicted", "upload"])
 

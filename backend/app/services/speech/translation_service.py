@@ -98,8 +98,12 @@ def _get_nllb():
 
         model_name = "facebook/nllb-200-distilled-600M"
         logger.info(f"Loading NLLB model '{model_name}' on CPU...")
-        _nllb_tokenizer = AutoTokenizer.from_pretrained(model_name)
-        _nllb_model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        try:
+            _nllb_tokenizer = AutoTokenizer.from_pretrained(model_name, local_files_only=True)
+            _nllb_model = AutoModelForSeq2SeqLM.from_pretrained(model_name, local_files_only=True)
+        except Exception:
+            _nllb_tokenizer = AutoTokenizer.from_pretrained(model_name)
+            _nllb_model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
         _nllb_model.eval()
 
         # Forcing CPU due to PyTorch not supporting RTX 5050 (sm_120) yet
@@ -146,9 +150,8 @@ def _nllb_translate_chunk(text: str, source_lang: str, target_lang: str) -> Opti
             translated_ids = model.generate(
                 **inputs,
                 forced_bos_token_id=forced_bos_id,
-                max_new_tokens=512,
-                num_beams=4,
-                early_stopping=True,
+                max_new_tokens=256,
+                num_beams=1,
                 no_repeat_ngram_size=3,
             )
 
@@ -303,21 +306,7 @@ class OfflineTranslationService:
                 return placeholder_map.get(placeholder, placeholder)
             return pattern.sub(replace_match, translated_text)
 
-        # ── Tier 1: Google Translate ──────────────────────────────────────────
-        try:
-            from deep_translator import GoogleTranslator
-            gt_source = "auto" if source not in ("en", "hi", "kn") else source
-            translated = GoogleTranslator(source=gt_source, target=target).translate(modified_text)
-            if translated and not _is_degenerate(translated):
-                final_result = restore_placeholders(translated)
-                logger.info(f"Google Translate succeeded ({source}->{target}): '{text[:40]}' -> '{final_result[:40]}'")
-                self._set_cached_translation(text, source, target, final_result)
-                return final_result
-            logger.warning("Google Translate returned degenerate output. Falling back to NLLB.")
-        except Exception as e:
-            logger.warning(f"Google Translate unavailable ({e}). Falling back to NLLB.")
-
-        # ── Tier 2: NLLB (offline, sentence-chunked) ───────────────────────────
+        # ── Tier 1: NLLB (Local, In-Memory, Zero Rate Limits, ~0.3s) ──────────
         if source in ("en", "hi", "kn") and target in ("en", "hi", "kn"):
             sentences = _split_sentences(modified_text)
             translated_parts = []
@@ -333,17 +322,31 @@ class OfflineTranslationService:
             if all_ok and translated_parts:
                 result = " ".join(translated_parts)
                 final_result = restore_placeholders(result)
-                logger.info(f"NLLB translation succeeded ({source}->{target}).")
+                logger.info(f"NLLB translation succeeded ({source}->{target}): '{text[:40]}' -> '{final_result[:40]}'")
                 self._set_cached_translation(text, source, target, final_result)
                 return final_result
 
-            # Try the full text as one chunk (for very short inputs)
-            if len(sentences) == 1 or not all_ok:
-                result = _nllb_translate_chunk(modified_text, source, target)
-                if result:
-                    final_result = restore_placeholders(result)
-                    self._set_cached_translation(text, source, target, final_result)
-                    return final_result
+            # Try the full text as one chunk (for short inputs or fallback)
+            result = _nllb_translate_chunk(modified_text, source, target)
+            if result:
+                final_result = restore_placeholders(result)
+                logger.info(f"NLLB full chunk succeeded ({source}->{target}): '{text[:40]}' -> '{final_result[:40]}'")
+                self._set_cached_translation(text, source, target, final_result)
+                return final_result
+
+        # ── Tier 2: Google Translate (Fallback only if NLLB fails) ───────────
+        try:
+            from deep_translator import GoogleTranslator
+            gt_source = "auto" if source not in ("en", "hi", "kn") else source
+            translated = GoogleTranslator(source=gt_source, target=target).translate(modified_text)
+            if translated and not _is_degenerate(translated):
+                final_result = restore_placeholders(translated)
+                logger.info(f"Google Translate fallback succeeded ({source}->{target}): '{text[:40]}' -> '{final_result[:40]}'")
+                self._set_cached_translation(text, source, target, final_result)
+                return final_result
+            logger.warning("Google Translate returned degenerate output.")
+        except Exception as e:
+            logger.debug(f"Google Translate fallback unavailable ({e}).")
 
         # ── Tier 3: Return original text (non-garbage guarantee) ──────────────
         logger.warning(

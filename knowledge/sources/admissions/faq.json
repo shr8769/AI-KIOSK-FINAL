@@ -31,6 +31,11 @@
     },
     {
         "topic": "Fees",
+        "question": "What is the fee structure for BBA (Bachelor of Business Administration) programs?",
+        "answer": "For Bachelor of Business Administration (BBA) programs at PES University: BBA (General / Honors) tuition is INR 2,60,000 per annum, BBA Business Analytics (Hons) is INR 3,00,000 per annum, BBA Hospitality & Event Management (HEM) is INR 2,20,000 per annum, and BBA Sports Management is INR 2,20,000 per annum. A one-time non-refundable administrative charge of INR 10,000 applies. For fee queries or payment details, contact the Admissions Office at admissions@pes.edu or call 080-10-297-297."
+    },
+    {
+        "topic": "Fees",
         "question": "How much is the tuition fee per semester for undergraduate programs?",
         "answer": "For the current academic year, undergraduate tuition is $15,500 per semester for full-time domestic students taking between 12 and 18 credit hours. Part-time tuition is charged at a rate of $1,100 per credit hour."
     },
@@ -58,36 +63,6 @@
         "topic": "Fees",
         "question": "What happens if I miss the tuition payment deadline?",
         "answer": "A late payment fee of $150 will be applied to your student account, and a financial hold will be placed. This hold prevents you from adding/dropping courses, registering for future terms, or obtaining official transcripts."
-    },
-    {
-        "topic": "Scholarships",
-        "question": "What merit-based scholarships are available for incoming freshmen?",
-        "answer": "We offer a range of merit-based scholarships, from partial awards ($5,000 per year) up to full-tuition coverage. These are awarded automatically based on your cumulative GPA, standardized test scores (if submitted), and outstanding high school achievements."
-    },
-    {
-        "topic": "Scholarships",
-        "question": "Do I need to submit a separate application to be considered for scholarships?",
-        "answer": "All applicants are automatically considered for general academic merit scholarships upon submitting their standard admission application. However, specialized awards (such as department-specific, athletic, or leadership scholarships) may require a separate application form."
-    },
-    {
-        "topic": "Scholarships",
-        "question": "Are there financial aid or need-based scholarships available for students?",
-        "answer": "Yes, domestic students can apply for need-based financial aid (grants, loans, and work-study) by completing the Free Application for Federal Student Aid (FAFSA). International students can apply for need-based institutional aid using the CSS Profile."
-    },
-    {
-        "topic": "Scholarships",
-        "question": "Can international students apply for scholarships and financial aid?",
-        "answer": "Yes, international students are eligible for all merit-based scholarships. While they are not eligible for federal US financial aid, we offer a limited number of need-aware institutional scholarships for qualified international applicants."
-    },
-    {
-        "topic": "Scholarships",
-        "question": "What are the renewal criteria for maintaining my scholarship in subsequent years?",
-        "answer": "To renew your academic scholarship annually, you must maintain a cumulative GPA of 3.2 or higher, enroll as a full-time student completing at least 30 credits per academic year, and remain in good behavioral standing with the university."
-    },
-    {
-        "topic": "Scholarships",
-        "question": "Are there athletic or extracurricular scholarships offered by the university?",
-        "answer": "Yes, athletic scholarships are administered directly through the Athletics Department for NCAA Division II sports. We also offer scholarships for talent-based extracurriculars like marching band, orchestra, speech/debate, and theater."
     },
     {
         "topic": "Documents required",
@@ -148,5 +123,10 @@
         "topic": "Important deadlines",
         "question": "What is the deadline to accept the admission offer and pay the enrollment deposit?",
         "answer": "The national confirmation deadline is May 1. You must accept your admission offer in the student portal and submit the $500 non-refundable enrollment deposit by 11:59 PM EST on this day to secure your spot."
+    },
+    {
+        "topic": "Scholarships",
+        "question": "What scholarships are available at PES University? What is the Prof. MRD Scholarship? What is the Prof. CNR Rao Scholarship?",
+        "answer": "PES University offers several scholarships and awards:\n1. Prof. MRD Scholarships: Merit Certificate + 50% Tuition Fee Refund for Top 5% of the Students based on their CGPA.\n2. Prof. CNR Rao Scholarships: Merit Certificate + 40% Tuition Fee Refund for the next 20% of the Students based on their SGPA.\n3. Distinction Awards: Merit Certificate for Students securing 7.75+ SGPA.\n4. DevOn Corporate Scholarships: Offered by corporates for students in their final year recognizing their merit.\n5. Teaching Assistantships: For students assisting Professors.\n6. Research Assistantships: For students working as research associates.\nNote: Scholarships are subject to qualifying CGPA/SGPA and are not applicable in the final year (except corporate). Students are eligible for only one award per semester/year."
     }
 ]

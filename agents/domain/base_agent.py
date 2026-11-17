@@ -1,4 +1,6 @@
 import os
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 import re
 import json
 import datetime
@@ -22,7 +24,8 @@ SYNONYMS = {
     "scholarship": {"scholarship", "scholarships", "aid", "loyalty", "mrd"},
     "eligibility": {"eligibility", "eligible", "criteria", "requirements", "requirement"},
     "hostel": {"hostel", "hostels", "mess", "boarding", "accommodation"},
-    "required": {"required", "require", "mandatory", "necessary"}
+    "required": {"required", "require", "mandatory", "necessary"},
+    "package": {"package", "packages", "salary", "salaries", "ctc", "lpa", "compensation", "highest", "average"}
 }
 
 STOP_WORDS = {
@@ -526,6 +529,7 @@ class BaseAgent(ABC):
             f"  COMEDK = Consortium of Medical, Engineering and Dental Colleges of Karnataka\n"
             f"  CIE = Center for Innovation and Entrepreneurship\n"
             f"  MRD = Prof. M.R. Doreswamy (scholarship name)\n\n"
+            f"Rule: If the user asks for multiple statistics (e.g. both highest and average package) and the context contains part of the answer (e.g. highest salary is ₹68 LPA), provide the verified details and clarify that full brochures or averages are available at the relevant office.\n"
             f"Rule: If you need to provide a URL or link, ALWAYS format it using standard Markdown syntax with 'this link' as the text (e.g., [this link](https://...)). NEVER output plain unformatted URLs.\n"
             f"Rule: If the user's query or your response relates to money, fees, or payments, you MUST include the contact info for the admissions office (admissions@pes.edu, Phone: 080-10-297-297) so they can contact them directly.\n\n"
             f"Context:\n{formatted_context}\n"
