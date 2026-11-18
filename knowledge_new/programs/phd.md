@@ -3,7 +3,7 @@ title: "Ph.D / M.Tech by Research"
 url: https://pes.edu/phd
 category: programs
 breadcrumb: ""
-last_crawled: "2026-07-24T02:31:00.792386+05:30"
+last_crawled: "2026-11-18T08:20:18.377044+05:30"
 ---
 
 ### Ph.D / M.Tech by Research
@@ -20,10 +20,12 @@ Part-time opportunities also for teachers and industry professionals.
 - Collaboration with reputed universities and industries
 - Fellowship/Scholarship/Financial Assistance available
 
+[Learn More](https://drive.google.com/file/d/1rSIFkFnBFlO7LmSD7t8ToSIZRTsrLDRF/view?usp=sharing)
+
 ### AVAILABLE PROGRAMS
 
-- Ph.D. and M.Tech by Researchin – Computer Science & Engineering, Electrical Engineering, Electronics and Communication Engineering, Mechanical Engineering, and Biotechnology.
-- Ph.Din – Commerce & Management, Science (Maths, Physics & Chemistry), Computer Applications, Psychology, Nursing, and Pharmacy.Candidates wishing to pursue research careers in interdisciplinary areas are especially encouraged.
+- Ph.D. and M.Tech by Researchin – Computer Science & Engineering, Electrical Engineering, Electronics and Communication Engineering, and Mechanical Engineering.
+- Ph.Din – Commerce & Management, Science (Maths, Physics & Chemistry), Computer Applications, Psychology, and Nursing.Candidates wishing to pursue research careers in interdisciplinary areas are especially encouraged.
 
 ### MINIMUM QUALIFICATION
 
@@ -35,7 +37,7 @@ Part-time opportunities also for teachers and industry professionals.
 ### APPLICATION REQUIREMENTS
 
 - Cover letter
-- Deg. Certificates–UG/PG, others
+- Degree Certificates–UG (for M.Tech (by Research). UG, PG, and others (for Ph.D.)
 - Photocopies of marks cards, transcripts
 - Statement of Purpose
 - Recommendation Letters (2 from academic references)
@@ -48,21 +50,33 @@ Register online from the link given below. Registrations are open throughout th
 
 Syllabus for Entrance Exam:Click here
 
+### Important Notes
+
+- Incomplete Applications: Submissions missing required details or documents will be automatically rejected without review.
+- Late Submissions: Applications received after the deadline will be deferred to the subsequent admission cycle.
+- Applicant Notification: Only shortlisted candidates will be contacted on the registered email ID during any phase of the admission/selection process.
+- Applicant Responsibility: The University assumes no liability for applicant oversights, including unread email communications, incomplete document submission, missed admission deadlines, or failure to attend scheduled entrance examinations or interviews.
+- Vacancies & Supervisor Allocation: Admissions to Ph.D. and M.Tech. (by Research) programs, as well as the assignment of research supervisors, are strictly subject to seat and vacancy availability.
+
 ### Program Outline
 
 Ph.D. and M.Tech. by ResearchAffiliation: PES University
 
-27 February 2026Last date to submit Application
+25 September 2026Last date to submit Application
 
-14 March 2026Entrance Exam
+10 October 2026Entrance Exam
 
 Will be notified laterInterview
 
 ### PH.D/ M.TECH
 
-Ph.D & M.Tech(by Research) course work exam ESA August 2026 Draft Time Table with Course Codes & Titles.Learn More
+Ph.D & M.Tech(by Research) course work exam ESA August 2026 FINAL Time Table with Course Codes & Titles.Learn More
 
 Ph.D / M.Tech (by Research) Course Work exam ESA Feb./March 2026 Final TimetableLearn More
+
+### NOTIFICATION #224
+
+Ph.D / M.Tech (by Research) Entrance Exam October 2026.Learn More
 
 ### NOTIFICATION #213
 
@@ -71,10 +85,6 @@ Ph.D / M.Tech (by Research) course work exam ESA August 2026Learn More
 ### NOTIFICATION #197
 
 Ph.D / M.Tech (by Research) Exam Notification March 2026Learn More
-
-### NOTIFICATION #196
-
-Ph.D / M.Tech (by Research) Exam Notification February 2026Learn More
 
 ### ADMISSIONS OPEN
 
@@ -131,6 +141,14 @@ DC MeetingsHalf Yearly Progress Report
 Ph.D. Proposal Defense
 
 Tips to prepare for Proposal DefenseProposal Defense Synopsis FormatResearch Proposal FormatPh.D. Comprehensive ExamPh.D. Synopsis SubmissionPh.D. Thesis Format
+
+### PES Scholarships
+
+Rewarding Excellence, Empowering FuturesMerit-based scholarships that recognize academic achievement and support your journey at PES University.
+
+### PES Loyalty Program
+
+Celebrating Lifelong ConnectionsExclusive benefits and privileges for the extended PES community, strengthening bonds that last beyond graduation.
 
 ### You may also be interested in
 

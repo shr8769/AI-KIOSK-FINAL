@@ -3,7 +3,7 @@ title: "Research Programs"
 url: https://pes.edu/research
 category: research
 breadcrumb: ""
-last_crawled: "2026-07-24T02:09:29.707346+05:30"
+last_crawled: "2026-11-18T08:07:19.697677+05:30"
 ---
 
 Programs
@@ -15,6 +15,9 @@ Our research programs foster innovation and interdisciplinary exploration, empow
 - Doctor of Philosophy (Ph.D)
 - Master of Technology by Research
 
+### Research Brochure
+
+[Download](https://drive.google.com/uc?export=download&id=1tDnWY5BWqvlrJ99HfmrBeqO8yfKoxmoE)
 - All Programs
 - Institutes/ Departments
 - Undergraduate

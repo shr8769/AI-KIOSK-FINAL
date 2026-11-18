@@ -3,7 +3,7 @@ title: "Hostel"
 url: https://pes.edu/hostel
 category: hostels
 breadcrumb: ""
-last_crawled: "2026-07-24T02:18:58.212237+05:30"
+last_crawled: "2026-11-18T08:11:48.103277+05:30"
 ---
 
 Admissions
@@ -40,7 +40,7 @@ For complete information regarding the Girls hostel at the Ring Road Campus and 
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ### Study at PES
 

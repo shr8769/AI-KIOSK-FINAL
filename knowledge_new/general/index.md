@@ -1,228 +1,292 @@
 ---
-title: "PES University – Education for the real world"
-url: https://pes.edu/
+title: "PESUIMSR | PES UNIVERSITY INSTITUTE OF MEDICAL SCIENCES & RESEARCH"
+url: https://pesuimsr.pes.edu/
 category: general
 breadcrumb: ""
-last_crawled: "2026-08-17T19:18:43.434520+05:30"
+last_crawled: "2026-11-18T08:20:26.282329+05:30"
 ---
 
-Master of Design (M.Des)Design. Innovate. Lead - with 
-M.Des at PES University.INTRODUCINGLearn More
+PG Medical Admissions 2026–27 Open
 
-Book your Campus Tour– Register and explore our learning spaces, labs, student life and more.
+# MD & MS programs at PESUIMSR
 
-### Admissions 2026 Closing Soon
+Choose your specialty and take the next step after MBBS. The National Medical Commission (NMC) has approved 78 postgraduate medical seats across 20 specialties at PES University Institute of Medical Sciences and Research, Electronic City, Bengaluru.
 
-Over 60+ Programs to choose from.B.Tech Admissions 2026 with JEE Mains & KCET Scores only.Register now.
+[Learn more](https://campaigns.pes.edu/med/)
+[Fee Details](https://pesuimsr.pes.edu/mdmsfee/)
+Register Now
 
-### Scholarships
+# Admissions 2026 Now Open
 
-Rs. 140+ Crores merit scholarships given till date. Several PESU Scholarships are available for eligible students.
+PES is a much sought-after university, known both for our academic rigor and our unique student development approach.
 
-### Research Driven Learning
+[Apply Now](https://admissions.pes.edu)
+[Fee Details](https://pesuimsr.pes.edu/fee/)
+PESU Institute of Medical Sciences & Research
 
-Basic engineering research at PES is a systematic pursuit for greater…
+# About PESUIMSR
 
-### International Internships
+Empowering future doctors through excellence in education, innovation in research, and compassion in care.
 
-PES Summer offers the opportunity to dive into exciting subjects…
+[Apply Now](https://admissions.pes.edu)
+[Infrastructure](https://pesuimsr.pes.edu/infrastructure/)
+Study @ PES University
 
-### Placements
+# Programs
 
-Our strong placement outcomes are a result of our focus on comprehensive career development for all students.
+The MBBS (Bachelor of Medicine, Bachelor of Surgery) program is designed to equip students with the knowledge, skills, and practical experience necessary to embark on a career in medicine.
 
-B.Tech Admissions 2026 with JEE Mains & KCET Scores only.
+[Apply Now](https://admissions.pes.edu)
+[Departments](https://pesuimsr.pes.edu/departments/)
+PESUIMSR
 
-### ADMISSIONS 2026 CLOSING SOON
+# Departments
 
-[Register](https://admissions.pes.edu/)
+PESU Institute of Medical Sciences and Research (PESU IMSR) offers a comprehensive academic structure divided into Pre-Clinical, Para-Clinical, and Clinical departments, ensuring a progressive and integrated approach to medical education.
 
-Book Campus TourResearch Driven LearningInternational InternshipsScholarshipsPh.D and M.Tech by ResearchPlacements
+[Apply Now](https://admissions.pes.edu)
+[Programs](https://pesuimsr.pes.edu/programs/)
+Register Now
 
-### Our Campuses
+### Admissions 2026Now Open
 
-PES has four Bengaluru-based campuses and two in Andhra Pradesh.
+About PESUIMSR
 
-- PES UniversityPES UniversityRR Campus, Banashankari
-- PES UniversityPES UniversityEC Campus, Electronic City
-- PES UniversityPES UniversityHanumanth Nagar Campus
-- PES IMSRPES IMSRKuppam, Andhra Pradesh
-- The Amaatra AcademyThe Amaatra AcademyOff Sarjapur Road
-- PES Public SchoolPES Public SchoolChittoor, Andhra Pradesh
-- SSM Public SchoolSSM Public SchoolBanashankari, Bengaluru
+### AboutPESUIMSR
 
-1. 1
-2. 2
-3. 3
+Study @ PES University
 
-### Our Campuses
+### Programs
 
-PES has four Bengaluru-based campuses and two in Andhra Pradesh.
+Electronic City, Bengaluru
 
-- SSM Public SchoolSSM Public SchoolBanashankari, Bengaluru
-- PES UniversityPES UniversityRR Campus, Banashankari
-- PES UniversityPES UniversityEC Campus, Electronic City
-- PES UniversityPES UniversityHanumanth Nagar Campus
-- PES IMSRPES IMSRKuppam, Andhra Pradesh
-- The Amaatra AcademyThe Amaatra AcademyOff Sarjapur Road
-- PES Public SchoolPES Public SchoolChittoor, Andhra Pradesh
-- SSM Public SchoolSSM Public SchoolBanashankari, Bengaluru
-- PES UniversityPES UniversityRR Campus, Banashankari
+### Study MBBS @PES University
 
-1. 1
-2. 2
-3. 3
-4. 4
-5. 5
-6. 6
-7. 7
+02
+══════════════════════════════════════
+     ACCREDITATION + STATS ISLAND
+══════════════════════════════════════
+NAAC A+
+Recognition grade
+UGC, NMC
+Approval body
+PES University
+Affiliating university
+Electronic City
+Bengaluru campus
+250
+MBBS seats per year
+21
+Academic departments
+13
+Postgraduate specialties
+3
+Pre-Clinical, Para-Clinical & Clinical stages
+══════════════════════════════════════
+     ABOUT
+══════════════════════════════════════
+About Us
 
-## Academics
+## About PESUIMSR
 
-Preparing students to follow their own North Star and become responsible citizens and leaders.
+PES University Institute of Medical Sciences and Research (PESUIMSR), located in Electronic City, Bengaluru, represents a significant stride in medical education and healthcare delivery in Karnataka. As part of the prestigious PES University, which has over 50 years of educational excellence, PESUIMSR is envisioned as a modern medical college that not only trains future doctors but also provides state-of-the-art healthcare services to the local population and neighboring districts of Tamil Nadu.
 
-### Undergraduate Education
+In addition to its academic mission, PESUIMSR is deeply committed to community health. The associated hospital provides comprehensive medical services, contributing to the well-being of underserved populations.
 
-A rich learning experience that combines deep subject-area expertise with all-round development
+250
+MBBS seats
+21
+Departments
+NAAC A+
+Recognition grade
+[Learn More](https://pesuimsr.pes.edu/about/)
+![PES University Electronic City Campus](https://pesuimsr.pes.edu/assets/img/hero-ec-campus.jpg)
+![Academics at PESUIMSR](https://pesuimsr.pes.edu/assets/img/academics-cover.jpg)
+![Admissions at PESUIMSR](https://pesuimsr.pes.edu/assets/img/admissions-cover.jpg)
+![Campus Life at PESUIMSR](https://pesuimsr.pes.edu/assets/img/campus-life-cover.jpg)
+══════════════════════════════════════
+     WHY PESUIMSR
+══════════════════════════════════════
+Why PESUIMSR
 
-### Postgraduate Education
+## A modern medical college in a vibrant tech corridor
 
-Advanced fields of knowledge that help you develop specialisations and leadership skills
+### A Significant Stride
 
-### Lifelong Learning
+PES University Institute of Medical Sciences and Research (PESUIMSR), located in Electronic City, Bengaluru, represents a significant stride in medical education and healthcare delivery in Karnataka.
 
-Continuing executive education for working professionals to upskill while you work
+### Learning & Research
 
-## Meet our Faculty
+The institute is designed to be a hub of advanced medical learning and research, equipped with cutting-edge infrastructure and facilities.
 
-### Dr. Shailashree Haridas
+### A Vibrant Tech Corridor
 
-Dean, Faculty of Management & Commerce
+The campus is located in a vibrant tech corridor, offering students exposure to interdisciplinary collaboration and innovation.
 
-### Dr. V Krishna
+### Community Health
 
-Dean, Student Affairs
+PESUIMSR is deeply committed to community health.
 
-### Dr. Shylaja S S
+══════════════════════════════════════
+     VISION / MISSION / QUALITY POLICY
+══════════════════════════════════════
+What Guides Us
 
-Director of Cloud Computing & Big Data (CCBD), Centre for Data Sciences & Applied Machine Learning (CDSAML)
+## Vision, Mission & Quality Policy
 
-##### Ranked #1
+V
 
-#1 University in Karnataka – New Universities Under 5 YearsKSURF 2019
+### Vision
 
-##### India’s Most Trusted
+To create professionally superior and ethically strong global workforce.
 
-PES University placed seventh on the list of INDIA’S MOST TRUSTED Educational Institutes. Source: TRA.
+M
 
-##### Top 25 M.Tech College
+### Mission
 
-PES University in the list of Top 25 M.Tech colleges in IndiaCareerindia
+To provide students with a sense of history, an understanding of values and ethics, a commitment to law and morality, an appreciation of human creativity and an analytical inquiring mind.
 
-##### Ranked #6
+Q
 
-PES University is ranked sixth in the Outlook-ICARE India University Rankings 2019.
+### Quality Policy
 
-## Academics
+Our quality policy is to develop highly skilled human resources with the ability to adapt to an intellectually and technologically changing environment with the participative efforts of the management, staff, students and parents.
 
-Preparing students to follow their own North Star and become responsible citizens and leaders.
+══════════════════════════════════════
+     PROGRAM
+══════════════════════════════════════
+Study @ PES University
 
-### Undergraduate Education
+## Our Programs
 
-A rich learning experience that combines deep subject-area expertise with all-round development
+The MBBS and postgraduate MD/MS programs are designed to equip medical students and resident doctors with the clinical expertise, technical skills, and practical experience necessary to excel across general medicine and specialized surgical care.
 
-### Postgraduate Education
+Undergraduate · Medicine
 
-Advanced fields of knowledge that help you develop specialisations and leadership skills
+### MBBS
 
-### Lifelong Learning
+Bachelor of Medicine, Bachelor of Surgery
 
-Continuing executive education for working professionals to upskill while you work
+The MBBS program is designed to equip students with the knowledge, skills, and practical experience necessary to embark on a career in medicine.
 
-## Meet our Faculty
+4.5+1 yrs
+Duration + mandatory Internship
+PES University
+Affiliation
+UGC, NMC
+Approval Body
+NAAC A+
+Recognition grade
 
-### Dr. Shailashree Haridas
+Campus: PES University Electronic City (EC) Campus.
 
-Dean, Faculty of Management & Commerce
+[Learn More](https://pes.edu/mbbs/)
+Postgraduate · Medicine · New
 
-### Dr. V Krishna
+### MD / MS
 
-Dean, Student Affairs
+Doctor of Medicine / Master of Surgery
 
-### Dr. Shylaja S S
+Newly introduced postgraduate programs in 20 specialties — 15 MD and 5 MS — including General Medicine, Paediatrics, Emergency Medicine, General Surgery, Orthopaedics, and Obstetrics & Gynaecology. Admissions 2026–27 are open.
 
-Director of Cloud Computing & Big Data (CCBD), Centre for Data Sciences & Applied Machine Learning (CDSAML)
+78
+NMC-approved seats
+20
+Specialties (15 MD + 5 MS)
+UGC, NMC
+Approval Body
+NAAC A+
+Recognition grade
 
-##### Ranked #1
+Campus: PES University Electronic City (EC) Campus.
 
-#1 University in Karnataka – New Universities Under 5 YearsKSURF 2019
+[Learn More](https://campaigns.pes.edu/med/)
+══════════════════════════════════════
+     DEPARTMENTS JOURNEY
+══════════════════════════════════════
+Academics
 
-##### India’s Most Trusted
+## Departments at PESUIMSR
 
-PES University placed seventh on the list of INDIA’S MOST TRUSTED Educational Institutes. Source: TRA.
+PESU Institute of Medical Sciences and Research (PESU IMSR) offers a comprehensive academic structure divided into Pre-Clinical, Para-Clinical, and Clinical departments, ensuring a progressive and integrated approach to medical education.
 
-##### Top 25 M.Tech College
+21
+Departments across 3 stages of the MBBS curriculum
+03
 
-PES University in the list of Top 25 M.Tech colleges in IndiaCareerindia
+### Pre-Clinical
 
-##### Ranked #6
+Departments
+Anatomy
+Physiology
+Biochemistry
+05
 
-PES University is ranked sixth in the Outlook-ICARE India University Rankings 2019.
+### Para-Clinical
 
-# Pesuvians for Life
+Departments
+Pathology
+Microbiology
+Pharmacology
+Forensic Medicine
+Community Medicine
+13
 
-Explore inspiring stories and experiences from our alumni
+### Clinical
 
-## Placements
+Departments
+General Medicine
+General Surgery
+OBG
+Pediatric
+Orthopedics
+Ophthalmology
+ENT
+Dermatology
+Psychiatry
+Anaesthesiology
+Radio Diagnosis
+Dentistry
+[Explore Departments](https://pesuimsr.pes.edu/departments/)
+══════════════════════════════════════
+     CAMPUS FACILITIES
+══════════════════════════════════════
+Campus Life
 
-Our alumni work at leading
+## Infrastructure
 
-organisations around the world
+Developed in response to student and faculty needs, our infrastructure ensures that there are no boundaries between the discovery, transfer and application of knowledge.
 
-## Placements
+[AcademicsClassrooms & Labs](https://pesuimsr.pes.edu/infrastructure/#classrooms-labs)
+[FitnessGYM](https://pesuimsr.pes.edu/infrastructure/#gym)
+[WellnessYoga](https://pesuimsr.pes.edu/infrastructure/#yoga)
+[SportsRocket Sports](https://pesuimsr.pes.edu/infrastructure/#rocket-sports)
+[SportsTable Tennis](https://pesuimsr.pes.edu/infrastructure/#table-tennis)
+[Explore Infrastructure](https://pesuimsr.pes.edu/infrastructure/)
+══════════════════════════════════════
+     GET STARTED
+══════════════════════════════════════
+Get Started
 
-Our alumni work at leading organisations around the world
+## Three ways to know PESUIMSR
 
-## Pesuvians for Life
+[Giving to PESThe support extended by patrons like you, has been the primary reason for the substantial growth of our institution. Your contribution would greatly assist in making your PES a world-class institution.Learn more →](https://pes.edu/give-to-pes/)
+[Staying in TouchJoin Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.Learn more →](https://pes.almaconnect.com/)
+[News & EventsThe news.pes.edu portal is PES University’s official news platform, showcasing achievements, events, and updates across its campuses.Learn more →](https://news.pes.edu)
+══════════════════════════════════════
+     QUOTE
+══════════════════════════════════════
 
-Explore inspiring stories and experiences from our alumni
+> OVER 50 YEARS OF PES EDUCATION IN INDIA
 
-## Research
+══════════════════════════════════════
+     FINAL CTA
+══════════════════════════════════════
 
-Our 8 Centres of Excellence work on inter-disciplinary research and provide vibrant hubs where students, faculty and industry can collaborate
+Register Now
 
-## Research
+## Admissions 2026 Now Open
 
-Our 8 Centres of Excellence work on inter-disciplinary research and provide vibrant hubs where students, faculty and industry can collaborate
-
-CIE is the launchpad to inspire students and startups to develop innovative world-changing ideas and help them become role-model entrepreneurs.
-
-C-ISFCR aims to provide facilities to test and understand the practical aspects of information security in existing and emerging areas.
-
-CORI brings together the expertise of accomplished engineers and enthusiasm of students to provide deep insights and evolve leading edge solutions.
-
-## Campus Life
-
-AGILE: Our unique,holistic student approach
-
-Reverberating 3 virtues Forgiveness.,.
-
-PES University’s 3rd edition of The Amateur.,.
-
-Learning drive on motivation, training and.,.
-
-Reverberating 3 virtues Forgiveness.,.
-
-### You may also be interested in
-
-### Giving to PES
-
-The generous support from patrons like you has been instrumental in the remarkable growth of our university. Your continued contribution will play a vital role in transforming PES into a world-class university.
-
-### Staying in Touch
-
-Join Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.
-
-### Discovering our Newsletters
-
-The Student Newsletter is your guide to what’s happening on campus and in the student community. Find out about PES events, leadership, career and the amazing achievements of your fellow PESU students!
+[Apply Now](https://admissions.pes.edu)
+[Fee Details](https://pesuimsr.pes.edu/fee/)
+[Admission Process](https://pesuimsr.pes.edu/admission-process/)

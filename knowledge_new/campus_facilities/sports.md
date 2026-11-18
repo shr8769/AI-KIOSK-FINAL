@@ -3,7 +3,7 @@ title: "Sports & Athletics"
 url: https://pes.edu/sports
 category: campus_facilities
 breadcrumb: ""
-last_crawled: "2026-07-24T02:26:06.585470+05:30"
+last_crawled: "2026-11-18T08:18:11.997869+05:30"
 ---
 
 Campus Life
@@ -31,10 +31,10 @@ From representing Karnataka in cricket to mentoring tomorrow’s champions, our 
 
 Our friendly PES mascot, Jago, is always ready to cheer on teams
 
-[Learn more](https://pes.edu/jago)
+[Learn more](https://pes.edu/jago/)
 
 ### Meet Our Mascot
 
 ### Our friendly PES mascot, Jago, is always ready to cheer on teams
 
-[More](https://pes.edu/jago)
+[More](https://pes.edu/jago/)

@@ -3,7 +3,7 @@ title: "Transportation"
 url: https://pes.edu/transportation
 category: transportation
 breadcrumb: ""
-last_crawled: "2026-07-24T02:19:47.346647+05:30"
+last_crawled: "2026-11-18T08:17:13.343381+05:30"
 ---
 
 Admissions
@@ -12,10 +12,6 @@ PES Entrance ProcessEligibility & OverviewQualifying ExamsProgram IntakeFee Deta
 ### Transportation
 
 From every corner of the city to the heart of campus — PES University's transportation service ensures a safe, timely, and hassle-free journey for every student.
-
-### Transportation Registration Link
-
-To register for the university transportation and bus services, or to view the bus routes, please visit the official transportation portal at [this link](https://pes.edu/transportation/).
 
 ### Choose a campus
 
@@ -38,7 +34,7 @@ To register for the university transportation and bus services, or to view the b
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ### Study at PES
 

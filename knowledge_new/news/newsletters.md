@@ -3,7 +3,7 @@ title: "Newsletters"
 url: https://pes.edu/newsletters
 category: news
 breadcrumb: ""
-last_crawled: "2026-07-24T02:29:29.527230+05:30"
+last_crawled: "2026-11-18T08:17:43.277488+05:30"
 ---
 
 Campus Life
@@ -12,6 +12,12 @@ Art & CultureSports & AthleticsScience & TechClubs & ActivitiesSocial ImpactNews
 ### Newsletters
 
 Explore FYI, our monthly newsletter written by students to get a taste of life at PES
+
+### 2026
+
+### FYI - Aatmatrisha
+
+April
 
 ### 2025
 

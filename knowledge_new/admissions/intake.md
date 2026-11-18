@@ -3,7 +3,7 @@ title: "Program Intake"
 url: https://pes.edu/intake
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-07-24T02:28:20.675231+05:30"
+last_crawled: "2026-11-18T08:12:16.425120+05:30"
 ---
 
 Admissions
@@ -13,7 +13,7 @@ PES Entrance ProcessEligibility & OverviewQualifying ExamsProgram IntakeFee Deta
 
 Seats Intake for all the programs at PESU is given below
 
-AY 2026-27
+AY 2027-28
 
 - PESU Ring Road CampusRR Campus
 - PESU Electronic City CampusEC Campus
@@ -35,7 +35,7 @@ AY 2026-27
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ### Study at PES
 

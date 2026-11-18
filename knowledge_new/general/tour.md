@@ -3,7 +3,7 @@ title: "Campus Tour"
 url: https://pes.edu/tour
 category: general
 breadcrumb: ""
-last_crawled: "2026-07-24T02:30:10.521306+05:30"
+last_crawled: "2026-11-18T08:19:24.469296+05:30"
 ---
 
 Admissions
@@ -48,7 +48,7 @@ Ready to experience PES University in person?Schedule your visit today!
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ### Study at PES
 

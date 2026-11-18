@@ -3,7 +3,7 @@ title: "Campus Life"
 url: https://pes.edu/campus-life
 category: campus_life
 breadcrumb: ""
-last_crawled: "2026-07-24T02:09:22.394697+05:30"
+last_crawled: "2026-11-18T08:07:10.258018+05:30"
 ---
 
 Campus Life
@@ -60,13 +60,13 @@ Explore FYI, our monthly student-written newsletter, for a glimpse into life at 
 
 Our friendly PES mascot, Jago, is always ready to cheer on teams
 
-[Learn more](https://pes.edu/jago)
+[Learn more](https://pes.edu/jago/)
 
 ### Meet Our Mascot
 
 ### Our friendly PES mascot, Jago, is always ready to cheer on teams
 
-[More](https://pes.edu/jago)
+[More](https://pes.edu/jago/)
 
 ### Our Campuses
 

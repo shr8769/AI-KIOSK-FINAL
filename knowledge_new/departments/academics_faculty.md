@@ -3,7 +3,7 @@ title: "Faculty"
 url: https://pes.edu/academics/faculty
 category: departments
 breadcrumb: ""
-last_crawled: "2026-07-24T02:29:44.937273+05:30"
+last_crawled: "2026-11-18T08:14:17.657751+05:30"
 ---
 
 About
@@ -39,10 +39,6 @@ Director of Cloud Computing & Big Data (CCBD), Centre for Data Sciences & Applie
 ### Dr. Anuradha M
 
 Chairperson, Department of Electronics & Communication Engineering
-
-### Dr. Anuradha N
-
-Dean, Architecture & Design
 
 ### Prof. Chitra Viswanathan
 

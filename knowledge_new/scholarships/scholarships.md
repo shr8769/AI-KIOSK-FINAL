@@ -3,7 +3,7 @@ title: "Scholarships"
 url: https://pes.edu/scholarships
 category: scholarships
 breadcrumb: ""
-last_crawled: "2026-07-24T02:20:39.282887+05:30"
+last_crawled: "2026-11-18T08:14:08.300233+05:30"
 ---
 
 Admissions
@@ -28,25 +28,26 @@ Several PESU Scholarships are available for eligible students.
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ### Prof. MRD Scholarships
 
-The Prof. MRD Scholarship provides a Merit Certificate + 50% Tuition Fee Refund for the Top 5% of the Students based on their CGPA.
+Merit Certificate + 50% Tuition Fee Refund for Top 5% of the Students based on their CGPA.
 
 ### Prof. CNR Rao Scholarships
 
-The Prof. CNR Rao Scholarship provides a Merit Certificate + 40% Tuition Fee Refund for the next 20% of the Students based on their SGPA.
+Merit Certificate + 40% Tuition Fee Refund for the next 20% of the Students based on their SGPA.
 
 ### Distinction Awards
 
-The Distinction Award provides a Merit Certificate for Students securing 7.75+ SGPA.
+Merit Certificate for Students securing 7.75+ SGPA.
 
 Note:
 
 1. The Scholarships/ Awards are subject to qualifying CGPA/ SGPA and other conditions as stipulated by Scholarship Committee each year.
 2. The above Scholarships/ Awards are not applicable to students in their final year of study.
 3. The student is eligible only for one award in each semester/year.
+4. These scholarships are not applicable for Medical MS and MD programs
 
 ### DevOn Corporate Scholarships
 

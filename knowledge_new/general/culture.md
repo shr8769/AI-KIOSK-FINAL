@@ -3,7 +3,7 @@ title: "Art & Culture"
 url: https://pes.edu/culture
 category: general
 breadcrumb: ""
-last_crawled: "2026-07-24T02:30:33.362693+05:30"
+last_crawled: "2026-11-18T08:13:48.713586+05:30"
 ---
 
 Campus Life
@@ -49,13 +49,13 @@ Explore FYI, our monthly student-written newsletter, for a glimpse into life at 
 
 Our friendly PES mascot, Jago, is always ready to cheer on teams
 
-[Learn more](https://pes.edu/jago)
+[Learn more](https://pes.edu/jago/)
 
 ### Meet Our Mascot
 
 ### Our friendly PES mascot, Jago, is always ready to cheer on teams
 
-[More](https://pes.edu/jago)
+[More](https://pes.edu/jago/)
 
 ### Our Campuses
 

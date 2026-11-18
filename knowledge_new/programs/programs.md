@@ -3,7 +3,7 @@ title: "All Programs"
 url: https://pes.edu/programs
 category: programs
 breadcrumb: ""
-last_crawled: "2026-07-24T02:28:36.900772+05:30"
+last_crawled: "2026-11-18T08:10:56.967529+05:30"
 ---
 
 Programs
@@ -21,13 +21,11 @@ A complete list of programs currently available at PES
 - Bachelor of Technology (B.Tech) – Diploma Lateral Entry
 - Bachelor of Computer Application (BCA)
 
-### Institute of Medicine
+### Institute of Medical Sciences & Research
 
 - Bachelor of Medicine, Bachelor of Surgery (MBBS)
-
-### Institute of Architecture
-
-- Bachelor of Architecture (B.Arch)
+- Doctor of Medicine (MD)
+- Master of Surgery (MS)
 
 ### Institute of Design
 
@@ -86,8 +84,8 @@ A complete list of programs currently available at PES
 
 ### Institute of Law
 
-- BBA-LLB (Hons) and BA-LLB (Hons)
-- LLB (Hons)
+- BBA. LL.B (Hons.) / BA. LL.B (Hons.) / B.Com. LL.B (Hons.)
+- LL.B (Hons.)
 
 - All Programs
 - Institutes/ Departments
@@ -121,10 +119,6 @@ A complete list of programs currently available at PES
 
 - Master of Science (M.Sc) in Psychology
 
-### Institute of Law
-
-- LL.M.
-
 ### Institute of Pharmaceutical Sciences
 
 - Master of Pharmacy (M.Pharm)
@@ -133,6 +127,14 @@ A complete list of programs currently available at PES
 
 - Doctor of Philosophy (Ph.D)
 - Master of Technology by Research
+
+### PES Scholarships
+
+Rewarding Excellence, Empowering FuturesMerit-based scholarships that recognize academic achievement and support your journey at PES University.
+
+### PES Loyalty Program
+
+Celebrating Lifelong ConnectionsExclusive benefits and privileges for the extended PES community, strengthening bonds that last beyond graduation.
 
 ### How to apply
 

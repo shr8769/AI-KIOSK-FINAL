@@ -3,7 +3,7 @@ title: "Documents Required"
 url: https://pes.edu/docs
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-07-24T02:29:22.374782+05:30"
+last_crawled: "2026-11-18T08:11:30.111985+05:30"
 ---
 
 Admissions
@@ -31,21 +31,7 @@ Foreign National Candidates must submit their valid passport copy and valid visa
 
 #### KEA - Govt (G) / Private (P) / NRI (N) / Others (Q) Quota
 
-### B.Arch
-
-#### KCET Quota
-
-#### PESU Merit Quota
-
-#### Management/ HFC / NRI/ PIO/ OCI/ Sponsored seats
-
-– NATA score card copy– Copy of PES B.Arch Application Form– 10+2 Class Marks Card – Original (if the original is not issued by the college, a copy of 10+2 class marks card signed and sealed by the college Principal to be produced)– 10th Class Marks Card – Original– Transfer Certificate /College Leaving Certificate– Migration Certificate (If other than PU Board)– SIX COPIES each of color passport size and stamp size photographs– Copy of Aadhar Card– Copy of PAN Card of both the Candidate and Parent (Mandatory, for opening bank account)– Tuition Fee Receipt – Original (Very Important)– Eligibility Certificate from AIU (If the grade system is 10+2. This is applicable only for NRI/ OCI/ PIO candidates)– Cancelled Bank Cheque leaf (Very Important)– Documents pertaining to the Loyalty Program (Only if applicable. For more information on this, please checkhttps://pes.edu/loyalty/)
-
-2 sets of self-attested photocopies of the above-mentioned documents
-
-Foreign National Candidates must submit their valid passport copy and valid visa copy (OCI card in case of an OCI). This is mandatory.
-
-### BBA (General/ Hons) / BBA (Sports Management) / BBA in Business Analytics (Hons) / BBA (Hospitality and Event Management) / B.DES / BBA-LLB (Hons) / BA-LLB (Hons)/ B.Com (General / Hons.) / B.Com (Hons.) in Finance and Accounting (CA Embedded) / B.Com (Hons) with ACCA / B.Com (Hons) with CMA / B.Com (Hons) with CFA / B.Sc (Hons) Psychology / BA in Performing Arts / Bachelor of Computer Applications (BCA)/ B.Sc (Hons) Economics / B.Sc (Hons) Journalism and Mass Communication
+### BBA (General/ Hons) / BBA (Sports Management) / BBA in Business Analytics (Hons) / BBA (Hospitality and Event Management) / B.DES / BBA-LLB (Hons) / BA-LLB (Hons) / B.Com-LLB (Hons) / B.Com (General / Hons.) / B.Com (Hons.) in Finance and Accounting (CA Embedded) / B.Com (Hons) with ACCA / B.Com (Hons) with CMA / B.Com (Hons) with CFA / B.Sc (Hons) Psychology / BA in Performing Arts / Bachelor of Computer Applications (BCA)/ B.Sc (Hons) Economics / B.Sc (Hons) Journalism and Mass Communication
 
 #### PESU Merit Quota
 
@@ -89,7 +75,7 @@ Foreign National Candidates must submit their valid passport copy and valid visa
 
 Foreign National Candidates must submit their valid passport copy and valid visa copy (OCI card in case of an OCI). This is mandatory.
 
-### M.Sc Psychology / M.Des / LL.M.
+### M.Sc Psychology / M.Des
 
 #### PES Entrance Process / Other entrance exam seats
 
@@ -106,6 +92,10 @@ Foreign National Candidates must submit their valid passport copy and valid visa
 2 sets of self-attested photocopies of the above-mentioned documents
 
 Foreign National Candidates must submit their valid passport copy and valid visa copy (OCI card in case of an OCI). This is mandatory.
+
+### Doctor of Medicine (MD) / Master of Surgery (MS)
+
+#### KEA - Govt (G) / Private (P) / NRI (N) / Others (Q) Quota
 
 ### Ph.D / M.Tech by Research
 
@@ -135,7 +125,7 @@ Foreign National Candidates must submit their valid passport copy and valid visa
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ### Study at PES
 

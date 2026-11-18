@@ -3,7 +3,7 @@ title: "Departments"
 url: https://pes.edu/departments
 category: departments
 breadcrumb: ""
-last_crawled: "2026-07-24T02:24:07.990123+05:30"
+last_crawled: "2026-11-18T08:17:04.213758+05:30"
 ---
 
 Programs
@@ -23,13 +23,11 @@ The various departments under our institutes are as listed below.
 - Biotechnology
 - Computer Applications
 
-### Institute of Medicine
+### Institute of Medical Sciences & Research
 
 - Bachelor of Medicine, Bachelor of Surgery (MBBS)
-
-### Institute of Architecture
-
-- Bachelor of Architecture (B.Arch)
+- Doctor of Medicine (MD)
+- Master of Surgery (MS)
 
 ### Institute of Design
 

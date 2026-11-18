@@ -3,7 +3,7 @@ title: "Loyalty Program"
 url: https://pes.edu/loyalty
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-07-24T02:09:38.029452+05:30"
+last_crawled: "2026-11-18T08:08:29.144475+05:30"
 ---
 
 Admissions
@@ -96,7 +96,7 @@ The loyalty benefitdoes not applyto students admitted throughGovernment CET or G
 
 Disclaimer
 
-- This Loyalty Program is not applicable for MBBS, MD and MS programs.
+- This Loyalty Program is not applicable for MD and MS programs.
 - This Loyalty Program has no bearing on the admissions process of any PES Group* Institution. This benefit will only be applicable for eligible candidates if they clear the admissions process of a particular PES Institution as per norms.
 - The Loyalty Program mentioned here will be reviewed by PES on a regular basis and may be changed / annulled without any prior notification.
 - If a PES Group* full-time employee on the payroll of the PES Group* availing the Loyalty benefit, resigns / relieved from the PES Group*, the Loyalty benefit will be declared null and void.
@@ -130,7 +130,7 @@ This Loyalty Benefit to the eligible candidates is extended in the form of a fee
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ### Study at PES
 

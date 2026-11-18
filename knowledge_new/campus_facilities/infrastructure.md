@@ -3,7 +3,7 @@ title: "Infrastructure"
 url: https://pes.edu/infrastructure
 category: campus_facilities
 breadcrumb: ""
-last_crawled: "2026-07-24T02:21:32.471791+05:30"
+last_crawled: "2026-11-18T08:09:43.854383+05:30"
 ---
 
 About
@@ -47,13 +47,13 @@ Promoting creativity and self-expression for an enriching college experience.
 
 Our friendly PES mascot, Jago, is always ready to cheer on teams
 
-[Learn more](https://pes.edu/jago)
+[Learn more](https://pes.edu/jago/)
 
 ### Meet Our Mascot
 
 ### Our friendly PES mascot, Jago, is always ready to cheer on teams
 
-[More](https://pes.edu/jago)
+[More](https://pes.edu/jago/)
 
 ### You may also be interested in
 

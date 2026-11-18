@@ -3,7 +3,7 @@ title: "Placements"
 url: https://pes.edu/placements
 category: placements
 breadcrumb: ""
-last_crawled: "2026-07-24T02:56:03.486431+05:30"
+last_crawled: "2026-11-18T08:06:59.656828+05:30"
 ---
 
 ### Placements
@@ -24,22 +24,29 @@ Our strong placement outcomes are a result of our focus on comprehensive career 
 
 ### Placement Statistics
 
-Our graduates are recruited for diverse roles in Technology, Administration, Business Development, Employee Engagement, People’s Operations, Marketing, and Finance, among others. The graduating batch was placed exceptionally well across each major sector and industry. A detailed report of these placement seasons can be viewed in the Placement Brochure.
+Our graduates are recruited for diverse roles in Technology, Administration, Business Development, Employee Engagement, People’s Operations, Marketing, and Finance, among others. The graduating batch of 2026 was placed exceptionally well across each major sector and industry. A detailed report of these placement seasons can be viewed in the Placement Brochure.
 
-- **Highest Salary / Package Offered:** ₹68 LPA (Lakhs Per Annum)
-- **Average Package Range:** ₹12 LPA to ₹18 LPA for tier-1 engineering & circuit branches (see Placement Brochure for comprehensive department reports)
-- **Participating Companies:** 347+
-- **Total Placement Offers:** 1,485+
-- **Internship Offers:** 1,237+
+432
++
+Participating Companies
+₹
+67
+lpa
+Highest Salary Offered
+1668
++
+Placements Offers
+1374
++
+Internships Offers
 
 ### PES alumni can be found in these leading companies
 
+and many more…
+
 ### PES alumni can be found in these leading companies
 
-PES University maintains active recruitment relationships with many top-tier product-based companies and global firms. The top Tier-1 companies coming for college placements include:
-- **Big Tech & Product Companies:** Amazon, Microsoft, Meta, Google, Intuit, Adobe, Cisco, VMware, Nvidia, eBay, and Akamai.
-- **Fintech & Consulting:** Goldman Sachs, Morgan Stanley, J.P. Morgan, Deloitte, and various global management consulting firms.
-- **Others:** Flipkart, Netflix, Sprinklr, Citrix, Yahoo, Shell, and Sabre Travel Technologies.
+and many more…
 
 ### You may also be interested in
 

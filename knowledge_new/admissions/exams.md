@@ -3,7 +3,7 @@ title: "Qualifying Exams​"
 url: https://pes.edu/exams
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-07-24T02:27:35.957010+05:30"
+last_crawled: "2026-11-18T08:10:04.528442+05:30"
 ---
 
 Admissions
@@ -17,17 +17,13 @@ A list of qualifying exams for admissions to PES is provided below
 
 JEE Main, Karnataka CET. However, registration fromhttps://admissions.pes.eduis mandatory.
 
-### MBBS
+### MBBS / MD / MS
 
 Admissions are exclusively through the KEA (Karnataka Examination Authority) counseling process using the NEET rank / score.
 
 ### Law Programs
 
-PES Entrance Process – Register fromhttps://admissions.pes.edu. BBA-LLB (Hons), BA-LLB (Hons), LLB (Hons), LL.M. programs. For BBA-LLB (Hons) and BA-LLB (Hons), CLAT scores are also accepted. However, registration fromhttps://admissions.pes.eduis mandatory even if the candidate seeks admission through CLAT score.
-
-### B.Arch
-
-Admissions is primarily based on the NATA score of the candidate. However, registration fromhttps://admissions.pes.eduis mandatory even if the admission is through NATA scores.
+PES Entrance Process – Register fromhttps://admissions.pes.edu. BBA-LLB (Hons), BA-LLB (Hons), B.Com-LLB (Hons), LLB (Hons) programs. For BBA-LLB (Hons), BA-LLB (Hons) and B.Com-LLB (Hons), CLAT scores are also accepted. However, registration fromhttps://admissions.pes.eduis mandatory even if the candidate seeks admission through CLAT score.
 
 ### MBA
 
@@ -73,7 +69,7 @@ For more information about PES Entrance Process and to register, please visithtt
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ### Study at PES
 

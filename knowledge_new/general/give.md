@@ -3,7 +3,7 @@ title: "Giving to PES"
 url: https://pes.edu/give
 category: general
 breadcrumb: ""
-last_crawled: "2026-07-24T02:19:20.831684+05:30"
+last_crawled: "2026-11-18T08:16:37.575534+05:30"
 ---
 
 ### Giving to PES
@@ -12,11 +12,11 @@ Contribute to our continued excellence
 
 ### Become a Donor
 
-[Learn more](https://pes.edu/give#)
+[Learn more](https://pes.edu/give)
 
 ### Become a Donor
 
-[Learn more](https://pes.edu/give#)
+[Learn more](https://pes.edu/give)
 
 ### Give to PES
 
@@ -90,7 +90,7 @@ Peoples Education Society
 
 Dear Patron,
 
-The Peoples Education Society (PES) was established in 1972, in Bangalore, with the objective of developing an institution offering need-based education. Prof. M.R. Doreswamy founded PES with a vision “to create professionally superior and ethically strong global manpower”. He established the Pre-University College in the early seventies and followed it up with institutions for pursuing degrees of: Bachelor of Commerce (1980), Diploma of Pharmacy (1982), Polytechnic (1983), Bachelor of Science (1984), Bachelor of Engineering (1988), Bachelor of Business Management (1994), Master of Computer Applications (1977), Master of Business Administration (1977) and the Master of Science – Microbiology (1998). On the inauguration of the Silver Jubilee Complex (worth Rs.15 crores), in the second week of March 2000, the management of PES initiated several programs to step up the quality of the activities in the new millennium. Mobilization of Rs.1 crore as seed capital towards an endowment fund is one of them. The institute intends to set up the ‘PES Endowment Fund’ to support the following causes:
+The Peoples Education Society (PES) was established in 1972, in Bangalore, with the objective of developing an institution offering need-based education. Prof. M.R. Doreswamy founded PES with a vision “to create professionally superior and ethically strong global workforce”. He established the Pre-University College in the early seventies and followed it up with institutions for pursuing degrees of: Bachelor of Commerce (1980), Diploma of Pharmacy (1982), Polytechnic (1983), Bachelor of Science (1984), Bachelor of Engineering (1988), Bachelor of Business Management (1994), Master of Computer Applications (1977), Master of Business Administration (1977) and the Master of Science – Microbiology (1998). On the inauguration of the Silver Jubilee Complex (worth Rs.15 crores), in the second week of March 2000, the management of PES initiated several programs to step up the quality of the activities in the new millennium. Mobilization of Rs.1 crore as seed capital towards an endowment fund is one of them. The institute intends to set up the ‘PES Endowment Fund’ to support the following causes:
 
 The Management of PES proposes to use only the interest earned on this fund to support the above mentioned activities. The institution will cover the balance until adequate funds are collected. This endeavour required a sum of over Rs.12 lakhs last year.
 

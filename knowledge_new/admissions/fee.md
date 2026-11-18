@@ -3,7 +3,7 @@ title: "Fee Details"
 url: https://pes.edu/fee
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-07-24T02:18:50.509628+05:30"
+last_crawled: "2026-11-18T08:13:38.569734+05:30"
 ---
 
 Admissions
@@ -13,35 +13,21 @@ PES Entrance ProcessEligibility & OverviewQualifying ExamsProgram IntakeFee Deta
 
 Fee Structure for the different programs are provided below
 
-### Fee Details for 2026-27
+### Fee Details for 2027-28
 
 ### Undergraduate
 
 #### Bachelor of Technology (B.Tech)
 
-- **Computer Science and Engineering (CSE)** & **CSE (Artificial Intelligence & Machine Learning - AIML)**
-  - KCET Quota Fee – ~INR 1,14,000 / Annum
-  - PESSAT Quota Fee – INR 5,00,000 / Annum
-  - Management / JEE Main Quota Fee – INR 5,50,000 / Annum
-- **Electronics and Communication Engineering (ECE)**
-  - KCET Quota Fee – ~INR 1,14,000 / Annum
-  - PESSAT Quota Fee – INR 4,50,000 / Annum
-  - Management / JEE Main Quota Fee – INR 5,00,000 / Annum
-- **Mechanical Engineering (ME)**, **Electrical and Electronics Engineering (EEE)**, & **Biotechnology (BT)**
-  - KCET Quota Fee – ~INR 1,14,000 / Annum
-  - PESSAT Quota Fee – INR 4,00,000 / Annum
-  - Management / JEE Main Quota Fee – INR 4,50,000 / Annum
-
-*(For NRI / Foreign / Sponsored / OCI / PIO seats Fee: Please contact the Office of Admissions or write to admissions@pes.edu)*
 #### Bachelor of Technology (B.Tech) – Diploma Lateral Entry
-
-#### Bachelor of Architecture (B.Arch)
 
 #### Bachelor of Design (B.Des)
 
 #### Bachelor of Business Administration and LLB – BBA, LLB (Hons)
 
 #### Bachelor of Arts and LLB – BA, LLB (Hons)
+
+#### Bachelor of Commerce and LLB – B.Com, LLB (Hons)
 
 #### Bachelor of Law – LLB (Hons)
 
@@ -56,28 +42,12 @@ Fee Structure for the different programs are provided below
 #### Bachelor of Commerce (Hons) with CFA – B.Com (Hons) with CFA
 
 #### Bachelor of Business Administration (BBA) – General/ Hons
-- PESSAT / Merit Quota Fee – INR 2,60,000 / Annum
-- One time non-refundable administrative charges – INR 10,000
 
 #### Bachelor of Business Administration (BBA) – Business Analytics (Hons)
-- PESSAT / Merit Quota Fee – INR 3,00,000 / Annum
-- One time non-refundable administrative charges – INR 10,000
 
 #### Bachelor of Business Administration – Hospitality & Event Management (BBA-HEM)
-- PESSAT / Merit Quota Fee – INR 2,20,000 / Annum
-- One time non-refundable administrative charges – INR 10,000
 
 #### Bachelor of Business Administration (BBA) – Sports Management
-- PESSAT / Merit Quota Fee – INR 2,20,000 / Annum
-- One time non-refundable administrative charges – INR 10,000
-
-#### Bachelor of Business Administration and LLB – BBA, LLB (Hons)
-- Tuition Fee – INR 2,50,000 / Annum
-- One time non-refundable administrative charges – INR 10,000
-
-#### Bachelor of Computer Applications (BCA)
-- PESSAT / Merit Quota Fee – INR 2,60,000 / Annum
-- One time non-refundable administrative charges – INR 10,000
 
 #### Bachelor of Arts (B.A) in Performing Arts
 
@@ -111,7 +81,7 @@ Fee Structure for the different programs are provided below
 
 #### Bachelor of Physiotherapy (BPT)
 
-PESU Merit Fee– INR 2,20,000 / Annum
+PESU Merit Fee– INR 2,40,000 / Annum
 
 One time non-refundable administrative charges– INR 10,000
 
@@ -125,24 +95,26 @@ One time non-refundable administrative charges– INR 10,000
 
 #### Master of Computer Applications (MCA)
 
+#### Doctor of Medicine (MD)
+
+#### Master of Surgery (MS)
+
 #### Master of Pharmacy (M.Pharm)
 
 #### Master of Science (M.Sc) in Psychology
-
-#### Master of Laws (LL.M.)
 
 #### Research Programs
 
 - M.Tech by Research
 - Doctor of Philosophy (Ph. D)
 
-Fee for Doctor of Philosophy (Ph. D)– INR 2,00,000 / Annum
+Fee for Doctor of Philosophy (Ph. D)– INR 2,20,000 / Annum
 
-Fee for M.Tech by Research Program– INR 1,00,000 / Annum
+Fee for M.Tech by Research Program– INR 1,20,000 / Annum
 
-### CET Fee Details for 2025-26
+### CET Fee Details for 2026-27
 
-PES University CET/ PGCET fee Structure for B.Tech / B.Arch / Allied Health Sciences/ Nursing / Physiotherapy/ Pharmacy/ MBA / MCA / M.Tech / Diploma CET B.Tech for the Year 2025-26
+PES University CET/ PGCET fee Structure for B.Tech / Allied Health Sciences/ Nursing / Physiotherapy/ Pharmacy/ MBA / MCA / M.Tech / Diploma CET B.Tech for the Year 2026-27
 
 | Mandatory Fee | – |
 | --- | --- |
@@ -190,7 +162,7 @@ Upto 100% finance to eligible students at nominal rate of interest by Union Bank
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ### Study at PES
 

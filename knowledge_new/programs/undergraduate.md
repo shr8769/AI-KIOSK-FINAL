@@ -3,7 +3,7 @@ title: "Undergraduate Programs"
 url: https://pes.edu/undergraduate
 category: programs
 breadcrumb: ""
-last_crawled: "2026-07-24T02:23:31.301641+05:30"
+last_crawled: "2026-11-18T08:12:42.772948+05:30"
 ---
 
 Programs
@@ -19,13 +19,9 @@ Undergraduate programs at PES provide opportunities to discover, learn and grow.
 - Bachelor of Technology (B.Tech) – Diploma Lateral Entry
 - Bachelor of Computer Application (BCA)
 
-### Institute of Medicine
+### Institute of Medical Sciences & Research
 
 - Bachelor of Medicine, Bachelor of Surgery (MBBS)
-
-### Institute of Architecture
-
-- Bachelor of Architecture (B.Arch)
 
 ### Institute of Design
 
@@ -84,8 +80,8 @@ Undergraduate programs at PES provide opportunities to discover, learn and grow.
 
 ### Institute of Law
 
-- BBA-LLB (Hons) and BA-LLB (Hons)
-- LLB (Hons)
+- BBA. LL.B (Hons.) / BA. LL.B (Hons.) / B.Com. LL.B (Hons.)
+- LL.B (Hons.)
 
 - All Programs
 - Institutes/ Departments

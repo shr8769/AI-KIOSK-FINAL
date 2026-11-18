@@ -3,7 +3,7 @@ title: "Admissions"
 url: https://pes.edu/admissions
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-08-17T19:19:19.281669+05:30"
+last_crawled: "2026-11-18T08:06:40.333567+05:30"
 ---
 
 Admissions
@@ -70,13 +70,9 @@ Method of Admission
 3. Results of the entrance process will be shared with the candidate within 3 working days from the date of completion of the online interview process
 4. If selected, the email shared with the candidate will detail the process for admission, which starts with the payment of the blocking tuition fee.
 
-##### Institute of Medicine
+##### Institute of Medical Sciences & Research
 
 #### Bachelor of Medicine, Bachelor of Surgery (MBBS)
-
-##### Institute of Architecture
-
-#### Bachelor of Architecture (B.Arch)
 
 ##### Institute of Design
 
@@ -117,7 +113,7 @@ Method of Admission
 
 ##### Institute of Law
 
-#### BBA-LLB (Hons) and BA-LLB (Hons)
+#### BBA-LLB (Hons) / BA-LLB (Hons) / B.Com-LLB (Hons)
 
 #### LLB (Hons)
 
@@ -205,6 +201,10 @@ Mode & Method of Admissions
 - PESU Merit QuotaVisithttps://admissions.pes.edu/to register for the entrance processSelect the program of choicePay the application fee and finish the full registrationBook your entrance slotPrint your entrance hall ticketAppear for the online interview process as per the information on your hall ticketEnsure to keep your educational transcripts and other supporting documents ready when you appear for the online interview process. This is mandatoryResults of the entrance process will be shared with the candidate within 3 working days from the date of completion of the online interview processIf selected, the email shared with the candidate will detail the process for admission, which starts with the payment of the blocking tuition fee.
 - PGCET Quota– Candidate to appear for the Government PGCET entrance exam and attend the PGCET counseling.
 
+##### Institute of Medical Sciences & Research
+
+#### MD/MS Programs @ PESUIMSR
+
 ##### Institute of Management and Commerce
 
 #### Master of Business Administration (MBA)
@@ -212,10 +212,6 @@ Mode & Method of Admissions
 ##### Institute of Design
 
 #### Master of Design (M.Des)
-
-##### Institute of Law
-
-#### LL.M.
 
 ##### Institute of Psychology
 
@@ -250,12 +246,12 @@ Master of Technology (M.Tech) by Research
 
 Orange Separator
 Brochure Link
-[Download Brochure](https://drive.google.com/uc?export=download&id=1UCtsYQaBfB9OFj4vVBrPw5RGcrs7Pg3Y)
+[Download Brochure](https://drive.google.com/uc?export=download&id=1rAaNRrWXTk2-x9LHGLkrh_-yBbPAzypL)
 
 ##### General Admission Norms
 
 - Candidates who have done their education through distance learning mode / online mode / part-time mode / private schooling / IGNOU / open schooling (except for NIOS) / NTTF / NWAC board / IHM / University not recognized by UGC, are not eligible for admission to any program
-- Candidates from IGCSE / Cambridge board must have studied atleast 4 subjects in AS level and 4 subjects in A level. Anything less than this will not be acceptable for admission to any of our programs
+- Candidates from IGCSE / Cambridge board must have studied atleast 3 relevant subjects in A Level (Advanced Level) specifically. Anything less than this will not be acceptable for admission to any of our programs
 - Candidates from International Baccalaureate (IB) boardOriginal 12th Diploma Transcript of grades is mandatory for admissionsMust have atleast 3 HL subjects and not more than 3 SL subjects out of their 6 total subjects in the 12th std equivalent original diploma transcriptMust have secured a minimum of 24 points in total in their 12th std equivalent diploma transcriptThe original 12th equivalent diploma transcript result should clearly mention as “Diploma Awarded”
 - Candidates from CBSE boardIf it says “ER (Essential Repeat)” in the 12th certificate, such candidates will not be eligible for admission to any programIf it says “Compartment” next to results in the 12th marks card, candidates can only do admission after clearing the compartment subject and getting the result as Pass.
 - Candidates from Andhra Pradesh board / Telangana board / Kerala boardOnly the 2nd inter / 12th marks will be considered for ascertaining eligibility and for admissions.

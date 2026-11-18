@@ -3,13 +3,13 @@ title: "Postgraduate Programs"
 url: https://pes.edu/postgraduate
 category: programs
 breadcrumb: ""
-last_crawled: "2026-07-24T02:27:43.532997+05:30"
+last_crawled: "2026-11-18T08:19:51.821686+05:30"
 ---
 
 Programs
 All ProgramsInstitutes/ DepartmentsUndergraduatePostgraduateResearchExecutive EducationWIL ProgramFacultyLearning ToolsAcademic Calendar
 
-### Postgradate Programs
+### Postgraduate Programs
 
 Our postgraduate programs are developed with a focus on industry requirements, and allow students to become specialists in the field of their choice
 
@@ -18,6 +18,11 @@ Our postgraduate programs are developed with a focus on industry requirements, a
 - Master of Technology (M.Tech)
 - Master of Computer Application (MCA)
 - Master of Science in ISMIn collaboration with Indiana University of Pennsylvania (IUP), USA.
+
+### Institute of Medical Sciences & Research
+
+- Doctor of Medicine (MD)
+- Master of Surgery (MS)
 
 ### Institute of Management and Commerce
 
@@ -31,10 +36,6 @@ Our postgraduate programs are developed with a focus on industry requirements, a
 ### Institute of Psychology
 
 - Master of Science (M.Sc) in Psychology
-
-### Institute of Law
-
-- LL.M.
 
 ### Institute of Pharmaceutical Sciences
 
