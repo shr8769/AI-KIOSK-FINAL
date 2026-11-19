@@ -3,7 +3,7 @@ title: "Important Dates"
 url: https://pes.edu/important-dates
 category: important_dates
 breadcrumb: ""
-last_crawled: "2026-11-18T08:08:19.094816+05:30"
+last_crawled: "2026-11-19T07:42:44.488034+05:30"
 ---
 
 Admissions

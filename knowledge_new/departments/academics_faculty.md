@@ -3,7 +3,7 @@ title: "Faculty"
 url: https://pes.edu/academics/faculty
 category: departments
 breadcrumb: ""
-last_crawled: "2026-11-18T08:14:17.657751+05:30"
+last_crawled: "2026-11-19T07:38:53.400070+05:30"
 ---
 
 About

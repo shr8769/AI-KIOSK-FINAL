@@ -3,7 +3,7 @@ title: "Infrastructure"
 url: https://pes.edu/infrastructure
 category: campus_facilities
 breadcrumb: ""
-last_crawled: "2026-11-18T08:09:43.854383+05:30"
+last_crawled: "2026-11-19T07:42:34.412007+05:30"
 ---
 
 About

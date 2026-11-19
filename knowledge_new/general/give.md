@@ -3,7 +3,7 @@ title: "Giving to PES"
 url: https://pes.edu/give
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-18T08:16:37.575534+05:30"
+last_crawled: "2026-11-19T07:39:43.329797+05:30"
 ---
 
 ### Giving to PES

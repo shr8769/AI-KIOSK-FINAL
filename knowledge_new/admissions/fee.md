@@ -3,7 +3,7 @@ title: "Fee Details"
 url: https://pes.edu/fee
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-11-18T08:13:38.569734+05:30"
+last_crawled: "2026-11-19T07:38:05.732892+05:30"
 ---
 
 Admissions

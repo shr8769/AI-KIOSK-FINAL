@@ -1,61 +1,15 @@
 ---
-title: "Academic Calendar"
-url: https://pes.edu/calendar
+title: "Calendar — PES University Events — events.pes.edu"
+url: https://events.pes.edu/calendar
 category: academic_calendar
 breadcrumb: ""
-last_crawled: "2026-11-18T08:18:30.196930+05:30"
+last_crawled: "2026-11-19T07:40:08.637234+05:30"
 ---
 
-Programs
-All ProgramsInstitutes/ DepartmentsUndergraduatePostgraduateResearchExecutive EducationWIL ProgramFacultyLearning ToolsAcademic Calendar
+Go toPES.eduNewsResearchClubsAdmissionsUniversity CampusesRing Road CampusEngineering, management & designElectronic City CampusEngineering & applied sciencesHanumanthanagar CampusNorth campus programsMedical & HealthcarePESIMSRPESUIMSRPES University HospitalPES Hospital, KuppamGet StartedAll CampusesUpcoming EventsContact SupportNot sure which campus?Explore events happening across every PES University campus and affiliated institution.Compare CampusesAll Campuses080-10-297297Top DepartmentsManagement Studies417 eventsCommerce121 eventsLaw101 eventsMore DepartmentsComputer Science· 60Electronics & Communications· 34Computer Science (AIML)· 29Psychology· 29Pharmacy· 25Architecture· 10Science & Humanities· 10Computer Applications· 9Electrical & Electronics· 9All Departments21 departments, 1 placeFrom Computer Science to Management Studies — every department's events in one browsable list.Browse All DepartmentsAll DepartmentsBrowse by TagPopular Tags#Clubs & Activities561 events#Talks276 events#Workshop255 eventsMore Tags#Technical· 120#Management· 113#InfoSession· 71#Cultural· 62#Admissions· 54All TagsCan't find a topic?Every event is tagged — browse the full topic cloud to find exactly what you're after.Browse All TagsAll TagsFeatured EventsHomeBrowse by CampusUniversity CampusesPESU RR Campus1284PESU EC Campus167PESU HN Campus102PESUIMSR0PESIMSR0PES University Hospital0PES Hospital, Kuppam0All CampusesBrowse by DepartmentTop DepartmentsManagement Studies417Commerce121Law101All DepartmentsBrowse by TagsPopular Tags#Clubs & Activities561#Talks276#Workshop255All TagsVenuesCalendarGuestsBack to PES.eduNewsResearchClubsBrowse EventsHome/CalendarPlan aheadTheEvents CalendarEvery hackathon, talk, fest and workshop — plus the full academic calendar of holidays and exams — across every PES University campus.November 2026Jump to todayAllEvent calendarHoliday calendarSunMonTueWedThuFriSat12345The Lam Research Challenge 2026Medical Law and Ethics6The Lam Research Challenge 2026RUDHIRA 4.0+1 more7Mach Zero8Mach Zero91011Read-A-Thon 2026Blood Donation Camp 2026+1 more12Kubernetes and its WorkflowThe Motor Vehicles (Amendment) Act, 2019 in Perspective+4 more13The Alumni PlaybookUnscripted14ConQuizTador 2026Quantum Hackathon 2026151617Technology Law and Intellectual Property Law Summit 202618192021222324252627282930Select a dateClick any day on the calendar to see its events here.PES Events SearchESCQuick filtersLive nowBrowse all eventsUpcoming eventsPESU RR CampusPESU EC CampusPESU HN CampusPESUIMSRPESIMSRPES University HospitalPES Hospital, KuppamPopular tags#Clubs & Activities#Talks#Workshop#Technical#Management#InfoSession#Cultural#Admissions#Research#SocialActivities#Innovation#Academics#Cash Prize#Art#Music#Skill Building#Webinar#Conference#Alumni#Dance#Sports#Photography#Debate#Coding#Food#Entrepreneurship#Books#Media#Reading#Symposium#Entrepreneur#StartupPressEnterto search  ·Ctrl+Kto toggle  ·Escto closePlease confirmAre you sure?CancelConfirm
 
-### Academic Calendar
+---
 
-Our academic calendar provides a comprehensive schedule of important dates and events throughout the academic year. This organized and accessible calendar helps students, faculty, and staff plan their activities effectively and stay informed about key academic milestones.
+## Contact Information
 
-### 2026-27
-
-- AY 2026-27 (Jan 2026 to May 2026)
-- AY 2026-27 (Aug 2026 to Dec 2026)
-
-### 2025-26
-
-- AY 2025-26 (Jan 2025 to May 2025)
-- AY 2025-26 (Aug 2025 to Dec 2025 - UG Sem 3, 5, 7, 9)
-- AY 2025-26 (Aug 2025 to Dec 2025 - UG Sem 1 Non-Engg)
-- AY 2025-26 (Aug 2025 to Jan 2026 - UG Sem 1 B.Tech, B.Arch, B.Pharm)
-
-- All Programs
-- Institutes/ Departments
-- Undergraduate
-- Postgraduate
-- Research
-- Executive Education
-- WIL Program
-- Faculty
-- Learning Tools
-- Academic Calendar
-
-### How to apply
-
-See the eligibility criteria and important information for our programs
-
-[Learn more](https://pes.edu/admissions/)
-
-### Study at PES
-
-[Register for Admissions Now](https://admissions.pes.edu/)
-
-### You may also be interested in
-
-### Giving to PES
-
-The generous support from patrons like you has been instrumental in the remarkable growth of our university. Your continued contribution will play a vital role in transforming PES into a world-class university.
-
-### Staying in Touch
-
-Join Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.
-
-### Discovering our Newsletters
-
-The Student Newsletter is your guide to what’s happening on campus and in the student community. Find out about PES events, leadership, career and the amazing achievements of your fellow PESU students!
+**Phone:** 0801029729

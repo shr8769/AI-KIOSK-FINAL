@@ -3,7 +3,7 @@ title: "Placements"
 url: https://pes.edu/placements
 category: placements
 breadcrumb: ""
-last_crawled: "2026-11-18T08:06:59.656828+05:30"
+last_crawled: "2026-11-19T07:30:59.992179+05:30"
 ---
 
 ### Placements
@@ -33,10 +33,10 @@ Participating Companies
 67
 lpa
 Highest Salary Offered
-1668
+1667
 +
 Placements Offers
-1374
+1373
 +
 Internships Offers
 
