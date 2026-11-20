@@ -3,7 +3,7 @@ title: "Social Impact"
 url: https://pes.edu/impact
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-19T07:31:48.704030+05:30"
+last_crawled: "2026-11-20T07:32:49.578769+05:30"
 ---
 
 Campus Life
