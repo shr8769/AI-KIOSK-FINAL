@@ -3,7 +3,7 @@ title: "Program Intake"
 url: https://pes.edu/intake
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-11-20T07:38:18.051603+05:30"
+last_crawled: "2026-11-21T07:24:36.372310+05:30"
 ---
 
 Admissions

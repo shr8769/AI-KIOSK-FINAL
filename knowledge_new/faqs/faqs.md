@@ -3,7 +3,7 @@ title: "FAQs"
 url: https://pes.edu/faqs
 category: faqs
 breadcrumb: ""
-last_crawled: "2026-11-20T07:35:40.849830+05:30"
+last_crawled: "2026-11-21T07:21:01.275753+05:30"
 ---
 
 Admissions

@@ -3,7 +3,7 @@ title: "Scholarships"
 url: https://pes.edu/scholarships
 category: scholarships
 breadcrumb: ""
-last_crawled: "2026-11-20T07:40:53.306455+05:30"
+last_crawled: "2026-11-21T07:17:29.291336+05:30"
 ---
 
 Admissions
