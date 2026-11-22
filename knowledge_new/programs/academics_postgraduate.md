@@ -3,7 +3,7 @@ title: "Postgraduate Programs"
 url: https://pes.edu/academics/postgraduate
 category: programs
 breadcrumb: ""
-last_crawled: "2026-11-21T07:16:12.122022+05:30"
+last_crawled: "2026-11-22T06:16:45.709021+05:30"
 ---
 
 Programs

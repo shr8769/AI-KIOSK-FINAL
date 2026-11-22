@@ -3,7 +3,7 @@ title: "Ph.D / M.Tech by Research"
 url: https://pes.edu/phd
 category: programs
 breadcrumb: ""
-last_crawled: "2026-11-21T07:25:47.455441+05:30"
+last_crawled: "2026-11-22T06:21:26.980127+05:30"
 ---
 
 ### Ph.D / M.Tech by Research

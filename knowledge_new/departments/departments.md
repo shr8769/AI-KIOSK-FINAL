@@ -3,7 +3,7 @@ title: "Departments"
 url: https://pes.edu/departments
 category: departments
 breadcrumb: ""
-last_crawled: "2026-11-21T07:24:00.720952+05:30"
+last_crawled: "2026-11-22T06:18:21.960406+05:30"
 ---
 
 Programs

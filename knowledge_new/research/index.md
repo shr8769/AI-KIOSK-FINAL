@@ -3,7 +3,7 @@ title: "Research @ PES University"
 url: https://research.pes.edu/
 category: research
 breadcrumb: ""
-last_crawled: "2026-11-21T07:21:57.540926+05:30"
+last_crawled: "2026-11-22T06:21:06.637439+05:30"
 ---
 
 # Advancing Knowledge,Innovation& Impact
@@ -301,6 +301,6 @@ Bengaluru – 560085, Karnataka, India
 
 ## Contact Information
 
-**Emails:** office.deanresearch@pes.edu, Emailoffice.deanresearch@pes.edu
+**Emails:** Emailoffice.deanresearch@pes.edu, office.deanresearch@pes.edu
 
 **Phone:** 3956768759, 2020202320

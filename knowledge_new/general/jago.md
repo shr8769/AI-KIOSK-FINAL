@@ -3,7 +3,7 @@ title: "JAGO"
 url: https://pes.edu/jago
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-21T07:25:57.878113+05:30"
+last_crawled: "2026-11-22T06:22:10.678270+05:30"
 ---
 
 PES University · Meet the Mascot

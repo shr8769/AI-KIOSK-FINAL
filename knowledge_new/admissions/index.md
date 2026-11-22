@@ -3,7 +3,7 @@ title: "PES University - Admissions"
 url: https://admissions.pes.edu/
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-11-21T07:19:36.461461+05:30"
+last_crawled: "2026-11-22T06:08:58.675631+05:30"
 ---
 
 Admissions

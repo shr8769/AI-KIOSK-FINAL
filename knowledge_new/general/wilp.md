@@ -3,7 +3,7 @@ title: "Work Integrated Learning Program"
 url: https://pes.edu/wilp
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-21T07:22:06.635286+05:30"
+last_crawled: "2026-11-22T06:09:49.102171+05:30"
 ---
 
 Programs

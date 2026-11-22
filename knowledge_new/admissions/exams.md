@@ -3,7 +3,7 @@ title: "Qualifying Exams​"
 url: https://pes.edu/exams
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-11-21T07:14:15.416481+05:30"
+last_crawled: "2026-11-22T06:14:26.424171+05:30"
 ---
 
 Admissions

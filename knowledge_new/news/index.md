@@ -3,7 +3,7 @@ title: "News"
 url: https://news.pes.edu/
 category: news
 breadcrumb: ""
-last_crawled: "2026-11-21T07:18:07.440283+05:30"
+last_crawled: "2026-11-22T06:09:39.784953+05:30"
 ---
 
 HERO
@@ -13,38 +13,38 @@ PES University News
 # Stories from every campus, every day.
 
 Live · auto-updating feed
-[Staff Achievements · PESU RR CampusPES University Professor Honoured with Karnataka Nataka Academy AwardOct 26, 2026567 views5 likes](https://news.pes.edu/12180/)
-[Clubs & Activities · PESU EC CampusCTRL + ALT + STEAL: An AI-Powered Mystery Heist Challenge of Strategy and DeductionNov 04, 2026339 views](https://news.pes.edu/12188/)
-[Clubs & Activities · PESU EC CampusMaaya 2026 – ECLECTRIA: A Grand Celebration of Creativity, Culture, and Campus SpiritOct 26, 2026294 views](https://news.pes.edu/12185/)
-[Workshop · PESU RR CampusBuilding Awareness on Intellectual Property: Biotechnology Department Hosts IPR & Patents WorkshopOct 30, 2026237 views](https://news.pes.edu/12194/)
-[Alumni · PESU RR CampusFuture of Work and Skill Relevance: Industry Expert Shares Insights with StudentsNov 04, 2026218 views](https://news.pes.edu/12187/)
-[Clubs & Activities · PESU EC CampusBreakthrough 1.0: Transforming Ideas into Impact Through InnovationOct 23, 2026213 views](https://news.pes.edu/12183/)
-[Webinar · PESU RR CampusHospitality Industry Trends, Career Opportunities and Industry Expectations: Insights from an Engaging WebinarNov 04, 2026198 views](https://news.pes.edu/12195/)
-[Innovative · PESU EC CampusMaaya 2026 – ECLECTRIA Concludes with an Electrifying Concert NightOct 27, 2026185 views](https://news.pes.edu/12186/)
+[Staff Achievements · PESU RR CampusPES University Professor Honoured with Karnataka Nataka Academy AwardOct 26, 2026576 views5 likes](https://news.pes.edu/12180/)
+[Clubs & Activities · PESU EC CampusCTRL + ALT + STEAL: An AI-Powered Mystery Heist Challenge of Strategy and DeductionNov 04, 2026345 views](https://news.pes.edu/12188/)
+[Clubs & Activities · PESU EC CampusMaaya 2026 – ECLECTRIA: A Grand Celebration of Creativity, Culture, and Campus SpiritOct 26, 2026307 views](https://news.pes.edu/12185/)
+[Workshop · PESU RR CampusBuilding Awareness on Intellectual Property: Biotechnology Department Hosts IPR & Patents WorkshopOct 30, 2026242 views](https://news.pes.edu/12194/)
+[Alumni · PESU RR CampusFuture of Work and Skill Relevance: Industry Expert Shares Insights with StudentsNov 04, 2026226 views](https://news.pes.edu/12187/)
+[Clubs & Activities · PESU EC CampusBreakthrough 1.0: Transforming Ideas into Impact Through InnovationOct 23, 2026223 views](https://news.pes.edu/12183/)
+[Webinar · PESU RR CampusHospitality Industry Trends, Career Opportunities and Industry Expectations: Insights from an Engaging WebinarNov 04, 2026205 views](https://news.pes.edu/12195/)
+[Innovative · PESU EC CampusMaaya 2026 – ECLECTRIA Concludes with an Electrifying Concert NightOct 27, 2026193 views](https://news.pes.edu/12186/)
 duplicate set for seamless loop
-[Staff Achievements · PESU RR CampusPES University Professor Honoured with Karnataka Nataka Academy AwardOct 26, 2026567 views5 likes](https://news.pes.edu/12180/)
-[Clubs & Activities · PESU EC CampusCTRL + ALT + STEAL: An AI-Powered Mystery Heist Challenge of Strategy and DeductionNov 04, 2026339 views](https://news.pes.edu/12188/)
-[Clubs & Activities · PESU EC CampusMaaya 2026 – ECLECTRIA: A Grand Celebration of Creativity, Culture, and Campus SpiritOct 26, 2026294 views](https://news.pes.edu/12185/)
-[Workshop · PESU RR CampusBuilding Awareness on Intellectual Property: Biotechnology Department Hosts IPR & Patents WorkshopOct 30, 2026237 views](https://news.pes.edu/12194/)
-[Alumni · PESU RR CampusFuture of Work and Skill Relevance: Industry Expert Shares Insights with StudentsNov 04, 2026218 views](https://news.pes.edu/12187/)
-[Clubs & Activities · PESU EC CampusBreakthrough 1.0: Transforming Ideas into Impact Through InnovationOct 23, 2026213 views](https://news.pes.edu/12183/)
-[Webinar · PESU RR CampusHospitality Industry Trends, Career Opportunities and Industry Expectations: Insights from an Engaging WebinarNov 04, 2026198 views](https://news.pes.edu/12195/)
-[Innovative · PESU EC CampusMaaya 2026 – ECLECTRIA Concludes with an Electrifying Concert NightOct 27, 2026185 views](https://news.pes.edu/12186/)
-[Clubs & Activities · PESU RR CampusHuman Glitch: A Test of Wit, Adaptability, and Teamwork at Maaya 2K2626 Oct 2026165 views](https://news.pes.edu/12182/)
-[Sports · PESU RR CampusPESU Table Tennis Women Team Triumphs at Falak ’26 State-Level Sports Fest18 Oct 2026177 views](https://news.pes.edu/12189/)
-[Sports · PESU RR CampusPESU Cricket Team Clinches Championship Title at Falak ’2617 Oct 2026195 views](https://news.pes.edu/12190/)
-[Sports · PESU RR CampusDhruthika N Andan Wins Gold at Dasara Games 202615 Oct 2026175 views](https://news.pes.edu/12191/)
-[Motivation · PESU RR CampusKala-Niti: A Unique Blend of Creativity, Strategy, and Problem-Solving12 Oct 2026210 views](https://news.pes.edu/12193/)
-[Sports · PESU RR CampusPESU Sports Teams Shine at Spardha 202612 Oct 2026261 views](https://news.pes.edu/12192/)
-[Event · PESU RR CampusA.R. Rahman's Wonderment Tour: A Night of Music, Magic, and Event Management Excellence06 Oct 2026466 views](https://news.pes.edu/12179/)
+[Staff Achievements · PESU RR CampusPES University Professor Honoured with Karnataka Nataka Academy AwardOct 26, 2026576 views5 likes](https://news.pes.edu/12180/)
+[Clubs & Activities · PESU EC CampusCTRL + ALT + STEAL: An AI-Powered Mystery Heist Challenge of Strategy and DeductionNov 04, 2026345 views](https://news.pes.edu/12188/)
+[Clubs & Activities · PESU EC CampusMaaya 2026 – ECLECTRIA: A Grand Celebration of Creativity, Culture, and Campus SpiritOct 26, 2026307 views](https://news.pes.edu/12185/)
+[Workshop · PESU RR CampusBuilding Awareness on Intellectual Property: Biotechnology Department Hosts IPR & Patents WorkshopOct 30, 2026242 views](https://news.pes.edu/12194/)
+[Alumni · PESU RR CampusFuture of Work and Skill Relevance: Industry Expert Shares Insights with StudentsNov 04, 2026226 views](https://news.pes.edu/12187/)
+[Clubs & Activities · PESU EC CampusBreakthrough 1.0: Transforming Ideas into Impact Through InnovationOct 23, 2026223 views](https://news.pes.edu/12183/)
+[Webinar · PESU RR CampusHospitality Industry Trends, Career Opportunities and Industry Expectations: Insights from an Engaging WebinarNov 04, 2026205 views](https://news.pes.edu/12195/)
+[Innovative · PESU EC CampusMaaya 2026 – ECLECTRIA Concludes with an Electrifying Concert NightOct 27, 2026193 views](https://news.pes.edu/12186/)
+[Clubs & Activities · PESU RR CampusMYSTARA 2.0: A 24-Hour Marathon of Innovation and Problem-Solving22 Oct 2026191 views](https://news.pes.edu/12184/)
+[Sports · PESU RR CampusPESU Table Tennis Women Team Triumphs at Falak ’26 State-Level Sports Fest18 Oct 2026183 views](https://news.pes.edu/12189/)
+[Sports · PESU RR CampusPESU Cricket Team Clinches Championship Title at Falak ’2617 Oct 2026201 views](https://news.pes.edu/12190/)
+[Sports · PESU RR CampusDhruthika N Andan Wins Gold at Dasara Games 202615 Oct 2026178 views](https://news.pes.edu/12191/)
+[Motivation · PESU RR CampusKala-Niti: A Unique Blend of Creativity, Strategy, and Problem-Solving12 Oct 2026218 views](https://news.pes.edu/12193/)
+[Sports · PESU RR CampusPESU Sports Teams Shine at Spardha 202612 Oct 2026269 views](https://news.pes.edu/12192/)
+[Event · PESU RR CampusA.R. Rahman's Wonderment Tour: A Night of Music, Magic, and Event Management Excellence06 Oct 2026473 views](https://news.pes.edu/12179/)
 duplicate set for seamless loop
-[Clubs & Activities · PESU RR CampusHuman Glitch: A Test of Wit, Adaptability, and Teamwork at Maaya 2K2626 Oct 2026165 views](https://news.pes.edu/12182/)
-[Sports · PESU RR CampusPESU Table Tennis Women Team Triumphs at Falak ’26 State-Level Sports Fest18 Oct 2026177 views](https://news.pes.edu/12189/)
-[Sports · PESU RR CampusPESU Cricket Team Clinches Championship Title at Falak ’2617 Oct 2026195 views](https://news.pes.edu/12190/)
-[Sports · PESU RR CampusDhruthika N Andan Wins Gold at Dasara Games 202615 Oct 2026175 views](https://news.pes.edu/12191/)
-[Motivation · PESU RR CampusKala-Niti: A Unique Blend of Creativity, Strategy, and Problem-Solving12 Oct 2026210 views](https://news.pes.edu/12193/)
-[Sports · PESU RR CampusPESU Sports Teams Shine at Spardha 202612 Oct 2026261 views](https://news.pes.edu/12192/)
-[Event · PESU RR CampusA.R. Rahman's Wonderment Tour: A Night of Music, Magic, and Event Management Excellence06 Oct 2026466 views](https://news.pes.edu/12179/)
+[Clubs & Activities · PESU RR CampusMYSTARA 2.0: A 24-Hour Marathon of Innovation and Problem-Solving22 Oct 2026191 views](https://news.pes.edu/12184/)
+[Sports · PESU RR CampusPESU Table Tennis Women Team Triumphs at Falak ’26 State-Level Sports Fest18 Oct 2026183 views](https://news.pes.edu/12189/)
+[Sports · PESU RR CampusPESU Cricket Team Clinches Championship Title at Falak ’2617 Oct 2026201 views](https://news.pes.edu/12190/)
+[Sports · PESU RR CampusDhruthika N Andan Wins Gold at Dasara Games 202615 Oct 2026178 views](https://news.pes.edu/12191/)
+[Motivation · PESU RR CampusKala-Niti: A Unique Blend of Creativity, Strategy, and Problem-Solving12 Oct 2026218 views](https://news.pes.edu/12193/)
+[Sports · PESU RR CampusPESU Sports Teams Shine at Spardha 202612 Oct 2026269 views](https://news.pes.edu/12192/)
+[Event · PESU RR CampusA.R. Rahman's Wonderment Tour: A Night of Music, Magic, and Event Management Excellence06 Oct 2026473 views](https://news.pes.edu/12179/)
 Auto-scrolling — hover a row to pause
 [🔥 Hot News](https://news.pes.edu/ribbon/hot)
 [Featured](https://news.pes.edu/ribbon/featured)
@@ -62,16 +62,16 @@ Trending Now
 
 ## Most viewed in the last 30 days
 
-[01PESU RR Campus · Press NotePES University Professor Honoured with Karnataka Nataka Academy Award5675](https://news.pes.edu/12180/)
-[02PESU EC Campus · FeaturedCTRL + ALT + STEAL: An AI-Powered Mystery Heist Challenge of Strategy and Deduction3394](https://news.pes.edu/12188/)
-[03PESU EC Campus · HotMaaya 2026 – ECLECTRIA: A Grand Celebration of Creativity, Culture, and Campus Spirit2943](https://news.pes.edu/12185/)
-[04PESU RR Campus · FeaturedBuilding Awareness on Intellectual Property: Biotechnology Department Hosts IPR & Patents Workshop2376](https://news.pes.edu/12194/)
-[05PESU RR CampusFuture of Work and Skill Relevance: Industry Expert Shares Insights with Students2183](https://news.pes.edu/12187/)
-[06PESU EC Campus · HotBreakthrough 1.0: Transforming Ideas into Impact Through Innovation2132](https://news.pes.edu/12183/)
-[07PESU RR Campus · FeaturedHospitality Industry Trends, Career Opportunities and Industry Expectations: Insights from an Engaging Webinar1982](https://news.pes.edu/12195/)
-[08PESU EC Campus · HotMaaya 2026 – ECLECTRIA Concludes with an Electrifying Concert Night1854](https://news.pes.edu/12186/)
-[09PESU RR Campus · HotMYSTARA 2.0: A 24-Hour Marathon of Innovation and Problem-Solving1843](https://news.pes.edu/12184/)
-[10PESU RR Campus · HotInk and Impact: Where Literature Met Creativity, Strategy, and Innovation1682](https://news.pes.edu/12196/)
+[01PESU RR Campus · Press NotePES University Professor Honoured with Karnataka Nataka Academy Award5765](https://news.pes.edu/12180/)
+[02PESU EC Campus · FeaturedCTRL + ALT + STEAL: An AI-Powered Mystery Heist Challenge of Strategy and Deduction3454](https://news.pes.edu/12188/)
+[03PESU EC Campus · HotMaaya 2026 – ECLECTRIA: A Grand Celebration of Creativity, Culture, and Campus Spirit3073](https://news.pes.edu/12185/)
+[04PESU RR Campus · FeaturedBuilding Awareness on Intellectual Property: Biotechnology Department Hosts IPR & Patents Workshop2426](https://news.pes.edu/12194/)
+[05PESU RR CampusFuture of Work and Skill Relevance: Industry Expert Shares Insights with Students2263](https://news.pes.edu/12187/)
+[06PESU EC Campus · HotBreakthrough 1.0: Transforming Ideas into Impact Through Innovation2232](https://news.pes.edu/12183/)
+[07PESU RR Campus · FeaturedHospitality Industry Trends, Career Opportunities and Industry Expectations: Insights from an Engaging Webinar2052](https://news.pes.edu/12195/)
+[08PESU EC Campus · HotMaaya 2026 – ECLECTRIA Concludes with an Electrifying Concert Night1934](https://news.pes.edu/12186/)
+[09PESU RR Campus · HotInk and Impact: Where Literature Met Creativity, Strategy, and Innovation1762](https://news.pes.edu/12196/)
+[10PESU RR Campus · FeaturedHuman Glitch: A Test of Wit, Adaptability, and Teamwork at Maaya 2K261693](https://news.pes.edu/12182/)
 SPORTS
 
 Sports News
@@ -79,15 +79,15 @@ Sports News
 ## Latest articles in this category
 
 [View all](https://news.pes.edu/tag/sports/)
-[PESU RR CampusPESU Sports Teams Shine at Spardha 2026PES University delivered an outstanding performance at Spardha 2026, with the Men's and Women's Table Tennis teams and the Men's Badminton team emerg…12 Oct 2026261 views](https://news.pes.edu/12192/)
-[PESU RR CampusDhruthika N Andan Wins Gold at Dasara Games 202615 Oct 2026175 views](https://news.pes.edu/12191/)
-[PESU RR CampusPESU Cricket Team Clinches Championship Title at Falak ’2617 Oct 2026195 views](https://news.pes.edu/12190/)
-[PESU RR CampusPESU Table Tennis Women Team Triumphs at Falak ’26 State-Level Sports Fest18 Oct 2026 · 177 views](https://news.pes.edu/12189/)
-[PESU RR CampusBruins Roar’26: Celebrating Sportsmanship, Teamwork, and the True Bruins Spirit18 Sep 2026 · 405 views](https://news.pes.edu/12170/)
-[PESU RR CampusPESU Student Clinches Gold at the 9th Kerala State Squash Championship29 Sep 2026 · 1186 views](https://news.pes.edu/12167/)
-[PESU RR CampusPES University Tennis Team Finishes as Runners‑Up at REVELS CUP 202628 Feb 2026 · 1846 views](https://news.pes.edu/12020/)
-[PESU RR CampusPESU Student Wins Bronze at Karnataka State Olympics 2025–2619 Jan 2026 · 1770 views](https://news.pes.edu/12018/)
-[PESU RR CampusPES University Cricket Team Wins “Udaan 26” State‑Level Tournament28 Feb 2026 · 1162 views](https://news.pes.edu/12017/)
+[PESU RR CampusPESU Sports Teams Shine at Spardha 2026PES University delivered an outstanding performance at Spardha 2026, with the Men's and Women's Table Tennis teams and the Men's Badminton team emerg…12 Oct 2026269 views](https://news.pes.edu/12192/)
+[PESU RR CampusDhruthika N Andan Wins Gold at Dasara Games 202615 Oct 2026178 views](https://news.pes.edu/12191/)
+[PESU RR CampusPESU Cricket Team Clinches Championship Title at Falak ’2617 Oct 2026201 views](https://news.pes.edu/12190/)
+[PESU RR CampusPESU Table Tennis Women Team Triumphs at Falak ’26 State-Level Sports Fest18 Oct 2026 · 183 views](https://news.pes.edu/12189/)
+[PESU RR CampusBruins Roar’26: Celebrating Sportsmanship, Teamwork, and the True Bruins Spirit18 Sep 2026 · 411 views](https://news.pes.edu/12170/)
+[PESU RR CampusPESU Student Clinches Gold at the 9th Kerala State Squash Championship29 Sep 2026 · 1199 views](https://news.pes.edu/12167/)
+[PESU RR CampusPES University Tennis Team Finishes as Runners‑Up at REVELS CUP 202628 Feb 2026 · 1857 views](https://news.pes.edu/12020/)
+[PESU RR CampusPESU Student Wins Bronze at Karnataka State Olympics 2025–2619 Jan 2026 · 1782 views](https://news.pes.edu/12018/)
+[PESU RR CampusPES University Cricket Team Wins “Udaan 26” State‑Level Tournament28 Feb 2026 · 1176 views](https://news.pes.edu/12017/)
 VIDEOS
 
 Watch
@@ -95,10 +95,10 @@ Watch
 ## PESU Featured Videos
 
 [View all videos](https://news.pes.edu/videos/)
-[PESU RR CampusAgainst the Clock: IJMC Students Take on a High‑Intensity Video Production Challenge at PES University04 Apr 2026 · 844 views](https://news.pes.edu/12074/)
-[PESU RR CampusCreate your own path: Rashmikant Joshi at Ninth Annual Convocation 2024 of PES University08 Dec 2024 · 3844 views](https://news.pes.edu/11669/)
-[PESU RR CampusThe Code of Honour - 2023, a 24-Hour Hackathon organised by PES University17 Nov 2023 · 7803 views](https://news.pes.edu/11277/)
-[PESU RR CampusSeventh Annual Convocation of PES University12 Sep 2022 · 5302 views](https://news.pes.edu/10918/)
+[PESU RR CampusAgainst the Clock: IJMC Students Take on a High‑Intensity Video Production Challenge at PES University04 Apr 2026 · 851 views](https://news.pes.edu/12074/)
+[PESU RR CampusCreate your own path: Rashmikant Joshi at Ninth Annual Convocation 2024 of PES University08 Dec 2024 · 3854 views](https://news.pes.edu/11669/)
+[PESU RR CampusThe Code of Honour - 2023, a 24-Hour Hackathon organised by PES University17 Nov 2023 · 7808 views](https://news.pes.edu/11277/)
+[PESU RR CampusSeventh Annual Convocation of PES University12 Sep 2022 · 5316 views](https://news.pes.edu/10918/)
 RESEARCH
 
 Research News
@@ -106,15 +106,15 @@ Research News
 ## Latest articles in this category
 
 [View all](https://news.pes.edu/tag/research/)
-[PESU RR CampusWorkshop on SPSS: Empowering Researchers with Data-Driven InsightsA workshop on SPSS was conducted to help participants develop essential skills in statistical data analysis and research methodology.01 Oct 2026528 views](https://news.pes.edu/12173/)
-[PESUIMSRCME on Biomarkers in Translational Medicine Highlights Advances in Patient-Centered Healthcare21 Aug 2026540 views](https://news.pes.edu/12147/)
-[PESU EC CampusPES University Research Scholars Win First Prize at Nano Jatha 202604 Aug 2026791 views](https://news.pes.edu/12134/)
-[PESU EC CampusAdvancing Ethical Research in the Age of Artificial Intelligence: Two-Day Faculty Development Programme at PES University17 Jul 2026 · 625 views](https://news.pes.edu/12131/)
-[PESU EC CampusPES University Hosts Symposium 2.0 on AI in the Manufacturing Industry16 Feb 2026 · 1999 views](https://news.pes.edu/12004/)
-[PESU RR CampusResearch Conclave 2026 | Fostering Innovation and Intellectual Dialogue at PES University05 Jan 2026 · 1928 views](https://news.pes.edu/11993/)
-[PESU RR CampusPES University Hosts Inter‑Institutional Multidisciplinary Research Workshop 202515 Dec 2025 · 2318 views](https://news.pes.edu/11987/)
-[PESU EC CampusPES University and HCLTech Forge Strategic Partnership with Engineering Design Studio Launch20 Sep 2025 · 2437 views](https://news.pes.edu/11907/)
-[PESU EC CampusHealthcare stream magazine released18 Apr 2025 · 5349 views](https://news.pes.edu/11815/)
+[PESU RR CampusWorkshop on SPSS: Empowering Researchers with Data-Driven InsightsA workshop on SPSS was conducted to help participants develop essential skills in statistical data analysis and research methodology.01 Oct 2026537 views](https://news.pes.edu/12173/)
+[PESUIMSRCME on Biomarkers in Translational Medicine Highlights Advances in Patient-Centered Healthcare21 Aug 2026553 views](https://news.pes.edu/12147/)
+[PESU EC CampusPES University Research Scholars Win First Prize at Nano Jatha 202604 Aug 2026802 views](https://news.pes.edu/12134/)
+[PESU EC CampusAdvancing Ethical Research in the Age of Artificial Intelligence: Two-Day Faculty Development Programme at PES University17 Jul 2026 · 629 views](https://news.pes.edu/12131/)
+[PESU EC CampusPES University Hosts Symposium 2.0 on AI in the Manufacturing Industry16 Feb 2026 · 2010 views](https://news.pes.edu/12004/)
+[PESU RR CampusResearch Conclave 2026 | Fostering Innovation and Intellectual Dialogue at PES University05 Jan 2026 · 1938 views](https://news.pes.edu/11993/)
+[PESU RR CampusPES University Hosts Inter‑Institutional Multidisciplinary Research Workshop 202515 Dec 2025 · 2329 views](https://news.pes.edu/11987/)
+[PESU EC CampusPES University and HCLTech Forge Strategic Partnership with Engineering Design Studio Launch20 Sep 2025 · 2450 views](https://news.pes.edu/11907/)
+[PESU EC CampusHealthcare stream magazine released18 Apr 2025 · 5361 views](https://news.pes.edu/11815/)
 EXPLORE BY TOPIC
 
 Explore by Topic
@@ -157,30 +157,30 @@ Latest News
 ## All stories, newest first
 
 2077 articles · Page 1 of 87
-[Clubs & ActivitiesPESU EC CampusCTRL + ALT + STEAL: An AI-Powered Mystery Heist Challenge of Strategy and DeductionNov 04, 20263394](https://news.pes.edu/12188/)
-[WebinarPESU RR CampusHospitality Industry Trends, Career Opportunities and Industry Expectations: Insights from an Engaging WebinarNov 04, 20261982](https://news.pes.edu/12195/)
-[AlumniPESU RR CampusFuture of Work and Skill Relevance: Industry Expert Shares Insights with StudentsNov 04, 20262183](https://news.pes.edu/12187/)
-[Clubs & ActivitiesPESU RR CampusInk and Impact: Where Literature Met Creativity, Strategy, and InnovationNov 02, 20261682](https://news.pes.edu/12196/)
-[WorkshopPESU RR CampusBuilding Awareness on Intellectual Property: Biotechnology Department Hosts IPR & Patents WorkshopOct 30, 20262376](https://news.pes.edu/12194/)
-[InnovativePESU EC CampusMaaya 2026 – ECLECTRIA Concludes with an Electrifying Concert NightOct 27, 20261854](https://news.pes.edu/12186/)
-[Staff AchievementsPESU RR CampusPES University Professor Honoured with Karnataka Nataka Academy AwardOct 26, 20265675](https://news.pes.edu/12180/)
-[Clubs & ActivitiesPESU RR CampusHuman Glitch: A Test of Wit, Adaptability, and Teamwork at Maaya 2K26Oct 26, 20261653](https://news.pes.edu/12182/)
-[Clubs & ActivitiesPESU EC CampusMaaya 2026 – ECLECTRIA: A Grand Celebration of Creativity, Culture, and Campus SpiritOct 26, 20262943](https://news.pes.edu/12185/)
-[Clubs & ActivitiesPESU EC CampusBreakthrough 1.0: Transforming Ideas into Impact Through InnovationOct 23, 20262132](https://news.pes.edu/12183/)
-[Clubs & ActivitiesPESU RR CampusMYSTARA 2.0: A 24-Hour Marathon of Innovation and Problem-SolvingOct 22, 20261843](https://news.pes.edu/12184/)
-[SportsPESU RR CampusPESU Table Tennis Women Team Triumphs at Falak ’26 State-Level Sports FestOct 18, 20261772](https://news.pes.edu/12189/)
-[SportsPESU RR CampusPESU Cricket Team Clinches Championship Title at Falak ’26Oct 17, 20261953](https://news.pes.edu/12190/)
-[SportsPESU RR CampusDhruthika N Andan Wins Gold at Dasara Games 2026Oct 15, 20261754](https://news.pes.edu/12191/)
-[MotivationPESU RR CampusKala-Niti: A Unique Blend of Creativity, Strategy, and Problem-SolvingOct 12, 20262105](https://news.pes.edu/12193/)
-[SportsPESU RR CampusPESU Sports Teams Shine at Spardha 2026Oct 12, 20262613](https://news.pes.edu/12192/)
-[ConferencePESU RR Campus7th Young Visionary Housekeepers National Convention and 9th PHA Yuva Anniversary: Celebrating Innovation in HospitalityOct 06, 20263893](https://news.pes.edu/12178/)
-[EventPESU RR CampusA.R. Rahman's Wonderment Tour: A Night of Music, Magic, and Event Management ExcellenceOct 06, 20264662](https://news.pes.edu/12179/)
-[Interactive SessionPESU RR CampusIndustrial Visit to Rameshwaram Café: Bridging Classroom Learning with Industry ExperienceOct 06, 20264488](https://news.pes.edu/12177/)
-[Clubs & ActivitiesPESU RR CampusGandhi Jayanthi Celebration: Honouring the Legacy of Mahatma GandhiOct 03, 20263152](https://news.pes.edu/12181/)
-[Clubs & ActivitiesPESU RR CampusVoices of Change: Empowering Students to Become Catalysts for Social ImpactOct 02, 20264124](https://news.pes.edu/12176/)
-[InfoSessionPESU RR CampusB-Talk #47: Exploring the Agentic AI Revolution in BusinessOct 02, 20264023](https://news.pes.edu/12175/)
-[ResearchPESU RR CampusWorkshop on SPSS: Empowering Researchers with Data-Driven InsightsOct 01, 20265285](https://news.pes.edu/12173/)
-[SportsPESU RR CampusPESU Student Clinches Gold at the 9th Kerala State Squash ChampionshipSep 29, 202611864](https://news.pes.edu/12167/)
+[Clubs & ActivitiesPESU EC CampusCTRL + ALT + STEAL: An AI-Powered Mystery Heist Challenge of Strategy and DeductionNov 04, 20263454](https://news.pes.edu/12188/)
+[WebinarPESU RR CampusHospitality Industry Trends, Career Opportunities and Industry Expectations: Insights from an Engaging WebinarNov 04, 20262052](https://news.pes.edu/12195/)
+[AlumniPESU RR CampusFuture of Work and Skill Relevance: Industry Expert Shares Insights with StudentsNov 04, 20262263](https://news.pes.edu/12187/)
+[Clubs & ActivitiesPESU RR CampusInk and Impact: Where Literature Met Creativity, Strategy, and InnovationNov 02, 20261762](https://news.pes.edu/12196/)
+[WorkshopPESU RR CampusBuilding Awareness on Intellectual Property: Biotechnology Department Hosts IPR & Patents WorkshopOct 30, 20262426](https://news.pes.edu/12194/)
+[InnovativePESU EC CampusMaaya 2026 – ECLECTRIA Concludes with an Electrifying Concert NightOct 27, 20261934](https://news.pes.edu/12186/)
+[Staff AchievementsPESU RR CampusPES University Professor Honoured with Karnataka Nataka Academy AwardOct 26, 20265765](https://news.pes.edu/12180/)
+[Clubs & ActivitiesPESU RR CampusHuman Glitch: A Test of Wit, Adaptability, and Teamwork at Maaya 2K26Oct 26, 20261693](https://news.pes.edu/12182/)
+[Clubs & ActivitiesPESU EC CampusMaaya 2026 – ECLECTRIA: A Grand Celebration of Creativity, Culture, and Campus SpiritOct 26, 20263073](https://news.pes.edu/12185/)
+[Clubs & ActivitiesPESU EC CampusBreakthrough 1.0: Transforming Ideas into Impact Through InnovationOct 23, 20262232](https://news.pes.edu/12183/)
+[Clubs & ActivitiesPESU RR CampusMYSTARA 2.0: A 24-Hour Marathon of Innovation and Problem-SolvingOct 22, 20261913](https://news.pes.edu/12184/)
+[SportsPESU RR CampusPESU Table Tennis Women Team Triumphs at Falak ’26 State-Level Sports FestOct 18, 20261832](https://news.pes.edu/12189/)
+[SportsPESU RR CampusPESU Cricket Team Clinches Championship Title at Falak ’26Oct 17, 20262013](https://news.pes.edu/12190/)
+[SportsPESU RR CampusDhruthika N Andan Wins Gold at Dasara Games 2026Oct 15, 20261784](https://news.pes.edu/12191/)
+[MotivationPESU RR CampusKala-Niti: A Unique Blend of Creativity, Strategy, and Problem-SolvingOct 12, 20262185](https://news.pes.edu/12193/)
+[SportsPESU RR CampusPESU Sports Teams Shine at Spardha 2026Oct 12, 20262693](https://news.pes.edu/12192/)
+[ConferencePESU RR Campus7th Young Visionary Housekeepers National Convention and 9th PHA Yuva Anniversary: Celebrating Innovation in HospitalityOct 06, 20263933](https://news.pes.edu/12178/)
+[EventPESU RR CampusA.R. Rahman's Wonderment Tour: A Night of Music, Magic, and Event Management ExcellenceOct 06, 20264732](https://news.pes.edu/12179/)
+[Interactive SessionPESU RR CampusIndustrial Visit to Rameshwaram Café: Bridging Classroom Learning with Industry ExperienceOct 06, 20264608](https://news.pes.edu/12177/)
+[Clubs & ActivitiesPESU RR CampusGandhi Jayanthi Celebration: Honouring the Legacy of Mahatma GandhiOct 03, 20263192](https://news.pes.edu/12181/)
+[Clubs & ActivitiesPESU RR CampusVoices of Change: Empowering Students to Become Catalysts for Social ImpactOct 02, 20264264](https://news.pes.edu/12176/)
+[InfoSessionPESU RR CampusB-Talk #47: Exploring the Agentic AI Revolution in BusinessOct 02, 20264083](https://news.pes.edu/12175/)
+[ResearchPESU RR CampusWorkshop on SPSS: Empowering Researchers with Data-Driven InsightsOct 01, 20265375](https://news.pes.edu/12173/)
+[SportsPESU RR CampusPESU Student Clinches Gold at the 9th Kerala State Squash ChampionshipSep 29, 202611994](https://news.pes.edu/12167/)
 These links don't self-paginate the homepage — they jump straight
            into the full "Latest News" listing page at that page number.
 1

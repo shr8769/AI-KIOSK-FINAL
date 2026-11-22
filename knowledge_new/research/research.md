@@ -3,7 +3,7 @@ title: "Research Programs"
 url: https://pes.edu/research
 category: research
 breadcrumb: ""
-last_crawled: "2026-11-21T07:12:28.794126+05:30"
+last_crawled: "2026-11-22T06:08:22.335817+05:30"
 ---
 
 Programs
