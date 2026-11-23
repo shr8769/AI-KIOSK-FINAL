@@ -3,7 +3,7 @@ title: "Terms & Conditions"
 url: https://pes.edu/terms
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-22T06:20:11.554294+05:30"
+last_crawled: "2026-11-23T06:44:42.886824+05:30"
 ---
 
 Programs

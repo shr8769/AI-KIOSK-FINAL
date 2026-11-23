@@ -3,7 +3,7 @@ title: "Clubs and Activities"
 url: https://pes.edu/clubs
 category: campus_life
 breadcrumb: ""
-last_crawled: "2026-11-22T06:17:22.729772+05:30"
+last_crawled: "2026-11-23T06:46:09.934930+05:30"
 ---
 
 Campus Life

@@ -3,7 +3,7 @@ title: "All Programs"
 url: https://pes.edu/programs
 category: programs
 breadcrumb: ""
-last_crawled: "2026-11-22T06:19:45.167648+05:30"
+last_crawled: "2026-11-23T06:49:12.393079+05:30"
 ---
 
 Programs

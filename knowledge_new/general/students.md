@@ -3,7 +3,7 @@ title: "Students"
 url: https://pes.edu/students
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-22T06:13:30.509694+05:30"
+last_crawled: "2026-11-23T06:48:41.631020+05:30"
 ---
 
 ### Prospective Students
@@ -91,4 +91,4 @@ The Student Newsletter is your guide to what’s happening on campus and in the 
 
 ## Contact Information
 
-**Phone:** 0801029729, +918022429391
+**Phone:** +918022429391, 0801029729

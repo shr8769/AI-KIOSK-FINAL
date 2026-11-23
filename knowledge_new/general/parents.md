@@ -3,7 +3,7 @@ title: "Parents"
 url: https://pes.edu/parents
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-22T06:17:32.523606+05:30"
+last_crawled: "2026-11-23T06:37:45.849913+05:30"
 ---
 
 ### Parents
@@ -95,4 +95,4 @@ The Student Newsletter is your guide to what’s happening on campus and in the 
 
 ## Contact Information
 
-**Phone:** 0801029729, +918022429391
+**Phone:** +918022429391, 0801029729

@@ -3,7 +3,7 @@ title: "Careers"
 url: https://pes.edu/careers
 category: placements
 breadcrumb: ""
-last_crawled: "2026-11-22T06:13:01.945578+05:30"
+last_crawled: "2026-11-23T06:43:56.657406+05:30"
 ---
 
 ### Work With Us
