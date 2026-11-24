@@ -3,7 +3,7 @@ title: "Hostel"
 url: https://pes.edu/hostel
 category: hostels
 breadcrumb: ""
-last_crawled: "2026-11-23T06:41:14.106406+05:30"
+last_crawled: "2026-11-24T10:40:16.912081+05:30"
 ---
 
 Admissions

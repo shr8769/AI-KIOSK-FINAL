@@ -3,7 +3,7 @@ title: "Placements"
 url: https://pes.edu/placements
 category: placements
 breadcrumb: ""
-last_crawled: "2026-11-23T06:35:51.339143+05:30"
+last_crawled: "2026-11-24T10:27:11.698096+05:30"
 ---
 
 ### Placements
@@ -36,7 +36,7 @@ Highest Salary Offered
 1668
 +
 Placements Offers
-1374
+1373
 +
 Internships Offers
 

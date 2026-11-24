@@ -3,7 +3,7 @@ title: "Academics"
 url: https://pes.edu/academics
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-23T06:35:41.623954+05:30"
+last_crawled: "2026-11-24T10:27:02.296518+05:30"
 ---
 
 Programs

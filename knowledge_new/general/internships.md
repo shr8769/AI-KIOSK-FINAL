@@ -3,7 +3,7 @@ title: "International Internships"
 url: https://pes.edu/internships
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-23T06:41:44.928539+05:30"
+last_crawled: "2026-11-24T10:27:40.736666+05:30"
 ---
 
 Programs

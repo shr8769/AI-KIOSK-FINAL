@@ -3,7 +3,7 @@ title: "Sports & Athletics"
 url: https://pes.edu/sports
 category: campus_facilities
 breadcrumb: ""
-last_crawled: "2026-11-23T06:47:54.071366+05:30"
+last_crawled: "2026-11-24T10:29:45.547996+05:30"
 ---
 
 Campus Life

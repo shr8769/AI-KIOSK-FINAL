@@ -3,7 +3,7 @@ title: "IQAC"
 url: https://pes.edu/iqac
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-23T06:42:48.524395+05:30"
+last_crawled: "2026-11-24T10:36:51.046188+05:30"
 ---
 
 Programs

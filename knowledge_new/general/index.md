@@ -3,7 +3,7 @@ title: "PESUIMSR | PES UNIVERSITY INSTITUTE OF MEDICAL SCIENCES & RESEARCH"
 url: https://pesuimsr.pes.edu/
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-23T06:49:48.789111+05:30"
+last_crawled: "2026-11-24T10:40:25.126465+05:30"
 ---
 
 PG Medical Admissions 2026–27 Open
@@ -273,6 +273,19 @@ Get Started
 [Giving to PESThe support extended by patrons like you, has been the primary reason for the substantial growth of our institution. Your contribution would greatly assist in making your PES a world-class institution.Learn more →](https://pes.edu/give-to-pes/)
 [Staying in TouchJoin Alumni Network: The PES website supports the alumni network. All a student needs to do is create an account and you can start connecting with our Alumni to access a range of opportunities and benefits.Learn more →](https://pes.almaconnect.com/)
 [News & EventsThe news.pes.edu portal is PES University’s official news platform, showcasing achievements, events, and updates across its campuses.Learn more →](https://news.pes.edu)
+══════════════════════════════════════
+     NEWS & MILESTONES (live from news.pes.edu; cards below are fallback)
+══════════════════════════════════════
+Latest Updates
+
+## News & Milestones
+
+Recent achievements and events from campus.
+
+[September 29, 2026Orientation and White Coat Ceremony Marks the Beginning of a Noble Medical Journey at PESUIMSR](https://news.pes.edu/12166/)
+[September 28, 2026World Rabies Day 2026: Spreading Awareness for Prevention and Protection](https://news.pes.edu/12172/)
+[September 24, 2026International Snakebite Awareness Day 2026 Observed at Lakkur PHC](https://news.pes.edu/12161/)
+[View All News](https://news.pes.edu)
 ══════════════════════════════════════
      QUOTE
 ══════════════════════════════════════

@@ -3,7 +3,7 @@ title: "Internal Committee"
 url: https://pes.edu/committee
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-23T06:37:22.360817+05:30"
+last_crawled: "2026-11-24T10:32:27.498585+05:30"
 ---
 
 Programs
@@ -77,4 +77,4 @@ PESU ICC guidelines
 
 ## Contact Information
 
-**Emails:** chandvinishekar@gmail.com, jayshreenadig@pes.edu, psychiatry@pesuimsr.pes.edu, 168@pesu.pes.edu, pesuicmember@pes.edu, sajeevnair@pes.edu, nanitha@pes.edu, reka.disha@gmail.com, poojaagarwal@pes.edu, ankitapandey@pes.edu
+**Emails:** poojaagarwal@pes.edu, nanitha@pes.edu, reka.disha@gmail.com, psychiatry@pesuimsr.pes.edu, ankitapandey@pes.edu, pesuicmember@pes.edu, 168@pesu.pes.edu, sajeevnair@pes.edu, chandvinishekar@gmail.com, jayshreenadig@pes.edu
