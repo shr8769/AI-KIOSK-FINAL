@@ -3,7 +3,7 @@ title: "Art & Culture"
 url: https://pes.edu/culture
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-24T10:38:15.593321+05:30"
+last_crawled: "2026-11-25T09:18:03.414731+05:30"
 ---
 
 Campus Life

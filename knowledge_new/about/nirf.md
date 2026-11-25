@@ -3,7 +3,7 @@ title: "NIRF"
 url: https://pes.edu/nirf
 category: about
 breadcrumb: ""
-last_crawled: "2026-11-24T10:33:49.405739+05:30"
+last_crawled: "2026-11-25T09:26:08.215392+05:30"
 ---
 
 Programs

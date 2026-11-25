@@ -3,7 +3,7 @@ title: "PESUIMSR | PES UNIVERSITY INSTITUTE OF MEDICAL SCIENCES & RESEARCH"
 url: https://pesuimsr.pes.edu/
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-24T10:40:25.126465+05:30"
+last_crawled: "2026-11-25T09:27:32.625394+05:30"
 ---
 
 PG Medical Admissions 2026–27 Open

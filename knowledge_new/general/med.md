@@ -3,7 +3,7 @@ title: "MD / MS Admissions 2026–27 – PES University Institute of Medical Sci
 url: https://campaigns.pes.edu/med
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-24T10:29:28.115927+05:30"
+last_crawled: "2026-11-25T09:22:08.625987+05:30"
 ---
 
 PG Medical Admissions 2026–27 Open

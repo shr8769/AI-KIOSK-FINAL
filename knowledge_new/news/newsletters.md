@@ -3,7 +3,7 @@ title: "Newsletters"
 url: https://pes.edu/newsletters
 category: news
 breadcrumb: ""
-last_crawled: "2026-11-24T10:32:36.568341+05:30"
+last_crawled: "2026-11-25T09:17:22.284004+05:30"
 ---
 
 Campus Life
