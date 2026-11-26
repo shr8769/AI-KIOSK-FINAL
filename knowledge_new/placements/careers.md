@@ -3,7 +3,7 @@ title: "Careers"
 url: https://pes.edu/careers
 category: placements
 breadcrumb: ""
-last_crawled: "2026-11-25T09:16:43.853881+05:30"
+last_crawled: "2026-11-26T08:43:24.518572+05:30"
 ---
 
 ### Work With Us
@@ -73,4 +73,4 @@ The Student Newsletter is your guide to what’s happening on campus and in the 
 
 ## Contact Information
 
-**Emails:** careers@pes.eduWith, careers@pes.eduYou, careers@pes.edu
+**Emails:** careers@pes.edu, careers@pes.eduWith, careers@pes.eduYou

@@ -3,7 +3,7 @@ title: "The PES Way"
 url: https://pes.edu/pesway
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-25T09:25:09.648994+05:30"
+last_crawled: "2026-11-26T08:35:58.144952+05:30"
 ---
 
 About

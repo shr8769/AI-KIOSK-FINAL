@@ -3,7 +3,7 @@ title: "About Us"
 url: https://pes.edu/about
 category: about
 breadcrumb: ""
-last_crawled: "2026-11-25T09:19:45.489383+05:30"
+last_crawled: "2026-11-26T08:38:13.754436+05:30"
 ---
 
 About

@@ -3,7 +3,7 @@ title: "Science & Tech"
 url: https://pes.edu/tech
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-25T09:20:24.713436+05:30"
+last_crawled: "2026-11-26T08:32:40.517296+05:30"
 ---
 
 Campus Life

@@ -3,7 +3,7 @@ title: "Campuses"
 url: https://pes.edu/campuses
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-25T09:26:46.657883+05:30"
+last_crawled: "2026-11-26T08:38:22.822375+05:30"
 ---
 
 Campus Life
