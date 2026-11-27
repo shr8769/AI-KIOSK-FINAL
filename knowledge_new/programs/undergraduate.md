@@ -3,7 +3,7 @@ title: "Undergraduate Programs"
 url: https://pes.edu/undergraduate
 category: programs
 breadcrumb: ""
-last_crawled: "2026-11-26T08:38:33.321381+05:30"
+last_crawled: "2026-11-27T08:36:23.761407+05:30"
 ---
 
 Programs

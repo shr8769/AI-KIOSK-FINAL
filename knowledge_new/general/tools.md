@@ -3,7 +3,7 @@ title: "Learning Tools"
 url: https://pes.edu/tools
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-26T08:34:54.128122+05:30"
+last_crawled: "2026-11-27T08:41:57.835009+05:30"
 ---
 
 Programs

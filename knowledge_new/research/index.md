@@ -3,7 +3,7 @@ title: "Research @ PES University"
 url: https://research.pes.edu/
 category: research
 breadcrumb: ""
-last_crawled: "2026-11-26T08:35:03.338493+05:30"
+last_crawled: "2026-11-27T08:37:53.180702+05:30"
 ---
 
 # Advancing Knowledge,Innovation& Impact
@@ -267,9 +267,9 @@ Stay updated with the latest news and announcements from across PES University.
 
 Stay updated with upcoming events happening across all PES University campuses, from workshops to convocation.
 
-[26 NovConstitution, Conservation and the Citizen](https://events.pes.edu/11650/)
 [10 Jun31st International Advanced Computing and Communication Conference](https://events.pes.edu/11537/)
 [10 JunMulti - Agent Systems and Decentralized Intelligence](https://events.pes.edu/11523/)
+[26 NovConstitution, Conservation and the Citizen](https://events.pes.edu/11650/)
 [17 NovTechnology Law and Intellectual Property Law Summit 2026](https://events.pes.edu/11638/)
 [Browse All Events](https://events.pes.edu/)
 

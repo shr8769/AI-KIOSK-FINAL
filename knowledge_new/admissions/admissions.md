@@ -3,7 +3,7 @@ title: "Admissions"
 url: https://pes.edu/admissions
 category: admissions
 breadcrumb: ""
-last_crawled: "2026-11-26T08:31:32.535801+05:30"
+last_crawled: "2026-11-27T08:35:26.040392+05:30"
 ---
 
 Admissions
