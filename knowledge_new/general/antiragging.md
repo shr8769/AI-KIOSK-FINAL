@@ -3,7 +3,7 @@ title: "Anti-Ragging"
 url: https://pes.edu/antiragging
 category: general
 breadcrumb: ""
-last_crawled: "2026-11-27T08:40:32.176112+05:30"
+last_crawled: "2026-11-28T08:35:44.758107+05:30"
 ---
 
 Programs

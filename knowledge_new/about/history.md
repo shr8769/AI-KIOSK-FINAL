@@ -3,7 +3,7 @@ title: "History"
 url: https://pes.edu/history
 category: about
 breadcrumb: ""
-last_crawled: "2026-11-27T08:38:52.628377+05:30"
+last_crawled: "2026-11-28T08:29:20.063285+05:30"
 ---
 
 About

@@ -3,7 +3,7 @@ title: "Placements"
 url: https://pes.edu/placements
 category: placements
 breadcrumb: ""
-last_crawled: "2026-11-27T08:35:45.334396+05:30"
+last_crawled: "2026-11-28T08:26:10.396238+05:30"
 ---
 
 ### Placements

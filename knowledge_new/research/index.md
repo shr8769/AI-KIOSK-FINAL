@@ -3,7 +3,7 @@ title: "Research @ PES University"
 url: https://research.pes.edu/
 category: research
 breadcrumb: ""
-last_crawled: "2026-11-27T08:37:53.180702+05:30"
+last_crawled: "2026-11-28T08:30:23.590389+05:30"
 ---
 
 # Advancing Knowledge,Innovation& Impact

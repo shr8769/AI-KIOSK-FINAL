@@ -3,7 +3,7 @@ title: "Academic Calendar"
 url: https://pes.edu/calendar
 category: academic_calendar
 breadcrumb: ""
-last_crawled: "2026-11-27T08:40:23.170396+05:30"
+last_crawled: "2026-11-28T08:32:19.747265+05:30"
 ---
 
 Programs
